@@ -276,8 +276,8 @@ def main(args=None):
 
     args = parse_arguments().parse_args(args)
     trp = pygenometracks.tracksClass.PlotTracks(args.tracks.name, args.width, fig_height=args.height,
-                                               fontsize=args.fontSize, dpi=args.dpi,
-                                               track_label_width=args.trackLabelFraction)
+                                                fontsize=args.fontSize, dpi=args.dpi,
+                                                track_label_width=args.trackLabelFraction)
 
     if args.BED:
         count = 0

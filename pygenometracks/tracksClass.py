@@ -776,7 +776,6 @@ class PlotBoundaries(TrackPlot):
         x = []
         y = []
         if chrom_region not in self.interval_tree:
-            orig = chrom_region
             chrom_region = change_chrom_names(chrom_region)
         for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
             """
