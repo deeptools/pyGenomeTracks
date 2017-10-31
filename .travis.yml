@@ -1,0 +1,59 @@
+language: python
+sudo: true
+services:
+  - postgresql
+addons:
+  apt:
+    packages:
+    - samtools
+python:
+  - 2.7
+
+os:
+  - linux
+
+jobs:
+  include:
+    - stage: lint
+      env:
+        - LINT=1
+      before_install:
+        - curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o miniconda.sh
+        - bash miniconda.sh -b -p $HOME/miniconda
+        - PATH_WITHOUT_CONDA="$PATH"
+        - export PATH="$HOME/miniconda/bin:$PATH"
+        - hash -r
+        - conda config --set always_yes yes --set changeps1 no
+        - conda update -q conda
+      install:
+        - conda install --yes python=2.7 flake8
+      script:
+        - if [[ "$LINT" == "1" ]]; then flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712 ; fi
+    - stage: test
+      # Setup anaconda
+      before_install:
+        - export TEST_DATA_DIR="`pwd`/pygenometracks/test/test_data/"
+        - echo $TEST_DATA_DIR
+        - curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o miniconda.sh
+        # - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == "3.5" ]]; then curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh ; fi
+        # - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh ; fi
+        - bash miniconda.sh -b -p $HOME/miniconda
+        - PATH_WITHOUT_CONDA="$PATH"
+        - export PATH="$HOME/miniconda/bin:$PATH"
+        - hash -r
+        - conda config --set always_yes yes --set changeps1 no
+        - conda update -q conda
+        # Useful for debugging any issues with conda
+        - conda info -a
+
+      # Install packages
+      install:
+        - conda create --name pygenometracks_pytest --yes python=$TRAVIS_PYTHON_VERSION pytest
+        - source activate pygenometracks_pytest
+        - conda install --yes -c defaults -c conda-forge -c bioconda --file requirements.txt
+        - conda install --yes -c defaults -c conda-forge -c bioconda configparser
+        - python setup.py install
+
+      # command to run tests
+      script:
+        - py.test pygenometracks --doctest-modules

@@ -1,0 +1,6 @@
+numpy >= 1.12.*
+matplotlib >= 2.0.0
+intervaltree >= 2.1.0
+pybigwig >= 0.3.4
+pytest
+

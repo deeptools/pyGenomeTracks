@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from pygenometracks.makeTracksFile import main
+
+if __name__ == "__main__":
+    main()
