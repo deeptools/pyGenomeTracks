@@ -101,7 +101,7 @@ with open(ROOT + "browser_tracks.ini", 'w') as fh:
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
-def test_hicPlotTads():
+def test_plot_tracks():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
     args = "--tracks {0}/browser_tracks.ini --region chrX:3000000-3500000  " \
