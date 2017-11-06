@@ -1413,8 +1413,8 @@ class PlotTADs(TrackPlot):
         Plots the boundaries as triangles in the given ax.
         """
         from matplotlib.patches import Polygon
-        x = []
-        y = []
+        #x = []
+        #y = []
         ymax = 0
         if chrom_region not in self.interval_tree:
             orig = chrom_region
@@ -1433,8 +1433,8 @@ class PlotTADs(TrackPlot):
             x3 = region.end
             y1 = 0
             y2 = (region.end - region.begin)
-            x.extend([x1, x2, x3])
-            y.extend([y1, y2, y1])
+            #x.extend([x1, x2, x3])
+            #y.extend([y1, y2, y1])
 
             edgecolor = self.properties['border_color']
 
