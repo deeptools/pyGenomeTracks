@@ -1,0 +1,4 @@
+# the following code needs to be executed at the module level such that the filepaths can be
+# compared with the test
+# cd path to pyGenomeTracks
+bin/make_tracks_file --trackFiles pygenometracks/tests/test_data/bigwig_chrx_2e6_5e6.bw pygenometracks/tests/test_data/tad_classification.bed -o pygenometracks/tests/test_data/master_tracks.ini 
