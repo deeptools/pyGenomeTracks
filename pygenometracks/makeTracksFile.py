@@ -8,14 +8,16 @@ from pygenometracks._version import __version__
 def parse_arguments(args=None):
 
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description=('Facilitates the creation of a configuration file for hicPlotTADs. This program takes a list '
-                     'of files and does the boilerplate for the configuration file.'))
+         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+         description='Facilitates the creation of a configuration file for pyGenomeTracks. The program takes a list '
+                     'of files and does the boilerplate for the configuration file.',
+         usage="%(prog)s --trackFiles <bigwig file> <bed file> etc. -o tracks.ini")
 
     # define the arguments
     parser.add_argument('--trackFiles', '-f',
-                        help='Files to use in for the tracks. The ending of the file is used to define the type of'
-                             'track.',
+                        help='Files to use in for the tracks. The ending of the file is used to define the type of '
+                             'track. E.g. `.bw` for bigwig, `.bed` for bed etc. For a arcs or links file, the file '
+                             'ending recognized is `.arcs` or `.links`',
                         nargs='+',
                         type=argparse.FileType('r'),
                         required=True)
@@ -58,10 +60,12 @@ nans to zeros = True
 # options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
-# similary points:ms sets the point size (markersize (ms) to the given float
-type = line
+# similarly points:ms sets the point size (markersize (ms) to the given float
 # type = line:0.5
 # type = points:0.5
+
+# if the track wants to be plotted upside-down:
+# orientation = inverted
 #optional in case it can not be guessed by the file ending
 file_type = bigwig
 """
@@ -74,6 +78,8 @@ file_type = bigwig
             default_values = """
 color = green
 height = 0.2
+# if the track wants to be plotted upside-down:
+# orientation = inverted
 file_type = bedgraph
 """
             args.out.write("\n[{label}]\nfile={file}\ntitle={label}{default_values}".
@@ -145,7 +151,9 @@ file_type = hic_matrix
 # those bins that were not used during the correction
 # the default is to extend neighboring bins to
 # obtain an aesthetically pleasant output
-show_masked_bins = yes
+show_masked_bins = no
+# if the track wants to be plotted upside-down:
+# orientation = inverted
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
 # scale factor = 1
@@ -170,7 +178,31 @@ show_masked_bins = yes
 # is not wanted
 type = lines
 file_type = bedgraph_matrix
-plot horizontal lines=False
+#plot horizontal lines=False
+# if the track wants to be plotted upside-down:
+# orientation = inverted
+height=8
+"""
+            args.out.write("\n[{label}]\nfile={file}\ntitle={label}{default_values}".
+                           format(label=label, file=file_h.name, default_values=default_values))
+
+            sys.stdout.write("Adding bedgraph matrix matrix file: {}\n".format(file_h.name))
+
+        elif file_h.name.endswith('.arcs') or file_h.name.endswith('.links'):
+            default_values = """
+# the file format for acs is (tab separated)
+#   chr1 start1 end1 chr2 start2 end2 score
+# for example:
+#   chr1 100 200 chr1 250 300 0.5
+# A line will be drawn from the center of the first region (chr1: 150, tot the center of the other region (chr1:275)
+# arc whose start or end is not in the region plotted are not shown.
+title =  arcs
+color = red
+# if the track wants to be plotted upside-down:
+# orientation = inverted
+# if line width is not given, the score is used to set the line width
+# using the following formula (0.5 * square root(score)
+#line width = 0.5
 height=8
 """
             args.out.write("\n[{label}]\nfile={file}\ntitle={label}{default_values}".

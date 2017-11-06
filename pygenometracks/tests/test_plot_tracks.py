@@ -26,6 +26,18 @@ labels = off
 [spacer]
 height = 0.5
 
+[test arcs]
+file = test.arcs
+title = arcs
+
+[test arcs]
+file = test.arcs
+color = red
+line width = 3
+title = arc inverted fixed width
+orientation = inverted
+height = 4
+
 [test bedgraph]
 file = bedgraph_chrx_2e6_5e6.bg
 color = blue
@@ -43,7 +55,8 @@ file = bigwig_chrx_2e6_5e6.bw
 color = red
 height = 4
 type = line
-title = rep 1 test line
+title = rep 1 test line inverted
+orientation = inverted
 
 [test bigwig lines]
 file = bigwig_chrx_2e6_5e6.bw

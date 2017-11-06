@@ -122,7 +122,11 @@ file_type = bedgraph
 #   chr1 start1 end1 chr2 start2 end2 score
 # for example:
 #   chr1 100 200 chr1 250 300 0.5
-# the score value
+title =  arcs
+color = red
+# orientation = inverted
+# if line width is not given, the score is used to set the line width
+#line width = 0.5
 file = arcs.txt
 
 [vlines]
@@ -161,10 +165,8 @@ DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.12, 'top': 0.9}
 
 def parse_arguments(args=None):
     parser = argparse.ArgumentParser(
-        description='Plots the diagonal,  and some values close to '
-        'the diagonal of a  Hi-C matrix. The diagonal of the matrix is '
-        'plotted horizontally for a region. I will not draw the diagonal '
-        'for the whole chromosome',
+        description='Plots genomic tracks. The tracks.ini file can be genarated using the `make_tracks_file` '
+                    'program.',
         usage="%(prog)s --tracks tracks.ini --region chr1:1000000-4000000 -o image.png")
 
     parser.add_argument('--tracks',
