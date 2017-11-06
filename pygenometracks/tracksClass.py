@@ -319,6 +319,8 @@ class PlotTracks(object):
             file_type = 'bigwig'
         elif file.endswith(".bg") or file.endswith(".bg.gz"):
             file_type = 'bedgraph'
+        elif file.endswith(".arc") or file.endswith(".arcs") or file.endswith(".links") or file.endswith(".link"):
+            file_type = 'links'
         else:
             sys.exit("Section {}: can not identify file type. Please specify "
                      "the file_type for {}".format(track_dict['section_name'], file))
@@ -1263,17 +1265,15 @@ class PlotBed(TrackPlot):
 class PlotArcs(TrackPlot):
 
     def __init__(self, *args, **kwarg):
-        import collections
         super(PlotArcs, self).__init__(*args, **kwarg)
         # the file format expected is similar to file format of links in
         # circos:
         # chr1 100 200 chr1 250 300 0.5
-        # where the last value is an score.
+        # where the last value is a score.
 
         valid_intervals = 0
         interval_tree = {}
         line_number = 0
-        Arc = collections.namedtuple("Arc", ['chrom1', 'start1', 'end1', 'start2', 'end2', 'score'])
         with open(self.properties['file'], 'r') as file_h:
             for line in file_h.readlines():
                 line_number += 1
@@ -1306,7 +1306,7 @@ class PlotArcs(TrackPlot):
                     sys.exit(msg)
 
                 if chrom1 != chrom2:
-                    sys.stderr.write("Only links in same chromosome are considere. Skipping line\n{}\n".format(line))
+                    sys.stderr.write("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
                     continue
 
                 if chrom1 not in interval_tree:
@@ -1316,10 +1316,8 @@ class PlotArcs(TrackPlot):
                     start1, start2 = start2, start1
                     end1, end2 = end2, end1
 
-                value = Arc._make([chrom1, start1, end1, start2, end2, score])
-
                 # each interval spans from the smallest start to the largest end
-                interval_tree[chrom1].add(Interval(start1, end2, value))
+                interval_tree[chrom1].add(Interval(start1, end2, score))
                 valid_intervals += 1
 
         if valid_intervals == 0:
@@ -1350,23 +1348,26 @@ class PlotArcs(TrackPlot):
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
         for idx, interval in enumerate(arcs_in_region):
-            # skip arcs whose start and end are outside the ploted region
-            if interval.start < region_start and interval.end > region_end:
+            # skip arcs whose start and end are outside the plotted region
+            if interval.begin < region_start and interval.end > region_end:
                 continue
 
-            diameter = interval.end - interval.start
-            center = interval.start + float(diameter) / 2
+            if 'line width' in self.properties:
+                line_width = float(self.properties['line width'])
+            else:
+                line_width = 0.5 * np.sqrt(interval.data)
+
+            diameter = (interval.end - interval.begin)
+            center = interval.begin + float(diameter) / 2
             if diameter > max_diameter:
                 max_diameter = diameter
             count += 1
             ax.plot([center], [diameter])
-            if 'line width' in self.properties:
-                line_width = float(self.properties['line width'])
-            else:
-                line_width = 0.5 * np.sqrt(interval.value.score)
             ax.add_patch(Arc((center, 0), diameter,
                              diameter * 2, 0, 0, 180, color=self.properties['color'], lw=line_width))
 
+        # increase max_diameter slightly to avoid cropping of the arcs.
+        max_diameter += max_diameter * 0.05
         log.debug("{} were arcs plotted".format(count))
         if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
             ax.set_ylim(max_diameter, -1)
@@ -1374,6 +1375,111 @@ class PlotArcs(TrackPlot):
             ax.set_ylim(-1, max_diameter)
 
         ax.set_xlim(region_start, region_end)
+        label_ax.text(0.3, 0.0, self.properties['title'],
+                      horizontalalignment='left', size='large',
+                      verticalalignment='bottom', transform=label_ax.transAxes)
+
+
+class PlotTADs(TrackPlot):
+
+    def __init__(self, *args, **kwargs):
+        super(PlotTADs, self).__init__(*args, **kwargs)
+
+        line_number = 0
+        interval_tree = {}
+        intervals = []
+        prev_chrom = None
+        valid_intervals = 0
+
+        with open(self.properties['file'], 'r') as file_h:
+            for line in file_h.readlines():
+                line_number += 1
+                if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
+                    continue
+                try:
+                    chrom, start, end = line.strip().split('\t')[0:3]
+                except Exception as detail:
+                    msg = 'Could not read line\n{}\n. {}'.format(line, detail)
+                    sys.exit(msg)
+
+                try:
+                    start = int(start)
+                    end = int(end)
+                except ValueError as detail:
+                    msg = "Error reading line: {}. One of the fields is not " \
+                          "an integer.\nError message: {}".format(line_number, detail)
+                    sys.exit(msg)
+
+                assert start <= end, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
+
+                if prev_chrom and chrom != prev_chrom:
+                    start_array, end_array = zip(*intervals)
+                    start_array = np.array(start_array)
+                    end_array = np.array(end_array)
+                    # check if intervals are consecutive or 1bp positions demarcating the boundaries
+                    if np.any(end_array - start_array == 1):
+                        # The file contains only boundaries at 1bp position.
+                        end_array = start_array[1:]
+                        start_array = start_array[:-1]
+                    interval_tree[prev_chrom] = IntervalTree()
+                    for idx in range(len(start_array)):
+                        interval_tree[prev_chrom].add(Interval(start_array[idx], end_array[idx]))
+                        valid_intervals += 1
+                    intervals = []
+
+                intervals.append((start, end))
+
+                # each interval spans from the smallest start to the largest end
+                prev_chrom = chrom
+
+        start, end = zip(*intervals)
+        start = np.array(start)
+        end = np.array(end)
+        # check if intervals are consecutive or 1bp positions demarcating the boundaries
+        if np.any(end - start == 1):
+            # The file contains only boundaries at 1bp position.
+            end = start[1:]
+            start = start[:-1]
+        interval_tree[chrom] = IntervalTree()
+        for idx in range(len(start)):
+            interval_tree[chrom].add(Interval(start[idx], end[idx]))
+            valid_intervals += 1
+
+        if valid_intervals == 0:
+            sys.stderr.write("No valid intervals were found in file {}".format(self.properties['file']))
+
+        file_h.close()
+        self.interval_tree = interval_tree
+
+    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+        """
+        Plots the boundaries as triangles in the given ax.
+        """
+        x = []
+        y = []
+        if chrom_region not in self.interval_tree:
+            orig = chrom_region
+            chrom_region = change_chrom_names(chrom_region)
+            print 'changing {} to {}'.format(orig, chrom_region)
+        for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
+            """
+                  /\
+                 /  \
+                /    \
+            _____________________
+               x1 x2 x3
+            """
+            x1 = region.begin
+            x2 = x1 + float(region.end - region.begin) / 2
+            x3 = region.end
+            y1 = 0
+            y2 = (region.end - region.begin)
+            x.extend([x1, x2, x3])
+            y.extend([y1, y2, y1])
+
+        ax.plot(x, y, color='black')
+        ax.set_xlim(start_region, end_region)
+
         label_ax.text(0.3, 0.0, self.properties['title'],
                       horizontalalignment='left', size='large',
                       verticalalignment='bottom', transform=label_ax.transAxes)
