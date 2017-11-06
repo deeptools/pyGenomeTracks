@@ -16,27 +16,32 @@ fontsize=30
 [spacer]
 height = 0.05
 
-[tad state]
+[tads]
 file = tad_classification.bed
+title = TADs
+file_type = TADs
+border_color = black
+color = bed_rgb
+height = 5
+
+[tads 2]
+file = tad_classification.bed
+title = TADs inverted
+file_type = TADs
+border_color = red
+color = #cccccc
+orientation = inverted
+height = 3
+
+[tad state]
+file = chromatinStates_kc.bed.gz
 height = 0.5
-title = TAD state
+title = chromatin state
 display = collapsed
 labels = off
 
 [spacer]
 height = 0.5
-
-[test arcs]
-file = test.arcs
-title = arcs
-
-[test arcs]
-file = test.arcs
-color = red
-line width = 3
-title = arc inverted fixed width
-orientation = inverted
-height = 4
 
 [test bedgraph]
 file = bedgraph_chrx_2e6_5e6.bg
@@ -44,11 +49,23 @@ color = blue
 height = 4
 title = bedgraph
 
+[test arcs]
+file = test.arcs
+title = links inverted
+orientation = inverted
+
 [test bigwig]
 file = bigwig_chrx_2e6_5e6.bw
 color = blue
 height = 4
 title = rep 1 test fill
+
+[test arcs]
+file = test.arcs
+color = red
+line width = 3
+title = links fixed line width
+height = 4
 
 [test bigwig lines]
 file = bigwig_chrx_2e6_5e6.bw
@@ -96,7 +113,7 @@ height = 1
 
 [test bed6]
 file = dm3_genes.bed6.gz
-height = 10
+height = 15
 title = bed6 global max row
 fontsize = 10
 file_type = bed
@@ -104,7 +121,7 @@ global max row = yes
 interval_height = 200
 
 [vlines]
-file = domains.bed
+file = tad_classification.bed
 type = vlines
 
 """
@@ -120,7 +137,7 @@ def test_plot_tracks():
     args = "--tracks {0}/browser_tracks.ini --region chrX:3000000-3500000  " \
            "--outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
-
+    print("saving test to {}".format(outfile.name))
     res = compare_images(ROOT + '/master_plot.png', outfile.name, tolerance)
     assert res is None, res
 

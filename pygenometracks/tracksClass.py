@@ -105,8 +105,8 @@ class PlotTracks(object):
             elif properties['file_type'] == 'links':
                 self.track_obj_list.append(PlotArcs(properties))
 
-            elif properties['file_type'] == 'boundaries':
-                self.track_obj_list.append(PlotBoundaries(properties))
+            elif properties['file_type'] == 'TADs':
+                self.track_obj_list.append(PlotTADs(properties))
 
             if 'title' in properties:
                 # adjust titles that are too long
@@ -311,15 +311,15 @@ class PlotTracks(object):
                      of the last file is used in case when there are more files
         :return: string file type detected
         """
-        file = track_dict['file'].strip()
-        if file.endswith(".bed") or file.endswith(".bed.gz") or file.endswith(".bed3") \
-                or file.endswith(".bed6") or file.endswith(".bed12"):
+        file_ = track_dict['file'].strip()
+        if file_.endswith(".bed") or file_.endswith(".bed.gz") or file_.endswith(".bed3") \
+                or file_.endswith(".bed6") or file_.endswith(".bed12"):
             file_type = 'bed'
-        elif file.endswith(".bw"):
+        elif file_.endswith(".bw"):
             file_type = 'bigwig'
-        elif file.endswith(".bg") or file.endswith(".bg.gz"):
+        elif file_.endswith(".bg") or file_.endswith(".bg.gz"):
             file_type = 'bedgraph'
-        elif file.endswith(".arc") or file.endswith(".arcs") or file.endswith(".links") or file.endswith(".link"):
+        elif file_.endswith(".arc") or file_.endswith(".arcs") or file_.endswith(".links") or file_.endswith(".link"):
             file_type = 'links'
         else:
             sys.exit("Section {}: can not identify file type. Please specify "
@@ -887,9 +887,6 @@ class PlotBed(TrackPlot):
         for bed in bed_file_h:
             if prev is not None:
                 if prev.chromosome == bed.chromosome:
-                    if bed.start < prev.start:
-                        import ipdb
-                        ipdb.set_trace()
                     assert bed.start >= prev.start, "*Error* Bed file not sorted. Please sort using sort -k1,1 -k2,2n"
                 if prev.chromosome != bed.chromosome:
                     # init var
@@ -1381,82 +1378,44 @@ class PlotArcs(TrackPlot):
 
 
 class PlotTADs(TrackPlot):
+    DEFAULT_TAD_COLOR = "#cccccc"
 
     def __init__(self, *args, **kwargs):
         super(PlotTADs, self).__init__(*args, **kwargs)
 
-        line_number = 0
-        interval_tree = {}
-        intervals = []
-        prev_chrom = None
+        self.interval_tree = {}
         valid_intervals = 0
 
-        with open(self.properties['file'], 'r') as file_h:
-            for line in file_h.readlines():
-                line_number += 1
-                if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
-                    continue
-                try:
-                    chrom, start, end = line.strip().split('\t')[0:3]
-                except Exception as detail:
-                    msg = 'Could not read line\n{}\n. {}'.format(line, detail)
-                    sys.exit(msg)
+        import readBed
 
-                try:
-                    start = int(start)
-                    end = int(end)
-                except ValueError as detail:
-                    msg = "Error reading line: {}. One of the fields is not " \
-                          "an integer.\nError message: {}".format(line_number, detail)
-                    sys.exit(msg)
+        bed_file_h = readBed.ReadBed(opener(self.properties['file']))
+        self.bed_type = bed_file_h.file_type
+        if 'color' not in self.properties:
+            self.properties['color'] = "#44444"
+        elif 'color' in self.properties and self.properties['color'] == 'bed_rgb' and self.bed_type == 'bed3':
+            log.info("Color set to 'bed_rgb', but bed file does not have the rbg field")
+            self.properties['color'] = DEFAULT_TAD_COLOR
+        if 'border_color' not in self.properties:
+            self.properties['border_color'] = 'black'
 
-                assert start <= end, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
+        for bed in bed_file_h:
 
-                if prev_chrom and chrom != prev_chrom:
-                    start_array, end_array = zip(*intervals)
-                    start_array = np.array(start_array)
-                    end_array = np.array(end_array)
-                    # check if intervals are consecutive or 1bp positions demarcating the boundaries
-                    if np.any(end_array - start_array == 1):
-                        # The file contains only boundaries at 1bp position.
-                        end_array = start_array[1:]
-                        start_array = start_array[:-1]
-                    interval_tree[prev_chrom] = IntervalTree()
-                    for idx in range(len(start_array)):
-                        interval_tree[prev_chrom].add(Interval(start_array[idx], end_array[idx]))
-                        valid_intervals += 1
-                    intervals = []
-
-                intervals.append((start, end))
-
-                # each interval spans from the smallest start to the largest end
-                prev_chrom = chrom
-
-        start, end = zip(*intervals)
-        start = np.array(start)
-        end = np.array(end)
-        # check if intervals are consecutive or 1bp positions demarcating the boundaries
-        if np.any(end - start == 1):
-            # The file contains only boundaries at 1bp position.
-            end = start[1:]
-            start = start[:-1]
-        interval_tree[chrom] = IntervalTree()
-        for idx in range(len(start)):
-            interval_tree[chrom].add(Interval(start[idx], end[idx]))
+            if bed.chromosome not in self.interval_tree:
+                self.interval_tree[bed.chromosome] = IntervalTree()
+            self.interval_tree[bed.chromosome].add(Interval(bed.start, bed.end, bed))
             valid_intervals += 1
 
         if valid_intervals == 0:
             sys.stderr.write("No valid intervals were found in file {}".format(self.properties['file']))
 
-        file_h.close()
-        self.interval_tree = interval_tree
-
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
         """
         Plots the boundaries as triangles in the given ax.
         """
+        from matplotlib.patches import Polygon
         x = []
         y = []
+        ymax = 0
         if chrom_region not in self.interval_tree:
             orig = chrom_region
             chrom_region = change_chrom_names(chrom_region)
@@ -1477,12 +1436,36 @@ class PlotTADs(TrackPlot):
             x.extend([x1, x2, x3])
             y.extend([y1, y2, y1])
 
-        ax.plot(x, y, color='black')
-        ax.set_xlim(start_region, end_region)
+            edgecolor = self.properties['border_color']
 
-        label_ax.text(0.3, 0.0, self.properties['title'],
+            if self.properties['color'] == 'bed_rgb':
+                if self.bed_type in ['bed9', 'bed12'] and len(region.data.rgb) == 3:
+                    try:
+                        rgb = [float(col) / 255 for col in region.data.rgb]
+                    except IndexError:
+                        rgb = DEFAULT_TAD_COLOR
+                else:
+                    rgb = DEFAULT_TAD_COLOR
+
+            else:
+                rgb = self.properties['color']
+
+            triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]), closed=True,
+                               facecolor=rgb, edgecolor=edgecolor)
+            ax.add_artist(triangle)
+            if y2 > ymax:
+                ymax = y2
+
+        #ax.plot(x, y, color='black')
+        ax.set_xlim(start_region, end_region)
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            ax.set_ylim(ymax, 0)
+        else:
+            ax.set_ylim(0, ymax)
+
+        label_ax.text(0.15, 0.5, self.properties['title'],
                       horizontalalignment='left', size='large',
-                      verticalalignment='bottom', transform=label_ax.transAxes)
+                      verticalalignment='center')
 
 
 def change_chrom_names(chrom):
