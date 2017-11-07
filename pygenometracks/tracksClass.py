@@ -803,6 +803,8 @@ class PlotBed(TrackPlot):
 
     def __init__(self, *args, **kwarg):
         super(PlotBed, self).__init__(*args, **kwarg)
+        self.bed_type = None  # once the bed file is read, this is bed3, bed6 or bed12
+        self.len_w = None  # this is the length of the letter 'w' given the font size
 
         from matplotlib import font_manager
         if 'fontsize' not in self.properties:
@@ -861,6 +863,13 @@ class PlotBed(TrackPlot):
 
         bed_file_h = readBed.ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
+
+        if 'color' in self.properties and self.properties['color'] == 'bed_rgb' and \
+            self.bed_type not in ['bed12', 'bed9']:
+            log.warn("*WARNING* Color set to 'bed_rgb', but bed file does not have the rbg field. The color has "
+                     "been set to {}".format(DEFAULT_BED_COLOR))
+            self.properties['color'] = DEFAULT_BED_COLOR
+
         valid_intervals = 0
         self.max_num_row = {}
         self.interval_tree = {}
@@ -972,35 +981,39 @@ class PlotBed(TrackPlot):
             chrX    20850   23076   CG17636-RA      0       -       20850   23017   0       3       946,765,64,     0,1031,2162,
 
             BED9
-            bed with rbg at end
+            bed with rgb at end
             chr2L   0       70000   ID_5    0.26864549832   .       0       70000   51,160,44
 
             BED6
-            bed with rbg at end
+            bed without rgb
             chr2L   0       70000   ID_5    0.26864549832   .
             """
             self.counter += 1
             # an namedTuple object is stored in the region.value together with the free value for the gene
             bed, free_row = region.data
+
+            rgb = self.properties['color']
+            edgecolor = self.properties['border_color']
+
             if self.colormap:
                 # translate value field (in the example above is 0 or 0.2686...) into a color
                 rgb = self.colormap.to_rgba(bed.score)
                 edgecolor = self.colormap.to_rgba(bed.score)
-            else:
-                rgb = self.properties['color']
-                edgecolor = self.properties['border_color']
 
-            # if rgb is set in the bed line, this overrides the previously
-            # defined colormap
-            if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
-                try:
-                    rgb = [float(x) / 255 for x in bed.rgb]
-                    if 'border_color' in self.properties:
-                        edgecolor = self.properties['border_color']
-                    else:
-                        edgecolor = self.properties['color']
-                except IndexError:
-                    pass
+            if self.properties['color'] == 'bed_rgb':
+                # if rgb is set in the bed line, this overrides the previously
+                # defined colormap
+                if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
+                    try:
+                        rgb = [float(x) / 255 for x in bed.rgb]
+                        if 'border_color' in self.properties:
+                            edgecolor = self.properties['border_color']
+                        else:
+                            edgecolor = self.properties['color']
+                    except IndexError:
+                        rgb = DEFAULT_BED_COLOR
+                else:
+                    rgb = DEFAULT_BED_COLOR
 
             ypos = self.get_y_pos(free_row)
 
@@ -1391,9 +1404,11 @@ class PlotTADs(TrackPlot):
         bed_file_h = readBed.ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
         if 'color' not in self.properties:
-            self.properties['color'] = "#44444"
-        elif 'color' in self.properties and self.properties['color'] == 'bed_rgb' and self.bed_type == 'bed3':
-            log.info("Color set to 'bed_rgb', but bed file does not have the rbg field")
+            self.properties['color'] = DEFAULT_TAD_COLOR
+        elif 'color' in self.properties and self.properties['color'] == 'bed_rgb' and \
+            self.bed_type not in ['bed12', 'bed9']:
+            log.warn("*WARNING* Color set to 'bed_rgb', but bed file does not have the rbg field. The color has "
+                     "been set to {}".format(DEFAULT_TAD_COLOR))
             self.properties['color'] = DEFAULT_TAD_COLOR
         if 'border_color' not in self.properties:
             self.properties['border_color'] = 'black'

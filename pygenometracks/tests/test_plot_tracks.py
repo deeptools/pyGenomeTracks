@@ -36,9 +36,18 @@ height = 3
 [tad state]
 file = chromatinStates_kc.bed.gz
 height = 0.5
-title = chromatin state
+title = bed collapsed
 display = collapsed
 labels = off
+
+[tad state]
+file = chromatinStates_kc.bed.gz
+height = 0.5
+title = chromatin state
+display = color from bed rgb
+labels = off
+color = bed_rgb
+display = collapsed
 
 [spacer]
 height = 0.5
