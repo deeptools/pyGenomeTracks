@@ -202,19 +202,10 @@ def parse_arguments(args=None):
                         help='Plot title',
                         required=False)
 
-    parser.add_argument('--scoreName', '-s',
-                        help='Score name',
-                        required=False)
-
     parser.add_argument('--outFileName', '-out',
                         help='File name to save the image, file prefix in case multiple images '
                              'are stored',
                         required=True)
-
-    parser.add_argument('--zMax',
-                        help='zMax',
-                        type=float,
-                        default=None)
 
     parser.add_argument('--vlines',
                         help='Genomic cooordindates separated by space. E.g. '

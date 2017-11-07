@@ -112,7 +112,6 @@ setup(
     scripts=['bin/make_tracks_file', 'bin/pgt', 'bin/pyGenomeTracks'],
     include_package_data=True,
     package_dir={'pygenometracks': 'pygenometracks'},
-    package_data={'pygenometracks': ['qc_template.html']},
     url='http://pygenometracks.readthedocs.io',
     license='LICENSE.txt',
     description='Set of programs to process, analyze and visualize Hi-C data',
