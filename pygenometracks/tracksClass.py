@@ -100,13 +100,13 @@ class PlotTracks(object):
                 self.track_obj_list.append(PlotBigWig(properties))
 
             elif properties['file_type'] == 'bed':
-                self.track_obj_list.append(PlotBed(properties))
+                if 'display' in properties and properties['display'] == 'triangles':
+                    self.track_obj_list.append(PlotTADs(properties))
+                else:
+                    self.track_obj_list.append(PlotBed(properties))
 
             elif properties['file_type'] == 'links':
                 self.track_obj_list.append(PlotArcs(properties))
-
-            elif properties['file_type'] == 'boundaries':
-                self.track_obj_list.append(PlotBoundaries(properties))
 
             if 'title' in properties:
                 # adjust titles that are too long
@@ -114,7 +114,7 @@ class PlotTracks(object):
                 if track_label_width < 0.1:
                     properties['title'] = textwrap.fill(properties['title'].encode("UTF-8"), 12)
                 else:
-                    properties['title'] = textwrap.fill(properties['title'].encode("UTF-8"), 50)
+                    properties['title'] = textwrap.fill(properties['title'].encode("UTF-8"), 30)
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
@@ -311,14 +311,16 @@ class PlotTracks(object):
                      of the last file is used in case when there are more files
         :return: string file type detected
         """
-        file = track_dict['file'].strip()
-        if file.endswith(".bed") or file.endswith(".bed.gz") or file.endswith(".bed3") \
-                or file.endswith(".bed6") or file.endswith(".bed12"):
+        file_ = track_dict['file'].strip()
+        if file_.endswith(".bed") or file_.endswith(".bed.gz") or file_.endswith(".bed3") \
+                or file_.endswith(".bed6") or file_.endswith(".bed12"):
             file_type = 'bed'
-        elif file.endswith(".bw"):
+        elif file_.endswith(".bw"):
             file_type = 'bigwig'
-        elif file.endswith(".bg") or file.endswith(".bg.gz"):
+        elif file_.endswith(".bg") or file_.endswith(".bg.gz"):
             file_type = 'bedgraph'
+        elif file_.endswith(".arc") or file_.endswith(".arcs") or file_.endswith(".links") or file_.endswith(".link"):
+            file_type = 'links'
         else:
             sys.exit("Section {}: can not identify file type. Please specify "
                      "the file_type for {}".format(track_dict['section_name'], file))
@@ -801,6 +803,9 @@ class PlotBed(TrackPlot):
 
     def __init__(self, *args, **kwarg):
         super(PlotBed, self).__init__(*args, **kwarg)
+        self.bed_type = None  # once the bed file is read, this is bed3, bed6 or bed12
+        self.len_w = None  # this is the length of the letter 'w' given the font size
+        self.interval_tree = {}  # interval tree of the bed regions
 
         from matplotlib import font_manager
         if 'fontsize' not in self.properties:
@@ -812,8 +817,8 @@ class PlotBed(TrackPlot):
 
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BED_COLOR
-        if 'border_color' not in self.properties:
-            self.properties['border_color'] = 'black'
+        if 'border color' not in self.properties:
+            self.properties['border color'] = 'black'
         if 'labels' not in self.properties:
             self.properties['labels'] = 'on'
         if 'style' not in self.properties:
@@ -823,26 +828,40 @@ class PlotBed(TrackPlot):
         if 'interval height' not in self.properties:
             self.properties['interval_height'] = 100
 
+        self.colormap = None
+
+        # check if the color given is a color map
+        if not matplotlib.colors.is_color_like(self.properties['color']) and self.properties['color'] != 'bed_rgb':
+            # check if the color is a valid colormap name
+            if self.properties['color'] not in matplotlib.cm.datad:
+                log.warn("*WARNING* color: '{}' for section {} is not valid. Color has "
+                         "been set to {}".format(self.properties['color'], self.properties['section_name'],
+                                                 DEFAULT_BED_COLOR))
+                self.properties['color'] = DEFAULT_BED_COLOR
+            else:
+                self.colormap = self.properties['color']
+
         # to set the distance between rows
         self.row_scale = self.properties['interval_height'] * 2.3
 
-        self.colormap = None
-        # check if the color given is a color map
-        color_options = [m for m in matplotlib.cm.datad]
-        if self.properties['color'] in color_options and 'min_value' in self.properties and 'max_value' in self.properties:
-            norm = matplotlib.colors.Normalize(vmin=self.properties['min_value'],
-                                               vmax=self.properties['max_value'])
+        self.interval_tree, min_score, max_score = self.process_bed()
+        if self.colormap is not None:
+            if 'min_value' in self.properties:
+                min_score = self.properties['min_value']
+            if 'max_value' in self.properties:
+                max_score = self.properties['max_value']
+
+            norm = matplotlib.colors.Normalize(vmin=min_score,
+                                               vmax=max_score)
+
             cmap = matplotlib.cm.get_cmap(self.properties['color'])
             self.colormap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
-        # self.process_bed()
-
-    def process_bed(self, fig_width, region_start, region_end):
-
-        # to improve the visualization of the genes
-        # it is good to have an estimation of the label
-        # length. In the following code I try to get
-        # the length of a 'W'.
+    def get_length_w(self, fig_width, region_start, region_end):
+        '''
+        to improve the visualization of the genes it is good to have an estimation of the label
+        length. In the following code I try to get the length of a 'W' in base pairs.
+        '''
         if self.properties['labels'] == 'on':
             # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
             inches_per_pt = 1.0 / 72.27
@@ -855,80 +874,78 @@ class PlotBed(TrackPlot):
         else:
             self.len_w = 1
 
+        return self.len_w
+
+    def process_bed(self):
         import readBed
 
         bed_file_h = readBed.ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
+
+        if 'color' in self.properties and self.properties['color'] == 'bed_rgb' and \
+           self.bed_type not in ['bed12', 'bed9']:
+            log.warn("*WARNING* Color set to 'bed_rgb', but bed file does not have the rgb field. The color has "
+                     "been set to {}".format(DEFAULT_BED_COLOR))
+            self.properties['color'] = DEFAULT_BED_COLOR
+
         valid_intervals = 0
-        self.max_num_row = {}
-        self.interval_tree = {}
-        prev = None
-        # check for the number of other intervals that overlap
-        #    with the given interval
-        #            1         2
-        #  012345678901234567890123456
-        #  1=========       4=========
-        #       2=========
-        #         3============
-        #
-        # for 1 row_last_position = [9]
-        # for 2 row_last_position = [9, 14]
-        # for 3 row_last_position = [9, 14, 19]
-        # for 4 row_last_position = [26, 14, 19]
+        interval_tree = {}
 
-        row_last_position = []  # each entry in this list contains the end position
-        # of genomic interval. The list index is the row
-        # in which the genomic interval was plotted.
-        # Any new genomic interval that wants to be plotted,
-        # knows the row to use by finding the list index that
-        # is larger than its start
+        max_score = float('-inf')
+        min_score = float('inf')
         for bed in bed_file_h:
-            if prev is not None:
-                if prev.chromosome == bed.chromosome:
-                    if bed.start < prev.start:
-                        import ipdb
-                        ipdb.set_trace()
-                    assert bed.start >= prev.start, "*Error* Bed file not sorted. Please sort using sort -k1,1 -k2,2n"
-                if prev.chromosome != bed.chromosome:
-                    # init var
-                    row_last_position = []
-                    self.max_num_row[bed.chromosome] = 0
-            else:
-                self.max_num_row[bed.chromosome] = 0
+            if bed.score < min_score:
+                min_score = bed.score
+            if bed.score > max_score:
+                max_score = bed.score
 
-            # check for overlapping genes including
-            # label size (if plotted)
+            if bed.chromosome not in interval_tree:
+                interval_tree[bed.chromosome] = IntervalTree()
 
-            if self.properties['labels'] == 'on':
-                bed_extended_end = int(bed.end + (len(bed.name) * self.len_w))
-            else:
-                bed_extended_end = (bed.end + 2 * self.small_relative)
-
-            # get smallest free row
-            if len(row_last_position) == 0:
-                free_row = 0
-                row_last_position.append(bed_extended_end)
-            else:
-                # get list of rows that are less than bed.start, then take the min
-                idx_list = [idx for idx, value in enumerate(row_last_position) if value < bed.start]
-                if len(idx_list):
-                    free_row = min(idx_list)
-                    row_last_position[free_row] = bed_extended_end
-                else:
-                    free_row = len(row_last_position)
-                    row_last_position.append(bed_extended_end)
-
-            if bed.chromosome not in self.interval_tree:
-                self.interval_tree[bed.chromosome] = IntervalTree()
-
-            self.interval_tree[bed.chromosome].add(Interval(bed.start, bed.end, (bed, free_row)))
+            interval_tree[bed.chromosome].add(Interval(bed.start, bed.end, bed))
             valid_intervals += 1
-            prev = bed
-            if free_row > self.max_num_row[bed.chromosome]:
-                self.max_num_row[bed.chromosome] = free_row
 
         if valid_intervals == 0:
-            sys.stderr.write("No valid intervals were found in file {}".format(self.properties['file_name']))
+            log.warn("No valid intervals were found in file {}".format(self.properties['file_name']))
+
+        return interval_tree, min_score, max_score
+
+    def get_max_num_row(self, len_w, small_relative):
+        ''' Process the whole bed regions at the given figure length and font size to
+        determine the maximum number of rows required.
+        :return:
+        '''
+
+        self.max_num_row = {}
+        for chrom in self.interval_tree:
+            row_last_position = []  # each entry in this list contains the end position
+            self.max_num_row[chrom] = 0
+            for region in sorted(self.interval_tree[chrom][0:500000000]):
+                bed = region.data
+                if self.properties['labels'] == 'on':
+                    bed_extended_end = int(bed.end + (len(bed.name) * len_w))
+                else:
+                    bed_extended_end = (bed.end + 2 * small_relative)
+
+                # get smallest free row
+                if len(row_last_position) == 0:
+                    free_row = 0
+                    row_last_position.append(bed_extended_end)
+                else:
+                    # get list of rows that are less than bed.start, then take the min
+                    idx_list = [idx for idx, value in enumerate(row_last_position) if value < bed.start]
+                    if len(idx_list):
+                        free_row = min(idx_list)
+                        row_last_position[free_row] = bed_extended_end
+                    else:
+                        free_row = len(row_last_position)
+                        row_last_position.append(bed_extended_end)
+
+                if free_row > self.max_num_row[bed.chromosome]:
+                    self.max_num_row[bed.chromosome] = free_row
+
+        log.debug("max number of rows set to {}".format(self.max_num_row))
+        return self.max_num_row
 
     def get_y_pos(self, free_row):
         """
@@ -954,7 +971,9 @@ class PlotBed(TrackPlot):
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
         self.counter = 0
         self.small_relative = 0.004 * (end_region - start_region)
-        self.process_bed(ax.get_figure().get_figwidth(), start_region, end_region)
+        self.get_length_w(ax.get_figure().get_figwidth(), start_region, end_region)
+        if 'global max row' in self.properties and self.properties['global max row'] == 'yes':
+            self.get_max_num_row(self.len_w, self.small_relative)
 
         if chrom_region not in self.interval_tree.keys():
             chrom_region = change_chrom_names(chrom_region)
@@ -967,41 +986,66 @@ class PlotBed(TrackPlot):
 
         max_num_row_local = 1
         max_ypos = 0
+        # check for the number of other intervals that overlap
+        #    with the given interval
+        #            1         2
+        #  012345678901234567890123456
+        #  1=========       4=========
+        #       2=========
+        #         3============
+        #
+        # for 1 row_last_position = [9]
+        # for 2 row_last_position = [9, 14]
+        # for 3 row_last_position = [9, 14, 19]
+        # for 4 row_last_position = [26, 14, 19]
+
+        row_last_position = []  # each entry in this list contains the end position
+        # of genomic interval. The list index is the row
+        # in which the genomic interval was plotted.
+        # Any new genomic interval that wants to be plotted,
+        # knows the row to use by finding the list index that
+        # is larger than its start
+
+        # check for overlapping genes including
+        # label size (if plotted)
+
         for region in genes_overlap:
             """
             BED12 gene format with exon locations at the end
             chrX    20850   23076   CG17636-RA      0       -       20850   23017   0       3       946,765,64,     0,1031,2162,
 
             BED9
-            bed with rbg at end
+            bed with rgb at end
             chr2L   0       70000   ID_5    0.26864549832   .       0       70000   51,160,44
 
             BED6
-            bed with rbg at end
+            bed without rgb
             chr2L   0       70000   ID_5    0.26864549832   .
             """
             self.counter += 1
-            # an namedTuple object is stored in the region.value together with the free value for the gene
-            bed, free_row = region.data
-            if self.colormap:
-                # translate value field (in the example above is 0 or 0.2686...) into a color
-                rgb = self.colormap.to_rgba(bed.score)
-                edgecolor = self.colormap.to_rgba(bed.score)
-            else:
-                rgb = self.properties['color']
-                edgecolor = self.properties['border_color']
+            bed = region.data
 
-            # if rgb is set in the bed line, this overrides the previously
-            # defined colormap
-            if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
-                try:
-                    rgb = [float(x) / 255 for x in bed.rgb]
-                    if 'border_color' in self.properties:
-                        edgecolor = self.properties['border_color']
-                    else:
-                        edgecolor = self.properties['color']
-                except IndexError:
-                    pass
+            if self.properties['labels'] == 'on':
+                num_name_characters = len(bed.name) + 2  # +2 to account for an space before and after the name
+                bed_extended_end = int(bed.end + (num_name_characters * self.len_w))
+            else:
+                bed_extended_end = (bed.end + 2 * self.small_relative)
+
+            # get smallest free row
+            if len(row_last_position) == 0:
+                free_row = 0
+                row_last_position.append(bed_extended_end)
+            else:
+                # get list of rows that are less than bed.start, then take the min
+                idx_list = [idx for idx, value in enumerate(row_last_position) if value < bed.start]
+                if len(idx_list):
+                    free_row = min(idx_list)
+                    row_last_position[free_row] = bed_extended_end
+                else:
+                    free_row = len(row_last_position)
+                    row_last_position.append(bed_extended_end)
+
+            rgb, edgecolor = self.get_rgb_and_edge_color(bed)
 
             ypos = self.get_y_pos(free_row)
 
@@ -1030,11 +1074,9 @@ class PlotBed(TrackPlot):
                         verticalalignment='center', fontproperties=self.fp)
 
         if self.counter == 0:
-            sys.stderr.write("*Warning* No intervals were found for file {} \n"
-                             "in section '{}' for the interval plotted ({}:{}-{}).\n"
-                             "".format(self.properties['file'],
-                                       self.properties['section_name'],
-                                       chrom_region, start_region, end_region))
+            log.warn("*Warning* No intervals were found for file {} "
+                     "in section '{}' for the interval plotted ({}:{}-{}).\n".
+                     format(self.properties['file'], self.properties['section_name'], chrom_region, start_region, end_region))
 
         ymax = 0
 
@@ -1050,13 +1092,6 @@ class PlotBed(TrackPlot):
         # the axis is inverted (thus, ymax < ymin)
         ax.set_ylim(ymin, ymax)
 
-        """
-        ax.text(start_region, (self.max_num_row[bed.chromosome] + 1) * 330 * 0.5,
-                     "{}".format(self.properties['title']),
-                     horizontalalignment='left', size='small',
-                     verticalalignment='bottom')
-        """
-
         if 'display' in self.properties:
             if self.properties['display'] == 'domain':
                 ax.set_ylim(-5, 205)
@@ -1068,6 +1103,30 @@ class PlotBed(TrackPlot):
         label_ax.text(0.15, 1, self.properties['title'],
                       horizontalalignment='left', size='large',
                       verticalalignment='top', transform=label_ax.transAxes)
+
+    def get_rgb_and_edge_color(self, bed):
+        rgb = self.properties['color']
+        edgecolor = self.properties['border color']
+
+        if self.colormap:
+            # translate value field (in the example above is 0 or 0.2686...) into a color
+            rgb = self.colormap.to_rgba(bed.score)
+
+        if self.properties['color'] == 'bed_rgb':
+            # if rgb is set in the bed line, this overrides the previously
+            # defined colormap
+            if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
+                try:
+                    rgb = [float(x) / 255 for x in bed.rgb]
+                    if 'border color' in self.properties:
+                        edgecolor = self.properties['border color']
+                    else:
+                        edgecolor = self.properties['color']
+                except IndexError:
+                    rgb = DEFAULT_BED_COLOR
+            else:
+                rgb = DEFAULT_BED_COLOR
+        return rgb, edgecolor
 
     def draw_gene_simple(self, ax, bed, ypos, rgb, edgecolor):
         """
@@ -1263,17 +1322,15 @@ class PlotBed(TrackPlot):
 class PlotArcs(TrackPlot):
 
     def __init__(self, *args, **kwarg):
-        import collections
         super(PlotArcs, self).__init__(*args, **kwarg)
         # the file format expected is similar to file format of links in
         # circos:
         # chr1 100 200 chr1 250 300 0.5
-        # where the last value is an score.
+        # where the last value is a score.
 
         valid_intervals = 0
         interval_tree = {}
         line_number = 0
-        Arc = collections.namedtuple("Arc", ['chrom1', 'start1', 'end1', 'start2', 'end2', 'score'])
         with open(self.properties['file'], 'r') as file_h:
             for line in file_h.readlines():
                 line_number += 1
@@ -1306,7 +1363,7 @@ class PlotArcs(TrackPlot):
                     sys.exit(msg)
 
                 if chrom1 != chrom2:
-                    sys.stderr.write("Only links in same chromosome are considere. Skipping line\n{}\n".format(line))
+                    sys.stderr.write("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
                     continue
 
                 if chrom1 not in interval_tree:
@@ -1316,10 +1373,8 @@ class PlotArcs(TrackPlot):
                     start1, start2 = start2, start1
                     end1, end2 = end2, end1
 
-                value = Arc._make([chrom1, start1, end1, start2, end2, score])
-
                 # each interval spans from the smallest start to the largest end
-                interval_tree[chrom1].add(Interval(start1, end2, value))
+                interval_tree[chrom1].add(Interval(start1, end2, score))
                 valid_intervals += 1
 
         if valid_intervals == 0:
@@ -1350,23 +1405,26 @@ class PlotArcs(TrackPlot):
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
         for idx, interval in enumerate(arcs_in_region):
-            # skip arcs whose start and end are outside the ploted region
-            if interval.start < region_start and interval.end > region_end:
+            # skip arcs whose start and end are outside the plotted region
+            if interval.begin < region_start and interval.end > region_end:
                 continue
 
-            diameter = interval.end - interval.start
-            center = interval.start + float(diameter) / 2
+            if 'line width' in self.properties:
+                line_width = float(self.properties['line width'])
+            else:
+                line_width = 0.5 * np.sqrt(interval.data)
+
+            diameter = (interval.end - interval.begin)
+            center = interval.begin + float(diameter) / 2
             if diameter > max_diameter:
                 max_diameter = diameter
             count += 1
             ax.plot([center], [diameter])
-            if 'line width' in self.properties:
-                line_width = float(self.properties['line width'])
-            else:
-                line_width = 0.5 * np.sqrt(interval.value.score)
             ax.add_patch(Arc((center, 0), diameter,
                              diameter * 2, 0, 0, 180, color=self.properties['color'], lw=line_width))
 
+        # increase max_diameter slightly to avoid cropping of the arcs.
+        max_diameter += max_diameter * 0.05
         log.debug("{} were arcs plotted".format(count))
         if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
             ax.set_ylim(max_diameter, -1)
@@ -1374,9 +1432,62 @@ class PlotArcs(TrackPlot):
             ax.set_ylim(-1, max_diameter)
 
         ax.set_xlim(region_start, region_end)
-        label_ax.text(0.3, 0.0, self.properties['title'],
+        log.debug('title is {}'.format(self.properties['title']))
+        label_ax.text(0.15, 0.5, self.properties['title'],
                       horizontalalignment='left', size='large',
-                      verticalalignment='bottom', transform=label_ax.transAxes)
+                      verticalalignment='center')
+
+
+class PlotTADs(PlotBed):
+
+    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+        """
+        Plots the boundaries as triangles in the given ax.
+        """
+        from matplotlib.patches import Polygon
+        ymax = 0.001
+        valid_regions = 0
+        if chrom_region not in self.interval_tree:
+            orig = chrom_region
+            chrom_region = change_chrom_names(chrom_region)
+            print 'changing {} to {}'.format(orig, chrom_region)
+
+        for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
+            """
+                  /\
+                 /  \
+                /    \
+            _____________________
+               x1 x2 x3
+            """
+            x1 = region.begin
+            x2 = x1 + float(region.end - region.begin) / 2
+            x3 = region.end
+            y1 = 0
+            y2 = (region.end - region.begin)
+
+            rgb, edgecolor = self.get_rgb_and_edge_color(region.data)
+
+            triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]), closed=True,
+                               facecolor=rgb, edgecolor=edgecolor)
+            ax.add_artist(triangle)
+            valid_regions += 1
+
+            if y2 > ymax:
+                ymax = y2
+
+        if valid_regions == 0:
+            log.warn("No regions found for section {}.".format(self.properties['section_name']))
+
+        ax.set_xlim(start_region, end_region)
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            ax.set_ylim(ymax, 0)
+        else:
+            ax.set_ylim(0, ymax)
+
+        label_ax.text(0.15, 0.5, self.properties['title'],
+                      horizontalalignment='left', size='large',
+                      verticalalignment='center')
 
 
 def change_chrom_names(chrom):
