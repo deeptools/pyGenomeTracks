@@ -15,6 +15,7 @@ are highly customizable. Currently, it is possible to plot:
 
 ![pyGenomeTracks example](https://github.com/maxplanck-ie/pyGenomeTracks/raw/master/pygenometracks/tests/test_data/master_plot.png)
 
+The configuration file for this image is [here](https://github.com/maxplanck-ie/pyGenomeTracks/blob/master/pygenometracks/tests/test_data/browser_tracks.ini)
 
 Installation
 ------------
@@ -41,4 +42,4 @@ Then, a region can be plotted using:
 $ pyGenomeTracks --tracks tracks.ini --region chr2:10,000,000-11,000,000 -o nice_image.pdf
 ```
 
-pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser)
+pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser) (See e.g. [Chorogenome navigator](http://chorogenome.ie-freiburg.mpg.de/) which is made with HiCBrowser)
