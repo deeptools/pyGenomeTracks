@@ -23,8 +23,15 @@ Installation
 Currently, the best way to install pyGenomeTracks is
 
 ```bash
+$ pip install pyGenomeTracks
+```
+
+If the latest version wants to be installed use:
+
+```bash
 $ pip install  git+https://github.com/maxplanck-ie/pyGenomeTracks.git
 ```
+
 
 Usage
 -----
