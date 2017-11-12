@@ -1,15 +1,9 @@
 language: python
 sudo: true
-services:
-  - postgresql
-addons:
-  apt:
-    packages:
-    - samtools
 
-python:
-  - 2.7
-  - 3.6
+env:
+  - TRAVIS_PYTHON_VERSION=2.7
+  - TRAVIS_PYTHON_VERSION=3.6
 
 os:
   - linux
