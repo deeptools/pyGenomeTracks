@@ -141,7 +141,7 @@ class ReadBed(object):
 
         >>> bed_line="chr1\t0\t1000\tgene_1\t0.5\t-\t0\t1000\t0\t3\t10,20,100\t20,200,700"
         >>> with open('/tmp/test.bed', 'w') as fh:
-        ...     fh.write(bed_line)
+        ...     foo = fh.write(bed_line)
         >>> bed_f = ReadBed(open('/tmp/test.bed','r'))
         >>> bed = bed_f.get_bed_interval(bed_line)
         >>> bed.chromosome
@@ -151,7 +151,7 @@ class ReadBed(object):
 
         >>> bed_line="chr2\t0\t1000\tgene_1\t0.5\t-\n"
         >>> with open('/tmp/test.bed', 'w') as fh:
-        ...     fh.write(bed_line)
+        ...     foo = fh.write(bed_line)
         >>> bed_f = ReadBed(open('/tmp/test.bed','r'))
         >>> bed_f.get_bed_interval(bed_line)
         BedInterval(chromosome='chr2', start=0, end=1000, name='gene_1', score=0.5, strand='-')
