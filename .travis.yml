@@ -6,11 +6,14 @@ addons:
   apt:
     packages:
     - samtools
+
 python:
   - 2.7
+  - 3.6
 
 os:
   - linux
+  - osx
 
 jobs:
   include:
@@ -35,8 +38,10 @@ jobs:
         - export TEST_DATA_DIR="`pwd`/pygenometracks/test/test_data/"
         - echo $TEST_DATA_DIR
         - curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o miniconda.sh
-        # - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == "3.5" ]]; then curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh ; fi
-        # - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh ; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o miniconda.sh ; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh ; fi
+        - if [[ "$TRAVIS_OS_NAME" == "osx" && "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then curl https://repo.continuum.io/miniconda/Miniconda2-latest-MacOSX-x86_64.sh -o miniconda.sh ; fi
+        - if [[ "$TRAVIS_OS_NAME" == "osx" && "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then curl https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o miniconda.sh ; fi
         - bash miniconda.sh -b -p $HOME/miniconda
         - PATH_WITHOUT_CONDA="$PATH"
         - export PATH="$HOME/miniconda/bin:$PATH"
@@ -51,7 +56,7 @@ jobs:
         - conda create --name pygenometracks_pytest --yes python=$TRAVIS_PYTHON_VERSION pytest
         - source activate pygenometracks_pytest
         - conda install --yes -c defaults -c conda-forge -c bioconda --file requirements.txt
-        - conda install --yes -c defaults -c conda-forge -c bioconda configparser
+        - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then conda install --yes -c defaults -c conda-forge -c bioconda configparser ; fi
         - python setup.py install
 
       # command to run tests

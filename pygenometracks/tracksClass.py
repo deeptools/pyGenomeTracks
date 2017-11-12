@@ -1423,11 +1423,11 @@ class PlotArcs(TrackPlot):
         from matplotlib.patches import Arc
         max_diameter = 0
         count = 0
-        if type(next(iter(self.intval_tree))) is not np.bytes_:
+        if type(next(iter(self.interval_tree))) is not np.bytes_:
             chrom_region = to_string(chrom_region)
         if chrom_region not in list(self.interval_tree):
             chrom_region = change_chrom_names(chrom_region)
-            if type(next(iter(self.intval_tree))) is not np.bytes_:
+            if type(next(iter(self.interval_tree))) is not np.bytes_:
                 chrom_region = to_string(chrom_region)
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
