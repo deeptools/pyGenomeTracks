@@ -1,4 +1,4 @@
-[![PyPI Version](https://img.shields.io/pypi/v/pyGenomeTracks.svg?style=plastic)](https://pypi.org/project/deepTools/) [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=plastic)](https://anaconda.org/bioconda/pygenometracks)
+[![PyPI Version](https://img.shields.io/pypi/v/pyGenomeTracks.svg?style=plastic)](https://pypi.org/project/deepTools/) [![bioconda-badge](https://img.shields.io/conda/vn/bioconda/pyGenomeTracks.svg?maxAge=2592000&style=plastic)](https://anaconda.org/bioconda/pygenometracks)
 
 pyGenomeTracks
 ==============
