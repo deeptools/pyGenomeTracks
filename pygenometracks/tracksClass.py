@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
+from past.builtins import map
+from past.builtins import zip
 
 import sys
 import numpy as np
 import logging
+from configparser import ConfigParser
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -15,6 +20,9 @@ import mpl_toolkits.axisartist as axisartist
 from matplotlib.patches import Rectangle
 import textwrap
 import os.path
+from .readBed import ReadBed
+from .utilities import to_string, to_bytes
+
 
 import warnings
 warnings.filterwarnings('error')
@@ -29,9 +37,6 @@ log = logging.getLogger(__name__)
 # logging.basicConfig()
 # log = logging.getLogger("tracksClass")
 log.setLevel(logging.DEBUG)
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 DEFAULT_BED_COLOR = '#1f78b4'
 DEFAULT_BIGWIG_COLOR = '#33a02c'
@@ -112,9 +117,15 @@ class PlotTracks(object):
                 # adjust titles that are too long
                 # if the track label space is small
                 if track_label_width < 0.1:
-                    properties['title'] = textwrap.fill(properties['title'].encode("UTF-8"), 12)
+                    if sys.version_info[0] == 2:
+                        properties['title'] = textwrap.fill(properties['title'].encode("UTF-8"), 12)
+                    else:
+                        properties['title'] = textwrap.fill(properties['title'], 12)
                 else:
-                    properties['title'] = textwrap.fill(properties['title'].encode("UTF-8"), 30)
+                    if sys.version_info[0] == 2:
+                        properties['title'] = textwrap.fill(properties['title'].encode("UTF-8"), 30)
+                    else:
+                        properties['title'] = textwrap.fill(properties['title'], 30)
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
@@ -196,9 +207,14 @@ class PlotTracks(object):
             line_width = self.vlines_properties['line width']
         else:
             line_width = 0.5
+        if type(next(iter(self.vlines_intval_tree))) is np.bytes_ or type(next(iter(self.vlines_intval_tree))) is bytes:
+            chrom_region = to_bytes(chrom_region)
 
-        if chrom_region not in self.vlines_intval_tree.keys():
+        if chrom_region not in list(self.vlines_intval_tree):
             chrom_region = change_chrom_names(chrom_region)
+            if type(next(iter(self.vlines_intval_tree))) is np.bytes_ or type(next(iter(self.vlines_intval_tree))) is bytes:
+                chrom_region = to_bytes(chrom_region)
+
         for region in sorted(self.vlines_intval_tree[chrom_region][start_region - 10000:end_region + 10000]):
             vlines_list.append(region.begin)
 
@@ -218,10 +234,9 @@ class PlotTracks(object):
         :param tracks_file: file path containing the track configuration
         :return: array of dictionaries and vlines_file. One dictionary per track
         """
-        from ConfigParser import SafeConfigParser
         from ast import literal_eval
-        parser = SafeConfigParser(None, MultiDict)
-        parser.readfp(open(tracks_file, 'r'))
+        parser = ConfigParser(dict_type=MultiDict, strict=False)
+        parser.read_file(open(tracks_file, 'r'))
 
         tracks_file_path = os.path.dirname(tracks_file)
 
@@ -348,7 +363,7 @@ def opener(filename):
     """
     import gzip
     f = open(filename, 'rb')
-    if f.read(2) == '\x1f\x8b':
+    if f.read(2) == b'\x1f\x8b':
         f.seek(0)
         return gzip.GzipFile(fileobj=f)
     else:
@@ -378,6 +393,7 @@ def file_to_intervaltree(file_name):
 
     for line in file_h.readlines():
         line_number += 1
+        line = to_string(line)
         if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
             continue
         fields = line.strip().split('\t')
@@ -410,7 +426,7 @@ def file_to_intervaltree(file_name):
 
         value = None
 
-        if fields > 3:
+        if len(fields) > 3:
             value = fields[3:]
             try:
                 line_min = min(map(float, value))
@@ -477,8 +493,13 @@ class PlotBedGraph(TrackPlot):
         score_list = []
         pos_list = []
 
-        if chrom_region not in self.interval_tree.keys():
+        if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
+            chrom_region = to_bytes(chrom_region)
+
+        if chrom_region not in list(self.interval_tree):
             chrom_region = change_chrom_names(chrom_region)
+            if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
+                chrom_region = to_bytes(chrom_region)
 
         for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
             score_list.append(float(region.data[0]))
@@ -560,9 +581,13 @@ class PlotBigWig(TrackPlot):
                 sys.stderr.write("'number of bins' value: {} for bigwig file {} "
                                  "is not valid. Using default value (700)".format(self.properties['number of bins'],
                                                                                   self.properties['file']))
+        if type(next(iter(self.bw.chroms()))) is np.bytes_ or type(next(iter(self.bw.chroms()))) is bytes:
+            chrom_region = to_bytes(chrom_region)
 
         if chrom_region not in self.bw.chroms().keys():
             chrom_region = change_chrom_names(chrom_region)
+            if type(next(iter(self.bw.chroms()))) is np.bytes_ or type(next(iter(self.bw.chroms()))) is bytes:
+                chrom_region = to_bytes(chrom_region)
 
         if chrom_region not in self.bw.chroms().keys():
             sys.stderr.write("Can not read region {} from bigwig file:\n\n"
@@ -582,12 +607,12 @@ class PlotBigWig(TrackPlot):
                 import pyBigWig
                 self.bw = pyBigWig.open(self.properties['file'])
 
-                log.warn("error found while reading bigwig scores ({}).\nTrying again. Iter num: {}".
-                         format(e, num_tries))
+                log.warning("error found while reading bigwig scores ({}).\nTrying again. Iter num: {}".
+                            format(e, num_tries))
                 pass
             else:
                 if num_tries > 1:
-                    log.warn("After {} the scores could be computed".format(num_tries))
+                    log.warning("After {} the scores could be computed".format(num_tries))
                 break
 
         x_values = np.linspace(start_region, end_region, num_bins)
@@ -834,9 +859,9 @@ class PlotBed(TrackPlot):
         if not matplotlib.colors.is_color_like(self.properties['color']) and self.properties['color'] != 'bed_rgb':
             # check if the color is a valid colormap name
             if self.properties['color'] not in matplotlib.cm.datad:
-                log.warn("*WARNING* color: '{}' for section {} is not valid. Color has "
-                         "been set to {}".format(self.properties['color'], self.properties['section_name'],
-                                                 DEFAULT_BED_COLOR))
+                log.warning("*WARNING* color: '{}' for section {} is not valid. Color has "
+                            "been set to {}".format(self.properties['color'], self.properties['section_name'],
+                                                    DEFAULT_BED_COLOR))
                 self.properties['color'] = DEFAULT_BED_COLOR
             else:
                 self.colormap = self.properties['color']
@@ -877,15 +902,14 @@ class PlotBed(TrackPlot):
         return self.len_w
 
     def process_bed(self):
-        import readBed
 
-        bed_file_h = readBed.ReadBed(opener(self.properties['file']))
+        bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
 
         if 'color' in self.properties and self.properties['color'] == 'bed_rgb' and \
            self.bed_type not in ['bed12', 'bed9']:
-            log.warn("*WARNING* Color set to 'bed_rgb', but bed file does not have the rgb field. The color has "
-                     "been set to {}".format(DEFAULT_BED_COLOR))
+            log.warning("*WARNING* Color set to 'bed_rgb', but bed file does not have the rgb field. The color has "
+                        "been set to {}".format(DEFAULT_BED_COLOR))
             self.properties['color'] = DEFAULT_BED_COLOR
 
         valid_intervals = 0
@@ -906,7 +930,7 @@ class PlotBed(TrackPlot):
             valid_intervals += 1
 
         if valid_intervals == 0:
-            log.warn("No valid intervals were found in file {}".format(self.properties['file_name']))
+            log.warning("No valid intervals were found in file {}".format(self.properties['file_name']))
 
         return interval_tree, min_score, max_score
 
@@ -1074,9 +1098,9 @@ class PlotBed(TrackPlot):
                         verticalalignment='center', fontproperties=self.fp)
 
         if self.counter == 0:
-            log.warn("*Warning* No intervals were found for file {} "
-                     "in section '{}' for the interval plotted ({}:{}-{}).\n".
-                     format(self.properties['file'], self.properties['section_name'], chrom_region, start_region, end_region))
+            log.warning("*Warning* No intervals were found for file {} "
+                        "in section '{}' for the interval plotted ({}:{}-{}).\n".
+                        format(self.properties['file'], self.properties['section_name'], chrom_region, start_region, end_region))
 
         ymax = 0
 
@@ -1399,9 +1423,12 @@ class PlotArcs(TrackPlot):
         from matplotlib.patches import Arc
         max_diameter = 0
         count = 0
-
-        if chrom_region not in self.interval_tree.keys():
+        if type(next(iter(self.interval_tree))) is not np.bytes_:
+            chrom_region = to_string(chrom_region)
+        if chrom_region not in list(self.interval_tree):
             chrom_region = change_chrom_names(chrom_region)
+            if type(next(iter(self.interval_tree))) is not np.bytes_:
+                chrom_region = to_string(chrom_region)
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
         for idx, interval in enumerate(arcs_in_region):
@@ -1450,7 +1477,7 @@ class PlotTADs(PlotBed):
         if chrom_region not in self.interval_tree:
             orig = chrom_region
             chrom_region = change_chrom_names(chrom_region)
-            print 'changing {} to {}'.format(orig, chrom_region)
+            log.info('Chromosome name: {} does not exists. Changing name to {}'.format(orig, chrom_region))
 
         for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
             """
@@ -1477,7 +1504,7 @@ class PlotTADs(PlotBed):
                 ymax = y2
 
         if valid_regions == 0:
-            log.warn("No regions found for section {}.".format(self.properties['section_name']))
+            log.warning("No regions found for section {}.".format(self.properties['section_name']))
 
         ax.set_xlim(start_region, end_region)
         if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':

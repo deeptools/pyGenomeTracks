@@ -97,6 +97,7 @@ install_requires_py = ["numpy >= 1.12.1",
                        "matplotlib >= 2.0.0",
                        "intervaltree >= 2.1.0",
                        "pyBigWig >=0.3.4",
+                       "future >= 0.16.0",
                        "pytest"
                        ]
 
