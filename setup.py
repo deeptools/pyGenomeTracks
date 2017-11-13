@@ -92,6 +92,7 @@ class install(_install):
         except Exception as e:
             sys.stderr.write("Error: {}".format(e))
 
+
 install_requires_py = ["numpy >= 1.12.1",
                        "matplotlib >= 2.0.0",
                        "intervaltree >= 2.1.0",
