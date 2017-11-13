@@ -6,7 +6,7 @@ env:
   - TRAVIS_PYTHON_VERSION=3.6
 
 os:
-#  - linux
+  - linux
   - osx
 
 jobs:
@@ -15,6 +15,7 @@ jobs:
       env:
         - LINT=1
         - TRAVIS_PYTHON_VERSION=2.7
+        - TRAVIS_OS_NAME=linux
       before_install:
         - curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o miniconda.sh
         - bash miniconda.sh -b -p $HOME/miniconda
