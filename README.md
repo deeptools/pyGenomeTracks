@@ -1,3 +1,4 @@
+[![PyPI Version](https://img.shields.io/pypi/v/pyGenomeTracks.svg?style=plastic)](https://pypi.org/project/deepTools/) [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=plastic)](https://anaconda.org/bioconda/pygenometracks)
 
 pyGenomeTracks
 ==============
@@ -19,6 +20,7 @@ The configuration file for this image is [here](https://github.com/maxplanck-ie/
 
 Installation
 ------------
+pyGenomeTracks works with python 2.7 and python 3.6.
 
 Currently, the best way to install pyGenomeTracks is
 
