@@ -92,7 +92,6 @@ class install(_install):
         except Exception as e:
             sys.stderr.write("Error: {}".format(e))
 
-
 install_requires_py = ["numpy >= 1.12.1",
                        "matplotlib >= 2.0.0",
                        "intervaltree >= 2.1.0",
@@ -122,5 +121,6 @@ setup(
         'Topic :: Scientific/Engineering :: Bio-Informatics'],
     install_requires=install_requires_py,
     zip_safe=False,
+    python_requires='>=2.6, !=3.0.*, !=3.1.*, !=3.2.*, <4',
     cmdclass={'sdist': sdist, 'install': install}
 )
