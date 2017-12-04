@@ -22,7 +22,13 @@ Installation
 ------------
 pyGenomeTracks works with python 2.7 and python 3.6.
 
-Currently, the best way to install pyGenomeTracks is
+Currently, the best way to install pyGenomeTracks is with anaconda
+
+```bash
+$ conda install -c bioconda pygenometracks 
+```
+
+Also, pyGenomeTracks can be installed using pip
 
 ```bash
 $ pip install pyGenomeTracks
