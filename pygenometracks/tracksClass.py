@@ -23,9 +23,20 @@ import os.path
 from .readBed import ReadBed
 from .utilities import to_string, to_bytes
 
+import hicexplorer.HiCMatrix as HiCMatrix
+import hicexplorer.utilities
+import scipy.sparse
+import copy
 
 import warnings
-warnings.filterwarnings('error')
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+warnings.filterwarnings("ignore", message="numpy.ndarray size changed")
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=DeprecationWarning)
+warnings.simplefilter(action='ignore', category=ImportWarning)
+
+# import warnings
+# warnings.filterwarnings('error')
 
 from collections import OrderedDict
 from intervaltree import IntervalTree, Interval
@@ -113,6 +124,9 @@ class PlotTracks(object):
             elif properties['file_type'] == 'links':
                 self.track_obj_list.append(PlotArcs(properties))
 
+            elif properties['file_type'] == 'hic_matrix':
+                self.track_obj_list.append(PlotHiCMatrix(properties))
+
             if 'title' in properties:
                 # adjust titles that are too long
                 # if the track label space is small
@@ -130,18 +144,50 @@ class PlotTracks(object):
         log.info("time initializing track(s):")
         self.print_elapsed(start)
 
-    def get_tracks_height(self):
-        # prepare layout based on the tracks given.
-        # The main purpose of the following loop is
-        # to get the height of each of the tracks
-        # because for the Hi-C the height is variable with respect
-        # to the range being plotted, the function is called
-        # when each plot is going to be printed.
+    def get_tracks_height(self, start_region=None, end_region=None):
+        """
+        The main purpose of the following loop is
+        to get the height of each of the tracks
+        because for the Hi-C the height is variable with respect
+        to the range being plotted, the function is called
+        when each plot is going to be printed.
+
+        Args:
+            start_region: start of the region to plot. Only used in case the plot is a Hi-C matrix
+            end_region: end of the region to plot. Only used in case the plot is a Hi-C matrix
+
+        Returns:
+
+        """
         track_height = []
         for track_dict in self.track_list:
 
             if 'height' in track_dict:
                 height = track_dict['height']
+            # compute the height of a Hi-C track
+            # based on the depth such that the
+            # resulting plot appears proportional
+            #
+            #      /|\
+            #     / | \
+            #    /  |d \   d is the depth that we want to be proportional
+            #   /   |   \  when plotted in the figure
+            # ------------------
+            #   region len
+            #
+            # d (in cm) =  depth (in bp) * width (in cm) / region len (in bp)
+
+            elif 'depth' in track_dict and track_dict['file_type'] == 'hic_matrix':
+                # to compute the actual width of the figure the margins and the region
+                # set for the legends have to be considered
+                # DEFAULT_MARGINS[1] - DEFAULT_MARGINS[0] is the proportion of plotting area
+
+                hic_width = \
+                    self.fig_width * (DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']) * self.width_ratios[0]
+                scale_factor = 0.6  # the scale factor is to obtain a 'pleasing' result.
+                depth = min(track_dict['depth'], (end_region - start_region))
+
+                height = scale_factor * depth * hic_width / (end_region - start_region)
             else:
                 height = DEFAULT_TRACK_HEIGHT
 
@@ -150,7 +196,7 @@ class PlotTracks(object):
         return track_height
 
     def plot(self, file_name, chrom, start, end, title=None):
-        track_height = self.get_tracks_height()
+        track_height = self.get_tracks_height(start_region=start, end_region=end)
 
         if self.fig_height:
             fig_height = self.fig_height
@@ -207,13 +253,12 @@ class PlotTracks(object):
             line_width = self.vlines_properties['line width']
         else:
             line_width = 0.5
-        if type(next(iter(self.vlines_intval_tree))) is np.bytes_ or type(next(iter(self.vlines_intval_tree))) is bytes:
-            chrom_region = to_bytes(chrom_region)
+
+        chrom_region = check_chrom_str_bytes(self.vlines_intval_tree, chrom_region)
 
         if chrom_region not in list(self.vlines_intval_tree):
             chrom_region = change_chrom_names(chrom_region)
-            if type(next(iter(self.vlines_intval_tree))) is np.bytes_ or type(next(iter(self.vlines_intval_tree))) is bytes:
-                chrom_region = to_bytes(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.vlines_intval_tree, chrom_region)
 
         for region in sorted(self.vlines_intval_tree[chrom_region][start_region - 10000:end_region + 10000]):
             vlines_list.append(region.begin)
@@ -493,13 +538,11 @@ class PlotBedGraph(TrackPlot):
         score_list = []
         pos_list = []
 
-        if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
-            chrom_region = to_bytes(chrom_region)
+        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
 
         if chrom_region not in list(self.interval_tree):
             chrom_region = change_chrom_names(chrom_region)
-            if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
-                chrom_region = to_bytes(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
 
         for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
             score_list.append(float(region.data[0]))
@@ -581,13 +624,11 @@ class PlotBigWig(TrackPlot):
                 sys.stderr.write("'number of bins' value: {} for bigwig file {} "
                                  "is not valid. Using default value (700)".format(self.properties['number of bins'],
                                                                                   self.properties['file']))
-        if type(next(iter(self.bw.chroms()))) is np.bytes_ or type(next(iter(self.bw.chroms()))) is bytes:
-            chrom_region = to_bytes(chrom_region)
+        chrom_region = check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
 
         if chrom_region not in self.bw.chroms().keys():
             chrom_region = change_chrom_names(chrom_region)
-            if type(next(iter(self.bw.chroms()))) is np.bytes_ or type(next(iter(self.bw.chroms()))) is bytes:
-                chrom_region = to_bytes(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
 
         if chrom_region not in self.bw.chroms().keys():
             sys.stderr.write("Can not read region {} from bigwig file:\n\n"
@@ -802,9 +843,10 @@ class PlotBoundaries(TrackPlot):
         """
         x = []
         y = []
+        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
         if chrom_region not in self.interval_tree:
             chrom_region = change_chrom_names(chrom_region)
-        for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
+            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
             """
                   /\
                  /  \
@@ -999,8 +1041,10 @@ class PlotBed(TrackPlot):
         if 'global max row' in self.properties and self.properties['global max row'] == 'yes':
             self.get_max_num_row(self.len_w, self.small_relative)
 
+        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
         if chrom_region not in self.interval_tree.keys():
             chrom_region = change_chrom_names(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
 
         genes_overlap = sorted(self.interval_tree[chrom_region][start_region:end_region])
 
@@ -1423,12 +1467,12 @@ class PlotArcs(TrackPlot):
         from matplotlib.patches import Arc
         max_diameter = 0
         count = 0
-        if type(next(iter(self.interval_tree))) is not np.bytes_:
-            chrom_region = to_string(chrom_region)
+
+        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
         if chrom_region not in list(self.interval_tree):
             chrom_region = change_chrom_names(chrom_region)
-            if type(next(iter(self.interval_tree))) is not np.bytes_:
-                chrom_region = to_string(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
+
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
         for idx, interval in enumerate(arcs_in_region):
@@ -1474,9 +1518,11 @@ class PlotTADs(PlotBed):
         from matplotlib.patches import Polygon
         ymax = 0.001
         valid_regions = 0
+        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
         if chrom_region not in self.interval_tree:
             orig = chrom_region
             chrom_region = change_chrom_names(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
             log.info('Chromosome name: {} does not exists. Changing name to {}'.format(orig, chrom_region))
 
         for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
@@ -1517,6 +1563,293 @@ class PlotTADs(PlotBed):
                       verticalalignment='center')
 
 
+class PlotHiCMatrix(TrackPlot):
+
+    def __init__(self, properties_dict):
+        # to avoid the color bar to span all the
+        # width of the axis I pass two axes
+        # to plot_matrix
+        self.properties = properties_dict
+
+        log.debug("self.properties", self.properties)
+        if self.properties['file'].endswith('.cool'):
+            # just init the cooler matrix.
+            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], color_only_init=True)
+        else:
+            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'])
+
+        if len(self.hic_ma.matrix.data) == 0:
+            log.error("Matrix {} is empty".format(self.properties['file']))
+            exit(1)
+        if 'show_masked_bins' in self.properties and self.properties['show_masked_bins'] == 'yes':
+            pass
+        else:
+            self.hic_ma.maskBins(self.hic_ma.nan_bins)
+
+        # check that the matrix can be log transformed
+        if 'transform' in self.properties:
+            if self.properties['transform'] == 'log1p':
+                if self.hic_ma.matrix.data.min() + 1 < 0:
+                    log.error("\n*ERROR*\nMatrix contains negative values.\n"
+                              "log1p transformation can not be applied to \n"
+                              "values in matrix: {}".format(self.properties['file']))
+                    exit(1)
+
+            elif self.properties['transform'] == '-log':
+                if self.hic_ma.matrix.data.min() < 0:
+                    log.error("\n*ERROR*\nMatrix contains negative values.\n"
+                              "log(-1 * <values>) transformation can not be applied to \n"
+                              "values in matrix: {}".format(self.properties['file']))
+                    exit(1)
+
+            elif self.properties['transform'] == 'log':
+                if self.hic_ma.matrix.data.min() < 0:
+                    log.error("\n*ERROR*\nMatrix contains negative values.\n"
+                              "log transformation can not be applied to \n"
+                              "values in matrix: {}".format(self.properties['file']))
+                    exit(1)
+
+        new_intervals = hicexplorer.utilities.enlarge_bins(self.hic_ma.cut_intervals)
+        self.hic_ma.interval_trees, self.hic_ma.chrBinBoundaries = \
+            self.hic_ma.intervalListToIntervalTree(new_intervals)
+
+        self.hic_ma.cut_intervals = new_intervals
+        binsize = self.hic_ma.getBinSize()
+        max_depth_in_bins = int(self.properties['depth'] / binsize)
+
+        # work only with the lower matrix
+        # and remove all pixels that are beyond
+        # 2 * max_depth_in_bis which are not required
+        # (this is done by subtracting a second sparse matrix
+        # that contains only the lower matrix that wants to be removed.
+        limit = 2 * max_depth_in_bins
+        self.hic_ma.matrix = scipy.sparse.triu(self.hic_ma.matrix, k=0, format='csr') - \
+            scipy.sparse.triu(self.hic_ma.matrix, k=limit, format='csr')
+        self.hic_ma.matrix.eliminate_zeros()
+
+        # fill the main diagonal, otherwise it looks
+        # not so good. The main diagonal is filled
+        # with an array containing the max value found
+        # in the matrix
+        if sum(self.hic_ma.matrix.diagonal()) == 0:
+            log.info("Filling main diagonal with max value "
+                     "because it empty and looks bad...\n")
+            max_value = self.hic_ma.matrix.data.max()
+            main_diagonal = scipy.sparse.dia_matrix(([max_value] * self.hic_ma.matrix.shape[0], [0]),
+                                                    shape=self.hic_ma.matrix.shape)
+            self.hic_ma.matrix = self.hic_ma.matrix + main_diagonal
+
+        self.plot_inverted = False
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            self.plot_inverted = True
+
+        self.norm = None
+
+        if 'colormap' not in self.properties:
+            self.properties['colormap'] = DEFAULT_MATRIX_COLORMAP
+
+        self.cmap = matplotlib.cm.get_cmap(self.properties['colormap'])
+        self.cmap.set_bad('white')
+
+        self.cmap.set_bad('black')
+
+        if 'boundaries_file' in self.properties:
+            self.boundaries_obj = PlotBoundaries({'file': self.properties['boundaries_file']})
+
+    def plot(self, ax, label_ax, chrom_region, region_start, region_end):
+        self.cbar_ax = copy.copy(label_ax)
+        self.label_ax = label_ax
+        self.label_ax.set_axis_off()
+        self.ax = ax
+
+        chrom_sizes = self.hic_ma.get_chromosome_sizes()
+        chrom_region = check_chrom_str_bytes(chrom_sizes, chrom_region)
+
+        if chrom_region not in list(chrom_sizes):
+            chrom_region = change_chrom_names(chrom_region)
+            chrom_region = check_chrom_str_bytes(chrom_sizes, chrom_region)
+
+        if region_end > chrom_sizes[chrom_region]:
+            log.error("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n")
+            log.error("{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
+                                                                   region_start, region_end))
+
+        if self.properties['file'].endswith('.cool'):
+            # load now the region to be plotted
+            pass
+
+        # expand region to plus depth on both sides
+        # to avoid a 45 degree 'cut' on the edges
+
+        # get bin id of start and end of region in given chromosome
+        chr_start_id, chr_end_id = self.hic_ma.getChrBinRange(chrom_region)
+        chr_start = self.hic_ma.cut_intervals[chr_start_id][1]
+        chr_end = self.hic_ma.cut_intervals[chr_end_id - 1][1]
+        start_bp = max(chr_start, region_start - self.properties['depth'])
+        end_bp = min(chr_end, region_end + self.properties['depth'])
+
+        idx, start_pos = zip(*[(idx, x[1]) for idx, x in
+                               enumerate(self.hic_ma.cut_intervals)
+                               if x[0] == chrom_region and x[1] >= start_bp and x[2] <= end_bp])
+
+        idx = idx[0:-1]
+        # select only relevant matrix part
+        matrix = self.hic_ma.matrix[idx, :][:, idx]
+        # limit the 'depth' based on the length of the region being viewed
+
+        region_len = region_end - region_start
+        depth = min(self.properties['depth'], int(region_len * 1.25))
+        depth_in_bins = int(1.5 * region_len / self.hic_ma.getBinSize())
+
+        if depth < self.properties['depth']:
+            # remove from matrix all data points that are not visible.
+            matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
+        matrix = np.asarray(matrix.todense().astype(float))
+        if 'scale factor' in self.properties:
+            matrix = matrix * self.properties['scale factor']
+
+        if 'transform' in self.properties:
+            if self.properties['transform'] == 'log1p':
+                matrix += 1
+                self.norm = matplotlib.colors.LogNorm()
+
+            elif self.properties['transform'] == '-log':
+                mask = matrix == 0
+                matrix[mask] = matrix[mask is False].min()
+                matrix = -1 * np.log(matrix)
+
+            elif self.properties['transform'] == 'log':
+                mask = matrix == 0
+                matrix[mask] = matrix[mask is False].min()
+                matrix = np.log(matrix)
+
+        if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
+            vmax = self.properties['max_value']
+
+        else:
+            # try to use a 'aesthetically pleasant' max value
+            vmax = np.percentile(matrix.diagonal(1), 80)
+
+        if 'min_value' in self.properties and self.properties['min_value'] != 'auto':
+            vmin = self.properties['min_value']
+        else:
+            if depth_in_bins > matrix.shape[0]:
+                depth_in_bins = matrix.shape[0] - 5
+
+            # if the region length is large with respect to the chromosome length, the diagonal may have
+            # very few values or none. Thus, the following lines reduce the number of bins until the
+            # diagonal is at least length 5
+            num_bins_from_diagonal = int(region_len / self.hic_ma.getBinSize())
+            for num_bins in range(0, num_bins_from_diagonal)[::-1]:
+                distant_diagonal_values = matrix.diagonal(num_bins)
+                if len(distant_diagonal_values) > 5:
+                    break
+
+            vmin = np.median(distant_diagonal_values)
+
+        log.info("setting min, max values for track {} to: {}, {}\n".format(self.properties['section_name'],
+                                                                            vmin, vmax))
+        img = self.pcolormesh_45deg(matrix, start_pos, vmax=vmax, vmin=vmin)
+        img.set_rasterized(True)
+        if self.plot_inverted:
+            self.ax.set_ylim(depth, 0)
+        else:
+            self.ax.set_ylim(0, depth)
+
+        # ##plot boundaries
+        # if a boundaries file is given, plot the
+        # tad boundaries as line delineating the TAD triangles
+        if 'boundaries_file' in self.properties:
+            self.boundaries_obj.plot(ax, label_ax, chrom_region, region_start, region_end)
+
+        self.ax.set_xlim(region_start, region_end)
+        if 'x labels' in self.properties and self.properties['x labels'] != 'no':
+            ticks = self.ax.get_xticks()
+            labels = ["{:.2f}".format((x / 1e6))
+                      for x in ticks]
+            labels[-1] += "Mbp"
+            self.ax.get_xaxis().set_tick_params(
+                which='both',
+                bottom='on',
+                top='off',
+                direction='out')
+
+            self.ax.set_xticklabels(labels)
+        else:
+            self.ax.get_xaxis().set_tick_params(
+                which='both',
+                bottom='off',
+                top='off',
+                direction='out')
+            self.ax.axes.get_xaxis().set_visible(False)
+
+        self.ax.set_frame_on(False)
+        self.ax.axes.get_yaxis().set_visible(False)
+        self.cbar_ax.patch.set_alpha(0.0)
+        try:
+            if 'transform' in self.properties and \
+                    self.properties['transform'] in ['log', 'log1p']:
+                # get a useful log scale
+                # that looks like [1, 2, 5, 10, 20, 50, 100, ... etc]
+
+                # The following code is problematic with some versions of matplotlib.
+                # Should be uncommented once the problem is clarified
+                from matplotlib.ticker import LogFormatter
+                formatter = LogFormatter(10, labelOnlyBase=False)
+                aa = np.array([1, 2, 5])
+                tick_values = np.concatenate([aa * 10**x for x in range(10)])
+                cobar = plt.colorbar(img, ticks=tick_values, format=formatter, ax=self.cbar_ax, fraction=0.95)
+                """
+                aa = np.array([0, 1, 2, 3, 4, 5])
+                tick_values = set(np.concatenate([aa * 10**x for x in range(10)]))
+                cobar = plt.colorbar(img, ticks=list(tick_values), ax=self.cbar_ax, fraction=0.95)
+                """
+            else:
+                cobar = plt.colorbar(img, ax=self.cbar_ax, fraction=0.95)
+            cobar.solids.set_edgecolor("face")
+            cobar.ax.set_ylabel(self.properties['title'])
+
+            # adjust the labels of the colorbar
+            labels = cobar.ax.get_yticklabels()
+            ticks = cobar.ax.get_yticks()
+            if ticks[0] == 0:
+                # if the label is at the start of the colobar
+                # move it above avoid being cut or overlapping with other track
+                labels[0].set_verticalalignment('bottom')
+            if ticks[-1] == 1:
+                # if the label is at the end of the colobar
+                # move it a bit inside to avoid overlapping
+                # with other labels
+                labels[-1].set_verticalalignment('top')
+            cobar.ax.set_yticklabels(labels)
+
+        except ValueError:
+            pass
+
+    def pcolormesh_45deg(self, matrix_c, start_pos_vector, vmin=None,
+                         vmax=None):
+        """
+        Turns the matrix 45 degrees and adjusts the
+        bins to match the actual start end positions.
+        """
+        import itertools
+        # code for rotating the image 45 degrees
+        n = matrix_c.shape[0]
+        # create rotation/scaling matrix
+        t = np.array([[1, 0.5], [-1, 0.5]])
+        # create coordinate matrix and transform it
+        matrix_a = np.dot(np.array([(i[1], i[0])
+                                    for i in itertools.product(start_pos_vector[::-1],
+                                                               start_pos_vector)]), t)
+        # this is to convert the indices into bp ranges
+        x = matrix_a[:, 1].reshape(n + 1, n + 1)
+        y = matrix_a[:, 0].reshape(n + 1, n + 1)
+        # plot
+        im = self.ax.pcolormesh(x, y, np.flipud(matrix_c),
+                                vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
+        return im
+
+
 def change_chrom_names(chrom):
     """
     Changes UCSC chromosome names to ensembl chromosome names
@@ -1531,3 +1864,17 @@ def change_chrom_names(chrom):
         chrom = 'chr' + chrom
 
     return chrom
+
+
+def check_chrom_str_bytes(iteratable_obj, p_obj):
+    # determine type
+    if isinstance(p_obj, list) and len(p_obj) > 0:
+        type_ = type(p_obj[0])
+    else:
+        type_ = type(p_obj)
+    if not isinstance(type(next(iter(iteratable_obj))), type_):
+        if type(next(iter(iteratable_obj))) is str:
+            p_obj = to_string(p_obj)
+        elif type(next(iter(iteratable_obj))) in [bytes, np.bytes_]:
+            p_obj = to_bytes(p_obj)
+    return p_obj

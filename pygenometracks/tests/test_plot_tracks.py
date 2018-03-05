@@ -13,6 +13,18 @@ browser_tracks = """
 [x-axis]
 fontsize=30
 
+[tads]
+file = Li_et_al_2015.h5
+title = Hi-C contact matrix
+depth = 150000
+transform = log1p
+#boundaries_file = boundaries_example
+#type = arcplot
+#type = interaction
+#optional in case it can not be guessed by the file ending
+file_type = hic_matrix
+show_masked_bins = no
+
 [spacer]
 height = 0.05
 
