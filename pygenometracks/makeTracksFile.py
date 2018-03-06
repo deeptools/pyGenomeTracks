@@ -165,10 +165,6 @@ depth = 100000
 #min_value =2.8
 #max_value = 3.0
 transform = log1p
-#boundaries_file = boundaries_example
-#type = arcplot
-#type = interaction
-#optional in case it can not be guessed by the file ending
 file_type = hic_matrix
 # show masked bins plots as white lines
 # those bins that were not used during the correction
@@ -217,7 +213,7 @@ height=8
 
         elif file_h.name.endswith('.arcs') or file_h.name.endswith('.links'):
             default_values = """
-# the file format for acs is (tab separated)
+# the file format for links is (tab separated)
 #   chr1 start1 end1 chr2 start2 end2 score
 # for example:
 #   chr1 100 200 chr1 250 300 0.5
@@ -225,11 +221,17 @@ height=8
 # arc whose start or end is not in the region plotted are not shown.
 title =  arcs
 color = red
+# options are arcs and triangles, the triangles option is convenient to overlay over a Hi-C matrix
+# to highlight matrix pixel of the highlighted link
+links type = arcs
 # if the track wants to be plotted upside-down:
 # orientation = inverted
 # if line width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
-#line width = 0.5
+# line width = 0.5
+# options for line style are 'solid', 'dashed', 'dotted' etc. The full list of
+# styles can be found here: https://matplotlib.org/gallery/lines_bars_and_markers/linestyles.html
+line style = solid
 # if the track wants to be plotted on top of the previous track
 #overlay previous = yes
 # height of track in cm
