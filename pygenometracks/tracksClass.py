@@ -1437,8 +1437,8 @@ class PlotArcs(TrackPlot):
         # where the last value is a score.
         if 'line width' not in self.properties:
             self.properties['line width'] = 0.5
-        if 'line type' not in self.properties:
-            self.properties['line type'] = 'solid'
+        if 'line style' not in self.properties:
+            self.properties['line style'] = 'solid'
         if 'links type' not in self.properties:
             self.properties['links type'] = 'arcs'
         self.max_height = None
@@ -1561,7 +1561,8 @@ class PlotArcs(TrackPlot):
             self.max_height = radius
         ax.plot([center], [diameter])
         ax.add_patch(Arc((center, 0), diameter,
-                         diameter, 0, 0, 180, color=self.properties['color'], lw=self.line_width))
+                         diameter, 0, 0, 180, color=self.properties['color'],
+                         linewidth=self.line_width, ls=self.properties['line style']))
 
     def plot_triangles(self, ax, interval):
         from matplotlib.patches import Polygon
@@ -1571,8 +1572,10 @@ class PlotArcs(TrackPlot):
         y1 = 0
         y2 = (interval.end - interval.begin)
 
-        triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]), closed=True,
-                           edgecolor=self.properties['color'], linewidth=self.line_width)
+        triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]), closed=False,
+                           facecolor='none', edgecolor=self.properties['color'],
+                           linewidth=self.line_width,
+                           ls=self.properties['line style'])
         ax.add_artist(triangle)
         if y2 > self.max_height:
             self.max_height = y2
