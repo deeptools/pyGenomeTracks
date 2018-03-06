@@ -166,7 +166,7 @@ border color = black
 gene rows = 10
 
 [test bed6]
-file = dm3_genes.bed6_1e6_4e6.gz
+file = dm3_genes.bed6.gz
 height = 10
 title = bed6 fontsize=10; line width=1.5; global max row=yes (global max row sets the number of genes per row as the maximum found anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
