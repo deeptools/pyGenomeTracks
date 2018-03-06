@@ -13,10 +13,12 @@ are highly customizable. Currently, it is possible to plot:
  * bed (many options)
  * bedgraph
  * links (represented as arcs) 
+ * Hi-C matrices (if [HiCExplorer](http://hicexplorer.readthedocs.io) is installed)
 
-![pyGenomeTracks example](https://github.com/maxplanck-ie/pyGenomeTracks/raw/master/pygenometracks/tests/test_data/master_plot.png)
+pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
 
-The configuration file for this image is [here](https://github.com/maxplanck-ie/pyGenomeTracks/blob/master/pygenometracks/tests/test_data/browser_tracks.ini)
+![pyGenomeTracks example](./docs/content/images/hic_example_nat_comm_small.png)
+
 
 Installation
 ------------
@@ -43,7 +45,8 @@ $ pip install  git+https://github.com/maxplanck-ie/pyGenomeTracks.git
 
 Usage
 -----
-To run pyGenomeTracks a configuration file describing the tracks is required. The easiest way to create this file is using `make_tracks_file` which setups up a file with defaults that can be easily changed. The format is:
+To run pyGenomeTracks a configuration file describing the tracks is required. The easiest way to create this file is using the program `make_tracks_file` which creates a configuration file with 
+defaults that can be easily changed. The format is:
 
 ```bash
 $ make_tracks_file --trackFiles <file1.bed> <file2.bw> ... -o tracks.ini
@@ -54,7 +57,130 @@ $ make_tracks_file --trackFiles <file1.bed> <file2.bw> ... -o tracks.ini
 Then, a region can be plotted using:
 
 ```bash
-$ pyGenomeTracks --tracks tracks.ini --region chr2:10,000,000-11,000,000 -o nice_image.pdf
+$ pyGenomeTracks --tracks tracks.ini --region chr2:10,000,000-11,000,000 --outFileName nice_image.pdf
 ```
+
+The ending `--outFileName` defines the image format. If `.pdf` is used, then the resulting image is a pdf. The options are pdf, png and svg. 
+
+Examples
+--------
+
+(This examples are found in the `examples/` folder)
+
+A minimal example of a configuration file with a single bigwig track looks like this:
+
+```
+[bigwig file test]
+file = bigwig.bw
+# height of the track in cm (optional value)
+height = 4
+title = bigwig
+min_value = 0
+max_value = 30
+```
+
+
+```bash
+$ pyGenomeTracks --tracks bigwig_track.ini --region X:2,500,000-3,000,000 -o bigwig.png
+```
+
+![pyGenomeTracks bigwig example](./examples/bigwig.png)
+
+
+Now, let's add an the genomic location and some genes:
+```
+[bigwig file test]
+file = bigwig.bw
+# height of the track in cm (optional value)
+height = 4
+title = bigwig
+min_value = 0
+max_value = 30
+
+[spacer]
+# this simply adds an small space between the two tracks.
+
+[genes]
+file = genes.bed.gz
+height = 7
+title = genes
+fontsize = 10
+file_type = bed
+gene rows = 10
+
+[x-axis]
+fontsize=10
+```
+
+```bash
+$ pyGenomeTracks --tracks bigwig_with_genes.ini --region X:2,800,000-3,100,000 -o bigwig_with_genes.png
+```
+
+![pyGenomeTracks bigwig example](./examples/bigwig_with_genes.png)
+
+Now, we will add some vertical lines across all tracks. The vertical lines should be in a bed format.
+
+```
+[bigwig file test]
+file = bigwig.bw
+# height of the track in cm (optional value)
+height = 4
+title = bigwig
+min_value = 0
+max_value = 30
+
+[spacer]
+# this simply adds an small space between the two tracks.
+
+[genes]
+file = genes.bed.gz
+height = 7
+title = genes
+fontsize = 10
+file_type = bed
+gene rows = 10
+
+[x-axis]
+fontsize=10
+
+[vlines]
+file = domains.bed
+type = vlines
+
+```
+
+
+```bash
+$ pyGenomeTracks --tracks bigwig_with_genes_and_vlines.ini --region X:2,800,000-3,100,000 -o bigwig_with_genes_and_vlines.png
+```
+
+
+Examples with multiple options
+------------------------------
+![pyGenomeTracks bigwig example](./examples/bigwig_with_genes_and_vlines.png)
+
+
+A comprehensive example of pyGenomeTracks can be found as part of our automatic testing.
+Note, that pyGenome tracks also allows the combination of multiple tracks into one using the parameter: `overlay previous=yes` or `overlay previous=share-y`.
+In the second option the y-axis of the tracks that overlays is the same as the track being overlay. Multiple tracks can be overlay together.
+
+![pyGenomeTracks example](./pygenometracks/tests/test_data/master_plot.png)
+
+The configuration file for this image is [here](./pygenometracks/tests/test_data/browser_tracks.ini)
+
+
+Examples with Hi-C data
+-----------------------
+
+In this examples is where the overlay tracks are more useful. Notice that any track can be overlay over a Hi-C matrix. Most useful is to overlay TADs or to overlay links using the `triangles` option 
+that will point in the Hi-C matrix the pixel with the link contact. When overlaying links and TADs is useful to set `overlay previous=share-y` such that the two tracks match the positions. This is not
+required when overlying other type of data like a bigwig file that has a different y-scale.
+
+![pyGenomeTracks example](./pygenometracks/tests/test_data/master_plot_hic.png)
+
+The configuration file for this image is [here](./pygenometracks/tests/test_data/browser_tracks_hic.ini)
+
+
+
 
 pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser) (See e.g. [Chorogenome navigator](http://chorogenome.ie-freiburg.mpg.de/) which is made with HiCBrowser)

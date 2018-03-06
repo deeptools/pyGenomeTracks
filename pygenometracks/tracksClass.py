@@ -223,7 +223,12 @@ class PlotTracks(object):
         # skipped_tracks is the count of tracks that have the
         # 'overlay previous' parameter and should be skipped
         skipped_tracks = 0
+        axis = None
         for idx, track in enumerate(self.track_obj_list):
+            if idx == 0 and track.properties['overlay previous'] != 'no':
+                log.warn("First track can not have the `overlay previous` option")
+                track.properties['overlay previous'] = 'no'
+
             if track.properties['overlay previous'] in ['yes', 'share-y']:
                 overlay = True
                 skipped_tracks += 1
@@ -347,7 +352,7 @@ class PlotTracks(object):
             if 'title' not in track_dict:
                 track_dict['title'] = ''
                 if track_dict['overlay previous'] != 'no' or track_dict['section_name'].endswith('[x-axis]') \
-                    or track_dict['section_name'].endswith('[spacer]'):
+                        or track_dict['section_name'].endswith('[spacer]'):
                     pass
                 else:
                     warn = "\ntitle not set for 'section {}'\n".format(track_dict['section_name'])
@@ -803,105 +808,6 @@ class PlotXAxis(TrackPlot):
         label_axis.text(0.15, 0.5, self.properties['title'],
                         horizontalalignment='left', size='large',
                         verticalalignment='center')
-
-
-class PlotBoundaries(TrackPlot):
-
-    def __init__(self, *args, **kwargs):
-        super(PlotBoundaries, self).__init__(*args, **kwargs)
-
-        line_number = 0
-        interval_tree = {}
-        intervals = []
-        prev_chrom = None
-        valid_intervals = 0
-
-        with open(self.properties['file'], 'r') as file_h:
-            for line in file_h.readlines():
-                line_number += 1
-                if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
-                    continue
-                try:
-                    chrom, start, end = line.strip().split('\t')[0:3]
-                except Exception as detail:
-                    msg = 'Could not read line\n{}\n. {}'.format(line, detail)
-                    sys.exit(msg)
-
-                try:
-                    start = int(start)
-                    end = int(end)
-                except ValueError as detail:
-                    msg = "Error reading line: {}. One of the fields is not " \
-                          "an integer.\nError message: {}".format(line_number, detail)
-                    sys.exit(msg)
-
-                assert start <= end, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
-
-                if prev_chrom and chrom != prev_chrom:
-                    start_array, end_array = zip(*intervals)
-                    start_array = np.array(start_array)
-                    end_array = np.array(end_array)
-                    # check if intervals are consecutive or 1bp positions demarcating the boundaries
-                    if np.any(end_array - start_array == 1):
-                        # The file contains only boundaries at 1bp position.
-                        end_array = start_array[1:]
-                        start_array = start_array[:-1]
-                    interval_tree[prev_chrom] = IntervalTree()
-                    for idx in range(len(start_array)):
-                        interval_tree[prev_chrom].add(Interval(start_array[idx], end_array[idx]))
-                        valid_intervals += 1
-                    intervals = []
-
-                intervals.append((start, end))
-
-                # each interval spans from the smallest start to the largest end
-                prev_chrom = chrom
-
-        start, end = zip(*intervals)
-        start = np.array(start)
-        end = np.array(end)
-        # check if intervals are consecutive or 1bp positions demarcating the boundaries
-        if np.any(end - start == 1):
-            # The file contains only boundaries at 1bp position.
-            end = start[1:]
-            start = start[:-1]
-        interval_tree[chrom] = IntervalTree()
-        for idx in range(len(start)):
-            interval_tree[chrom].add(Interval(start[idx], end[idx]))
-            valid_intervals += 1
-
-        if valid_intervals == 0:
-            sys.stderr.write("No valid intervals were found in file {}".format(self.properties['file']))
-
-        file_h.close()
-        self.interval_tree = interval_tree
-
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
-        """
-        Plots the boundaries as triangles in the given ax.
-        """
-        x = []
-        y = []
-        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
-        if chrom_region not in self.interval_tree:
-            chrom_region = change_chrom_names(chrom_region)
-            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
-            """
-                  /\
-                 /  \
-                /    \
-            _____________________
-               x1 x2 x3
-            """
-            x1 = region.begin
-            x2 = x1 + float(region.end - region.begin) / 2
-            x3 = region.end
-            y1 = 0
-            y2 = (region.end - region.begin)
-            x.extend([x1, x2, x3])
-            y.extend([y1, y2, y1])
-
-        ax.plot(x, y, color='black')
 
 
 class PlotBed(TrackPlot):
@@ -1724,9 +1630,6 @@ class PlotHiCMatrix(TrackPlot):
 
         self.cmap.set_bad('black')
 
-        if 'boundaries_file' in self.properties:
-            self.boundaries_obj = PlotBoundaries({'file': self.properties['boundaries_file']})
-
     def plot(self, ax, label_ax, chrom_region, region_start, region_end):
         self.cbar_ax = copy.copy(label_ax)
         self.label_ax = label_ax
@@ -1875,6 +1778,7 @@ class PlotHiCMatrix(TrackPlot):
             else:
                 cobar = plt.colorbar(img, ax=self.cbar_ax, fraction=0.95)
             cobar.solids.set_edgecolor("face")
+            cobar.ax.tick_params(labelsize='smaller')
             # cobar.ax.set_ylabel(self.properties['title'])
 
             # adjust the labels of the colorbar

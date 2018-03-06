@@ -48,8 +48,6 @@ before_install:
 
 # Install packages
 install:
-  #- conda create --name pygenometracks_pytest --yes python=$TRAVIS_PYTHON_VERSION pytest
-  #- source activate pygenometracks_pytest
   - conda install --yes -c conda-forge -c bioconda python=$TRAVIS_PYTHON_VERSION --file requirements.txt
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then conda install --yes -c defaults -c conda-forge -c bioconda configparser ; fi
   - python setup.py install

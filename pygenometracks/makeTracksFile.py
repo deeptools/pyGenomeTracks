@@ -69,7 +69,8 @@ nans to zeros = True
 show data range = yes
 # if the track wants to be plotted upside-down:
 # orientation = inverted
-# if the track wants to be plotted on top of the previous track
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
 #overlay previous = yes
 #optional in case it can not be guessed by the file ending
 file_type = bigwig
@@ -86,7 +87,8 @@ color = green
 height = 2
 # if the track wants to be plotted upside-down:
 # orientation = inverted
-# if the track wants to be plotted on top of the previous track
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
 #overlay previous = yes
 file_type = bedgraph
 """
@@ -141,7 +143,8 @@ fontsize = 10
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
 #gene rows = 10
-# if the track wants to be plotted on top of the previous track
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
 #overlay previous = yes
 # by default the ymax is the number of
 # rows occupied by the genes in the region plotted. However,
@@ -201,7 +204,8 @@ file_type = bedgraph_matrix
 #plot horizontal lines=False
 # if the track wants to be plotted upside-down:
 # orientation = inverted
-# if the track wants to be plotted on top of the previous track
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
 #overlay previous = yes
 # height of track in cm
 height=8
@@ -219,7 +223,7 @@ height=8
 #   chr1 100 200 chr1 250 300 0.5
 # A line will be drawn from the center of the first region (chr1: 150, tot the center of the other region (chr1:275)
 # arc whose start or end is not in the region plotted are not shown.
-title =  arcs
+title = links
 color = red
 # options are arcs and triangles, the triangles option is convenient to overlay over a Hi-C matrix
 # to highlight matrix pixel of the highlighted link
@@ -232,7 +236,9 @@ links type = arcs
 # options for line style are 'solid', 'dashed', 'dotted' etc. The full list of
 # styles can be found here: https://matplotlib.org/gallery/lines_bars_and_markers/linestyles.html
 line style = solid
-# if the track wants to be plotted on top of the previous track
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own
+# scale
 #overlay previous = yes
 # height of track in cm
 height=8
