@@ -268,11 +268,13 @@ def test_plot_tracks_with_hic():
     show_masked_bins = no
 
     [test arcs]
-    file = test.arcs
+    file = links2.links
     title =
+    links type = triangles
+    line style = dashed
     overlay previous = share-y
-    line width = 3
-    color = darkred
+    line width = 0.8
+    color = black
 
     [test bigwig]
     file = bigwig2_X_2.5e6_3.5e6.bw
@@ -289,10 +291,13 @@ def test_plot_tracks_with_hic():
 
     [hic matrix]
     file = Li_et_al_2015.h5
-    title = depth=150000; show_masked_bins=yes;
-    depth = 150000
+    title = depth=200000; show_masked_bins=yes;
+    depth = 200000
     file_type = hic_matrix
     show_masked_bins = yes
+
+    [spacer]
+    height = 0.1
 
     [x-axis]
 
