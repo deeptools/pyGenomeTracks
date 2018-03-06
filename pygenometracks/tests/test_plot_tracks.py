@@ -258,10 +258,11 @@ def test_plot_tracks_with_hic():
 
     [hic matrix]
     file = Li_et_al_2015.h5
-    title = depth=200000; transform=log1p; (arcs: overlay previous=yes)
+    title = depth=250000; transform=log1p; (arcs: overlay previous=yes)
+    colormap = BuPu
     min_value = 20
     max_value = 300
-    depth = 200000
+    depth = 250000
     transform = log1p
     file_type = hic_matrix
     show_masked_bins = no
@@ -269,7 +270,7 @@ def test_plot_tracks_with_hic():
     [test arcs]
     file = test.arcs
     title =
-    overlay previous = yes
+    overlay previous = share-y
     line width = 3
     color = darkred
 

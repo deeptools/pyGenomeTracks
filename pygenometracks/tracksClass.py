@@ -231,7 +231,7 @@ class PlotTracks(object):
                 overlay = False
 
             if track.properties['overlay previous'] == 'share-y':
-                ylim = axis.get_xlim()
+                ylim = axis.get_ylim()
             else:
                 idx -= skipped_tracks
                 axis = axisartist.Subplot(fig, grids[idx, 0])
@@ -243,10 +243,11 @@ class PlotTracks(object):
                 label_axis = plt.subplot(grids[idx, 1])
                 label_axis.set_axis_off()
 
+            axis.set_xlim(start, end)
             track.plot(axis, label_axis, chrom, start, end)
 
-            # if track.properties['overlay previous'] == 'share-y':
-            #     axis.set_ylim(ylim)
+            if track.properties['overlay previous'] == 'share-y':
+                axis.set_ylim(ylim)
 
             if not overlay:
                 axis_list.append(axis)
@@ -545,7 +546,6 @@ class TrackPlot(object):
 class PlotSpacer(TrackPlot):
 
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
-        ax.set_xlim(start_region, end_region)
         pass
 
 
@@ -601,7 +601,6 @@ class PlotBedGraph(TrackPlot):
         self.ax.set_frame_on(False)
         self.ax.axes.get_xaxis().set_visible(False)
         self.ax.axes.get_yaxis().set_visible(False)
-        self.ax.set_xlim(start_region, end_region)
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
@@ -719,7 +718,6 @@ class PlotBigWig(TrackPlot):
                                  color=self.properties['color'],
                                  facecolor=self.properties['color'])
 
-        self.ax.set_xlim(start_region, end_region)
         ymin, ymax = self.ax.get_ylim()
         if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
             ymax = self.properties['max_value']
@@ -771,7 +769,6 @@ class PlotXAxis(TrackPlot):
             self.properties['fontsize'] = 15
 
     def plot(self, ax, label_axis, chrom_region, region_start, region_end):
-        ax.set_xlim(region_start, region_end)
         ticks = ax.get_xticks()
         if ticks[-1] - ticks[1] <= 1e5:
             labels = ["{:,.0f}".format((x / 1e3))
@@ -905,7 +902,6 @@ class PlotBoundaries(TrackPlot):
             y.extend([y1, y2, y1])
 
         ax.plot(x, y, color='black')
-        ax.set_xlim(start_region, end_region)
 
 
 class PlotBed(TrackPlot):
@@ -1211,8 +1207,6 @@ class PlotBed(TrackPlot):
             elif self.properties['display'] == 'collapsed':
                 ax.set_ylim(-5, 105)
 
-        ax.set_xlim(start_region, end_region)
-
         label_ax.text(0.15, 1, self.properties['title'],
                       horizontalalignment='left', size='large',
                       verticalalignment='top', transform=label_ax.transAxes)
@@ -1511,7 +1505,7 @@ class PlotArcs(TrackPlot):
         :param label_ax: matplotlib axis for labels
         """
         from matplotlib.patches import Arc
-        max_diameter = 0
+        max_height = 0
         count = 0
 
         chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
@@ -1532,23 +1526,24 @@ class PlotArcs(TrackPlot):
                 line_width = 0.5 * np.sqrt(interval.data)
 
             diameter = (interval.end - interval.begin)
+            radius = float(diameter) / 2
             center = interval.begin + float(diameter) / 2
-            if diameter > max_diameter:
-                max_diameter = diameter
+            if radius > max_height:
+                max_height = radius
             count += 1
             ax.plot([center], [diameter])
             ax.add_patch(Arc((center, 0), diameter,
-                             diameter * 2, 0, 0, 180, color=self.properties['color'], lw=line_width))
+                             diameter, 0, 0, 180, color=self.properties['color'], lw=line_width))
 
-        # increase max_diameter slightly to avoid cropping of the arcs.
-        max_diameter += max_diameter * 0.05
+        # the arc height is equal to the radius, the track height is the largest
+        # radius plotted plus an small increase to avoid cropping of the arcs
+        max_height += max_height * 0.1
         log.debug("{} were arcs plotted".format(count))
         if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
-            ax.set_ylim(max_diameter, -1)
+            ax.set_ylim(max_height, -1)
         else:
-            ax.set_ylim(-1, max_diameter)
+            ax.set_ylim(-1, max_height)
 
-        ax.set_xlim(region_start, region_end)
         log.debug('title is {}'.format(self.properties['title']))
         label_ax.text(0.15, 0.5, self.properties['title'],
                       horizontalalignment='left', size='large',
@@ -1598,7 +1593,6 @@ class PlotTADs(PlotBed):
         if valid_regions == 0:
             log.warning("No regions found for section {}.".format(self.properties['section_name']))
 
-        ax.set_xlim(start_region, end_region)
         if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, 0)
         else:
@@ -1808,7 +1802,6 @@ class PlotHiCMatrix(TrackPlot):
         if 'boundaries_file' in self.properties:
             self.boundaries_obj.plot(ax, label_ax, chrom_region, region_start, region_end)
 
-        self.ax.set_xlim(region_start, region_end)
         if 'x labels' in self.properties and self.properties['x labels'] != 'no':
             ticks = self.ax.get_xticks()
             labels = ["{:.2f}".format((x / 1e6))
