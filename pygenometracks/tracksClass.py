@@ -1435,7 +1435,13 @@ class PlotArcs(TrackPlot):
         # circos:
         # chr1 100 200 chr1 250 300 0.5
         # where the last value is a score.
-
+        if 'line width' not in self.properties:
+            self.properties['line width'] = 0.5
+        if 'line type' not in self.properties:
+            self.properties['line type'] = 'solid'
+        if 'links type' not in self.properties:
+            self.properties['links type'] = 'arcs'
+        self.max_height = None
         valid_intervals = 0
         interval_tree = {}
         line_number = 0
@@ -1504,8 +1510,7 @@ class PlotArcs(TrackPlot):
         :param ax: matplotlib axis
         :param label_ax: matplotlib axis for labels
         """
-        from matplotlib.patches import Arc
-        max_height = 0
+        self.max_height = 0
         count = 0
 
         chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
@@ -1516,38 +1521,61 @@ class PlotArcs(TrackPlot):
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
         for idx, interval in enumerate(arcs_in_region):
-            # skip arcs whose start and end are outside the plotted region
+            # skip intervals whose start and end are outside the plotted region
             if interval.begin < region_start and interval.end > region_end:
                 continue
 
-            if 'line width' in self.properties:
-                line_width = float(self.properties['line width'])
+            if self.properties['links type'] == 'triangles':
+                self.plot_triangles(ax, interval)
             else:
-                line_width = 0.5 * np.sqrt(interval.data)
+                self.plot_arcs(ax, interval)
 
-            diameter = (interval.end - interval.begin)
-            radius = float(diameter) / 2
-            center = interval.begin + float(diameter) / 2
-            if radius > max_height:
-                max_height = radius
             count += 1
-            ax.plot([center], [diameter])
-            ax.add_patch(Arc((center, 0), diameter,
-                             diameter, 0, 0, 180, color=self.properties['color'], lw=line_width))
 
         # the arc height is equal to the radius, the track height is the largest
         # radius plotted plus an small increase to avoid cropping of the arcs
-        max_height += max_height * 0.1
-        log.debug("{} were arcs plotted".format(count))
+        self.max_height += self.max_height * 0.1
+        log.debug("{} were links plotted".format(count))
         if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
-            ax.set_ylim(max_height, -1)
+            ax.set_ylim(self.max_height, -1)
         else:
-            ax.set_ylim(-1, max_height)
+            ax.set_ylim(-1, self.max_height)
 
         log.debug('title is {}'.format(self.properties['title']))
         label_ax.text(0.15, 0.5, self.properties['title'],
                       horizontalalignment='left', size='large',
                       verticalalignment='center')
+
+    def plot_arcs(self, ax, interval):
+        from matplotlib.patches import Arc
+
+        if 'line width' in self.properties:
+            line_width = float(self.properties['line width'])
+        else:
+            line_width = 0.5 * np.sqrt(interval.data)
+
+        diameter = (interval.end - interval.begin)
+        radius = float(diameter) / 2
+        center = interval.begin + float(diameter) / 2
+        if radius > self.max_height:
+            self.max_height = radius
+        ax.plot([center], [diameter])
+        ax.add_patch(Arc((center, 0), diameter,
+                         diameter, 0, 0, 180, color=self.properties['color'], lw=line_width))
+
+    def plot_triangles(self, ax, interval):
+        from matplotlib.patches import Polygon
+        x1 = interval.begin
+        x2 = x1 + float(interval.end - interval.begin) / 2
+        x3 = interval.end
+        y1 = 0
+        y2 = (interval.end - interval.begin)
+
+        triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]), closed=True,
+                           edgecolor=self.properties['color'], linewidth=self.properties['line width'])
+        ax.add_artist(triangle)
+        if y2 > self.max_height:
+            self.max_height = y2
 
 
 class PlotTADs(PlotBed):
@@ -1567,10 +1595,10 @@ class PlotTADs(PlotBed):
             log.info('Chromosome name: {} does not exists. Changing name to {}'.format(orig, chrom_region))
 
         for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
-            """
+            """      ______ y2
                   /\
                  /  \
-                /    \
+                /    \ _____ y1
             _____________________
                x1 x2 x3
             """

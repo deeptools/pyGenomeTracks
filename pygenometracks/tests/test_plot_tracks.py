@@ -261,7 +261,7 @@ def test_plot_tracks_with_hic():
     title = depth=250000; transform=log1p; (arcs: overlay previous=yes)
     colormap = BuPu
     min_value = 20
-    max_value = 300
+    max_value = 100
     depth = 250000
     transform = log1p
     file_type = hic_matrix
