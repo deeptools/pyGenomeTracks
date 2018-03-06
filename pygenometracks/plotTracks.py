@@ -19,7 +19,7 @@ nans to zeros = True
 # options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
-# similary points:ms sets the point size (markersize (ms) to the given float
+# similarly points:ms sets the point size (markersize (ms) to the given float
 type = line
 # type = line:0.5
 # type = points:0.5

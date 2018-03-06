@@ -53,11 +53,11 @@ DEFAULT_BED_COLOR = '#1f78b4'
 DEFAULT_BIGWIG_COLOR = '#33a02c'
 DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
 DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
-DEFAULT_TRACK_HEIGHT = 3  # in centimeters
+DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 # proportion of width dedicated to (figure, legends)
 DEFAULT_WIDTH_RATIOS = (0.93, 0.07)
-DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.12, 'top': 0.9}
+DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
 
 
 class MultiDict(OrderedDict):
@@ -93,6 +93,8 @@ class PlotTracks(object):
             fontsize = fontsize
         else:
             fontsize = float(fig_width) * 0.3
+        # the track label width is the fraction of the figure width that is used
+        # for the track 'title' or label.
         if track_label_width is None:
             self.width_ratios = DEFAULT_WIDTH_RATIOS
         else:
@@ -161,8 +163,13 @@ class PlotTracks(object):
         """
         track_height = []
         for track_dict in self.track_list:
-
-            if 'height' in track_dict:
+            # if overlay previous is set to a value other than no
+            # then, skip this track height
+            if track_dict['overlay previous'] != 'no':
+                continue
+            elif 'x-axis' in track_dict and track_dict['x-axis'] is True:
+                height = track_dict['fontsize'] / 10
+            elif 'height' in track_dict:
                 height = track_dict['height']
             # compute the height of a Hi-C track
             # based on the depth such that the
@@ -213,16 +220,36 @@ class PlotTracks(object):
                                              height_ratios=track_height,
                                              width_ratios=self.width_ratios)
         axis_list = []
+        # skipped_tracks is the count of tracks that have the
+        # 'overlay previous' parameter and should be skipped
+        skipped_tracks = 0
         for idx, track in enumerate(self.track_obj_list):
-            axis = axisartist.Subplot(fig, grids[idx, 0])
-            fig.add_subplot(axis)
-            axis.axis[:].set_visible(False)
-            # to make the background transparent
-            axis.patch.set_visible(False)
-            label_axis = plt.subplot(grids[idx, 1])
-            label_axis.set_axis_off()
+            if track.properties['overlay previous'] in ['yes', 'share-y']:
+                overlay = True
+                skipped_tracks += 1
+            else:
+                overlay = False
+
+            if track.properties['overlay previous'] == 'share-y':
+                ylim = axis.get_xlim()
+            else:
+                idx -= skipped_tracks
+                axis = axisartist.Subplot(fig, grids[idx, 0])
+                fig.add_subplot(axis)
+                # turns off the lines around the tracks
+                axis.axis[:].set_visible(False)
+                # to make the background transparent
+                axis.patch.set_visible(False)
+                label_axis = plt.subplot(grids[idx, 1])
+                label_axis.set_axis_off()
+
             track.plot(axis, label_axis, chrom, start, end)
-            axis_list.append(axis)
+
+            # if track.properties['overlay previous'] == 'share-y':
+            #     axis.set_ylim(ylim)
+
+            if not overlay:
+                axis_list.append(axis)
 
         if self.vlines_intval_tree:
             self.plot_vlines(axis_list, chrom, start, end)
@@ -263,12 +290,11 @@ class PlotTracks(object):
         for region in sorted(self.vlines_intval_tree[chrom_region][start_region - 10000:end_region + 10000]):
             vlines_list.append(region.begin)
 
-        for idx, track in enumerate(self.track_obj_list):
-            ymin, ymax = axis_list[idx].get_ylim()
+        for ax in axis_list:
+            ymin, ymax = ax.get_ylim()
 
-            axis_list[idx].vlines(vlines_list, ymin, ymax, linestyle='dashed', zorder=10,
-                                  linewidth=line_width,
-                                  color=(0, 0, 0, 0.7), alpha=0.5)
+            ax.vlines(vlines_list, ymin, ymax, linestyle='dashed', zorder=10, linewidth=line_width,
+                      color=(0, 0, 0, 0.7), alpha=0.5)
 
         return
 
@@ -314,12 +340,18 @@ class PlotTracks(object):
                 if 'file_type' not in track_dict:
                     track_dict['file_type'] = self.guess_filetype(track_dict)
 
-                #  set some default values
-                if 'title' not in track_dict:
+            if 'overlay previous' not in track_dict:
+                track_dict['overlay previous'] = 'no'
+            #  set some default values
+            if 'title' not in track_dict:
+                track_dict['title'] = ''
+                if track_dict['overlay previous'] != 'no' or track_dict['section_name'].endswith('[x-axis]') \
+                    or track_dict['section_name'].endswith('[spacer]'):
+                    pass
+                else:
                     warn = "\ntitle not set for 'section {}'\n".format(track_dict['section_name'])
-                    track_dict['title'] = ''
-                if warn:
-                    sys.stderr.write(warn)
+            if warn:
+                sys.stderr.write(warn)
             updated_track_list.append(track_dict)
         self.track_list = updated_track_list
         if self.vlines_properties:
@@ -755,15 +787,25 @@ class PlotXAxis(TrackPlot):
                       for x in ticks]
             labels[-2] += " Mbp"
 
-        ax.axis["x"] = ax.new_floating_axis(0, 0.5)
+        if 'where' in self.properties and self.properties['where'] == 'top':
+            ax.axis["x"] = ax.new_floating_axis(0, 0.2)
+            ax.axis["x"].set_axis_direction("top")
+            label_y_pos = 0.99
+            vert_align = 'top'
+        else:
+            ax.axis["x"] = ax.new_floating_axis(0, 0.9)
+            label_y_pos = 0.01
+            vert_align = 'bottom'
+        ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
+                fontsize=int(self.properties['fontsize']), verticalalignment=vert_align, transform=ax.transAxes)
 
         ax.axis["x"].axis.set_ticklabels(labels)
         ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
 
         ax.axis["x"].major_ticklabels.set(size=int(self.properties['fontsize']))
-
-        if 'where' in self.properties and self.properties['where'] == 'top':
-            ax.axis["x"].set_axis_direction("top")
+        label_axis.text(0.15, 0.5, self.properties['title'],
+                        horizontalalignment='left', size='large',
+                        verticalalignment='center')
 
 
 class PlotBoundaries(TrackPlot):
@@ -894,6 +936,8 @@ class PlotBed(TrackPlot):
             self.properties['display'] = 'stacked'
         if 'interval height' not in self.properties:
             self.properties['interval_height'] = 100
+        if 'line width' not in self.properties:
+            self.properties['line width'] = 0.5
 
         self.colormap = None
 
@@ -1052,6 +1096,7 @@ class PlotBed(TrackPlot):
         if self.properties['labels'] != 'off' and len(genes_overlap) > 60:
             self.properties['labels'] = 'off'
 
+        linewidth = self.properties['line width']
         max_num_row_local = 1
         max_ypos = 0
         # check for the number of other intervals that overlap
@@ -1128,11 +1173,11 @@ class PlotBed(TrackPlot):
 
             if self.bed_type == 'bed12':
                 if self.properties['style'] == 'flybase':
-                    self.draw_gene_with_introns_flybase_style(ax, bed, ypos, rgb, edgecolor)
+                    self.draw_gene_with_introns_flybase_style(ax, bed, ypos, rgb, edgecolor, linewidth)
                 else:
-                    self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor)
+                    self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor, linewidth)
             else:
-                self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor)
+                self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
 
             if self.properties['labels'] == 'off':
                 pass
@@ -1196,7 +1241,7 @@ class PlotBed(TrackPlot):
                 rgb = DEFAULT_BED_COLOR
         return rgb, edgecolor
 
-    def draw_gene_simple(self, ax, bed, ypos, rgb, edgecolor):
+    def draw_gene_simple(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
         draws an interval with direction (if given)
         """
@@ -1204,15 +1249,15 @@ class PlotBed(TrackPlot):
 
         if bed.strand not in ['+', '-']:
             ax.add_patch(Rectangle((bed.start, ypos), bed.end - bed.start, self.properties['interval_height'],
-                                   edgecolor=edgecolor, facecolor=rgb, linewidth=0.5))
+                                   edgecolor=edgecolor, facecolor=rgb, linewidth=linewidth))
         else:
             vertices = self._draw_arrow(ax, bed.start, bed.end, bed.strand, ypos)
             ax.add_patch(Polygon(vertices, closed=True, fill=True,
                                  edgecolor=edgecolor,
                                  facecolor=rgb,
-                                 linewidth=0.5))
+                                 linewidth=linewidth))
 
-    def draw_gene_with_introns_flybase_style(self, ax, bed, ypos, rgb, edgecolor):
+    def draw_gene_with_introns_flybase_style(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
         draws a gene using different styles
         """
@@ -1222,7 +1267,8 @@ class PlotBed(TrackPlot):
             return
         half_height = float(self.properties['interval_height']) / 2
         # draw 'backbone', a line from the start until the end of the gene
-        ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height], 'black', linewidth=0.5, zorder=-1)
+        ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height], 'black',
+                linewidth=linewidth, zorder=-1)
 
         # get start, end of all the blocks
         positions = []
@@ -1261,7 +1307,7 @@ class PlotBed(TrackPlot):
         ax.add_patch(Polygon(vertices, closed=True, fill=True,
                              edgecolor=edgecolor,
                              facecolor=_rgb,
-                             linewidth=0.5))
+                             linewidth=linewidth))
 
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
@@ -1274,7 +1320,7 @@ class PlotBed(TrackPlot):
             ax.add_patch(Polygon(vertices, closed=True, fill=True,
                                  edgecolor=edgecolor,
                                  facecolor=_rgb,
-                                 linewidth=0.5))
+                                 linewidth=linewidth))
 
     def _draw_arrow(self, ax, start, end, strand, ypos):
         """
@@ -1320,21 +1366,21 @@ class PlotBed(TrackPlot):
 
         return vertices
 
-    def draw_gene_with_introns(self, ax, bed, ypos, rgb, edgecolor):
+    def draw_gene_with_introns(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
         draws a gene like in flybase gbrowse.
         """
         from matplotlib.patches import Polygon
 
         if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
-            self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor)
+            self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
         half_height = float(self.properties['interval_height']) / 2
         quarter_height = float(self.properties['interval_height']) / 4
         three_quarter_height = quarter_height * 3
 
         # draw 'backbone', a line from the start until the end of the gene
-        ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height], 'black', linewidth=0.5, zorder=-1)
+        ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height], 'black', linewidth=linewidth, zorder=-1)
 
         for idx in range(0, bed.block_count):
             x0 = bed.start + bed.block_starts[idx]
@@ -1367,7 +1413,7 @@ class PlotBed(TrackPlot):
                 vertices = ([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])
 
             ax.add_patch(Polygon(vertices, closed=True, fill=True,
-                                 linewidth=0.1,
+                                 linewidth=linewidth,
                                  edgecolor='none',
                                  facecolor=rgb))
 
@@ -1542,7 +1588,7 @@ class PlotTADs(PlotBed):
             rgb, edgecolor = self.get_rgb_and_edge_color(region.data)
 
             triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]), closed=True,
-                               facecolor=rgb, edgecolor=edgecolor)
+                               facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line width'])
             ax.add_artist(triangle)
             valid_regions += 1
 
@@ -1659,7 +1705,7 @@ class PlotHiCMatrix(TrackPlot):
     def plot(self, ax, label_ax, chrom_region, region_start, region_end):
         self.cbar_ax = copy.copy(label_ax)
         self.label_ax = label_ax
-        self.label_ax.set_axis_off()
+        # self.label_ax = label_ax
         self.ax = ax
 
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
@@ -1783,8 +1829,6 @@ class PlotHiCMatrix(TrackPlot):
                 direction='out')
             self.ax.axes.get_xaxis().set_visible(False)
 
-        self.ax.set_frame_on(False)
-        self.ax.axes.get_yaxis().set_visible(False)
         self.cbar_ax.patch.set_alpha(0.0)
         try:
             if 'transform' in self.properties and \
@@ -1807,7 +1851,7 @@ class PlotHiCMatrix(TrackPlot):
             else:
                 cobar = plt.colorbar(img, ax=self.cbar_ax, fraction=0.95)
             cobar.solids.set_edgecolor("face")
-            cobar.ax.set_ylabel(self.properties['title'])
+            # cobar.ax.set_ylabel(self.properties['title'])
 
             # adjust the labels of the colorbar
             labels = cobar.ax.get_yticklabels()
@@ -1825,6 +1869,10 @@ class PlotHiCMatrix(TrackPlot):
 
         except ValueError:
             pass
+
+        self.label_ax.text(0.25, 0.5, self.properties['title'],
+                           horizontalalignment='left', size='large',
+                           verticalalignment='center', transform=self.label_ax.transAxes)
 
     def pcolormesh_45deg(self, matrix_c, start_pos_vector, vmin=None,
                          vmax=None):
