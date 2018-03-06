@@ -1730,32 +1730,6 @@ class PlotHiCMatrix(TrackPlot):
         else:
             self.ax.set_ylim(0, depth)
 
-        # ##plot boundaries
-        # if a boundaries file is given, plot the
-        # tad boundaries as line delineating the TAD triangles
-        if 'boundaries_file' in self.properties:
-            self.boundaries_obj.plot(ax, label_ax, chrom_region, region_start, region_end)
-
-        if 'x labels' in self.properties and self.properties['x labels'] != 'no':
-            ticks = self.ax.get_xticks()
-            labels = ["{:.2f}".format((x / 1e6))
-                      for x in ticks]
-            labels[-1] += "Mbp"
-            self.ax.get_xaxis().set_tick_params(
-                which='both',
-                bottom='on',
-                top='off',
-                direction='out')
-
-            self.ax.set_xticklabels(labels)
-        else:
-            self.ax.get_xaxis().set_tick_params(
-                which='both',
-                bottom='off',
-                top='off',
-                direction='out')
-            self.ax.axes.get_xaxis().set_visible(False)
-
         self.cbar_ax.patch.set_alpha(0.0)
         try:
             if 'transform' in self.properties and \
@@ -1770,11 +1744,6 @@ class PlotHiCMatrix(TrackPlot):
                 aa = np.array([1, 2, 5])
                 tick_values = np.concatenate([aa * 10**x for x in range(10)])
                 cobar = plt.colorbar(img, ticks=tick_values, format=formatter, ax=self.cbar_ax, fraction=0.95)
-                """
-                aa = np.array([0, 1, 2, 3, 4, 5])
-                tick_values = set(np.concatenate([aa * 10**x for x in range(10)]))
-                cobar = plt.colorbar(img, ticks=list(tick_values), ax=self.cbar_ax, fraction=0.95)
-                """
             else:
                 cobar = plt.colorbar(img, ax=self.cbar_ax, fraction=0.95)
             cobar.solids.set_edgecolor("face")
@@ -1798,9 +1767,9 @@ class PlotHiCMatrix(TrackPlot):
         except ValueError:
             pass
 
-        self.label_ax.text(0.25, 0.5, self.properties['title'],
-                           horizontalalignment='left', size='large',
-                           verticalalignment='center', transform=self.label_ax.transAxes)
+        self.label_ax.text(0.30, 0.5, self.properties['title'],
+                           size='large',
+                           verticalalignment='center')
 
     def pcolormesh_45deg(self, matrix_c, start_pos_vector, vmin=None,
                          vmax=None):

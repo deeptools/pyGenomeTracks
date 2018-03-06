@@ -1,4 +1,4 @@
-[![PyPI Version](https://img.shields.io/pypi/v/pyGenomeTracks.svg?style=plastic)](https://pypi.org/project/deepTools/) [![bioconda-badge](https://img.shields.io/conda/vn/bioconda/pyGenomeTracks.svg?maxAge=2592000&style=plastic)](https://anaconda.org/bioconda/pygenometracks)
+[![PyPI Version](https://img.shields.io/pypi/v/pyGenomeTracks.svg?style=plastic)](https://pypi.org/project/pyGenomeTracks/) [![bioconda-badge](https://img.shields.io/conda/vn/bioconda/pyGenomeTracks.svg?maxAge=2592000&style=plastic)](https://anaconda.org/bioconda/pygenometracks)
 
 pyGenomeTracks
 ==============
@@ -87,7 +87,7 @@ $ pyGenomeTracks --tracks bigwig_track.ini --region X:2,500,000-3,000,000 -o big
 ![pyGenomeTracks bigwig example](./examples/bigwig.png)
 
 
-Now, let's add an the genomic location and some genes:
+Now, let's add the genomic location and some genes:
 ```
 [bigwig file test]
 file = bigwig.bw
@@ -155,10 +155,55 @@ $ pyGenomeTracks --tracks bigwig_with_genes_and_vlines.ini --region X:2,800,000-
 ```
 
 
-Examples with multiple options
-------------------------------
 ![pyGenomeTracks bigwig example](./examples/bigwig_with_genes_and_vlines.png)
 
+The following is an example with Hi-C data overlay with topologically associating domains (TADs) and a bigwig file.
+
+```
+[x-axis]
+where = top
+
+[hic matrix]
+file = hic_data.h5
+title = Hi-C data
+# depth is the maximum distance plotted in bp. In Hi-C tracks
+# the height of the track is calculated based on the depth such
+# that the matrix does not look deformated
+depth = 300000
+transform = log1p
+file_type = hic_matrix
+
+[tads]
+file = domains.bed
+display = triangles
+border color = black
+color = none
+# the tads are overlay over the hic-matrix
+# the share-y options sets the y-axis to be shared
+# between the Hi-C matrix and the TADs. 
+overlay previous = share-y
+
+[spacer]
+
+[bigwig file test]
+file = bigwig.bw
+# height of the track in cm (optional value)
+height = 4
+title = ChIP-seq
+min_value = 0
+max_value = 30
+
+```
+
+```bash
+$ pyGenomeTracks  --tracks hic_track.ini -o hic_track.png --region chrX:2500000-3500000
+```
+
+![pyGenomeTracks bigwig example](./examples/hic_track.png)
+
+
+Examples with multiple options
+------------------------------
 
 A comprehensive example of pyGenomeTracks can be found as part of our automatic testing.
 Note, that pyGenome tracks also allows the combination of multiple tracks into one using the parameter: `overlay previous=yes` or `overlay previous=share-y`.

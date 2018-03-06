@@ -306,7 +306,7 @@ def test_plot_tracks():
 def test_plot_tracks_with_hic():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/browser_tracks_hic.ini --region X:2500000-3500000 --trackLabelFraction 0.3 --width 38 " \
+    args = "--tracks {0}/browser_tracks_hic.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 " \
            "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
