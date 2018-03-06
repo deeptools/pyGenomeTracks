@@ -16,10 +16,10 @@ def test_make_tracks():
 
     pygenometracks.makeTracksFile.main(args)
 
-    if filecmp.cmp(outfile.name, ROOT + '/master_tracks_tmp.ini') is False:
+    if filecmp.cmp(outfile.name, ROOT + '/master_tracks.ini') is False:
         import difflib
         diff = difflib.unified_diff(open(outfile.name).readlines(),
-                                    open(ROOT + '/master_tracks_tmp.ini').readlines(), lineterm='')
+                                    open(ROOT + '/master_tracks.ini').readlines(), lineterm='')
         print(''.join(list(diff)))
 
     assert(filecmp.cmp(outfile.name, ROOT + '/master_tracks.ini') is True)
