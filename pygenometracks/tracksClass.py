@@ -88,6 +88,7 @@ class PlotTracks(object):
         self.vlines_properties = None
         self.track_list = None
         start = self.print_elapsed(None)
+        self.available_tracks = self.get_available_tracks()
         self.parse_tracks(tracks_file)
         if fontsize:
             fontsize = fontsize
@@ -106,28 +107,16 @@ class PlotTracks(object):
         self.track_obj_list = []
         for idx, properties in enumerate(self.track_list):
             if 'spacer' in properties:
-                self.track_obj_list.append(PlotSpacer(properties))
+                self.track_obj_list.append(SpacerTrack(properties))
                 continue
             elif 'x-axis' in properties:
-                self.track_obj_list.append(PlotXAxis(properties))
+                self.track_obj_list.append(XAxisTrack(properties))
                 continue
-            if properties['file_type'] == 'bedgraph':
-                self.track_obj_list.append(PlotBedGraph(properties))
-
-            elif properties['file_type'] == 'bigwig':
-                self.track_obj_list.append(PlotBigWig(properties))
-
-            elif properties['file_type'] == 'bed':
-                if 'display' in properties and properties['display'] == 'triangles':
-                    self.track_obj_list.append(PlotTADs(properties))
-                else:
-                    self.track_obj_list.append(PlotBed(properties))
-
-            elif properties['file_type'] == 'links':
-                self.track_obj_list.append(PlotArcs(properties))
-
-            elif properties['file_type'] == 'hic_matrix':
-                self.track_obj_list.append(PlotHiCMatrix(properties))
+            else:
+                # for all other tracks that are not axis or spacer
+                # the track_class is obtained from the available tracks
+                track_class = self.available_tracks[properties['file_type']]
+                self.track_obj_list.append(track_class(properties))
 
             if 'title' in properties:
                 # adjust titles that are too long
@@ -145,6 +134,26 @@ class PlotTracks(object):
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
+
+    @staticmethod
+    def get_available_tracks():
+        """
+        Finds all the children of the class GenomeTrack (as well as the children of GenomeTrack subclasses
+         (eg PlotTADs, which inherits PlotBed that inherits GenomeTrack)
+        :return:
+        Dict of available GenomeTracks. key = track type (eg. bedgraph, bed) and value = tracks class
+        """
+        avail_tracks = {}
+        work = [GenomeTrack]
+        while work:
+            parent = work.pop()
+            for child in parent.__subclasses__():
+                if child not in avail_tracks:
+                    track_type = child.TRACK_TYPE
+                    avail_tracks[track_type] = child
+                    work.append(child)
+
+        return avail_tracks
 
     def get_tracks_height(self, start_region=None, end_region=None):
         """
@@ -344,7 +353,7 @@ class PlotTracks(object):
             if 'file' in track_dict and track_dict['file'] != '':
                 track_dict = self.check_file_exists(track_dict, tracks_file_path)
                 if 'file_type' not in track_dict:
-                    track_dict['file_type'] = self.guess_filetype(track_dict)
+                    track_dict['file_type'] = self.guess_filetype(track_dict, self.available_tracks)
 
             if 'overlay previous' not in track_dict:
                 track_dict['overlay previous'] = 'no'
@@ -401,27 +410,31 @@ class PlotTracks(object):
         return track_dict
 
     @staticmethod
-    def guess_filetype(track_dict):
+    def guess_filetype(track_dict, available_tracks):
         """
 
         :param track_dict: dictionary of track values with the 'file' key
                     containing a string path of the file or files. Only the ending
                      of the last file is used in case when there are more files
+        :param: available_tracks: list of available tracks
+
         :return: string file type detected
         """
         file_ = track_dict['file'].strip()
-        if file_.endswith(".bed") or file_.endswith(".bed.gz") or file_.endswith(".bed3") \
-                or file_.endswith(".bed6") or file_.endswith(".bed12"):
-            file_type = 'bed'
-        elif file_.endswith(".bw"):
-            file_type = 'bigwig'
-        elif file_.endswith(".bg") or file_.endswith(".bg.gz"):
-            file_type = 'bedgraph'
-        elif file_.endswith(".arc") or file_.endswith(".arcs") or file_.endswith(".links") or file_.endswith(".link"):
-            file_type = 'links'
-        else:
+        file_type = None
+        for track_type, track_class in available_tracks.items():
+            for ending in track_class.SUPPORTED_ENDINGS:
+                if file_.endswith(ending):
+                    if file_type == track_class.TRACK_TYPE:
+                        log.error("file_type already defined in other GenomeTrack")
+                        exit()
+                    else:
+                        file_type = track_class.TRACK_TYPE
+
+        if file_type is None:
             sys.exit("Section {}: can not identify file type. Please specify "
                      "the file_type for {}".format(track_dict['section_name'], file))
+
         return file_type
 
     @staticmethod
@@ -534,27 +547,34 @@ def file_to_intervaltree(file_name):
     return interval_tree, min_value, max_value
 
 
-class TrackPlot(object):
+class GenomeTrack(object):
     """
     The TrackPlot object is a holder for all tracks that are to be plotted.
     For example, to plot a bedgraph file a new class that extends TrackPlot
     should be created.
 
-    It is expected that all TrackPlot objects have a plot method.
+    It is expected that all GenomeTrack objects have a plot method.
 
     """
+    SUPORTED_ENDINGS = []
+    TRACK_TYPE = None
 
     def __init__(self, properties_dict):
         self.properties = properties_dict
+        self.file_type = 'test'
 
 
-class PlotSpacer(TrackPlot):
+class SpacerTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = []
+    TRACK_TYPE = None
 
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
         pass
 
 
-class PlotBedGraph(TrackPlot):
+class BedGraphTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['.bg', '.bg.gz']
+    TRACK_TYPE = 'bedgraph'
 
     def __init__(self, properties_dict):
         # super(self.__class__, self).__init__(*args, **kwargs)
@@ -633,7 +653,9 @@ class PlotBedGraph(TrackPlot):
                            verticalalignment='center', transform=self.label_ax.transAxes)
 
 
-class PlotBigWig(TrackPlot):
+class BigWigTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['.bw', '.bigwig']
+    TRACK_TYPE = 'bigwig'
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -766,10 +788,12 @@ class PlotBigWig(TrackPlot):
         return self.ax
 
 
-class PlotXAxis(TrackPlot):
+class XAxisTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = []
+    TRACK_TYPE = None
 
     def __init__(self, *args, **kwargs):
-        super(PlotXAxis, self).__init__(*args, **kwargs)
+        super(XAxisTrack, self).__init__(*args, **kwargs)
         if 'fontsize' not in self.properties:
             self.properties['fontsize'] = 15
 
@@ -810,10 +834,12 @@ class PlotXAxis(TrackPlot):
                         verticalalignment='center')
 
 
-class PlotBed(TrackPlot):
+class BedTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['bed', 'bed3', 'bed6', 'bed12', 'bed.gz', 'bed3.gz', 'bed6.gz', 'bed12.gz']
+    TRACK_TYPE = 'bed'
 
     def __init__(self, *args, **kwarg):
-        super(PlotBed, self).__init__(*args, **kwarg)
+        super(BedTrack, self).__init__(*args, **kwarg)
         self.bed_type = None  # once the bed file is read, this is bed3, bed6 or bed12
         self.len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions
@@ -1333,10 +1359,12 @@ class PlotBed(TrackPlot):
                             fillstyle='none', color='blue', markersize=3)
 
 
-class PlotArcs(TrackPlot):
+class LinksTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['.arcs', '.arc' '.link', '.links']
+    TRACK_TYPE = 'links'
 
     def __init__(self, *args, **kwarg):
-        super(PlotArcs, self).__init__(*args, **kwarg)
+        super(LinksTrack, self).__init__(*args, **kwarg)
         # the file format expected is similar to file format of links in
         # circos:
         # chr1 100 200 chr1 250 300 0.5
@@ -1408,6 +1436,7 @@ class PlotArcs(TrackPlot):
 
         if 'alpha' not in self.properties:
             self.properties['alpha'] = 0.8
+
 
     def plot(self, ax, label_ax, chrom_region, region_start, region_end):
         """
@@ -1487,7 +1516,9 @@ class PlotArcs(TrackPlot):
             self.max_height = y2
 
 
-class PlotTADs(PlotBed):
+class PlotTADs(BedTrack):
+    SUPPORTED_ENDINGS = ['.domain', '.domains' '.tad', '.tads']
+    TRACK_TYPE = 'domains'
 
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
         """
@@ -1540,7 +1571,9 @@ class PlotTADs(PlotBed):
                       verticalalignment='center')
 
 
-class PlotHiCMatrix(TrackPlot):
+class HiCMatrixTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['.h5', '.cool' '.mcool']
+    TRACK_TYPE = 'hic_matrix'
 
     def __init__(self, properties_dict):
         # to avoid the color bar to span all the
@@ -1793,6 +1826,88 @@ class PlotHiCMatrix(TrackPlot):
         im = self.ax.pcolormesh(x, y, np.flipud(matrix_c),
                                 vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
         return im
+
+
+class PlotBedGraphMatrix(BedGraphTrack):
+    SUPPORTED_ENDINGS = ['.bm', '.bm.gz' '.bedgraphmatrix']
+    TRACK_TYPE = 'bedgraph_matrix'
+
+    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+        self.ax = ax
+        self.label_ax = label_ax
+        """
+        Plots a bedgraph matrix file, that instead of having
+        a single value per bin, it has several values.
+        """
+
+        start_pos = []
+        matrix_rows = []
+        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
+
+        # if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
+        #     chrom_region = toBytes(chrom_region)
+        if chrom_region not in list(self.interval_tree):
+            chrom_region = change_chrom_names(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
+
+            # if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
+            #     chrom_region = toBytes(chrom_region)
+
+        for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
+            start_pos.append(region.begin)
+            values = map(float, region.data)
+            matrix_rows.append(values)
+
+        matrix = np.vstack(matrix_rows).T
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            matrix = np.flipud(matrix)
+
+        if 'type' in self.properties and self.properties['type'] == 'lines':
+            for row in matrix:
+                self.ax.plot(start_pos, row, color='grey', linewidth=0.5)
+
+            self.ax.plot(start_pos, matrix.mean(axis=0), linestyle="--", marker="|")
+            ymax = self.properties['max_value']
+            ymin = self.properties['min_value']
+            self.ax.set_ylim(ymin, ymax)
+
+            if 'show data range' in self.properties and self.properties['show data range'] == 'no':
+                pass
+            else:
+                if float(ymax) % 1 == 0:
+                    ymax_print = int(ymax)
+                else:
+                    ymax_print = "{:.1f}".format(ymax)
+
+                if float(ymin) % 1 == 0:
+                    ymin_print = int(ymin)
+                else:
+                    ymin_print = "{:.1f}".format(ymin)
+
+                ydelta = ymax - ymin
+                small_x = 0.01 * (end_region - start_region)
+                # by default show the data range
+                self.ax.text(start_region - small_x, ymax - ydelta * 0.2,
+                             "[{}-{}]".format(ymin_print, ymax_print),
+                             horizontalalignment='left',
+                             verticalalignment='bottom')
+            if 'plot horizontal lines' in self.properties and self.properties['plot horizontal lines']:
+                # plot horizontal lines to compare values
+                self.ax.hlines(np.arange(0, 1.1, 0.1), start_region, end_region, linestyle="--",
+                               zorder=0, color='grey')
+
+        else:
+            x, y = np.meshgrid(start_pos, np.arange(matrix.shape[0]))
+            shading = 'gouraud'
+            vmax = self.properties['max_value']
+            vmin = self.properties['min_value']
+
+            img = self.ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
+            img.set_rasterized(True)
+
+        self.label_ax.text(0.15, 0.5, self.properties['title'],
+                           horizontalalignment='left', size='large',
+                           verticalalignment='center', transform=self.label_ax.transAxes)
 
 
 def change_chrom_names(chrom):
