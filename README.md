@@ -69,7 +69,7 @@ Examples
 
 A minimal example of a configuration file with a single bigwig track looks like this:
 
-```
+```INI
 [bigwig file test]
 file = bigwig.bw
 # height of the track in cm (optional value)
@@ -88,7 +88,7 @@ $ pyGenomeTracks --tracks bigwig_track.ini --region X:2,500,000-3,000,000 -o big
 
 
 Now, let's add the genomic location and some genes:
-```
+```INI
 [bigwig file test]
 file = bigwig.bw
 # height of the track in cm (optional value)
@@ -120,7 +120,7 @@ $ pyGenomeTracks --tracks bigwig_with_genes.ini --region X:2,800,000-3,100,000 -
 
 Now, we will add some vertical lines across all tracks. The vertical lines should be in a bed format.
 
-```
+```INI
 [bigwig file test]
 file = bigwig.bw
 # height of the track in cm (optional value)
@@ -146,7 +146,6 @@ fontsize=10
 [vlines]
 file = domains.bed
 type = vlines
-
 ```
 
 
@@ -159,7 +158,7 @@ $ pyGenomeTracks --tracks bigwig_with_genes_and_vlines.ini --region X:2,800,000-
 
 The following is an example with Hi-C data overlay with topologically associating domains (TADs) and a bigwig file.
 
-```
+```INI
 [x-axis]
 where = top
 
