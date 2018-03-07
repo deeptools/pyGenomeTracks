@@ -65,7 +65,7 @@ The ending `--outFileName` defines the image format. If `.pdf` is used, then the
 Examples
 --------
 
-(This examples are found in the `examples/` folder)
+(These examples are found in the `examples/` folder)
 
 A minimal example of a configuration file with a single bigwig track looks like this:
 
@@ -217,7 +217,7 @@ The configuration file for this image is [here](./pygenometracks/tests/test_data
 Examples with Hi-C data
 -----------------------
 
-In this examples is where the overlay tracks are more useful. Notice that any track can be overlay over a Hi-C matrix. Most useful is to overlay TADs or to overlay links using the `triangles` option 
+In these examples is where the overlay tracks are more useful. Notice that any track can be overlay over a Hi-C matrix. Most useful is to overlay TADs or to overlay links using the `triangles` option 
 that will point in the Hi-C matrix the pixel with the link contact. When overlaying links and TADs is useful to set `overlay previous=share-y` such that the two tracks match the positions. This is not
 required when overlying other type of data like a bigwig file that has a different y-scale.
 
