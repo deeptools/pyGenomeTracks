@@ -43,6 +43,8 @@ def main(args=None):
 # where=top
 
 [spacer]
+# height of space in cm (optional)
+height = 0.5
 
 """)
 
@@ -53,6 +55,7 @@ def main(args=None):
 color = #666666
 min_value = 0
 #max_value = auto
+# height of track in cm
 height = 1.5
 number of bins = 500
 nans to zeros = True
@@ -66,6 +69,9 @@ nans to zeros = True
 show data range = yes
 # if the track wants to be plotted upside-down:
 # orientation = inverted
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay previous = yes
 #optional in case it can not be guessed by the file ending
 file_type = bigwig
 """
@@ -77,9 +83,13 @@ file_type = bigwig
         elif file_h.name.endswith('.bg') or file_h.name.endswith('.bedgraph') or file_h.name.endswith('.bedGraph'):
             default_values = """
 color = green
-height = 0.2
+# height of track in cm
+height = 2
 # if the track wants to be plotted upside-down:
 # orientation = inverted
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay previous = yes
 file_type = bedgraph
 """
             args.out.write("\n[{label}]\nfile={file}\ntitle={label}{default_values}".
@@ -106,6 +116,7 @@ color = darkblue
 #color = RdYlBu
 #min_value=0
 #max_value=100
+# height of track in cm
 height = 5
 # to turn off/on printing of labels
 labels = off
@@ -113,6 +124,8 @@ labels = off
 file_type = bed
 # optional: font size can be given to override the default size
 fontsize = 10
+# optional: line width
+#line width = 0.5
 # the display parameter defines how the bed file is plotted.
 # The options are ['colapsed', 'interleaved', 'triangles'] This options asume that the regions do not overlap.
 # `collapsed`: The bed regions are plotted one after the other in one line.
@@ -130,6 +143,9 @@ fontsize = 10
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
 #gene rows = 10
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay previous = yes
 # by default the ymax is the number of
 # rows occupied by the genes in the region plotted. However,
 # by setting this option, the global maximum is used instead.
@@ -141,17 +157,17 @@ fontsize = 10
 
             sys.stdout.write("Adding bed file: {}\n".format(file_h.name))
 
-        elif file_h.name.endswith('.h5') or file_h.name.endswith('.npz'):
+        elif file_h.name.endswith('.h5') or file_h.name.endswith('.npz') or file_h.name.endswith('.cool') \
+                or file_h.name.endswith('.mcool'):
             default_values = """
 colormap = RdYlBu_r
 depth = 100000
+# height of track (in cm) can be given. Othewise, the height is computed such that the proportions of the
+# hic matrix are kept (e.g. the image does not appear shrink or extended)
+# height = 10
 #min_value =2.8
 #max_value = 3.0
 transform = log1p
-#boundaries_file = boundaries_example
-#type = arcplot
-#type = interaction
-#optional in case it can not be guessed by the file ending
 file_type = hic_matrix
 # show masked bins plots as white lines
 # those bins that were not used during the correction
@@ -163,6 +179,7 @@ show_masked_bins = no
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
 # scale factor = 1
+
 """
             args.out.write("\n[{label}]\nfile={file}\ntitle={label}{default_values}".
                            format(label=label, file=file_h.name, default_values=default_values))
@@ -187,6 +204,10 @@ file_type = bedgraph_matrix
 #plot horizontal lines=False
 # if the track wants to be plotted upside-down:
 # orientation = inverted
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay previous = yes
+# height of track in cm
 height=8
 """
             args.out.write("\n[{label}]\nfile={file}\ntitle={label}{default_values}".
@@ -196,19 +217,30 @@ height=8
 
         elif file_h.name.endswith('.arcs') or file_h.name.endswith('.links'):
             default_values = """
-# the file format for acs is (tab separated)
+# the file format for links is (tab separated)
 #   chr1 start1 end1 chr2 start2 end2 score
 # for example:
 #   chr1 100 200 chr1 250 300 0.5
 # A line will be drawn from the center of the first region (chr1: 150, tot the center of the other region (chr1:275)
 # arc whose start or end is not in the region plotted are not shown.
-title =  arcs
+title = links
 color = red
+# options are arcs and triangles, the triangles option is convenient to overlay over a Hi-C matrix
+# to highlight matrix pixel of the highlighted link
+links type = arcs
 # if the track wants to be plotted upside-down:
 # orientation = inverted
 # if line width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
-#line width = 0.5
+# line width = 0.5
+# options for line style are 'solid', 'dashed', 'dotted' etc. The full list of
+# styles can be found here: https://matplotlib.org/gallery/lines_bars_and_markers/linestyles.html
+line style = solid
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own
+# scale
+#overlay previous = yes
+# height of track in cm
 height=8
 """
             args.out.write("\n[{label}]\nfile={file}\ntitle={label}{default_values}".

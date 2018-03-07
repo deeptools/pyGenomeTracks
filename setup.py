@@ -98,6 +98,7 @@ install_requires_py = ["numpy >= 1.12.1",
                        "intervaltree >= 2.1.0",
                        "pyBigWig >=0.3.4",
                        "future >= 0.16.0",
+                       "hicexplorer >= 1.8",
                        "pytest"
                        ]
 
@@ -107,7 +108,7 @@ if sys.version_info[0] == 2 or (sys.version_info[0] == 3 and sys.version_info[1]
 setup(
     name='pyGenomeTracks',
     version=get_version(),
-    author='Fidel Ramirez',
+    author='Fidel Ramírez, Joachim Wolf, Björn Grüning,',
     author_email='deeptools@googlegroups.com',
     packages=['pygenometracks'],
     scripts=['bin/make_tracks_file', 'bin/pgt', 'bin/pyGenomeTracks'],
