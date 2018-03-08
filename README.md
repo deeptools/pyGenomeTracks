@@ -156,6 +156,17 @@ $ pyGenomeTracks --tracks bigwig_with_genes_and_vlines.ini --region X:2,800,000-
 
 ![pyGenomeTracks bigwig example](./examples/bigwig_with_genes_and_vlines.png)
 
+Examples with peaks
+-------------------
+
+pyGenomeTracks has an option to plot peaks using MACS2 narrowPeak format.
+
+This is an example of the output:
+
+![pyGenomeTracks bigwig example](./pygenometracks/tests/test_data/master_narrowPeak.png)
+
+Examples with Hi-C data
+
 The following is an example with Hi-C data overlay with topologically associating domains (TADs) and a bigwig file.
 
 ```INI
