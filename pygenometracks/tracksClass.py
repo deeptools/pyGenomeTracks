@@ -56,7 +56,7 @@ DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
 DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 # proportion of width dedicated to (figure, legends)
-DEFAULT_WIDTH_RATIOS = (0.93, 0.07)
+DEFAULT_WIDTH_RATIOS = (0.90, 0.1)
 DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
 
 
@@ -88,6 +88,7 @@ class PlotTracks(object):
         self.vlines_properties = None
         self.track_list = None
         start = self.print_elapsed(None)
+        self.available_tracks = self.get_available_tracks()
         self.parse_tracks(tracks_file)
         if fontsize:
             fontsize = fontsize
@@ -106,28 +107,16 @@ class PlotTracks(object):
         self.track_obj_list = []
         for idx, properties in enumerate(self.track_list):
             if 'spacer' in properties:
-                self.track_obj_list.append(PlotSpacer(properties))
+                self.track_obj_list.append(SpacerTrack(properties))
                 continue
             elif 'x-axis' in properties:
-                self.track_obj_list.append(PlotXAxis(properties))
+                self.track_obj_list.append(XAxisTrack(properties))
                 continue
-            if properties['file_type'] == 'bedgraph':
-                self.track_obj_list.append(PlotBedGraph(properties))
-
-            elif properties['file_type'] == 'bigwig':
-                self.track_obj_list.append(PlotBigWig(properties))
-
-            elif properties['file_type'] == 'bed':
-                if 'display' in properties and properties['display'] == 'triangles':
-                    self.track_obj_list.append(PlotTADs(properties))
-                else:
-                    self.track_obj_list.append(PlotBed(properties))
-
-            elif properties['file_type'] == 'links':
-                self.track_obj_list.append(PlotArcs(properties))
-
-            elif properties['file_type'] == 'hic_matrix':
-                self.track_obj_list.append(PlotHiCMatrix(properties))
+            else:
+                # for all other tracks that are not axis or spacer
+                # the track_class is obtained from the available tracks
+                track_class = self.available_tracks[properties['file_type']]
+                self.track_obj_list.append(track_class(properties))
 
             if 'title' in properties:
                 # adjust titles that are too long
@@ -145,6 +134,26 @@ class PlotTracks(object):
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
+
+    @staticmethod
+    def get_available_tracks():
+        """
+        Finds all the children of the class GenomeTrack (as well as the children of GenomeTrack subclasses
+         (eg PlotTADs, which inherits PlotBed that inherits GenomeTrack)
+        :return:
+        Dict of available GenomeTracks. key = track type (eg. bedgraph, bed) and value = tracks class
+        """
+        avail_tracks = {}
+        work = [GenomeTrack]
+        while work:
+            parent = work.pop()
+            for child in parent.__subclasses__():
+                if child not in avail_tracks:
+                    track_type = child.TRACK_TYPE
+                    avail_tracks[track_type] = child
+                    work.append(child)
+
+        return avail_tracks
 
     def get_tracks_height(self, start_region=None, end_region=None):
         """
@@ -344,7 +353,7 @@ class PlotTracks(object):
             if 'file' in track_dict and track_dict['file'] != '':
                 track_dict = self.check_file_exists(track_dict, tracks_file_path)
                 if 'file_type' not in track_dict:
-                    track_dict['file_type'] = self.guess_filetype(track_dict)
+                    track_dict['file_type'] = self.guess_filetype(track_dict, self.available_tracks)
 
             if 'overlay previous' not in track_dict:
                 track_dict['overlay previous'] = 'no'
@@ -401,27 +410,31 @@ class PlotTracks(object):
         return track_dict
 
     @staticmethod
-    def guess_filetype(track_dict):
+    def guess_filetype(track_dict, available_tracks):
         """
 
         :param track_dict: dictionary of track values with the 'file' key
                     containing a string path of the file or files. Only the ending
                      of the last file is used in case when there are more files
+        :param: available_tracks: list of available tracks
+
         :return: string file type detected
         """
         file_ = track_dict['file'].strip()
-        if file_.endswith(".bed") or file_.endswith(".bed.gz") or file_.endswith(".bed3") \
-                or file_.endswith(".bed6") or file_.endswith(".bed12"):
-            file_type = 'bed'
-        elif file_.endswith(".bw"):
-            file_type = 'bigwig'
-        elif file_.endswith(".bg") or file_.endswith(".bg.gz"):
-            file_type = 'bedgraph'
-        elif file_.endswith(".arc") or file_.endswith(".arcs") or file_.endswith(".links") or file_.endswith(".link"):
-            file_type = 'links'
-        else:
+        file_type = None
+        for track_type, track_class in available_tracks.items():
+            for ending in track_class.SUPPORTED_ENDINGS:
+                if file_.endswith(ending):
+                    if file_type == track_class.TRACK_TYPE:
+                        log.error("file_type already defined in other GenomeTrack")
+                        exit()
+                    else:
+                        file_type = track_class.TRACK_TYPE
+
+        if file_type is None:
             sys.exit("Section {}: can not identify file type. Please specify "
                      "the file_type for {}".format(track_dict['section_name'], file))
+
         return file_type
 
     @staticmethod
@@ -534,27 +547,95 @@ def file_to_intervaltree(file_name):
     return interval_tree, min_value, max_value
 
 
-class TrackPlot(object):
+class GenomeTrack(object):
     """
     The TrackPlot object is a holder for all tracks that are to be plotted.
     For example, to plot a bedgraph file a new class that extends TrackPlot
     should be created.
 
-    It is expected that all TrackPlot objects have a plot method.
+    It is expected that all GenomeTrack objects have a plot method.
 
     """
+    SUPORTED_ENDINGS = []
+    TRACK_TYPE = None
+    OPTIONS_TXT = """
+# title of track (plotted on the right side)
+title =
+# height of track in cm (ignored if the track is overlay on top the previous track)
+height = 2
+# if the track wants to be plotted upside-down:
+# orientation = inverted
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay previous = yes
+"""
 
     def __init__(self, properties_dict):
         self.properties = properties_dict
+        self.file_type = 'test'
 
 
-class PlotSpacer(TrackPlot):
+class SpacerTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = []
+    TRACK_TYPE = None
 
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
         pass
 
 
-class PlotBedGraph(TrackPlot):
+class XAxisTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = []
+    TRACK_TYPE = None
+
+    def __init__(self, *args, **kwargs):
+        super(XAxisTrack, self).__init__(*args, **kwargs)
+        if 'fontsize' not in self.properties:
+            self.properties['fontsize'] = 15
+
+    def plot(self, ax, label_axis, chrom_region, region_start, region_end):
+        ticks = ax.get_xticks()
+        if ticks[-1] - ticks[1] <= 1e5:
+            labels = ["{:,.0f}".format((x / 1e3))
+                      for x in ticks]
+            labels[-2] += " Kb"
+
+        elif 1e5 < ticks[-1] - ticks[1] < 4e6:
+            labels = ["{:,.0f}".format((x / 1e3))
+                      for x in ticks]
+            labels[-2] += " Kb"
+        else:
+            labels = ["{:,.1f} ".format((x / 1e6))
+                      for x in ticks]
+            labels[-2] += " Mbp"
+
+        if 'where' in self.properties and self.properties['where'] == 'top':
+            ax.axis["x"] = ax.new_floating_axis(0, 0.2)
+            ax.axis["x"].set_axis_direction("top")
+            label_y_pos = 0.99
+            vert_align = 'top'
+        else:
+            ax.axis["x"] = ax.new_floating_axis(0, 0.9)
+            label_y_pos = 0.01
+            vert_align = 'bottom'
+        ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
+                fontsize=int(self.properties['fontsize']), verticalalignment=vert_align, transform=ax.transAxes)
+
+        ax.axis["x"].axis.set_ticklabels(labels)
+        ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
+
+        ax.axis["x"].major_ticklabels.set(size=int(self.properties['fontsize']))
+        label_axis.text(0.15, 0.5, self.properties['title'],
+                        horizontalalignment='left', size='large',
+                        verticalalignment='center')
+
+
+class BedGraphTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['.bg', '.bg.gz']
+    TRACK_TYPE = 'bedgraph'
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+color = green
+file_type = {}
+    """.format(TRACK_TYPE)
 
     def __init__(self, properties_dict):
         # super(self.__class__, self).__init__(*args, **kwargs)
@@ -633,7 +714,31 @@ class PlotBedGraph(TrackPlot):
                            verticalalignment='center', transform=self.label_ax.transAxes)
 
 
-class PlotBigWig(TrackPlot):
+class BigWigTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['.bw', '.bigwig']
+    TRACK_TYPE = 'bigwig'
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+color = #666666
+# the default for min_value and max_value is 'auto' which means that the scale will go
+# from the minimum value found in the region plotted to the maximum value found.
+min_value = 0
+#max_value = auto
+# The number of bins takes the region to be plotted and divides it into the number of bins specified
+# Then, at each bin the bigwig mean value is computed and plotted.
+# A lower number of bins produces a coarser tracks
+number of bins = 500
+# to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
+nans to zeros = True
+# for type, the options are: line, points, fill. Default is fill
+# to add the preferred line width or point size use:
+# type = line:lw where lw (linewidth) is float
+# similarly points:ms sets the point size (markersize (ms) to the given float
+# type = line:0.5
+# type = points:0.5
+# set show data range to no to hide the text on the upper-left showing the data range
+show data range = yes
+file_type = {}
+    """.format(TRACK_TYPE)
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -766,54 +871,65 @@ class PlotBigWig(TrackPlot):
         return self.ax
 
 
-class PlotXAxis(TrackPlot):
-
-    def __init__(self, *args, **kwargs):
-        super(PlotXAxis, self).__init__(*args, **kwargs)
-        if 'fontsize' not in self.properties:
-            self.properties['fontsize'] = 15
-
-    def plot(self, ax, label_axis, chrom_region, region_start, region_end):
-        ticks = ax.get_xticks()
-        if ticks[-1] - ticks[1] <= 1e5:
-            labels = ["{:,.0f}".format((x / 1e3))
-                      for x in ticks]
-            labels[-2] += " Kb"
-
-        elif 1e5 < ticks[-1] - ticks[1] < 4e6:
-            labels = ["{:,.0f}".format((x / 1e3))
-                      for x in ticks]
-            labels[-2] += " Kb"
-        else:
-            labels = ["{:,.1f} ".format((x / 1e6))
-                      for x in ticks]
-            labels[-2] += " Mbp"
-
-        if 'where' in self.properties and self.properties['where'] == 'top':
-            ax.axis["x"] = ax.new_floating_axis(0, 0.2)
-            ax.axis["x"].set_axis_direction("top")
-            label_y_pos = 0.99
-            vert_align = 'top'
-        else:
-            ax.axis["x"] = ax.new_floating_axis(0, 0.9)
-            label_y_pos = 0.01
-            vert_align = 'bottom'
-        ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
-                fontsize=int(self.properties['fontsize']), verticalalignment=vert_align, transform=ax.transAxes)
-
-        ax.axis["x"].axis.set_ticklabels(labels)
-        ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
-
-        ax.axis["x"].major_ticklabels.set(size=int(self.properties['fontsize']))
-        label_axis.text(0.15, 0.5, self.properties['title'],
-                        horizontalalignment='left', size='large',
-                        verticalalignment='center')
-
-
-class PlotBed(TrackPlot):
+class BedTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['bed', 'bed3', 'bed6', 'bed12', 'bed.gz', 'bed3.gz', 'bed6.gz', 'bed12.gz']
+    TRACK_TYPE = 'bed'
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+# if the type=genes is given
+# the the file is interpreted as gene
+# file. If the bed file contains the exon
+# structure (bed 12) then this is plotted. Otherwise
+# a region **with direction** is plotted.
+# if the bed file contains a column for color (column 9), then this color can be used by
+# setting:
+# color = bed_rgb
+color = darkblue
+#if color is a valid colormap name (like RbBlGn), then the score is mapped
+# to the colormap. If the color is simply a color name, then this color is used and the score is not considered.
+# For the colormap option, the the min_value and max_value for the score can be provided, otherwise
+# the maximum score and minimum score found are used.
+#color = RdYlBu
+#min_value=0
+#max_value=100
+# height of track in cm
+height = 5
+# to turn off/on printing of labels
+labels = off
+# optional: font size can be given to override the default size
+fontsize = 10
+# optional: line width
+#line width = 0.5
+# the display parameter defines how the bed file is plotted.
+# The options are ['colapsed', 'interleaved', 'triangles'] This options asume that the regions do not overlap.
+# `collapsed`: The bed regions are plotted one after the other in one line.
+# `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
+# if display is not given, then each region is plotted using the gene style
+#optional, default is black. To remove the background color, simply set 'color' and 'background color' to the
+# same value
+#border color = black
+# style to plot the genes when they have exon information
+#style = UCSC
+#style = flybase
+# maximum number of gene rows to be plotted. This
+# field is useful to limit large number of close genes
+# to be printed over many rows. When several images want
+# to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
+#gene rows = 10
+# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay previous = yes
+# by default the ymax is the number of
+# rows occupied by the genes in the region plotted. However,
+# by setting this option, the global maximum is used instead.
+# This is useful to combine images that are all consistent and
+# have the same number of rows.
+#global max row = yes
+# optional. If not given is guessed from the file ending.
+file_type = {}
+    """.format(TRACK_TYPE)
 
     def __init__(self, *args, **kwarg):
-        super(PlotBed, self).__init__(*args, **kwarg)
+        super(BedTrack, self).__init__(*args, **kwarg)
         self.bed_type = None  # once the bed file is read, this is bed3, bed6 or bed12
         self.len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions
@@ -1333,10 +1449,35 @@ class PlotBed(TrackPlot):
                             fillstyle='none', color='blue', markersize=3)
 
 
-class PlotArcs(TrackPlot):
+class LinksTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['.arcs', '.arc' '.link', '.links']
+    TRACK_TYPE = 'links'
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+# the file format for links is (tab separated)
+#   chr1 start1 end1 chr2 start2 end2 score
+# for example:
+#   chr1 100 200 chr1 250 300 0.5
+# depending on the links type either and arc or a 'triangle' can be plotted. If an arc,
+# a line will be drawn from the center of the first region (chr1: 150, tot the center of the other region (chr1:275).
+# if a triangle, the vertix of the triangle will be drawn at the center between the two points (also the center of
+# each position is used)
+# links whose start or end is not in the region plotted are not shown.
+# color of the lines
+color = red
+# for the links type, the options are arcs and triangles, the triangles option is convenient to overlay over a
+# Hi-C matrix to highlight the matrix pixel of the highlighted link
+links type = arcs
+# if line width is not given, the score is used to set the line width
+# using the following formula (0.5 * square root(score)
+# line width = 0.5
+# options for line style are 'solid', 'dashed', 'dotted' etc. The full list of
+# styles can be found here: https://matplotlib.org/gallery/lines_bars_and_markers/linestyles.html
+line style = solid
+file_type = {}
+    """.format(TRACK_TYPE)
 
     def __init__(self, *args, **kwarg):
-        super(PlotArcs, self).__init__(*args, **kwarg)
+        super(LinksTrack, self).__init__(*args, **kwarg)
         # the file format expected is similar to file format of links in
         # circos:
         # chr1 100 200 chr1 250 300 0.5
@@ -1487,7 +1628,9 @@ class PlotArcs(TrackPlot):
             self.max_height = y2
 
 
-class PlotTADs(PlotBed):
+class PlotTADs(BedTrack):
+    SUPPORTED_ENDINGS = ['.domain', '.domains' '.tad', '.tads']
+    TRACK_TYPE = 'domains'
 
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
         """
@@ -1540,7 +1683,36 @@ class PlotTADs(PlotBed):
                       verticalalignment='center')
 
 
-class PlotHiCMatrix(TrackPlot):
+class HiCMatrixTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['.h5', '.cool' '.mcool']
+    TRACK_TYPE = 'hic_matrix'
+    OPTIONS_TXT = """
+title =
+# The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
+# the default color map is RdYlBu_r (_r) stands for reverse
+#colormap = RdYlBu_r
+# depth is the maximum distance that should be plotted.
+depth = 100000
+# height of track (in cm) can be given. Otherwise, the height is computed such that the proportions of the
+# hic matrix are kept (e.g. the image does not appear shrink or extended)
+# height = 10
+# min_value and max_value refer to the contacts in the matrix.
+#min_value =2.8
+#max_value = 3.0
+# the matrix can be transformed using the log1 (or log, but zeros could be problematic)
+transform = log1p
+# show masked bins plots as white lines
+# those bins that were not used during the correction
+# the default is to extend neighboring bins to
+# obtain an aesthetically pleasant output
+show_masked_bins = no
+# if the track wants to be plotted upside-down:
+# orientation = inverted
+# optional if the values in the matrix need to be scaled the
+# following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
+# scale factor = 1
+file_type = {}
+    """.format(TRACK_TYPE)
 
     def __init__(self, properties_dict):
         # to avoid the color bar to span all the
@@ -1793,6 +1965,237 @@ class PlotHiCMatrix(TrackPlot):
         im = self.ax.pcolormesh(x, y, np.flipud(matrix_c),
                                 vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
         return im
+
+
+class PlotBedGraphMatrix(BedGraphTrack):
+    SUPPORTED_ENDINGS = ['.bm', '.bm.gz' '.bedgraphmatrix']
+    TRACK_TYPE = 'bedgraph_matrix'
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+# a bedgraph matrix file is like a bedgraph, except that per bin there
+# are more than one value separated by tab: E.g.
+# This file type is produced by HiCExplorer tool hicFindTads and contains
+# the TAD-separation score at different window sizes
+# chrX	18279	40131	0.399113	0.364118	0.320857	0.274307
+# chrX	40132	54262	0.479340	0.425471	0.366541	0.324736
+#min_value = 0.10
+#max_value = 0.70
+# if type is set as lines, then the TAD score lines are drawn instead
+# of the matrix otherwise a heatmap is plotted
+type = lines
+#plot horizontal lines=False
+file_type = {}
+    """.format(TRACK_TYPE)
+
+    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+        self.ax = ax
+        self.label_ax = label_ax
+        """
+        Plots a bedgraph matrix file, that instead of having
+        a single value per bin, it has several values.
+        """
+
+        start_pos = []
+        matrix_rows = []
+        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
+
+        # if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
+        #     chrom_region = toBytes(chrom_region)
+        if chrom_region not in list(self.interval_tree):
+            chrom_region = change_chrom_names(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
+
+            # if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
+            #     chrom_region = toBytes(chrom_region)
+
+        for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
+            start_pos.append(region.begin)
+            values = map(float, region.data)
+            matrix_rows.append(values)
+
+        matrix = np.vstack(matrix_rows).T
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            matrix = np.flipud(matrix)
+
+        if 'type' in self.properties and self.properties['type'] == 'lines':
+            for row in matrix:
+                self.ax.plot(start_pos, row, color='grey', linewidth=0.5)
+
+            self.ax.plot(start_pos, matrix.mean(axis=0), linestyle="--", marker="|")
+            ymax = self.properties['max_value']
+            ymin = self.properties['min_value']
+            self.ax.set_ylim(ymin, ymax)
+
+            if 'show data range' in self.properties and self.properties['show data range'] == 'no':
+                pass
+            else:
+                if float(ymax) % 1 == 0:
+                    ymax_print = int(ymax)
+                else:
+                    ymax_print = "{:.1f}".format(ymax)
+
+                if float(ymin) % 1 == 0:
+                    ymin_print = int(ymin)
+                else:
+                    ymin_print = "{:.1f}".format(ymin)
+
+                ydelta = ymax - ymin
+                small_x = 0.01 * (end_region - start_region)
+                # by default show the data range
+                self.ax.text(start_region - small_x, ymax - ydelta * 0.2,
+                             "[{}-{}]".format(ymin_print, ymax_print),
+                             horizontalalignment='left',
+                             verticalalignment='bottom')
+            if 'plot horizontal lines' in self.properties and self.properties['plot horizontal lines']:
+                # plot horizontal lines to compare values
+                self.ax.hlines(np.arange(0, 1.1, 0.1), start_region, end_region, linestyle="--",
+                               zorder=0, color='grey')
+
+        else:
+            x, y = np.meshgrid(start_pos, np.arange(matrix.shape[0]))
+            shading = 'gouraud'
+            vmax = self.properties['max_value']
+            vmin = self.properties['min_value']
+
+            img = self.ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
+            img.set_rasterized(True)
+
+        self.label_ax.text(0.15, 0.5, self.properties['title'],
+                           horizontalalignment='left', size='large',
+                           verticalalignment='center', transform=self.label_ax.transAxes)
+
+
+class NarrowPeakTrack(BedGraphTrack):
+    SUPPORTED_ENDINGS = ['.narrowPeak']
+    TRACK_TYPE = 'narrow_peal'
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+#max_value = 0.70
+show data range = yes
+show labels = yes
+# the narrowPeak format provides the information of the
+# peak summit. By default this information is used
+# although some peaks may look crooked.
+use summit = yes
+# type of plot: either box or peak
+# box will plot a rectangle of the peak width
+# peak will plot the shape of the peak, whose height is the
+# narrowPeak file signal value (usually peak coverage)
+type = peak
+# if the peaks look too thin, the can be adjusted
+width adjust = 1.5
+file_type = {}
+    """.format(TRACK_TYPE)
+
+    def __init__(self, properties_dict):
+        self.properties = properties_dict
+        if 'color' not in self.properties:
+            self.properties['color'] = '#FF000080'  # red, alpha=0.55
+        if 'show data range' not in self.properties:
+            self.properties['show data range'] = 'yes'
+        if 'show labels' not in self.properties:
+            self.properties['show labels'] = 'yes'
+        if 'use summits' not in self.properties:
+            self.properties['use summits'] = 'yes'
+        if 'width adjust' not in self.properties:
+            self.properties['width adjust'] = 1.5
+        else:
+            self.properties['width adjust'] = float(self.properties['width adjust'])
+        if 'type' not in self.properties:
+            self.properties['type'] = 'peak'
+
+        self.interval_tree, _, _ = file_to_intervaltree(self.properties['file'])
+
+    def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
+        # uses bezier curves to plot a shape that
+        # looks like a peak
+        from matplotlib.path import Path
+        import matplotlib.patches as patches
+        peak_width = float(end - start)
+        if center is None:
+            center = peak_width / 2 + start
+        if width_adjust != 1:
+            start -= width_adjust * peak_width / 2
+            end += width_adjust * peak_width / 2
+            peak_width *= width_adjust
+
+        path_data = [
+            (Path.MOVETO, (start, 0)),
+            (Path.CURVE4, (start + peak_width / 2, 0)),
+            (Path.CURVE4, (start + peak_width * 0.4, height)),
+            (Path.CURVE4, (center, height)),
+            (Path.CURVE4, (end - peak_width * 0.4, height)),
+            (Path.CURVE4, (end - peak_width / 2, 0)),
+            (Path.CURVE4, (end, 0))]
+
+        codes, verts = zip(*path_data)
+        path = Path(verts, codes)
+        patch = patches.PathPatch(path, facecolor=self.properties['color'])
+        self.ax.add_patch(patch)
+
+    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+        self.ax = ax
+
+        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
+        if chrom_region not in list(self.interval_tree):
+            chrom_region = change_chrom_names(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
+        max_signal = -1
+        for peak in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
+            name, score, strand, signal_value, p_value, q_value, summit = peak.data
+            signal_value = float(signal_value)
+            p_value = float(p_value)
+            q_value = float(q_value)
+            summit = int(summit)
+            if summit > 0:
+                summit = peak.begin + summit
+            else:
+                summit = None
+
+            if self.properties['type'] == 'box':
+                self.ax.add_patch(Rectangle((peak.begin, 0), peak.end - peak.begin,
+                                            100, edgecolor='black',
+                                            facecolor=self.properties['color']))
+                max_signal = 110
+            else:
+                if signal_value > max_signal:
+                    max_signal = signal_value
+                self.peak_plot(peak.begin, peak.end, signal_value, center=summit,
+                               width_adjust=self.properties['width adjust'])
+
+            x_pos = peak.begin + float(peak.end - peak.begin) / 2
+            y_pos = 0 - max_signal * 0.05
+            if self.properties['show labels'] != 'no':
+                self.ax.text(x_pos, y_pos, "{}\np-val:{:.1f}\nq-val:{:.1f}".format(name, p_value, q_value),
+                             horizontalalignment='center', size='smaller',
+                             verticalalignment='top')
+
+        if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
+            self.properties['max_value'] = max_signal
+
+        ymax = self.properties['max_value']
+        if self.properties['show labels'] != 'no':
+            if self.properties['type'] == 'box':
+                ymin = ymax * -3
+            else:
+                ymin = ymax * -0.8
+        else:
+            ymin = 0
+        self.ax.set_ylim(ymin, ymax)
+        if self.properties['show data range'] != 'no' and self.properties['type'] != 'box':
+            if float(ymax) % 1 == 0:
+                ymax_print = int(ymax)
+            else:
+                ymax_print = "{:.1f}".format(ymax)
+            ymin_print = 0
+            small_x = 0.01 * (end_region - start_region)
+            # by default show the data range
+            self.ax.text(start_region - small_x, ymax - ymax * 0.01,
+                         "[{}-{}]".format(ymin_print, ymax_print),
+                         horizontalalignment='left',
+                         verticalalignment='top')
+
+        label_ax.text(0.15, 0.5, self.properties['title'],
+                      horizontalalignment='left', size='large',
+                      verticalalignment='center')
 
 
 def change_chrom_names(chrom):

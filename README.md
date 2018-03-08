@@ -69,7 +69,7 @@ Examples
 
 A minimal example of a configuration file with a single bigwig track looks like this:
 
-```
+```INI
 [bigwig file test]
 file = bigwig.bw
 # height of the track in cm (optional value)
@@ -88,7 +88,7 @@ $ pyGenomeTracks --tracks bigwig_track.ini --region X:2,500,000-3,000,000 -o big
 
 
 Now, let's add the genomic location and some genes:
-```
+```INI
 [bigwig file test]
 file = bigwig.bw
 # height of the track in cm (optional value)
@@ -120,7 +120,7 @@ $ pyGenomeTracks --tracks bigwig_with_genes.ini --region X:2,800,000-3,100,000 -
 
 Now, we will add some vertical lines across all tracks. The vertical lines should be in a bed format.
 
-```
+```INI
 [bigwig file test]
 file = bigwig.bw
 # height of the track in cm (optional value)
@@ -146,7 +146,6 @@ fontsize=10
 [vlines]
 file = domains.bed
 type = vlines
-
 ```
 
 
@@ -157,9 +156,20 @@ $ pyGenomeTracks --tracks bigwig_with_genes_and_vlines.ini --region X:2,800,000-
 
 ![pyGenomeTracks bigwig example](./examples/bigwig_with_genes_and_vlines.png)
 
+Examples with peaks
+-------------------
+
+pyGenomeTracks has an option to plot peaks using MACS2 narrowPeak format.
+
+This is an example of the output:
+
+![pyGenomeTracks bigwig example](./pygenometracks/tests/test_data/master_narrowPeak.png)
+
+Examples with Hi-C data
+
 The following is an example with Hi-C data overlay with topologically associating domains (TADs) and a bigwig file.
 
-```
+```INI
 [x-axis]
 where = top
 
@@ -226,6 +236,48 @@ required when overlying other type of data like a bigwig file that has a differe
 The configuration file for this image is [here](./pygenometracks/tests/test_data/browser_tracks_hic.ini)
 
 
+Adding new tracks
+-----------------
+Adding new tracks to pyGenomeTracks only requires adding a new class that has a `plot` method and defines some basic info.
+
+For example, to make a track that plots some text at a given location we need to make class that looks like this:
+
+```python
+class TextTrack(GenomeTrack):
+    SUPPORTED_ENDINGS = ['.txt']  # this is used to guess the type of track based on file name
+    TRACK_TYPE = 'text'
+    OPTIONS_TXT = """
+height = 3
+title = 
+text = 
+# x position of text in the plot (in bp) 
+x position = 
+"""
+    def plot(self, ax, label_ax, chrom, region_start, region_end):
+        # print text at position x = self.properties['x position'] and y = 0.5 (center of the plot)
+        ax.text(float(self.properties['x position']), 0.5, self.properties['text'])
+        # print title in legend axis
+        label_ax.text(0.15, 0.5, self.properties['title'])
+        
+```
+
+
+Now we make a configuration file.
+
+```INI
+[x-axis]
+where = top
+
+[new track]
+file = 
+height = 4
+title = new pyGenomeTrack
+file_type = text
+text = hello world
+x position = 3100000
+```
+
+![pyGenomeTracks example](./examples/new_track.png)
 
 
 pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser) (See e.g. [Chorogenome navigator](http://chorogenome.ie-freiburg.mpg.de/) which is made with HiCBrowser)
