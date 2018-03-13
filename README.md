@@ -9,10 +9,10 @@ Standalone program and library to plot beautiful genome browser tracks
 pyGenomeTracks aims to produce high-quality genome browser tracks that
 are highly customizable. Currently, it is possible to plot:
 
- * bigwig 
+ * bigwig
  * bed (many options)
  * bedgraph
- * links (represented as arcs) 
+ * links (represented as arcs)
  * Hi-C matrices (if [HiCExplorer](http://hicexplorer.readthedocs.io) is installed)
 
 pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
@@ -27,7 +27,7 @@ pyGenomeTracks works with python 2.7 and python 3.6.
 Currently, the best way to install pyGenomeTracks is with anaconda
 
 ```bash
-$ conda install -c bioconda pygenometracks 
+$ conda install -c bioconda pygenometracks
 ```
 
 Also, pyGenomeTracks can be installed using pip
@@ -45,14 +45,14 @@ $ pip install  git+https://github.com/maxplanck-ie/pyGenomeTracks.git
 
 Usage
 -----
-To run pyGenomeTracks a configuration file describing the tracks is required. The easiest way to create this file is using the program `make_tracks_file` which creates a configuration file with 
+To run pyGenomeTracks a configuration file describing the tracks is required. The easiest way to create this file is using the program `make_tracks_file` which creates a configuration file with
 defaults that can be easily changed. The format is:
 
 ```bash
 $ make_tracks_file --trackFiles <file1.bed> <file2.bw> ... -o tracks.ini
 ```
 
-`make_tracks_file` uses the file ending to guess the file type. 
+`make_tracks_file` uses the file ending to guess the file type.
 
 Then, a region can be plotted using:
 
@@ -60,7 +60,13 @@ Then, a region can be plotted using:
 $ pyGenomeTracks --tracks tracks.ini --region chr2:10,000,000-11,000,000 --outFileName nice_image.pdf
 ```
 
-The ending `--outFileName` defines the image format. If `.pdf` is used, then the resulting image is a pdf. The options are pdf, png and svg. 
+The ending `--outFileName` defines the image format. If `.pdf` is used, then the resulting image is a pdf. The options are pdf, png and svg.
+
+Citation
+---------
+If you use pyGenomeTracks in your analysis, you can cite the following paper :
+
+Fidel Ramírez, Vivek Bhardwaj, Laura Arrigoni, Kin Chung Lam, Björn A. Grüning, José Villaveces, Bianca Habermann, Asifa Akhtar & Thomas Manke. High-resolution TADs reveal DNA sequences underlying genome organization in flies. Nature Communications (2018) [doi:10.1038/s41467-017-02525-w](https://www.nature.com/articles/s41467-017-02525-w)
 
 Examples
 --------
@@ -190,7 +196,7 @@ border color = black
 color = none
 # the tads are overlay over the hic-matrix
 # the share-y options sets the y-axis to be shared
-# between the Hi-C matrix and the TADs. 
+# between the Hi-C matrix and the TADs.
 overlay previous = share-y
 
 [spacer]
@@ -227,7 +233,7 @@ The configuration file for this image is [here](./pygenometracks/tests/test_data
 Examples with Hi-C data
 -----------------------
 
-In these examples is where the overlay tracks are more useful. Notice that any track can be overlay over a Hi-C matrix. Most useful is to overlay TADs or to overlay links using the `triangles` option 
+In these examples is where the overlay tracks are more useful. Notice that any track can be overlay over a Hi-C matrix. Most useful is to overlay TADs or to overlay links using the `triangles` option
 that will point in the Hi-C matrix the pixel with the link contact. When overlaying links and TADs is useful to set `overlay previous=share-y` such that the two tracks match the positions. This is not
 required when overlying other type of data like a bigwig file that has a different y-scale.
 
@@ -248,17 +254,17 @@ class TextTrack(GenomeTrack):
     TRACK_TYPE = 'text'
     OPTIONS_TXT = """
 height = 3
-title = 
-text = 
-# x position of text in the plot (in bp) 
-x position = 
+title =
+text =
+# x position of text in the plot (in bp)
+x position =
 """
     def plot(self, ax, label_ax, chrom, region_start, region_end):
         # print text at position x = self.properties['x position'] and y = 0.5 (center of the plot)
         ax.text(float(self.properties['x position']), 0.5, self.properties['text'])
         # print title in legend axis
         label_ax.text(0.15, 0.5, self.properties['title'])
-        
+
 ```
 
 
@@ -269,7 +275,7 @@ Now we make a configuration file.
 where = top
 
 [new track]
-file = 
+file =
 height = 4
 title = new pyGenomeTrack
 file_type = text
