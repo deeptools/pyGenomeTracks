@@ -1723,7 +1723,7 @@ file_type = {}
         log.debug("self.properties", self.properties)
         if self.properties['file'].endswith('.cool'):
             # just init the cooler matrix.
-            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], color_only_init=True)
+            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], cooler_only_init=True)
         else:
             self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'])
 
