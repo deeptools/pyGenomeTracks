@@ -165,12 +165,15 @@ DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.12, 'top': 0.9}
 
 def parse_arguments(args=None):
     parser = argparse.ArgumentParser(
-        description='Plots genomic tracks. The tracks.ini file can be genarated using the `make_tracks_file` '
-                    'program.',
+        description='Plots genomic tracks on specified region(s). '
+                    'Citation : Ramírez et al.  High-resolution TADs reveal DNA '
+                    'sequences underlying genome organization in flies. '
+                    'Nature Communications (2018) doi:10.1038/s41467-017-02525-w',
         usage="%(prog)s --tracks tracks.ini --region chr1:1000000-4000000 -o image.png")
 
     parser.add_argument('--tracks',
-                        help='File containing the instructions to plot the tracks ',
+                        help='File containing the instructions to plot the tracks. '
+                        'The tracks.ini file can be genarated using the `make_tracks_file` program.',
                         type=argparse.FileType('r'),
                         required=True,
                         )
