@@ -1,5 +1,3 @@
-
-
 """
 [spacer]
 # This will add a space between two tracks. No options are required, but
@@ -166,7 +164,7 @@ DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.12, 'top': 0.9}
 def parse_arguments(args=None):
     parser = argparse.ArgumentParser(
         description='Plots genomic tracks on specified region(s). '
-                    'Citation : Ramírez et al.  High-resolution TADs reveal DNA '
+                    'Citation : Ramirez et al.  High-resolution TADs reveal DNA '
                     'sequences underlying genome organization in flies. '
                     'Nature Communications (2018) doi:10.1038/s41467-017-02525-w',
         usage="%(prog)s --tracks tracks.ini --region chr1:1000000-4000000 -o image.png")
