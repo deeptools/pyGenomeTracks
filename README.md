@@ -283,7 +283,109 @@ text = hello world
 x position = 3100000
 ```
 
+```bash
+pgt --tracks new_track.ini --region X:3000000-3200000 -o new_track.png
+```
+
 ![pyGenomeTracks example](./examples/new_track.png)
+
+
+Another more complex example is the plotting of multiple bedgraph data as matrices. The output of `HiCExplorer hicFindTADs` produces a data format that
+is similar to a bedgraph but with more value columns. We call this a bedgraph matrix. The following track plot this bedgraph matrix:
+ 
+ ```python
+ class BedGraphMatrixTrack(BedGraphTrack):
+    # this track class extends a BedGraphTrack that is already part of 
+    # pyGenomeTracks. The advantage of extending this class is that
+    # we can re-use the code for reading a bedgraph file
+    SUPPORTED_ENDINGS = ['.bm', '.bm.gz']
+    TRACK_TYPE = 'bedgraph_matrix'
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+        # a bedgraph matrix file is like a bedgraph, except that per bin there
+        # are more than one value (separated by tab). This file type is 
+        # produced by the HiCExplorer tool hicFindTads and contains
+        # the TAD-separation score at different window sizes. 
+        # E.g.
+        # chrX	18279	40131	0.399113	0.364118	0.320857	0.274307
+        # chrX	40132	54262	0.479340	0.425471	0.366541	0.324736
+        #min_value = 0.10
+        #max_value = 0.70
+        file_type = {}
+        """.format(TRACK_TYPE)
+
+    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+        """
+        :param ax: main axis to plot 
+        :param label_ax: label axis
+        :param chrom_region: name of the chromosome for the region to plot
+        :param start_region: start coordinate (in bp) of the region to plot
+        :param end_region: end coordinate (in bp) of the region to plot
+
+        """
+        
+        start_pos = []
+        matrix_rows = []
+
+        # the __init__ method of the class BedGraphTrack already parsed
+        # the bedgraph file which is stored as an interval_tree for 
+        # quick querying of a region. 
+        # The code:
+        #   sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000])
+        # returns all the bedgraph intervals within the chrom_region:start_region-end_region range 
+        for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
+            start_pos.append(region.begin)
+            values = map(float, region.data)
+            matrix_rows.append(values)
+
+        # using numpy, the list of values per line in the bedgraph file
+        # is converted into a matrix whose columns contain 
+        # the bedgraph values for the same line (notice that
+        # the matrix is transposed to achieve this)
+        matrix = np.vstack(matrix_rows).T
+
+        # using meshgrid we get x and y positions to plot the matrix at
+        # corresponding positions given in the bedgraph file.
+        x, y = np.meshgrid(start_pos, np.arange(matrix.shape[0]))
+
+        # shading adds some smoothing to the pllot
+        shading = 'gouraud'
+        vmax = self.properties['max_value']
+        vmin = self.properties['min_value']
+
+        img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
+        img.set_rasterized(True)
+
+        # to add the label text
+        label_ax.text(0.15, 0.5, self.properties['title'])
+```
+
+
+Let's create a track for this:
+
+```INI
+[bedgraph matrix]
+file = tad_separation_score.bm.gz
+title = bedgraph matrix
+height = 8
+file_type = bedgraph_matrix
+
+[spacer]
+
+[x-axis]
+```
+
+```bash
+pgt --tracks bedgraph_matrix.ini --region X:2000000-3500000 -o bedgraph_matrix.png
+```
+
+![pyGenomeTracks example](./examples/bedgraph_matrix.png)
+
+Although this image looks interesting a more meaninful way to plot
+the data is a overlapping lines with the mean value highlighted. 
+Using the bedgraph version of `pyGenomeTracks` the following image
+can be obtained:
+
+![pyGenomeTracks example](./examples/bedgraph_matrix_lines.png)
 
 
 pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser) (See e.g. [Chorogenome navigator](http://chorogenome.ie-freiburg.mpg.de/) which is made with HiCBrowser)

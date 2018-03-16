@@ -433,7 +433,7 @@ class PlotTracks(object):
 
         if file_type is None:
             sys.exit("Section {}: can not identify file type. Please specify "
-                     "the file_type for {}".format(track_dict['section_name'], file))
+                     "the file_type for '{}'".format(track_dict['section_name'], file_))
 
         return file_type
 
@@ -1967,8 +1967,8 @@ file_type = {}
         return im
 
 
-class PlotBedGraphMatrix(BedGraphTrack):
-    SUPPORTED_ENDINGS = ['.bm', '.bm.gz' '.bedgraphmatrix']
+class BedGraphMatrixTrack(BedGraphTrack):
+    SUPPORTED_ENDINGS = ['.bm', '.bm.gz', '.bedgraphmatrix']
     TRACK_TYPE = 'bedgraph_matrix'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 # a bedgraph matrix file is like a bedgraph, except that per bin there
@@ -1998,8 +1998,6 @@ file_type = {}
         matrix_rows = []
         chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
 
-        # if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
-        #     chrom_region = toBytes(chrom_region)
         if chrom_region not in list(self.interval_tree):
             chrom_region = change_chrom_names(chrom_region)
             chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
@@ -2028,6 +2026,8 @@ file_type = {}
             if 'show data range' in self.properties and self.properties['show data range'] == 'no':
                 pass
             else:
+                # by default show the data range
+                ymin, ymax = ax.get_ylim()
                 if float(ymax) % 1 == 0:
                     ymax_print = int(ymax)
                 else:
@@ -2040,15 +2040,15 @@ file_type = {}
 
                 ydelta = ymax - ymin
                 small_x = 0.01 * (end_region - start_region)
-                # by default show the data range
                 self.ax.text(start_region - small_x, ymax - ydelta * 0.2,
                              "[{}-{}]".format(ymin_print, ymax_print),
                              horizontalalignment='left',
                              verticalalignment='bottom')
             if 'plot horizontal lines' in self.properties and self.properties['plot horizontal lines']:
-                # plot horizontal lines to compare values
-                self.ax.hlines(np.arange(0, 1.1, 0.1), start_region, end_region, linestyle="--",
-                               zorder=0, color='grey')
+                self.ax.grid(True)
+                self.ax.grid(True, which='y')
+                self.ax.axhline(y=0, color='black', linewidth=1)
+                self.ax.tick_params(axis='y', which='minor', left='on')
 
         else:
             x, y = np.meshgrid(start_pos, np.arange(matrix.shape[0]))
