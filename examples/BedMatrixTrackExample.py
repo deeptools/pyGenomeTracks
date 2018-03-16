@@ -1,3 +1,8 @@
+import numpy as np
+from pygenometracks.tracksClass import BedGraphTrack
+from pygenometracks.tracksClass import GenomeTrack
+
+
 class BedGraphMatrixExample(BedGraphTrack):
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz' '.bedgraphmatrix']
     TRACK_TYPE = 'bedgraph_matrix'
@@ -46,4 +51,3 @@ class BedGraphMatrixExample(BedGraphTrack):
         img.set_rasterized(True)
 
         label_ax.text(0.15, 0.5, self.properties['title'])
-

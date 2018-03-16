@@ -2048,7 +2048,7 @@ file_type = {}
                 self.ax.grid(True)
                 self.ax.grid(True, which='y')
                 self.ax.axhline(y=0, color='black', linewidth=1)
-                self.ax.tick_params(axis='y',which='minor', left='on')
+                self.ax.tick_params(axis='y', which='minor', left='on')
 
         else:
             x, y = np.meshgrid(start_pos, np.arange(matrix.shape[0]))
