@@ -230,6 +230,14 @@ In the second option the y-axis of the tracks that overlays is the same as the t
 The configuration file for this image is [here](./pygenometracks/tests/test_data/browser_tracks.ini)
 
 
+Examples with multiple options for bigwig tracks
+------------------------------------------------
+
+![pyGenomeTracks example](./pygenometracks/tests/test_data/master_bigwig.png)
+
+The configuration file for this image is [here](./pygenometracks/tests/test_data/bigwig.ini)
+
+
 Examples with Hi-C data
 -----------------------
 
