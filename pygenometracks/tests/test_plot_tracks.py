@@ -105,32 +105,6 @@ line width = 3
 title = links line width=3
 height = 3
 
-[test bigwig lines]
-file = bigwig2_X_2.5e6_3.5e6.bw
-color = gray
-height = 2
-type = line
-title = bigwig orientation=inverted; show data range=no
-orientation = inverted
-show data range = no
-max_value = 50
-
-[test bigwig lines]
-file = bigwig_chrx_2e6_5e6.bw
-color = red
-height = 2
-type = line:0.2
-title = bigwig type=line:0.2
-
-[test bigwig points]
-file = bigwig_chrx_2e6_5e6.bw
-color = black
-height = 2
-min_value = 0
-max_value = 100
-type = points:0.5
-title = bigwig type=point:0.5; min_value=0;max_value=100
-
 [spacer]
 height = 0.5
 title = height=0.5

@@ -729,6 +729,9 @@ min_value = 0
 number of bins = 500
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
 nans to zeros = True
+# the summary method by default is mean. Other
+# methods are min and max
+summary method = mean
 # for type, the options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -746,6 +749,12 @@ file_type = {}
         self.bw = pyBigWig.open(self.properties['file'])
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BIGWIG_COLOR
+
+        if 'summary method' not in self.properties:
+            self.properties['summary method'] = 'mean'
+
+        if 'nans to zeros' not in self.properties:
+            self.properties['nans to zeros'] = False
 
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
         self.ax = ax
@@ -784,7 +793,10 @@ file_type = {}
             num_tries += 1
             try:
                 scores_per_bin = np.array(self.bw.stats(chrom_region, start_region,
-                                                        end_region, nBins=num_bins)).astype(float)
+                                                        end_region, nBins=num_bins,
+                                                        type=self.properties['summary method'])).astype(float)
+                if self.properties['nans to zeros'] and np.any(np.isnan(scores_per_bin)):
+                    scores_per_bin[np.isnan(scores_per_bin)] = 0
             except Exception as e:
                 import pyBigWig
                 self.bw = pyBigWig.open(self.properties['file'])
