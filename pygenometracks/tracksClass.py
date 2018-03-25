@@ -630,7 +630,7 @@ class XAxisTrack(GenomeTrack):
 
 
 class BedGraphTrack(GenomeTrack):
-    SUPPORTED_ENDINGS = ['.bg', '.bg.gz']
+    SUPPORTED_ENDINGS = ['.bg', '.bg.gz', '.bg.bgz']
     TRACK_TYPE = 'bedgraph'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 color = green
@@ -640,9 +640,26 @@ file_type = {}
     def __init__(self, properties_dict):
         # super(self.__class__, self).__init__(*args, **kwargs)
         self.properties = properties_dict
+
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BEDGRAPH_COLOR
-        self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+
+        ymin = None
+        ymax = None
+
+        self.tbx = None
+        # try to load a tabix file is available
+        if self.properties['file'].endswith(".bgz"):
+            import pysam
+            # from the tabix file is not possible to know the
+            # global min and max
+            try:
+                self.tbx = pysam.TabixFile(self.properties['file'])
+            except IOError:
+                pass
+        # load the file as an interval tree
+        else:
+            self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
 
         if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
             self.properties['max_value'] = ymax
@@ -650,52 +667,112 @@ file_type = {}
         if 'min_value' not in self.properties or self.properties['min_value'] == 'auto':
             self.properties['min_value'] = ymin
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
-        self.ax = ax
-        self.label_ax = label_ax
+        self.num_fields = None
+
+    def _get_row_data(self, row):
+        """
+        Returns the chrom, start, end and fields from either a tabix or a
+        interval tree.
+        Args:
+            row: if tabix, the row comes from self.tbx.fetch otherwise
+            comes from sorted(interval_tree[chrom] ...
+
+        Returns:
+            start, end, fields where values is a list
+
+        """
+        if self.tbx is not None:
+            fields = row.split("\t")
+            values = fields[3:]
+            start = int(fields[1])
+            end = int(fields[2])
+
+        else:
+            values = row.data
+            start = row.begin
+            end = row.end
+
+        # set the num_fields value
+        # it is expected that the number of fields per row
+        # is equal. This value is used for regions not covered
+        # in the file and that should be represented as nans
+        if self.num_fields is None:
+            self.num_fields = len(values)
+        return start, end, values
+
+    def get_scores(self, chrom_region, start_region, end_region):
+        """
+        Retrieves the score (or scores or whatever fields are in a bedgraph like file) and the positions
+        for a given region.
+        Args:
+            chrom_region:
+            start_region:
+            end_region:
+        Returns:
+            tuple:
+                scores_list, post_list
+        """
         score_list = []
         pos_list = []
-
-        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
-
-        if chrom_region not in list(self.interval_tree):
-            chrom_region = change_chrom_names(chrom_region)
+        if self.tbx is not None:
+            if chrom_region not in self.tbx.contigs:
+                chrom_region = change_chrom_names(chrom_region)
+            chrom_region = check_chrom_str_bytes(self.tbx.contigs, chrom_region)
+            iterator = self.tbx.fetch(chrom_region, start_region, end_region)
+        else:
+            if chrom_region not in list(self.interval_tree):
+                chrom_region = change_chrom_names(chrom_region)
             chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
+            iterator = iter(sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]))
 
-        for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
-            score_list.append(float(region.data[0]))
-            pos_list.append(region.begin + (region.end - region.begin) / 2)
+        prev_end = start_region
+        for row in iterator:
+            start, end, values = self._get_row_data(row)
+            # if the region is not consecutive with respect to the previous
+            # nan values are added.
+            if prev_end != start:
+                score_list.append(np.repeat(np.nan, self.num_fields))
+                pos_list.append(prev_end + (start - prev_end) / 2)
+            prev_end = end
+            score_list.append(values)
+            pos_list.append(start + (end - start) / 2)
+
+        return score_list, pos_list
+
+    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+        score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
+        score_list = [float(x[0]) for x in score_list]
 
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BEDGRAPH_COLOR
 
         if 'extra' in self.properties and self.properties['extra'][0] == '4C':
             # draw a vertical line for each fragment region center
-            self.ax.fill_between(pos_list, score_list,
-                                 facecolor=self.properties['color'],
-                                 edgecolor='none')
-            self.ax.vlines(pos_list, [0], score_list, color='olive', linewidth=0.5)
-            self.ax.plot(pos_list, score_list, '-', color='slateblue', linewidth=0.7)
+            ax.fill_between(pos_list, score_list, facecolor=self.properties['color'],
+                            edgecolor='none')
+            ax.vlines(pos_list, [0], score_list, color='olive', linewidth=0.5)
+            ax.plot(pos_list, score_list, '-', color='slateblue', linewidth=0.7)
         else:
             try:
-                self.ax.fill_between(pos_list, score_list, facecolor=self.properties['color'])
+                ax.fill_between(pos_list, score_list, facecolor=self.properties['color'])
             except ValueError:
                 sys.stderr.write("Invalid color {} for {}. "
                                  "Using gray instead.".format(self.properties['color'], self.properties['file']))
-                self.ax.fill_between(pos_list, score_list, facecolor='gray')
-
-        self.ax.set_frame_on(False)
-        self.ax.axes.get_xaxis().set_visible(False)
-        self.ax.axes.get_yaxis().set_visible(False)
+                ax.fill_between(pos_list, score_list, facecolor='gray')
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
+        plot_ymin, plot_ymax = ax.get_ylim()
+        if ymax is None:
+            ymax = plot_ymax
+        if ymin is None:
+            ymin = plot_ymin
 
         if float(ymax) % 1 == 0:
             ymax_print = int(ymax)
         else:
             ymax_print = "{:.1f}".format(ymax)
-        self.ax.set_ylim(ymin, ymax)
+        ax.set_ylim(ymin, ymax)
         ydelta = ymax - ymin
         small_x = 0.01 * (end_region - start_region)
 
@@ -704,14 +781,13 @@ file_type = {}
             pass
         else:
             # by default show the data range
-            self.ax.text(start_region - small_x, ymax - ydelta * 0.2,
-                         "[{}-{}]".format(ymin, ymax_print),
-                         horizontalalignment='left', size='small',
-                         verticalalignment='bottom')
+            ax.text(start_region - small_x, ymax - ydelta * 0.2,
+                    "[{}-{}]".format(ymin, ymax_print),
+                    horizontalalignment='left', size='small', verticalalignment='bottom')
 
-        self.label_ax.text(0.15, 0.5, self.properties['title'],
-                           horizontalalignment='left', size='large',
-                           verticalalignment='center', transform=self.label_ax.transAxes)
+        label_ax.text(0.15, 0.5, self.properties['title'],
+                      horizontalalignment='left', size='large',
+                      verticalalignment='center', transform=label_ax.transAxes)
 
 
 class BigWigTrack(GenomeTrack):
@@ -1980,7 +2056,7 @@ file_type = {}
 
 
 class BedGraphMatrixTrack(BedGraphTrack):
-    SUPPORTED_ENDINGS = ['.bm', '.bm.gz', '.bedgraphmatrix']
+    SUPPORTED_ENDINGS = ['.bm', '.bm.gz', '.bedgraphmatrix', '.bm.bgz']
     TRACK_TYPE = 'bedgraph_matrix'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 # a bedgraph matrix file is like a bedgraph, except that per bin there
@@ -2006,20 +2082,11 @@ file_type = {}
         a single value per bin, it has several values.
         """
 
-        start_pos = []
+        values_list, start_pos = self.get_scores(chrom_region, start_region, end_region)
+
         matrix_rows = []
-        chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
-
-        if chrom_region not in list(self.interval_tree):
-            chrom_region = change_chrom_names(chrom_region)
-            chrom_region = check_chrom_str_bytes(self.interval_tree, chrom_region)
-
-            # if type(next(iter(self.interval_tree))) is np.bytes_ or type(next(iter(self.interval_tree))) is bytes:
-            #     chrom_region = toBytes(chrom_region)
-
-        for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
-            start_pos.append(region.begin)
-            values = map(float, region.data)
+        for values in values_list:
+            values = map(float, values)
             matrix_rows.append(values)
 
         matrix = np.vstack(matrix_rows).T
