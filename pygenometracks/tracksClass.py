@@ -634,6 +634,15 @@ class BedGraphTrack(GenomeTrack):
     TRACK_TYPE = 'bedgraph'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 color = green
+# to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
+nans to zeros = True
+# for type, the options are: line, points, fill. Default is fill
+# to add the preferred line width or point size use:
+# type = line:lw where lw (linewidth) is float
+# similarly points:ms sets the point size (markersize (ms) to the given float
+# type = line:0.5
+# type = points:0.5
+
 file_type = {}
     """.format(TRACK_TYPE)
 
@@ -643,6 +652,29 @@ file_type = {}
 
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BEDGRAPH_COLOR
+
+        if 'nans to zeros' not in self.properties:
+            self.properties['nans to zeros'] = False
+
+        self.plot_type = 'fill'
+        self.size = None
+
+        if 'type' in self.properties:
+            if self.properties['type'].find(":") > 0:
+                self.plot_type, size = self.properties['type'].split(":")
+                try:
+                    self.size = float(size)
+                except ValueError:
+                    exit("Invalid value: 'type = {}' in section: {}\n"
+                         "A number was expected and found '{}'".format(self.properties['type'],
+                                                                       self.properties['section_name'],
+                                                                       size))
+            else:
+                self.plot_type = self.properties['type']
+
+        if self.plot_type not in ['line', 'points', 'fill']:
+            exit("Invalid: 'type = {}' in section: {}\n".format(self.properties['type'],
+                                                                self.properties['section_name']))
 
         ymin = None
         ymax = None
@@ -730,12 +762,12 @@ file_type = {}
             start, end, values = self._get_row_data(row)
             # if the region is not consecutive with respect to the previous
             # nan values are added.
-            if prev_end != start:
+            if prev_end < start:
                 score_list.append(np.repeat(np.nan, self.num_fields))
-                pos_list.append(prev_end + (start - prev_end) / 2)
+                pos_list.append((prev_end, start))
             prev_end = end
             score_list.append(values)
-            pos_list.append(start + (end - start) / 2)
+            pos_list.append((start, end))
 
         return score_list, pos_list
 
@@ -743,22 +775,38 @@ file_type = {}
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         score_list = [float(x[0]) for x in score_list]
 
-        if 'color' not in self.properties:
-            self.properties['color'] = DEFAULT_BEDGRAPH_COLOR
+        # the following two lines will convert the score_list and the
+        # tuples in pos list (where is item is tuple(start, end)
+        # into an x value (pos_list) and a y value (score_list)
+        # where x = start1, end1, star2, end2 ...
+        # and y = score1, score1, score2, score2 ...
+
+        # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
+        score_list = np.repeat(score_list, 2)
+        if self.properties['nans to zeros']:
+            score_list[np.isnan(score_list)] = 0
+
+        # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
+        x_values = sum(pos_list, tuple())
 
         if 'extra' in self.properties and self.properties['extra'][0] == '4C':
             # draw a vertical line for each fragment region center
-            ax.fill_between(pos_list, score_list, facecolor=self.properties['color'],
+            ax.fill_between(pos_list, score_list, linewidth=0.1,
+                            facecolor=self.properties['color'],
                             edgecolor='none')
             ax.vlines(pos_list, [0], score_list, color='olive', linewidth=0.5)
             ax.plot(pos_list, score_list, '-', color='slateblue', linewidth=0.7)
         else:
-            try:
-                ax.fill_between(pos_list, score_list, facecolor=self.properties['color'])
-            except ValueError:
-                sys.stderr.write("Invalid color {} for {}. "
-                                 "Using gray instead.".format(self.properties['color'], self.properties['file']))
-                ax.fill_between(pos_list, score_list, facecolor='gray')
+            if self.plot_type == 'line':
+                ax.plot(x_values, score_list, '-', linewidth=self.size, color=self.properties['color'])
+
+            elif self.plot_type == 'points':
+                ax.plot(x_values, score_list, '.', markersize=self.size, color=self.properties['color'])
+
+            else:
+                ax.fill_between(x_values, score_list, linewidth=0.1,
+                                color=self.properties['color'],
+                                facecolor=self.properties['color'])
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
@@ -832,6 +880,26 @@ file_type = {}
         if 'nans to zeros' not in self.properties:
             self.properties['nans to zeros'] = False
 
+        self.plot_type = 'fill'
+        self.size = None
+
+        if 'type' in self.properties:
+            if self.properties['type'].find(":") > 0:
+                self.plot_type, size = self.properties['type'].split(":")
+                try:
+                    self.size = float(size)
+                except ValueError:
+                    exit("Invalid value: 'type = {}' in section: {}\n"
+                         "A number was expected and found '{}'".format(self.properties['type'],
+                                                                       self.properties['section_name'],
+                                                                       size))
+            else:
+                self.plot_type = self.properties['type']
+
+        if self.plot_type not in ['line', 'points', 'fill']:
+            exit("Invalid: 'type = {}' in section: {}\n".format(self.properties['type'],
+                                                                self.properties['section_name']))
+
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
         self.ax = ax
         self.label_ax = label_ax
@@ -887,30 +955,12 @@ file_type = {}
 
         x_values = np.linspace(start_region, end_region, num_bins)
 
-        if 'type' in self.properties and self.properties != 'fill':
-            if self.properties['type'].find(":") > 0:
-                plot_type, size = self.properties['type'].split(":")
-                try:
-                    size = float(size)
-                except ValueError:
-                    exit("Invalid value: 'type = {}' in section: {}\n"
-                         "A number was expected and found '{}'".format(self.properties['type'],
-                                                                       self.properties['section_name'],
-                                                                       size))
-            else:
-                plot_type = self.properties['type']
-                size = None
+        if self.plot_type == 'line':
+            self.ax.plot(x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['color'])
 
-            if plot_type == 'line':
-                self.ax.plot(x_values, scores_per_bin, '-', linewidth=size, color=self.properties['color'])
+        elif self.plot_type == 'points':
+            self.ax.plot(x_values, scores_per_bin, '.', markersize=self.size, color=self.properties['color'])
 
-            elif plot_type == 'points':
-                self.ax.plot(x_values, scores_per_bin, '.', markersize=size, color=self.properties['color'])
-
-            else:
-                exit("Invalid: 'type = {}' in section: {}\n".format(self.properties['type'],
-                                                                    self.properties['section_name'],
-                                                                    size))
         else:
             self.ax.fill_between(x_values, scores_per_bin, linewidth=0.1,
                                  color=self.properties['color'],
@@ -2075,8 +2125,6 @@ file_type = {}
     """.format(TRACK_TYPE)
 
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
-        self.ax = ax
-        self.label_ax = label_ax
         """
         Plots a bedgraph matrix file, that instead of having
         a single value per bin, it has several values.
@@ -2094,13 +2142,18 @@ file_type = {}
             matrix = np.flipud(matrix)
 
         if 'type' in self.properties and self.properties['type'] == 'lines':
-            for row in matrix:
-                self.ax.plot(start_pos, row, color='grey', linewidth=0.5)
+            # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
+            pos_list = sum(pos_list, tuple())
 
-            self.ax.plot(start_pos, matrix.mean(axis=0), linestyle="--", marker="|")
+            for row in matrix:
+                # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
+                row = np.repeat(row, 2)
+                ax.plot(start_pos, row, color='grey', linewidth=0.5)
+
+            ax.plot(start_pos, matrix.mean(axis=0), linestyle="--", marker="|")
             ymax = self.properties['max_value']
             ymin = self.properties['min_value']
-            self.ax.set_ylim(ymin, ymax)
+            ax.set_ylim(ymin, ymax)
 
             if 'show data range' in self.properties and self.properties['show data range'] == 'no':
                 pass
@@ -2119,15 +2172,15 @@ file_type = {}
 
                 ydelta = ymax - ymin
                 small_x = 0.01 * (end_region - start_region)
-                self.ax.text(start_region - small_x, ymax - ydelta * 0.2,
+                ax.text(start_region - small_x, ymax - ydelta * 0.2,
                              "[{}-{}]".format(ymin_print, ymax_print),
                              horizontalalignment='left',
                              verticalalignment='bottom')
             if 'plot horizontal lines' in self.properties and self.properties['plot horizontal lines']:
-                self.ax.grid(True)
-                self.ax.grid(True, which='y')
-                self.ax.axhline(y=0, color='black', linewidth=1)
-                self.ax.tick_params(axis='y', which='minor', left='on')
+                ax.grid(True)
+                ax.grid(True, which='y')
+                ax.axhline(y=0, color='black', linewidth=1)
+                ax.tick_params(axis='y', which='minor', left='on')
 
         else:
             x, y = np.meshgrid(start_pos, np.arange(matrix.shape[0]))
@@ -2135,12 +2188,12 @@ file_type = {}
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
 
-            img = self.ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
+            img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
             img.set_rasterized(True)
 
-        self.label_ax.text(0.15, 0.5, self.properties['title'],
-                           horizontalalignment='left', size='large',
-                           verticalalignment='center', transform=self.label_ax.transAxes)
+        label_ax.text(0.15, 0.5, self.properties['title'],
+                      horizontalalignment='left', size='large',
+                      verticalalignment='center', transform=label_ax.transAxes)
 
 
 class NarrowPeakTrack(BedGraphTrack):
