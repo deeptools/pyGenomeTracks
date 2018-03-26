@@ -130,10 +130,10 @@ file_type = {}
         self.cbar_ax = copy.copy(label_ax)
 
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
-        if chrom_region not in list(chrom_sizes):
+        if chrom_region not in chrom_sizes:
             chrom_region = self.change_chrom_names(chrom_region)
-            chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
 
+        chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
         if region_end > chrom_sizes[chrom_region]:
             self.log.error("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n")
             self.log.error("{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
