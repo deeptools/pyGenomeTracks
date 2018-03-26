@@ -647,8 +647,26 @@ file_type = {}
     """.format(TRACK_TYPE)
 
     def __init__(self, properties_dict):
-        # super(self.__class__, self).__init__(*args, **kwargs)
         self.properties = properties_dict
+
+        self.tbx = None
+        # try to load a tabix file is available
+        if self.properties['file'].endswith(".bgz"):
+            import pysam
+            # from the tabix file is not possible to know the
+            # global min and max
+            try:
+                self.tbx = pysam.TabixFile(self.properties['file'])
+            except IOError:
+                pass
+        # load the file as an interval tree
+        else:
+            self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+
+        self.num_fields = None
+        self.set_properties_defaults()
+
+    def set_properties_defaults(self):
 
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BEDGRAPH_COLOR
@@ -676,30 +694,11 @@ file_type = {}
             exit("Invalid: 'type = {}' in section: {}\n".format(self.properties['type'],
                                                                 self.properties['section_name']))
 
-        ymin = None
-        ymax = None
-
-        self.tbx = None
-        # try to load a tabix file is available
-        if self.properties['file'].endswith(".bgz"):
-            import pysam
-            # from the tabix file is not possible to know the
-            # global min and max
-            try:
-                self.tbx = pysam.TabixFile(self.properties['file'])
-            except IOError:
-                pass
-        # load the file as an interval tree
-        else:
-            self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
-
         if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
-            self.properties['max_value'] = ymax
+            self.properties['max_value'] = None
 
         if 'min_value' not in self.properties or self.properties['min_value'] == 'auto':
-            self.properties['min_value'] = ymin
-
-        self.num_fields = None
+            self.properties['min_value'] = None
 
     def _get_row_data(self, row):
         """
@@ -768,6 +767,11 @@ file_type = {}
             prev_end = end
             score_list.append(values)
             pos_list.append((start, end))
+
+        # default values in case the selected region is empty
+        if len(score_list) == 0:
+            score_list = [np.nan]
+            pos_list = (start_region, end_region)
 
         return score_list, pos_list
 
@@ -2120,9 +2124,36 @@ class BedGraphMatrixTrack(BedGraphTrack):
 # if type is set as lines, then the TAD score lines are drawn instead
 # of the matrix otherwise a heatmap is plotted
 type = lines
-#plot horizontal lines=False
+# pos score in bin means 'position of score with respect to bin start and end'
+# if the lines option is used, the y values can be put at the
+# center of the bin (default) or they can be plot as 'block',
+# which mean to plot the values as a line between the start and end of bin
+pos score in bin = center
+show data range = yes
+
+# only when type lines is used. Adds horizontal lines
+plot horizontal lines = no
 file_type = {}
     """.format(TRACK_TYPE)
+
+    def set_properties_defaults(self):
+        if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
+            self.properties['max_value'] = None
+
+        if 'min_value' not in self.properties or self.properties['min_value'] == 'auto':
+            self.properties['min_value'] = None
+
+        if 'type' not in self.properties:
+            self.properties['type'] = 'matrix'
+
+        if 'pos score in bin' not in self.properties:
+            self.properties['pos score in bin'] = 'center'
+
+        if 'show data range' not in self.properties:
+            self.properties['show data range'] = 'yes'
+
+        if 'plot horizontal lines' not in self.properties:
+            self.properties['plot horizontal lines'] = 'no'
 
     def plot(self, ax, label_ax, chrom_region, start_region, end_region):
         """
@@ -2141,21 +2172,29 @@ file_type = {}
         if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
             matrix = np.flipud(matrix)
 
-        if 'type' in self.properties and self.properties['type'] == 'lines':
-            # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
-            pos_list = sum(pos_list, tuple())
+        if self.properties['type'] == 'lines':
+            if self.properties['pos score in bin'] == 'block':
+                # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
+                x_values = sum(start_pos, tuple())
+            else:
+                x_values = [x[0] + (x[1] - x[0]) / 2 for x in start_pos]
 
             for row in matrix:
-                # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
-                row = np.repeat(row, 2)
-                ax.plot(start_pos, row, color='grey', linewidth=0.5)
+                if self.properties['pos score in bin'] == 'block':
+                    # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
+                    row = np.repeat(row, 2)
+                ax.plot(x_values, row, color='grey', linewidth=0.5)
 
-            ax.plot(start_pos, matrix.mean(axis=0), linestyle="--", marker="|")
+            if self.properties['pos score in bin'] == 'block':
+                mean_values = np.repeat(matrix.mean(axis=0), 2)
+            else:
+                mean_values = matrix.mean(axis=0)
+            ax.plot(x_values, mean_values, linestyle="--", marker="|")
             ymax = self.properties['max_value']
             ymin = self.properties['min_value']
             ax.set_ylim(ymin, ymax)
 
-            if 'show data range' in self.properties and self.properties['show data range'] == 'no':
+            if self.properties['show data range'] == 'no':
                 pass
             else:
                 # by default show the data range
@@ -2173,21 +2212,22 @@ file_type = {}
                 ydelta = ymax - ymin
                 small_x = 0.01 * (end_region - start_region)
                 ax.text(start_region - small_x, ymax - ydelta * 0.2,
-                             "[{}-{}]".format(ymin_print, ymax_print),
-                             horizontalalignment='left',
-                             verticalalignment='bottom')
-            if 'plot horizontal lines' in self.properties and self.properties['plot horizontal lines']:
+                        "[{}-{}]".format(ymin_print, ymax_print),
+                        horizontalalignment='left',
+                        verticalalignment='bottom')
+            if self.properties['plot horizontal lines'] == 'yes':
                 ax.grid(True)
                 ax.grid(True, which='y')
                 ax.axhline(y=0, color='black', linewidth=1)
                 ax.tick_params(axis='y', which='minor', left='on')
 
         else:
+            start_pos = [x[0] for x in start_pos]
+
             x, y = np.meshgrid(start_pos, np.arange(matrix.shape[0]))
             shading = 'gouraud'
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
-
             img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
             img.set_rasterized(True)
 
