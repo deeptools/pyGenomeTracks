@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from past.builtins import map
-from past.builtins import zip
 
-import numpy as np
 import logging
 from configparser import ConfigParser
 
@@ -30,7 +27,6 @@ warnings.simplefilter(action='ignore', category=ImportWarning)
 # warnings.filterwarnings('error')
 
 from collections import OrderedDict
-from intervaltree import IntervalTree, Interval
 
 from pygenometracks.tracks import *
 
@@ -41,7 +37,6 @@ log = logging.getLogger(__name__)
 # log = logging.getLogger("tracksClass")
 log.setLevel(logging.DEBUG)
 
-DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
 DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 # proportion of width dedicated to (figure, legends)

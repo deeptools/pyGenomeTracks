@@ -102,8 +102,8 @@ file_type = {}
             # check if the color is a valid colormap name
             if self.properties['color'] not in matplotlib.cm.datad:
                 self.log.warning("*WARNING* color: '{}' for section {} is not valid. Color has "
-                            "been set to {}".format(self.properties['color'], self.properties['section_name'],
-                                                    DEFAULT_BED_COLOR))
+                                 "been set to {}".format(self.properties['color'], self.properties['section_name'],
+                                                         DEFAULT_BED_COLOR))
                 self.properties['color'] = DEFAULT_BED_COLOR
             else:
                 self.colormap = self.properties['color']
@@ -149,8 +149,8 @@ file_type = {}
 
         if 'color' in self.properties and self.properties['color'] == 'bed_rgb' and \
            self.bed_type not in ['bed12', 'bed9']:
-            self.log.warning("*WARNING* Color set to 'bed_rgb', but bed file does not have the rgb field. The color has "
-                        "been set to {}".format(DEFAULT_BED_COLOR))
+            self.log.warning("*WARNING* Color set to 'bed_rgb', but bed file does not have the rgb field. "
+                             "The color has been set to {}".format(DEFAULT_BED_COLOR))
             self.properties['color'] = DEFAULT_BED_COLOR
 
         valid_intervals = 0
@@ -343,7 +343,8 @@ file_type = {}
         if self.counter == 0:
             self.log.warning("*Warning* No intervals were found for file {} "
                              "in section '{}' for the interval plotted ({}:{}-{}).\n".
-                             format(self.properties['file'], self.properties['section_name'], chrom_region, start_region, end_region))
+                             format(self.properties['file'], self.properties['section_name'],
+                                    chrom_region, start_region, end_region))
         ymax = 0
 
         if 'global max row' in self.properties and self.properties['global max row'] == 'yes':
@@ -402,7 +403,7 @@ file_type = {}
             ax.add_patch(Rectangle((bed.start, ypos), bed.end - bed.start, self.properties['interval_height'],
                                    edgecolor=edgecolor, facecolor=rgb, linewidth=linewidth))
         else:
-            vertices = self._draw_arrow(ax, bed.start, bed.end, bed.strand, ypos)
+            vertices = self._draw_arrow(bed.start, bed.end, bed.strand, ypos)
             ax.add_patch(Polygon(vertices, closed=True, fill=True,
                                  edgecolor=edgecolor,
                                  facecolor=rgb,
@@ -453,7 +454,7 @@ file_type = {}
         else:
             _rgb = rgb
 
-        vertices = self._draw_arrow(ax, first_pos[0], first_pos[1], bed.strand, ypos)
+        vertices = self._draw_arrow(first_pos[0], first_pos[1], bed.strand, ypos)
 
         ax.add_patch(Polygon(vertices, closed=True, fill=True,
                              edgecolor=edgecolor,
@@ -473,15 +474,13 @@ file_type = {}
                                  facecolor=_rgb,
                                  linewidth=linewidth))
 
-    def _draw_arrow(self, ax, start, end, strand, ypos):
+    def _draw_arrow(self, start, end, strand, ypos):
         """
         Draws a filled arrow
-        :param ax:
         :param start:
         :param end:
         :param strand:
         :param ypos:
-        :param rgb:
         :return: None
         """
         half_height = float(self.properties['interval_height']) / 2

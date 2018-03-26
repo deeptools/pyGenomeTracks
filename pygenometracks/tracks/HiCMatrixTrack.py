@@ -6,6 +6,7 @@ from matplotlib import cm
 from matplotlib import colors
 import matplotlib.pyplot as plt
 import numpy as np
+from past.builtins import zip
 
 from . GenomeTrack import GenomeTrack
 

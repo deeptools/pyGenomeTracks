@@ -54,5 +54,3 @@ class TADsTrack(BedTrack):
         label_ax.text(0.15, 0.5, self.properties['title'],
                       horizontalalignment='left', size='large',
                       verticalalignment='center')
-
-

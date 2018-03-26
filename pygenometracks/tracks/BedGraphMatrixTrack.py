@@ -1,3 +1,4 @@
+from past.builtins import map
 from . BedGraphTrack import BedGraphTrack
 from . GenomeTrack import GenomeTrack
 import numpy as np

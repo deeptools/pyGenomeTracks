@@ -1,5 +1,6 @@
 from .. utilities import to_string, to_bytes
 import logging
+import numpy as np
 
 
 class GenomeTrack(object):
@@ -64,5 +65,3 @@ height = 2
             elif type(next(iter(iteratable_obj))) in [bytes, np.bytes_]:
                 p_obj = to_bytes(p_obj)
         return p_obj
-
-

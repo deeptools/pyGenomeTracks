@@ -2,6 +2,8 @@ from . GenomeTrack import GenomeTrack
 from .. utilities import file_to_intervaltree
 import numpy as np
 
+DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
+
 
 class BedGraphTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.bg', '.bg.gz', '.bg.bgz']
