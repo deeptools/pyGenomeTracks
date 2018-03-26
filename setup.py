@@ -99,7 +99,7 @@ install_requires_py = ["numpy >= 1.12.1",
                        "pyBigWig >=0.3.4",
                        "future >= 0.16.0",
                        "hicexplorer >= 1.8",
-                       "pysam==0.11",
+                       "pysam>=0.14",
                        "pytest"
                        ]
 
