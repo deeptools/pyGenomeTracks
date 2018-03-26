@@ -4,5 +4,6 @@ intervaltree >= 2.1.0
 pybigwig >= 0.3.7
 future >= 0.16.0
 hicexplorer >= 2.0
+pysam==0.11
 pytest
 
