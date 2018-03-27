@@ -40,7 +40,7 @@ log.setLevel(logging.DEBUG)
 DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 # proportion of width dedicated to (figure, legends)
-DEFAULT_WIDTH_RATIOS = (0.90, 0.1)
+DEFAULT_WIDTH_RATIOS = (0.01, 0.90, 0.1)
 DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
 
 
@@ -83,7 +83,7 @@ class PlotTracks(object):
         if track_label_width is None:
             self.width_ratios = DEFAULT_WIDTH_RATIOS
         else:
-            self.width_ratios = (1 - track_label_width, track_label_width)
+            self.width_ratios = (0.01, 1 - track_label_width, track_label_width)
 
         font = {'size': fontsize}
         matplotlib.rc('font', **font)
@@ -176,7 +176,7 @@ class PlotTracks(object):
                 # DEFAULT_MARGINS[1] - DEFAULT_MARGINS[0] is the proportion of plotting area
 
                 hic_width = \
-                    self.fig_width * (DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']) * self.width_ratios[0]
+                    self.fig_width * (DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']) * self.width_ratios[1]
                 scale_factor = 0.6  # the scale factor is to obtain a 'pleasing' result.
                 depth = min(track_dict['depth'], (end_region - start_region))
 
@@ -202,7 +202,7 @@ class PlotTracks(object):
         if title:
             fig.suptitle(title)
 
-        grids = matplotlib.gridspec.GridSpec(len(track_height), 2,
+        grids = matplotlib.gridspec.GridSpec(len(track_height), 3,
                                              height_ratios=track_height,
                                              width_ratios=self.width_ratios)
         axis_list = []
@@ -225,13 +225,15 @@ class PlotTracks(object):
                 ylim = axis.get_ylim()
             else:
                 idx -= skipped_tracks
-                axis = axisartist.Subplot(fig, grids[idx, 0])
+                y_axis = plt.subplot(grids[idx, 0])
+                y_axis.set_xticks([])
+                axis = axisartist.Subplot(fig, grids[idx, 1])
                 fig.add_subplot(axis)
                 # turns off the lines around the tracks
                 axis.axis[:].set_visible(False)
                 # to make the background transparent
                 axis.patch.set_visible(False)
-                label_axis = plt.subplot(grids[idx, 1])
+                label_axis = plt.subplot(grids[idx, 2])
                 label_axis.set_axis_off()
 
             axis.set_xlim(start, end)
