@@ -40,7 +40,7 @@ log.setLevel(logging.DEBUG)
 DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 # proportion of width dedicated to (figure, legends)
-DEFAULT_WIDTH_RATIOS = (0.01, 0.90, 0.1)
+DEFAULT_WIDTH_RATIOS = (0.1, 0.90, 0.1)
 DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
 
 
@@ -204,7 +204,8 @@ class PlotTracks(object):
 
         grids = matplotlib.gridspec.GridSpec(len(track_height), 3,
                                              height_ratios=track_height,
-                                             width_ratios=self.width_ratios)
+                                             width_ratios=self.width_ratios,
+                                             hspace=0.5)
         axis_list = []
         # skipped_tracks is the count of tracks that have the
         # 'overlay previous' parameter and should be skipped
@@ -225,14 +226,21 @@ class PlotTracks(object):
                 ylim = axis.get_ylim()
             else:
                 idx -= skipped_tracks
-                y_axis = plt.subplot(grids[idx, 0])
-                y_axis.set_xticks([])
                 axis = axisartist.Subplot(fig, grids[idx, 1])
                 fig.add_subplot(axis)
                 # turns off the lines around the tracks
                 axis.axis[:].set_visible(False)
                 # to make the background transparent
                 axis.patch.set_visible(False)
+
+                # set y_axis to share the y_axis of the main axis
+                y_axis = plt.subplot(grids[idx, 0], sharey=axis)
+                y_axis.set_xticks([])
+
+                y_axis.spines['top'].set_visible(False)
+                y_axis.spines['right'].set_visible(False)
+                y_axis.spines['bottom'].set_visible(False)
+
                 label_axis = plt.subplot(grids[idx, 2])
                 label_axis.set_axis_off()
 
