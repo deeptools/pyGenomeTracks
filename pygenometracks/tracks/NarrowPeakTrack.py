@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from . GenomeTrack import GenomeTrack
 from . BedGraphTrack import BedGraphTrack
 from matplotlib.patches import Rectangle

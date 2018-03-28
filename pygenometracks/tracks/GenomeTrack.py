@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from .. utilities import to_string, to_bytes
 import logging
 import numpy as np
