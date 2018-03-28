@@ -23,12 +23,6 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=DeprecationWarning)
 warnings.simplefilter(action='ignore', category=ImportWarning)
 
-import logging
-FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
-logging.basicConfig(format=FORMAT)
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
 # import warnings
 # warnings.filterwarnings('error')
 

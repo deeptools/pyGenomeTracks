@@ -256,7 +256,6 @@ file_type = {}
 
         cobar.ax.set_yticklabels(labels)
 
-
     def pcolormesh_45deg(self, ax, matrix_c, start_pos_vector, vmin=None, vmax=None):
         """
         Turns the matrix 45 degrees and adjusts the

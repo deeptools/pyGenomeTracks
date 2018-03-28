@@ -129,5 +129,3 @@ file_type = {}
                 # with other labels
                 labels[-1].set_verticalalignment('top')
             cobar.ax.set_yticklabels(labels)
-
-
