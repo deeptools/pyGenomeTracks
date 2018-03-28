@@ -26,6 +26,8 @@ height = 2
 type = line:0.2
 title = type=line:0.2
 
+[spacer]
+
 [test bigwig points]
 file = bigwig_chrx_2e6_5e6.bw
 color = black
@@ -35,12 +37,16 @@ max_value = 100
 type = points:0.5
 title = type=point:0.5; min_value=0;max_value=100
 
+[spacer]
+
 [test bigwig nans to zeros]
 file = bigwig_chrx_2e6_5e6.bw
 color = red
 height = 2
 nans to zeros = True
 title = nans to zeros =True
+
+[spacer]
 
 [test bigwig mean]
 file = bigwig2_X_2.5e6_3.5e6.bw
@@ -51,17 +57,19 @@ type = line
 summary method = mean
 max_value = 150
 min_value = -5
+show data range = no
 number of bins = 300
 
 [test bigwig max]
 file = bigwig2_X_2.5e6_3.5e6.bw
+#title = test
 color = blue
 type = line
 summary method = max
 max_value = 150
-min_value = -5
+min_value = -15
 show data range = no
-overlay previous = yes
+overlay previous = share-y
 number of bins = 300
 
 [test bigwig min]
@@ -69,10 +77,9 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
 type=line
 summary method = min
-overlay previous = yes
 max_value = 150
-min_value = -5
-show data range = no
+min_value = -25
+overlay previous = share-y
 number of bins = 300
 
 [spacer]

@@ -71,7 +71,7 @@ file_type = {}
         path = Path(verts, codes)
         return patches.PathPatch(path)
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region, return_nans=False)
 
         self.patches = []
@@ -118,18 +118,61 @@ file_type = {}
                 ymin = ymax * -0.8
         else:
             ymin = 0
-        ax.set_ylim(ymin, ymax)
-        if self.properties['show data range'] != 'no' and self.properties['type'] != 'box':
-            if float(ymax) % 1 == 0:
-                ymax_print = int(ymax)
-            else:
-                ymax_print = "{:.1f}".format(ymax)
-            ymin_print = 0
-            small_x = 0.01 * (end_region - start_region)
-            # by default show the data range
-            ax.text(start_region - small_x, ymax - ymax * 0.01,
-                    "[{}-{}]".format(ymin_print, ymax_print), horizontalalignment='left', verticalalignment='top')
 
-        label_ax.text(0.15, 0.5, self.properties['title'],
-                      horizontalalignment='left', size='large',
-                      verticalalignment='center')
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            ax.set_ylim(ymax, ymin)
+        else:
+            ax.set_ylim(ymin, ymax)
+
+    def plot_y_axis(self, ax, plot_axis):
+        """
+        Plot the scale of the y axis with respect to the plot_axis
+        Args:
+            ax: axis to use to plot the scale
+            plot_axis: the reference axis to get the max and min.
+
+        Returns:
+
+        """
+        if 'show data range' in self.properties and self.properties['show data range'] == 'no':
+            return
+
+        if self.properties['type'] == 'box':
+            return
+
+        def value_to_str(value):
+            # given a numeric value, returns a
+            # string that removes unneeded decimal places
+            if value % 1 == 0:
+                str_value = str(int(value))
+            else:
+                str_value = "{:.1f}".format(value)
+            return str_value
+
+        ymin, ymax = plot_axis.get_ylim()
+        # get the position of 0 in the transAxes scale
+        y_at_zero = (0 - ymin) / (ymax - ymin)
+
+        ymax_str = value_to_str(ymax)
+        ymin_str = '0'
+
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            ymax = -0.99
+        else:
+            ymax = 0.99
+
+        # plot something that looks like this:
+        # ymax ┐
+        #      │
+        #      │
+        #    0 ┘
+
+        # the coordinate system used is the ax.transAxes (lower left corner (0,0), upper right corner (1,1)
+        # this way is easier to adjust the positions such that the lines are plotted complete
+        # and not only half of the width of the line.
+        x_pos = [0, 0.5, 0.5, 0]
+        y_pos = [y_at_zero, y_at_zero, ymax, ymax]
+        ax.plot(x_pos, y_pos, color='black', linewidth=1, transform=ax.transAxes)
+        ax.text(-0.2, y_at_zero, ymin_str, verticalalignment='bottom', horizontalalignment='right', transform=ax.transAxes)
+        ax.text(-0.2, ymax, ymax_str, verticalalignment='top', horizontalalignment='right', transform=ax.transAxes)
+        ax.patch.set_visible(False)

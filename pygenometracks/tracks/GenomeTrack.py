@@ -36,6 +36,52 @@ height = 2
         log.setLevel(logging.DEBUG)
         self.log = log
 
+    def plot_y_axis(self, ax, plot_axis):
+        """
+        Plot the scale of the y axis with respect to the plot_axis
+        Args:
+            ax: axis to use to plot the scale
+            plot_axis: the reference axis to get the max and min.
+
+        Returns:
+
+        """
+        if 'show data range' in self.properties and self.properties['show data range'] == 'no':
+            return
+
+        def value_to_str(value):
+            # given a numeric value, returns a
+            # string that removes unneeded decimal places
+            if value % 1 == 0:
+                str_value = str(int(value))
+            else:
+                str_value = "{:.1f}".format(value)
+            return str_value
+
+        ymin, ymax = plot_axis.get_ylim()
+
+        ymax_str = value_to_str(ymax)
+        ymin_str = value_to_str(ymin)
+        # plot something that looks like this:
+        # ymax ┐
+        #      │
+        #      │
+        # ymin ┘
+
+        # the coordinate system used is the ax.transAxes (lower left corner (0,0), upper right corner (1,1)
+        # this way is easier to adjust the positions such that the lines are plotted complete
+        # and not only half of the width of the line.
+        x_pos = [0, 0.5, 0.5, 0]
+        y_pos = [0.01, 0.01, 0.99, 0.99]
+        ax.plot(x_pos, y_pos, color='black', linewidth=1, transform=ax.transAxes)
+        ax.text(-0.2, -0.01, ymin_str, verticalalignment='bottom', horizontalalignment='right', transform=ax.transAxes)
+        ax.text(-0.2, 1, ymax_str, verticalalignment='top', horizontalalignment='right', transform=ax.transAxes)
+        ax.patch.set_visible(False)
+
+    def plot_label(self, label_ax):
+        label_ax.text(0.05, 0.5, self.properties['title'], horizontalalignment='left',
+                      size='large', verticalalignment='center', transform=label_ax.transAxes)
+
     @staticmethod
     def change_chrom_names(chrom):
         """

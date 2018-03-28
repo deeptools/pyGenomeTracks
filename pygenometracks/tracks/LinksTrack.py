@@ -104,7 +104,7 @@ file_type = {}
         if 'alpha' not in self.properties:
             self.properties['alpha'] = 0.8
 
-    def plot(self, ax, label_ax, chrom_region, region_start, region_end):
+    def plot(self, ax, chrom_region, region_start, region_end):
         """
         Makes and arc connecting two points on a linear scale representing
         interactions between Hi-C bins.
@@ -147,9 +147,9 @@ file_type = {}
             ax.set_ylim(-1, self.max_height)
 
         self.log.debug('title is {}'.format(self.properties['title']))
-        label_ax.text(0.15, 0.5, self.properties['title'],
-                      horizontalalignment='left', size='large',
-                      verticalalignment='center')
+
+    def plot_y_axis(self, ax, plot_ax):
+        pass
 
     def plot_arcs(self, ax, interval):
         from matplotlib.patches import Arc
