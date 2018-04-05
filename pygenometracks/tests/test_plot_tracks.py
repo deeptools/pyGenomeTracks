@@ -61,7 +61,7 @@ height = 0.5
 [test bedgraph]
 file = bedgraph_chrx_2e6_5e6.bg
 color = blue
-height = 3
+height = 1.5
 title = bedgraph color=blue
 max_value = 100
 
@@ -75,9 +75,11 @@ height = 2
 [test bigwig]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
-height = 3
+height = 1.5
 title = bigwig number of bins=2000
 number of bins = 2000
+
+[spacer]
 
 [test bigwig overlay]
 file = bigwig2_X_2.5e6_3.5e6.bw
@@ -85,7 +87,7 @@ color = red
 title = color:red; max_value=50; number of bins=100 (next track: overlay previous=yes; max_value=50; show data range=no; color=#0000FF80 (blue, with alpha 0.5))
 min_value =0
 max_value = 50
-height = 4
+height = 2
 number of bins = 100
 
 [test bigwig overlay]

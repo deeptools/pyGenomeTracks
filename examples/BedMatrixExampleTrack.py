@@ -1,12 +1,13 @@
+# -*- coding: utf-8 -*-
+from past.builtins import map
 import numpy as np
-from pygenometracks.tracksClass import BedGraphTrack
-from pygenometracks.tracksClass import GenomeTrack
+from . BedGraphTrack import BedGraphTrack
 
 
-class BedGraphMatrixExample(BedGraphTrack):
+class BedGraphMatrixExampleTrack(BedGraphTrack):
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz' '.bedgraphmatrix']
     TRACK_TYPE = 'bedgraph_matrix'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = BedGraphTrack.OPTIONS_TXT + """
         # a bedgraph matrix file is like a bedgraph, except that per bin there
         # are more than one value separated by tab: E.g.
         # This file type is produced by HiCExplorer tool hicFindTads and contains
@@ -22,15 +23,13 @@ class BedGraphMatrixExample(BedGraphTrack):
         file_type = {}
             """.format(TRACK_TYPE)
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
         """
-
-        :param ax:
-        :param label_ax:
-        :param chrom_region:
-        :param start_region:
-        :param end_region:
-        :return:
+        Args:
+            ax: matplotlib axis to plot
+            chrom_region: chromosome name
+            start_region: start coordinate of genomic position
+            end_region: end coordinate
         """
 
         start_pos = []
@@ -50,4 +49,5 @@ class BedGraphMatrixExample(BedGraphTrack):
         img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
         img.set_rasterized(True)
 
-        label_ax.text(0.15, 0.5, self.properties['title'])
+    def plot_y_axis(self, ax, plot_axis):
+        pass

@@ -31,9 +31,6 @@ orientation = inverted
 [spacer]
 height = 0.5
 
-[spacer]
-height = 0.5
-
 [hic matrix]
 file = Li_et_al_2015.h5
 title = depth=300000; transform=log1p; colormap Blues (TADs: overlay previous=yes; line width=1.5)
@@ -53,6 +50,7 @@ color = none
 height = 5
 line width = 1.5
 overlay previous = share-y
+show data range = no
 
 [spacer]
 height = 0.5
@@ -76,6 +74,8 @@ line style = dashed
 overlay previous = share-y
 line width = 0.8
 color = darkred
+show data range = no
+
 
 [test bigwig]
 file = bigwig2_X_2.5e6_3.5e6.bw
@@ -85,6 +85,7 @@ title =
 overlay previous = yes
 min_value = 0
 max_value = 50
+show data range = no
 
 [spacer]
 height = 0.5

@@ -257,11 +257,11 @@ Adding new tracks to pyGenomeTracks only requires adding a new class to the `pyg
 The class should inherit the the `GenomeTrack` (or other track class available) and should have a `plot` method.
 Additionally, some basic description should be added.
 
-For example, to make a track that prints 'hello world'  at a given location looks like this:
+For example, to make a track that prints 'hello world' at a given location looks like this:
 
 ```python
 class TextTrack(GenomeTrack):
-    SUPPORTED_ENDINGS = ['.txt']  # this is used to guess the type of track based on file name
+    SUPPORTED_ENDINGS = ['.txt']  # this is used by make_tracks_file to guess the type of track based on file name
     TRACK_TYPE = 'text'
     OPTIONS_TXT = """
 height = 3
@@ -270,11 +270,19 @@ text =
 # x position of text in the plot (in bp)
 x position =
 """
-    def plot(self, ax, label_ax, chrom, region_start, region_end):
+    def plot(self, ax, chrom, region_start, region_end):
+        """
+        This example simply plots the given title at a fixed
+        location in the axis. The chrom, region_start and region_end
+        variables are not used.
+        Args:
+            ax: matplotlib axis to plot
+            chrom_region: chromosome name
+            start_region: start coordinate of genomic position
+            end_region: end coordinate
+        """
         # print text at position x = self.properties['x position'] and y = 0.5 (center of the plot)
         ax.text(float(self.properties['x position']), 0.5, self.properties['text'])
-        # print title in legend axis
-        label_ax.text(0.15, 0.5, self.properties['title'])
 
 ```
 
@@ -299,16 +307,24 @@ x position = 3100000
 ```
 
 ```bash
+# pgt is short for `pyGenomeTracks`
 pgt --tracks new_track.ini --region X:3000000-3200000 -o new_track.png
 ```
 
 ![pyGenomeTracks example](./examples/new_track.png)
 
+Notice that the resulting track already includes a y-axis (to the left) and 
+a label to the right. This are the defaults that can be changed by
+adding a `plot_y_axis` and `plot_label` methods. 
 
 Another more complex example is the plotting of multiple bedgraph data as matrices. The output of `HiCExplorer hicFindTADs` produces a data format that
 is similar to a bedgraph but with more value columns. We call this a bedgraph matrix. The following track plot this bedgraph matrix:
  
  ```python
+import numpy as np
+from pygenometracks.tracksClass import BedGraphTrack
+from pygenometracks.tracksClass import GenomeTrack
+
  class BedGraphMatrixTrack(BedGraphTrack):
     # this track class extends a BedGraphTrack that is already part of 
     # pyGenomeTracks. The advantage of extending this class is that
@@ -328,14 +344,13 @@ is similar to a bedgraph but with more value columns. We call this a bedgraph ma
         file_type = {}
         """.format(TRACK_TYPE)
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
         """
-        :param ax: main axis to plot 
-        :param label_ax: label axis
-        :param chrom_region: name of the chromosome for the region to plot
-        :param start_region: start coordinate (in bp) of the region to plot
-        :param end_region: end coordinate (in bp) of the region to plot
-
+        Args:
+            ax: matplotlib axis to plot
+            chrom_region: chromosome name
+            start_region: start coordinate of genomic position
+            end_region: end coordinate
         """
 
         # the BedGraphTrack already has methods to read files
@@ -374,9 +389,11 @@ is similar to a bedgraph but with more value columns. We call this a bedgraph ma
         img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
         img.set_rasterized(True)
 
-        # to add the label text
-        label_ax.text(0.15, 0.5, self.properties['title'])
-```
+
+    def plot_y_axis(self, ax, plot_axis):
+        """turn off y_axis plot"
+        pass
+ ```
 
 
 Let's create a track for this:
@@ -399,7 +416,7 @@ pgt --tracks bedgraph_matrix.ini --region X:2000000-3500000 -o bedgraph_matrix.p
 
 ![pyGenomeTracks example](./examples/bedgraph_matrix.png)
 
-Although this image looks interesting a more meaningful way to plot
+Although this image looks interesting another way to plot
 the data is a overlapping lines with the mean value highlighted. 
 Using the bedgraph version of `pyGenomeTracks` the following image
 can be obtained:

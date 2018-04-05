@@ -13,25 +13,32 @@ tracks = """
 [test bedgraph tabix]
 file = bedgraph_chrx_2e6_5e6.bg.bgz
 color = blue
-height = 3
+height = 2
 title = tabix color=blue; type=fill
 min_value = -5
 type = fill
 
+[spacer]
+width = 0.01
+
 [test bedgraph tabix]
 file = bedgraph_chrx_2e6_5e6.bg.bgz
 color = brown
-height = 3
-title = tabix color=brown; type=line:0.5;nans to zeros=True
+height = 2
+title = tabix color=brown; type=line:0.5;nans to zeros=True; orientation=inverted
 nans to zeros = True
 min_value = -5
 max_value = 50
 type = line:0.5
+orientation = inverted
+
+[spacer]
+width = 0.01
 
 [test bedgraph]
 file = bedgraph_chrx_2e6_5e6.bg
 color = red
-height = 3
+height = 2
 title = color=red;type=points:0.5
 min_value = 0
 max_value = 50
@@ -55,13 +62,17 @@ file_type = bedgraph_matrix
 type = lines
 pos score in bin = block
 
+[spacer]
+width = 0.01
+
 [test bedgraph matrix lines]
 file = tad_separation_score_with_gap.bm.bgz
-title = type=lines (file type is tabix with a gap)
+title = type=lines; show data range=no (file type is tabix with a gap)
 height = 5
 file_type = bedgraph_matrix
 type = lines
 pos score in bin = center
+show data range = no
 
 [test bedgraph matrix lines tabix]
 file = tad_separation_score.bm.gz

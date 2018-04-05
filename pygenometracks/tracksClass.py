@@ -40,7 +40,7 @@ log.setLevel(logging.DEBUG)
 DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 # proportion of width dedicated to (figure, legends)
-DEFAULT_WIDTH_RATIOS = (0.90, 0.1)
+DEFAULT_WIDTH_RATIOS = (0.01, 0.90, 0.1)
 DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
 
 
@@ -83,7 +83,7 @@ class PlotTracks(object):
         if track_label_width is None:
             self.width_ratios = DEFAULT_WIDTH_RATIOS
         else:
-            self.width_ratios = (1 - track_label_width, track_label_width)
+            self.width_ratios = (0.01, 1 - track_label_width, track_label_width)
 
         font = {'size': fontsize}
         matplotlib.rc('font', **font)
@@ -176,7 +176,7 @@ class PlotTracks(object):
                 # DEFAULT_MARGINS[1] - DEFAULT_MARGINS[0] is the proportion of plotting area
 
                 hic_width = \
-                    self.fig_width * (DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']) * self.width_ratios[0]
+                    self.fig_width * (DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']) * self.width_ratios[1]
                 scale_factor = 0.6  # the scale factor is to obtain a 'pleasing' result.
                 depth = min(track_dict['depth'], (end_region - start_region))
 
@@ -202,15 +202,16 @@ class PlotTracks(object):
         if title:
             fig.suptitle(title)
 
-        grids = matplotlib.gridspec.GridSpec(len(track_height), 2,
+        grids = matplotlib.gridspec.GridSpec(len(track_height), 3,
                                              height_ratios=track_height,
-                                             width_ratios=self.width_ratios)
+                                             width_ratios=self.width_ratios, wspace=0.01)
         axis_list = []
         # skipped_tracks is the count of tracks that have the
         # 'overlay previous' parameter and should be skipped
         skipped_tracks = 0
-        axis = None
+        plot_axis = None
         for idx, track in enumerate(self.track_obj_list):
+            log.info("plotting {}".format(track.properties['section_name']))
             if idx == 0 and track.properties['overlay previous'] != 'no':
                 log.warn("First track can not have the `overlay previous` option")
                 track.properties['overlay previous'] = 'no'
@@ -222,26 +223,32 @@ class PlotTracks(object):
                 overlay = False
 
             if track.properties['overlay previous'] == 'share-y':
-                ylim = axis.get_ylim()
+                ylim = plot_axis.get_ylim()
             else:
                 idx -= skipped_tracks
-                axis = axisartist.Subplot(fig, grids[idx, 0])
-                fig.add_subplot(axis)
+                plot_axis = axisartist.Subplot(fig, grids[idx, 1])
+                fig.add_subplot(plot_axis)
                 # turns off the lines around the tracks
-                axis.axis[:].set_visible(False)
+                plot_axis.axis[:].set_visible(False)
                 # to make the background transparent
-                axis.patch.set_visible(False)
-                label_axis = plt.subplot(grids[idx, 1])
+                plot_axis.patch.set_visible(False)
+
+                y_axis = plt.subplot(grids[idx, 0])
+                y_axis.set_axis_off()
+
+                label_axis = plt.subplot(grids[idx, 2])
                 label_axis.set_axis_off()
 
-            axis.set_xlim(start, end)
-            track.plot(axis, label_axis, chrom, start, end)
+            plot_axis.set_xlim(start, end)
+            track.plot(plot_axis, chrom, start, end)
+            track.plot_y_axis(y_axis, plot_axis)
+            track.plot_label(label_axis)
 
             if track.properties['overlay previous'] == 'share-y':
-                axis.set_ylim(ylim)
+                plot_axis.set_ylim(ylim)
 
             if not overlay:
-                axis_list.append(axis)
+                axis_list.append(plot_axis)
 
         if self.vlines_intval_tree:
             self.plot_vlines(axis_list, chrom, start, end)
@@ -432,7 +439,10 @@ class SpacerTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
+        pass
+
+    def plot_y_axis(self, ax, plot_ax):
         pass
 
 
@@ -445,7 +455,7 @@ class XAxisTrack(GenomeTrack):
         if 'fontsize' not in self.properties:
             self.properties['fontsize'] = 15
 
-    def plot(self, ax, label_axis, chrom_region, region_start, region_end):
+    def plot(self, ax, chrom_region, region_start, region_end):
         ticks = ax.get_xticks()
         if ticks[-1] - ticks[1] <= 1e5:
             labels = ["{:,.0f}".format((x / 1e3))
@@ -477,6 +487,6 @@ class XAxisTrack(GenomeTrack):
         ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
 
         ax.axis["x"].major_ticklabels.set(size=int(self.properties['fontsize']))
-        label_axis.text(0.15, 0.5, self.properties['title'],
-                        horizontalalignment='left', size='large',
-                        verticalalignment='center')
+
+    def plot_y_axis(self, ax, plot_ax):
+        pass

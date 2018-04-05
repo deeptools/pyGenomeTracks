@@ -50,7 +50,7 @@ file_type = {}
         if 'plot horizontal lines' not in self.properties:
             self.properties['plot horizontal lines'] = 'no'
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
         """
         Plots a bedgraph matrix file, that instead of having
         a single value per bin, it has several values.
@@ -89,27 +89,6 @@ file_type = {}
             ymin = self.properties['min_value']
             ax.set_ylim(ymin, ymax)
 
-            if self.properties['show data range'] == 'no':
-                pass
-            else:
-                # by default show the data range
-                ymin, ymax = ax.get_ylim()
-                if float(ymax) % 1 == 0:
-                    ymax_print = int(ymax)
-                else:
-                    ymax_print = "{:.1f}".format(ymax)
-
-                if float(ymin) % 1 == 0:
-                    ymin_print = int(ymin)
-                else:
-                    ymin_print = "{:.1f}".format(ymin)
-
-                ydelta = ymax - ymin
-                small_x = 0.01 * (end_region - start_region)
-                ax.text(start_region - small_x, ymax - ydelta * 0.2,
-                        "[{}-{}]".format(ymin_print, ymax_print),
-                        horizontalalignment='left',
-                        verticalalignment='bottom')
             if self.properties['plot horizontal lines'] == 'yes':
                 ax.grid(True)
                 ax.grid(True, which='y')
@@ -123,9 +102,30 @@ file_type = {}
             shading = 'gouraud'
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
-            img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
-            img.set_rasterized(True)
+            self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
+            self.img.set_rasterized(True)
 
-        label_ax.text(0.15, 0.5, self.properties['title'],
-                      horizontalalignment='left', size='large',
-                      verticalalignment='center', transform=label_ax.transAxes)
+    def plot_y_axis(self, ax, plot_axis):
+        if self.properties['type'] == 'lines':
+            super(BedGraphMatrixTrack, self).plot_y_axis(ax, plot_axis)
+        else:
+            import matplotlib.pyplot as plt
+
+            cobar = plt.colorbar(self.img, ax=ax, fraction=0.95)
+
+            cobar.solids.set_edgecolor("face")
+            cobar.ax.tick_params(labelsize='smaller')
+            cobar.ax.yaxis.set_ticks_position('left')
+            # adjust the labels of the colorbar
+            labels = cobar.ax.get_yticklabels()
+            ticks = cobar.ax.get_yticks()
+            if ticks[0] == 0:
+                # if the label is at the start of the colobar
+                # move it above avoid being cut or overlapping with other track
+                labels[0].set_verticalalignment('bottom')
+            if ticks[-1] == 1:
+                # if the label is at the end of the colobar
+                # move it a bit inside to avoid overlapping
+                # with other labels
+                labels[-1].set_verticalalignment('top')
+            cobar.ax.set_yticklabels(labels)
