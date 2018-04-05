@@ -204,7 +204,7 @@ class PlotTracks(object):
 
         grids = matplotlib.gridspec.GridSpec(len(track_height), 3,
                                              height_ratios=track_height,
-                                             width_ratios=self.width_ratios)
+                                             width_ratios=self.width_ratios, wspace=0.01)
         axis_list = []
         # skipped_tracks is the count of tracks that have the
         # 'overlay previous' parameter and should be skipped
