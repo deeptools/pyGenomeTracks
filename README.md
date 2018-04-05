@@ -167,7 +167,8 @@ Examples with peaks
 
 pyGenomeTracks has an option to plot peaks using MACS2 narrowPeak format.
 
-This is an example of the output:
+The following is an example of the output in which the peak shape is 
+drawn based on the start, end, summit and height of the peak.
 
 ![pyGenomeTracks bigwig example](./pygenometracks/tests/test_data/master_narrowPeak.png)
 
@@ -252,10 +253,11 @@ The configuration file for this image is [here](./pygenometracks/tests/test_data
 
 Adding new tracks
 -----------------
-Adding new tracks to pyGenomeTracks only requires adding a new file to the `tracks` folder containing a class
-that inherits the `GenomeTrack` class and that has a `plot` method and and some basic info.
+Adding new tracks to pyGenomeTracks only requires adding a new class to the `pygenometracks/tracks` folder. 
+The class should inherit the the `GenomeTrack` (or other track class available) and should have a `plot` method.
+Additionally, some basic description should be added.
 
-For example, to make a track that plots 'hello world' at we need to make class that looks like this:
+For example, to make a track that prints 'hello world' at a given location looks like this:
 
 ```python
 class TextTrack(GenomeTrack):
@@ -284,8 +286,12 @@ x position =
 
 ```
 
+The OPTIONS_TXT should contain the text to build a default configuration file. 
+This information, together with the information about SUPPORTED_ENDINGS is used
+by the program `make_tracks_file` to create a default configuration file
+based on the endings of the files given.
 
-Now we make a configuration file.
+The configuration file is:
 
 ```INI
 [x-axis]
@@ -346,19 +352,23 @@ from pygenometracks.tracksClass import GenomeTrack
             start_region: start coordinate of genomic position
             end_region: end coordinate
         """
-        
-        start_pos = []
-        matrix_rows = []
 
-        # the __init__ method of the class BedGraphTrack already parsed
-        # the bedgraph file which is stored as an interval_tree for 
-        # quick querying of a region. 
-        # The code:
-        #   sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000])
-        # returns all the bedgraph intervals within the chrom_region:start_region-end_region range 
-        for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
-            start_pos.append(region.begin)
-            values = map(float, region.data)
+        # the BedGraphTrack already has methods to read files
+        # in which the first three columns are chrom, start,end
+        # here we used the get_scores method inherited from the
+        # BedGraphTrack class
+        values_list, start_pos = self.get_scores(chrom_region, start_region, end_region)
+        
+        # the values_list is a python list, containing one element
+        # per row in the selected genomic range.
+        # In this case, the bedgraph matrix contains per row a list
+        # of values, thus, each element of the values_list is itself
+        # a list. 
+        # In the following code, such list is converted to floats and
+        # appended to a new list. 
+        matrix_rows = []
+        for values in values_list:
+            values = map(float, values)
             matrix_rows.append(values)
 
         # using numpy, the list of values per line in the bedgraph file
