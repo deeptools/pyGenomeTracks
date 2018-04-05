@@ -42,7 +42,7 @@ class EpilogosTrack(BedGraphTrack):
         if 'plot horizontal lines' not in self.properties:
             self.properties['plot horizontal lines'] = 'no'
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
         """
         Plots a bedgraph matrix file, that instead of having
         a single value per bin, it has several values.
@@ -98,6 +98,3 @@ class EpilogosTrack(BedGraphTrack):
         collection = PatchCollection(rects, match_original=True)
         ax.add_collection(collection)
         ax.set_ylim(ymin - ymin * 0.01, ymax + ymax * 0.01)
-        label_ax.text(0.15, 0.5, self.properties['title'],
-                      horizontalalignment='left', size='large',
-                      verticalalignment='center', transform=label_ax.transAxes)
