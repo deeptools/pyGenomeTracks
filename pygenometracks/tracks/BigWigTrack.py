@@ -66,12 +66,8 @@ file_type = {}
             exit("Invalid: 'type = {}' in section: {}\n".format(self.properties['type'],
                                                                 self.properties['section_name']))
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
         formated_region = "{}:{}-{}".format(chrom_region, start_region, end_region)
-        self.log.debug("plotting {}".format(self.properties['file']))
-        # compute the score in bins of 10000 SLOW
-    #    score = np.array([self.bw.query(region[0], x, x+10000,1)[0]['mean']
-    #                      for x in range(region[1], region[2], 10000)])
 
         num_bins = 700
         if 'number of bins' in self.properties:
@@ -139,25 +135,5 @@ file_type = {}
             ax.set_ylim(ymax, ymin)
         else:
             ax.set_ylim(ymin, ymax)
-
-        ydelta = ymax - ymin
-
-        # set min max
-        if float(ymax) % 1 == 0:
-            ymax_print = int(ymax)
-        else:
-            ymax_print = "{:.1f}".format(ymax)
-
-        small_x = 0.01 * (end_region - start_region)
-        if 'show data range' in self.properties and self.properties['show data range'] == 'no':
-            pass
-        else:
-            # by default show the data range
-            ax.text(start_region - small_x, ymax - ydelta * 0.2,
-                    "[{}-{}]".format(int(ymin), ymax_print),
-                    horizontalalignment='left', verticalalignment='top')
-
-        label_ax.text(0.15, 0.5, self.properties['title'],
-                      horizontalalignment='left', size='large', verticalalignment='center')
 
         return ax

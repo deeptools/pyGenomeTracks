@@ -233,7 +233,7 @@ file_type = {}
             ypos = free_row * self.row_scale
         return ypos
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
         self.counter = 0
         self.small_relative = 0.004 * (end_region - start_region)
         self.get_length_w(ax.get_figure().get_figwidth(), start_region, end_region)
@@ -365,9 +365,34 @@ file_type = {}
             elif self.properties['display'] == 'collapsed':
                 ax.set_ylim(-5, 105)
 
-        label_ax.text(0.15, 1, self.properties['title'],
+    def plot_label(self, label_ax):
+        label_ax.text(0.05, 1, self.properties['title'],
                       horizontalalignment='left', size='large',
                       verticalalignment='top', transform=label_ax.transAxes)
+
+    def plot_y_axis(self, ax, plot_axis):
+        if self.colormap is not None:
+            import matplotlib.pyplot as plt
+            self.colormap.set_array([])
+
+            cobar = plt.colorbar(self.colormap, ax=ax, fraction=1, orientation='vertical')
+
+            cobar.solids.set_edgecolor("face")
+            cobar.ax.tick_params(labelsize='smaller')
+            cobar.ax.yaxis.set_ticks_position('left')
+            # adjust the labels of the colorbar
+            labels = cobar.ax.get_yticklabels()
+            ticks = cobar.ax.get_yticks()
+            if ticks[0] == 0:
+                # if the label is at the start of the colobar
+                # move it above avoid being cut or overlapping with other track
+                labels[0].set_verticalalignment('bottom')
+            if ticks[-1] == 1:
+                # if the label is at the end of the colobar
+                # move it a bit inside to avoid overlapping
+                # with other labels
+                labels[-1].set_verticalalignment('top')
+            cobar.ax.set_yticklabels(labels)
 
     def get_rgb_and_edge_color(self, bed):
         rgb = self.properties['color']
@@ -376,7 +401,7 @@ file_type = {}
         if self.colormap:
             # translate value field (in the example above is 0 or 0.2686...) into a color
             rgb = self.colormap.to_rgba(bed.score)
-
+            self.rgb = rgb
         if self.properties['color'] == 'bed_rgb':
             # if rgb is set in the bed line, this overrides the previously
             # defined colormap

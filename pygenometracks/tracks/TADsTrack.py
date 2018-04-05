@@ -5,7 +5,7 @@ class TADsTrack(BedTrack):
     SUPPORTED_ENDINGS = ['.domain', '.domains' '.tad', '.tads']
     TRACK_TYPE = 'domains'
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
         """
         Plots the boundaries as triangles in the given ax.
         """
@@ -50,7 +50,3 @@ class TADsTrack(BedTrack):
             ax.set_ylim(ymax, 0)
         else:
             ax.set_ylim(0, ymax)
-
-        label_ax.text(0.15, 0.5, self.properties['title'],
-                      horizontalalignment='left', size='large',
-                      verticalalignment='center')

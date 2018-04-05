@@ -17,7 +17,7 @@ title = max_value=40
 
 [narrow 2]
 file = test.narrowPeak
-height = 4
+height = 2
 show labels = no
 show data range =  no
 color = #00FF0080
@@ -27,7 +27,7 @@ title = show labels=no; show data range=no; use summit=no;color=#00FF0080
 
 [narrow 3]
 file = test.narrowPeak
-height = 4
+height = 2
 show labels = no
 color = #0000FF80
 use summit = no
@@ -53,7 +53,7 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 
 def test_narrow_track():
-    region = "X:2760000-2800000"
+    region = "X:2760000-2802000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='narrowTrack_test_', delete=False)
     args = "--tracks {root}/narrow_peak.ini --region {region} --trackLabelFraction 0.2 " \
            "--dpi 130 --outFileName  {outfile}".format(root=ROOT, outfile=outfile.name, region=region).split()

@@ -1,7 +1,6 @@
 import hicexplorer.HiCMatrix as HiCMatrix
 import hicexplorer.utilities
 import scipy.sparse
-import copy
 from matplotlib import cm
 from matplotlib import colors
 import matplotlib.pyplot as plt
@@ -126,14 +125,13 @@ file_type = {}
 
         self.cmap.set_bad('black')
 
-    def plot(self, ax, label_ax, chrom_region, region_start, region_end):
-        self.cbar_ax = copy.copy(label_ax)
+    def plot(self, ax, chrom_region, region_start, region_end):
 
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
-        if chrom_region not in list(chrom_sizes):
+        if chrom_region not in chrom_sizes:
             chrom_region = self.change_chrom_names(chrom_region)
-            chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
 
+        chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
         if region_end > chrom_sizes[chrom_region]:
             self.log.error("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n")
             self.log.error("{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
@@ -214,51 +212,49 @@ file_type = {}
 
         self.log.info("setting min, max values for track {} to: {}, {}\n".
                       format(self.properties['section_name'], vmin, vmax))
-        img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
-        img.set_rasterized(True)
+        self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
+        self.img.set_rasterized(True)
         if self.plot_inverted:
             ax.set_ylim(depth, 0)
         else:
             ax.set_ylim(0, depth)
 
-        self.cbar_ax.patch.set_alpha(0.0)
-        try:
-            if 'transform' in self.properties and \
-                    self.properties['transform'] in ['log', 'log1p']:
-                # get a useful log scale
-                # that looks like [1, 2, 5, 10, 20, 50, 100, ... etc]
+    def plot_y_axis(self, cbar_ax, plot_ax):
 
-                # The following code is problematic with some versions of matplotlib.
-                # Should be uncommented once the problem is clarified
-                from matplotlib.ticker import LogFormatter
-                formatter = LogFormatter(10, labelOnlyBase=False)
-                aa = np.array([1, 2, 5])
-                tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
-                cobar = plt.colorbar(img, ticks=tick_values, format=formatter, ax=self.cbar_ax, fraction=0.95)
-            else:
-                cobar = plt.colorbar(img, ax=self.cbar_ax, fraction=0.95)
-            cobar.solids.set_edgecolor("face")
-            cobar.ax.tick_params(labelsize='smaller')
-            # cobar.ax.set_ylabel(self.properties['title'])
+        if 'transform' in self.properties and \
+                self.properties['transform'] in ['log', 'log1p']:
+            # get a useful log scale
+            # that looks like [1, 2, 5, 10, 20, 50, 100, ... etc]
 
-            # adjust the labels of the colorbar
-            labels = cobar.ax.get_yticklabels()
-            ticks = cobar.ax.get_yticks()
-            if ticks[0] == 0:
-                # if the label is at the start of the colobar
-                # move it above avoid being cut or overlapping with other track
-                labels[0].set_verticalalignment('bottom')
-            if ticks[-1] == 1:
-                # if the label is at the end of the colobar
-                # move it a bit inside to avoid overlapping
-                # with other labels
-                labels[-1].set_verticalalignment('top')
-            cobar.ax.set_yticklabels(labels)
+            # The following code is problematic with some versions of matplotlib.
+            # Should be uncommented once the problem is clarified
+            from matplotlib.ticker import LogFormatter
+            formatter = LogFormatter(10, labelOnlyBase=False)
+            aa = np.array([1, 2, 5])
+            tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
+            cobar = plt.colorbar(self.img, ticks=tick_values, format=formatter, ax=cbar_ax, fraction=0.95)
+        else:
+            cobar = plt.colorbar(self.img, ax=cbar_ax, fraction=0.95)
 
-        except ValueError:
-            pass
+        cobar.solids.set_edgecolor("face")
+        cobar.ax.tick_params(labelsize='smaller')
+        cobar.ax.yaxis.set_ticks_position('left')
 
-        label_ax.text(0.30, 0.5, self.properties['title'], size='large', verticalalignment='center')
+        # adjust the labels of the colorbar
+        labels = cobar.ax.get_yticklabels()
+        ticks = cobar.ax.get_yticks()
+
+        if ticks[0] == 0:
+            # if the label is at the start of the colobar
+            # move it above avoid being cut or overlapping with other track
+            labels[0].set_verticalalignment('bottom')
+        if ticks[-1] == 1:
+            # if the label is at the end of the colobar
+            # move it a bit inside to avoid overlapping
+            # with other labels
+            labels[-1].set_verticalalignment('top')
+
+        cobar.ax.set_yticklabels(labels)
 
     def pcolormesh_45deg(self, ax, matrix_c, start_pos_vector, vmin=None, vmax=None):
         """

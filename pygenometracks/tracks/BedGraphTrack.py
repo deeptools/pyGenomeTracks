@@ -151,7 +151,7 @@ file_type = {}
 
         return score_list, pos_list
 
-    def plot(self, ax, label_ax, chrom_region, start_region, end_region):
+    def plot(self, ax, chrom_region, start_region, end_region):
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         score_list = [float(x[0]) for x in score_list]
 
@@ -196,23 +196,7 @@ file_type = {}
         if ymin is None:
             ymin = plot_ymin
 
-        if float(ymax) % 1 == 0:
-            ymax_print = int(ymax)
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            ax.set_ylim(ymax, ymin)
         else:
-            ymax_print = "{:.1f}".format(ymax)
-        ax.set_ylim(ymin, ymax)
-        ydelta = ymax - ymin
-        small_x = 0.01 * (end_region - start_region)
-
-        if 'show data range' in self.properties and \
-                self.properties['show data range'] == 'no':
-            pass
-        else:
-            # by default show the data range
-            ax.text(start_region - small_x, ymax - ydelta * 0.2,
-                    "[{}-{}]".format(ymin, ymax_print),
-                    horizontalalignment='left', size='small', verticalalignment='bottom')
-
-        label_ax.text(0.15, 0.5, self.properties['title'],
-                      horizontalalignment='left', size='large',
-                      verticalalignment='center', transform=label_ax.transAxes)
+            ax.set_ylim(ymin, ymax)
