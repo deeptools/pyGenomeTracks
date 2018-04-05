@@ -74,6 +74,16 @@ file_type = {}
         return patches.PathPatch(path)
 
     def plot(self, ax, chrom_region, start_region, end_region):
+        '''
+
+        Args:
+            chrom_region:
+            start_region:
+            end_region:
+
+        Returns:
+
+        '''
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region, return_nans=False)
 
         self.patches = []
