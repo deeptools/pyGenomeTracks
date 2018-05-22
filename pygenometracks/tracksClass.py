@@ -195,7 +195,7 @@ class PlotTracks(object):
         else:
             fig_height = sum(track_height)
 
-        log.debug("Figure size in cm is {} x {}. Dpi is set to {}\n".format(self.fig_width,fig_height, self.dpi))
+        log.debug("Figure size in cm is {} x {}. Dpi is set to {}\n".format(self.fig_width, fig_height, self.dpi))
         fig = plt.figure(figsize=self.cm2inch(self.fig_width, fig_height))
         if title:
             fig.suptitle(title)

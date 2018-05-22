@@ -151,8 +151,8 @@ file_type = {}
         end_bp = min(chr_end, region_end + self.properties['depth'])
 
         idx, start_pos = list(zip(*[(idx, x[1]) for idx, x in
-                               enumerate(self.hic_ma.cut_intervals)
-                               if x[0] == chrom_region and x[1] >= start_bp and x[2] <= end_bp]))
+                                enumerate(self.hic_ma.cut_intervals)
+                                if x[0] == chrom_region and x[1] >= start_bp and x[2] <= end_bp]))
 
         idx = idx[0:-1]
         # select only relevant matrix part

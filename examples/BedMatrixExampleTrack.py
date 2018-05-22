@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#from past.builtins import map
+# from past.builtins import map
 import numpy as np
 from . BedGraphTrack import BedGraphTrack
 
