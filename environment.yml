@@ -1,4 +1,4 @@
-name: pygenometracks2
+name: pygenometracks
 channels:
    - bioconda
    - conda-forge
