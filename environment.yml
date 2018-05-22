@@ -1,0 +1,14 @@
+name: pygenometracks2
+channels:
+   - bioconda
+   - conda-forge
+dependencies:
+    - numpy >= 1.12.1
+    - matplotlib >= 2.0.0
+    - intervaltree >= 2.1.0
+    - pybigwig >= 0.3.7
+    - future >= 0.16.0
+    - hicexplorer >= 2.0
+    - pytest
+    - pip:
+        - "git+https://github.com/deeptools/pyGenomeTracks.git"
