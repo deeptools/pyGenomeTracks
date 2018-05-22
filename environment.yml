@@ -8,7 +8,8 @@ dependencies:
     - intervaltree >= 2.1.0
     - pybigwig >= 0.3.7
     - future >= 0.16.0
-    - hicexplorer >= 2.0
+    - hicexplorer >= 2.1.1
+    - pysam >= 0.14
     - pytest
     - pip:
         - "git+https://github.com/deeptools/pyGenomeTracks.git"
