@@ -5,7 +5,7 @@ import sys
 import subprocess
 import re
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.sdist import sdist as _sdist
 from setuptools.command.install import install as _install
 
@@ -111,7 +111,7 @@ setup(
     version=get_version(),
     author='Fidel Ramírez, Joachim Wolf, Björn Grüning,',
     author_email='deeptools@googlegroups.com',
-    packages=['pygenometracks'],
+    packages=find_packages(exclude=['tests']),
     scripts=['bin/make_tracks_file', 'bin/pgt', 'bin/pyGenomeTracks'],
     include_package_data=True,
     package_dir={'pygenometracks': 'pygenometracks'},
