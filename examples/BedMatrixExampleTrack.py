@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from past.builtins import map
+#from past.builtins import map
 import numpy as np
 from . BedGraphTrack import BedGraphTrack
 
@@ -37,7 +37,7 @@ class BedGraphMatrixExampleTrack(BedGraphTrack):
 
         for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
             start_pos.append(region.begin)
-            values = map(float, region.data)
+            values = list(map(float, region.data))
             matrix_rows.append(values)
 
         matrix = np.vstack(matrix_rows).T
