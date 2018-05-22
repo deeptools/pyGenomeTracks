@@ -152,7 +152,7 @@ file_type = {}
 
         idx, start_pos = list(zip(*[(idx, x[1]) for idx, x in
                                 enumerate(self.hic_ma.cut_intervals)
-                                if x[0] == chrom_region and x[1] >= start_bp and x[2] <= end_bp]))
+                                    if x[0] == chrom_region and x[1] >= start_bp and x[2] <= end_bp]))
 
         idx = idx[0:-1]
         # select only relevant matrix part

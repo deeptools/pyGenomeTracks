@@ -1,3 +1,6 @@
+# create the environment using : `conda env create -f environment.yml`
+# update existing environment using : `conda env update -f environment.yml`
+# It installs from source using github master branch. If you get a pip error coming from feedparser.py, refer to the hack mentioned here : `https://bugs.python.org/msg301789`
 name: pygenometracks
 channels:
    - bioconda
