@@ -27,7 +27,6 @@ warnings.simplefilter(action='ignore', category=ImportWarning)
 # warnings.filterwarnings('error')
 
 from collections import OrderedDict
-
 from pygenometracks.tracks import *
 
 FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
@@ -196,8 +195,7 @@ class PlotTracks(object):
         else:
             fig_height = sum(track_height)
 
-        log.debug("Figure size in cm is {} x {}. Dpi is set to {}\n".format(self.fig_width,
-                                                                            fig_height, self.dpi))
+        log.debug("Figure size in cm is {} x {}. Dpi is set to {}\n".format(self.fig_width,fig_height, self.dpi))
         fig = plt.figure(figsize=self.cm2inch(self.fig_width, fig_height))
         if title:
             fig.suptitle(title)
