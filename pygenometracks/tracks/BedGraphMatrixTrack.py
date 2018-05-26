@@ -1,4 +1,3 @@
-from past.builtins import map
 from . BedGraphTrack import BedGraphTrack
 from . GenomeTrack import GenomeTrack
 import numpy as np
@@ -60,7 +59,7 @@ file_type = {}
 
         matrix_rows = []
         for values in values_list:
-            values = map(float, values)
+            values = list(map(float, values))
             matrix_rows.append(values)
 
         matrix = np.vstack(matrix_rows).T

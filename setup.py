@@ -5,7 +5,7 @@ import sys
 import subprocess
 import re
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.sdist import sdist as _sdist
 from setuptools.command.install import install as _install
 
@@ -96,7 +96,7 @@ class install(_install):
 install_requires_py = ["numpy >= 1.12.1",
                        "matplotlib >= 2.0.0",
                        "intervaltree >= 2.1.0",
-                       "pyBigWig >=0.3.4",
+                       "pyBigWig >=0.3.7",
                        "future >= 0.16.0",
                        "hicexplorer >= 2.1.1",
                        "pysam>=0.14",
@@ -109,9 +109,9 @@ if sys.version_info[0] == 2 or (sys.version_info[0] == 3 and sys.version_info[1]
 setup(
     name='pyGenomeTracks',
     version=get_version(),
-    author='Fidel Ramírez, Joachim Wolf, Björn Grüning,',
+    author='Fidel Ramírez, Joachim Wolf, Björn Grüning, Vivek Bhardwaj',
     author_email='deeptools@googlegroups.com',
-    packages=['pygenometracks'],
+    packages=find_packages(exclude=['tests']),
     scripts=['bin/make_tracks_file', 'bin/pgt', 'bin/pyGenomeTracks'],
     include_package_data=True,
     package_dir={'pygenometracks': 'pygenometracks'},

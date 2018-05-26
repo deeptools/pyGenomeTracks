@@ -1,0 +1,18 @@
+# create the environment using : `conda env create -f environment.yml`
+# update existing environment using : `conda env update -f environment.yml`
+# It installs from source using github master branch. If you get a pip error coming from feedparser.py, refer to the hack mentioned here : `https://bugs.python.org/msg301789`
+name: pygenometracks
+channels:
+   - bioconda
+   - conda-forge
+dependencies:
+    - numpy >= 1.12.1
+    - matplotlib >= 2.0.0
+    - intervaltree >= 2.1.0
+    - pybigwig >= 0.3.7
+    - future >= 0.16.0
+    - hicexplorer >= 2.1.1
+    - pysam >= 0.14
+    - pytest
+    - pip:
+        - "git+https://github.com/deeptools/pyGenomeTracks.git"
