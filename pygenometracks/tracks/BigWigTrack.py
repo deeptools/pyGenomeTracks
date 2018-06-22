@@ -40,11 +40,15 @@ file_type = {}
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BIGWIG_COLOR
 
+        if 'negative color' not in self.properties:
+            self.properties['negative color'] = self.properties['color']
+
         if 'summary method' not in self.properties:
             self.properties['summary method'] = 'mean'
 
         if 'nans to zeros' not in self.properties:
             self.properties['nans to zeros'] = False
+
 
         self.plot_type = 'fill'
         self.size = None
@@ -116,14 +120,25 @@ file_type = {}
         x_values = np.linspace(start_region, end_region, num_bins)
 
         if self.plot_type == 'line':
-            ax.plot(x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['color'])
+            pos_x_values = x_values.copy()
+            pos_x_values[scores_per_bin<0] = np.nan
+            ax.plot(pos_x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['color'])
+
+            neg_x_values = x_values.copy()
+            neg_x_values[scores_per_bin>=0] = np.nan
+            ax.plot(neg_x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['negative color'])
 
         elif self.plot_type == 'points':
-            ax.plot(x_values, scores_per_bin, '.', markersize=self.size, color=self.properties['color'])
+            ax.plot(x_values[scores_per_bin>=0], scores_per_bin[scores_per_bin>=0], '.',
+                    markersize=self.size, color=self.properties['color'])
+            ax.plot(x_values[scores_per_bin<0], scores_per_bin[scores_per_bin<0], '.',
+                    markersize=self.size, color=self.properties['negative color'])
 
         else:
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['color'],
-                            facecolor=self.properties['color'])
+                            facecolor=self.properties['color'], where=scores_per_bin>=0)
+            ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['negative color'],
+                            facecolor=self.properties['negative color'], where=scores_per_bin<0)
 
         ymin, ymax = ax.get_ylim()
         if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
