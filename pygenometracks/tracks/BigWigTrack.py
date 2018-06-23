@@ -136,9 +136,9 @@ file_type = {}
 
         else:
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['color'],
-                            facecolor=self.properties['color'], where=scores_per_bin>=0)
+                            facecolor=self.properties['color'], where=scores_per_bin>=0, interpolate=True)
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['negative color'],
-                            facecolor=self.properties['negative color'], where=scores_per_bin<0)
+                            facecolor=self.properties['negative color'], where=scores_per_bin<0, interpolate=True)
 
         ymin, ymax = ax.get_ylim()
         if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
