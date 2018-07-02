@@ -49,7 +49,6 @@ file_type = {}
         if 'nans to zeros' not in self.properties:
             self.properties['nans to zeros'] = False
 
-
         self.plot_type = 'fill'
         self.size = None
 
