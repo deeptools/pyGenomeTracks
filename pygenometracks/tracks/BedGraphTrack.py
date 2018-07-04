@@ -47,6 +47,9 @@ file_type = {}
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BEDGRAPH_COLOR
 
+        if 'negative color' not in self.properties:
+            self.properties['negative color'] = self.properties['color']
+
         if 'nans to zeros' not in self.properties:
             self.properties['nans to zeros'] = False
 
@@ -165,10 +168,8 @@ file_type = {}
         score_list = np.repeat(score_list, 2)
         if self.properties['nans to zeros']:
             score_list[np.isnan(score_list)] = 0
-
         # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
-        x_values = sum(pos_list, tuple())
-
+        x_values = np.asarray(sum(pos_list, tuple()), dtype=np.float)
         if 'extra' in self.properties and self.properties['extra'][0] == '4C':
             # draw a vertical line for each fragment region center
             ax.fill_between(pos_list, score_list, linewidth=0.1,
@@ -178,15 +179,30 @@ file_type = {}
             ax.plot(pos_list, score_list, '-', color='slateblue', linewidth=0.7)
         else:
             if self.plot_type == 'line':
-                ax.plot(x_values, score_list, '-', linewidth=self.size, color=self.properties['color'])
+                if self.properties['color'] == self.properties['negative color']:
+                    ax.plot(x_values, score_list, '-', linewidth=self.size, color=self.properties['color'])
+                else:
+                    import warnings
+                    warnings.warn('Line plots with a different negative color might not look pretty')
+                    pos_x_values = x_values.copy()
+                    pos_x_values[score_list < 0] = np.nan
+                    ax.plot(pos_x_values, score_list, '-', linewidth=self.size, color=self.properties['color'])
+
+                    neg_x_values = x_values.copy()
+                    neg_x_values[score_list >= 0] = np.nan
+                    ax.plot(neg_x_values, score_list, '-', linewidth=self.size, color=self.properties['negative color'])
 
             elif self.plot_type == 'points':
-                ax.plot(x_values, score_list, '.', markersize=self.size, color=self.properties['color'])
+                ax.plot(x_values[score_list>=0], score_list[score_list>=0], '.',
+                        markersize=self.size, color=self.properties['color'])
+                ax.plot(x_values[score_list<0], score_list[score_list<0], '.',
+                        markersize=self.size, color=self.properties['negative color'])
 
             else:
-                ax.fill_between(x_values, score_list, linewidth=0.1,
-                                color=self.properties['color'],
-                                facecolor=self.properties['color'])
+                ax.fill_between(x_values, score_list, linewidth=0.1, color=self.properties['color'],
+                                facecolor=self.properties['color'], where=score_list >= 0)
+                ax.fill_between(x_values, score_list, linewidth=0.1, color=self.properties['negative color'],
+                                facecolor=self.properties['negative color'], where=score_list < 0)
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
