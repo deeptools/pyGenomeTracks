@@ -193,9 +193,9 @@ file_type = {}
                     ax.plot(neg_x_values, score_list, '-', linewidth=self.size, color=self.properties['negative color'])
 
             elif self.plot_type == 'points':
-                ax.plot(x_values[score_list>=0], score_list[score_list>=0], '.',
+                ax.plot(x_values[score_list >= 0], score_list[score_list >= 0], '.',
                         markersize=self.size, color=self.properties['color'])
-                ax.plot(x_values[score_list<0], score_list[score_list<0], '.',
+                ax.plot(x_values[score_list < 0], score_list[score_list < 0], '.',
                         markersize=self.size, color=self.properties['negative color'])
 
             else:
