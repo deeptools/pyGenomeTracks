@@ -12,7 +12,7 @@ class EpilogosTrack(BedGraphTrack):
     The data format for this type of track can be found
     at http://wiki.wubrowse.org/QuantitativeCategorySeries.
     In summary, first three columns are chrom, start,end,
-    Next columns are a jason formatted line which contains
+    Next columns are a json formatted line which contains
     two attributes, id and qcat array. E.g.:
 
      id:8,qcat:[ [-0.0079,6], [-0.0056,17], [-0.0035,13], [-0.0023,5], ..
@@ -23,7 +23,19 @@ class EpilogosTrack(BedGraphTrack):
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
     """.format(TRACK_TYPE)
 
+    def __init__(self, *args, **kwarg):
+        super(EpilogosTrack, self).__init__(*args, **kwarg)
+        # load categories file
+        if self.properties['categories_file'] is not None:
+            with open(self.properties['categories_file']) as f:
+                self.categories = json.load(f)['categories']
+        else:
+            self.categories = None
+
     def set_properties_defaults(self):
+        if 'categories_file' not in self.properties:
+            self.properties['categories_file'] = None
+
         if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
             self.properties['max_value'] = None
 
@@ -83,6 +95,14 @@ class EpilogosTrack(BedGraphTrack):
             for qcat_value, qcat_id in qcat['qcat']:
                 if qcat_value == 0:
                     continue
+                # use color from categories file is given
+                if self.categories is not None:
+                    try:
+                        qcat_color = self.categories[str(qcat_id)][1]
+                    except:
+                        import ipdb; ipdb.set_trace()
+                else:
+                    qcat_color = cmap(qcat_id / 15)
                 height = abs(qcat_value)
                 if height + y_low > ymax:
                     ymax = height + y_low
@@ -93,7 +113,7 @@ class EpilogosTrack(BedGraphTrack):
                 # Rectangle(xy, width, height, angle=0.0, **kwargs)
                 # Draw a rectangle with lower left at xy = (x, y) with specified width, height and rotation angle.
                 rects.append(Rectangle((start, y_low), end - start, height,
-                                       edgecolor=edgecolor, facecolor=cmap(qcat_id / 15), linewidth=linewidth))
+                                       edgecolor=edgecolor, facecolor=qcat_color, linewidth=linewidth))
                 y_low += height
         collection = PatchCollection(rects, match_original=True)
         ax.add_collection(collection)
