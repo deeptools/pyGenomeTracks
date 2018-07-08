@@ -109,10 +109,7 @@ categories_file = <path to json categories file>
                     continue
                 # use color from categories file is given
                 if self.categories is not None:
-                    try:
-                        qcat_color = self.categories[str(qcat_id)][1]
-                    except:
-                        import ipdb; ipdb.set_trace()
+                    qcat_color = self.categories[str(qcat_id)][1]
                 else:
                     qcat_color = cmap(qcat_id / 15)
                 height = abs(qcat_value)
