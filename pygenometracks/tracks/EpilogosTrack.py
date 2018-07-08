@@ -21,6 +21,18 @@ class EpilogosTrack(BedGraphTrack):
     SUPPORTED_ENDINGS = ['.qcat', '.qcat.bgz']
     TRACK_TYPE = 'epilogos'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+# The categories file should contain the color information for each category id
+# A categories file should look like:
+# {
+# "categories":{
+#           "1":["Active TSS","#ff0000"],
+#           "2":["Flanking Active TSS","#ff4500"],
+#           "3":["Transcr at gene 5\" and 3\"","#32cd32"],
+#           "4":["Strong transcription","#008000"],
+#           "5":["Weak transcription","#006400"]
+# 	}
+#}
+categories_file = <path to json categories file>
     """.format(TRACK_TYPE)
 
     def __init__(self, *args, **kwarg):
