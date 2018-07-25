@@ -9,13 +9,21 @@ ROOT = os.path.dirname(os.path.abspath(__file__)) + "/test_data/"
 
 tracks = """
 
-c
+[test with categories]
+file = epilog.qcat.bgz
+height = 5
+title = height=5; categories_file=epilog_cats.json
+categories_file = epilog_cats.json
+
 [spacer]
 
 [test bedgraph tabix]
 file = epilog.qcat.bgz
 height = 5
 title = height=5
+
+[spacer]
+width=0.5
 
 [x-axis]
 """
