@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from past.builtins import map
 
 import sys
 import collections
@@ -207,7 +206,7 @@ class ReadBed(object):
                 rgb = r.split(",")
                 if len(rgb) == 3:
                     try:
-                        r = map(int, rgb)
+                        r = list(map(int, rgb))
                     except ValueError as detail:
                         sys.stderr.write("Error reading line: #{}. The rgb field {} is not "
                                          "valid.\nError message: {}\n".format(self.line_number, r, detail))
