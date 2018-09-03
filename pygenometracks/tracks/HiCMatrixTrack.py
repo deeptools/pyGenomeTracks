@@ -50,7 +50,14 @@ file_type = {}
 
         log.debug('FILE {}'.format(self.properties))
         # log.debug('pRegion {}'.format(pRegion))
-        self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=self.properties['region'])
+        region = None
+        if self.properties['region'] is not None:
+            if self.properties['region'][2] == 1e15:
+                region = [str(self.properties['region'][0])]
+            elif len(self.properties['region']) == 3:
+                region = [str(self.properties['region'][0]) + ':' + str(self.properties['region'][1]) + '-' + str(self.properties['region'][2])]
+
+        self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
 
         if len(self.hic_ma.matrix.data) == 0:
             self.log.error("Matrix {} is empty".format(self.properties['file']))
