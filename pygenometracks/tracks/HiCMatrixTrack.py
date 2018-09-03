@@ -1,5 +1,5 @@
-import hicexplorer.HiCMatrix as HiCMatrix
-import hicexplorer.utilities
+from hicmatrix import HiCMatrix
+import hicmatrix.utilities
 import scipy.sparse
 from matplotlib import cm
 from matplotlib import colors
@@ -9,6 +9,9 @@ import numpy as np
 from . GenomeTrack import GenomeTrack
 
 DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
+import logging
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 
 class HiCMatrixTrack(GenomeTrack):
@@ -45,11 +48,9 @@ file_type = {}
     def __init__(self, *args, **kwargs):
         super(HiCMatrixTrack, self).__init__(*args, **kwargs)
 
-        if self.properties['file'].endswith('.cool'):
-            # just init the cooler matrix.
-            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], color_only_init=True)
-        else:
-            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'])
+        log.debug('FILE {}'.format(self.properties))
+        # log.debug('pRegion {}'.format(pRegion))
+        self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=self.properties['region'])
 
         if len(self.hic_ma.matrix.data) == 0:
             self.log.error("Matrix {} is empty".format(self.properties['file']))
@@ -82,7 +83,7 @@ file_type = {}
                                    "values in matrix: {}".format(self.properties['file']))
                     exit(1)
 
-        new_intervals = hicexplorer.utilities.enlarge_bins(self.hic_ma.cut_intervals)
+        new_intervals = hicmatrix.utilities.enlarge_bins(self.hic_ma.cut_intervals)
         self.hic_ma.interval_trees, self.hic_ma.chrBinBoundaries = \
             self.hic_ma.intervalListToIntervalTree(new_intervals)
 
@@ -126,6 +127,7 @@ file_type = {}
 
     def plot(self, ax, chrom_region, region_start, region_end):
 
+        log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if chrom_region not in chrom_sizes:
             chrom_region = self.change_chrom_names(chrom_region)
@@ -136,9 +138,9 @@ file_type = {}
             self.log.error("{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
                                                                         region_start, region_end))
 
-        if self.properties['file'].endswith('.cool'):
-            # load now the region to be plotted
-            pass
+        # if self.properties['file'].endswith('.cool'):
+        #     # load now the region to be plotted
+        #     pass
 
         # expand region to plus depth on both sides
         # to avoid a 45 degree 'cut' on the edges

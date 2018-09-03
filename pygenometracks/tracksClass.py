@@ -63,7 +63,8 @@ class MultiDict(OrderedDict):
 class PlotTracks(object):
 
     def __init__(self, tracks_file, fig_width=DEFAULT_FIGURE_WIDTH,
-                 fig_height=None, fontsize=None, dpi=None, track_label_width=None):
+                 fig_height=None, fontsize=None, dpi=None, track_label_width=None,
+                 pRegion=None):
         self.fig_width = fig_width
         self.fig_height = fig_height
         self.dpi = dpi
@@ -99,7 +100,11 @@ class PlotTracks(object):
                 # for all other tracks that are not axis or spacer
                 # the track_class is obtained from the available tracks
                 track_class = self.available_tracks[properties['file_type']]
-                self.track_obj_list.append(track_class(properties))
+                if properties['file_type'] == 'hic_matrix':
+                    properties['region'] = pRegion
+                    self.track_obj_list.append(track_class(properties))
+                else:
+                    self.track_obj_list.append(track_class(properties))
 
             if 'title' in properties:
                 # adjust titles that are too long
