@@ -170,9 +170,47 @@ pyGenomeTracks has an option to plot peaks using MACS2 narrowPeak format.
 The following is an example of the output in which the peak shape is 
 drawn based on the start, end, summit and height of the peak.
 
+```INI
+[narrow]
+file = test.narrowPeak
+height = 4
+max_value = 40
+title = max_value=40
+
+[narrow 2]
+file = test.narrowPeak
+height = 2
+show labels = no
+show data range =  no
+color = #00FF0080
+use summit = no
+title = show labels=no; show data range=no; use summit=no;color=#00FF0080
+[spacer]
+
+[narrow 3]
+file = test.narrowPeak
+height = 2
+show labels = no
+color = #0000FF80
+use summit = no
+width adjust = 4
+title = show labels=no;width adjust=3
+
+[spacer]
+
+[narrow 4]
+file = test.narrowPeak
+height = 3
+type = box
+color = blue
+title = type=box;color=blue;
+
+[x-axis]
+```
 ![pyGenomeTracks bigwig example](./pygenometracks/tests/test_data/master_narrowPeak.png)
 
 Examples with Hi-C data
+-----------------------
 
 The following is an example with Hi-C data overlay with topologically associating domains (TADs) and a bigwig file.
 
@@ -218,6 +256,60 @@ $ pyGenomeTracks  --tracks hic_track.ini -o hic_track.png --region chrX:2500000-
 
 ![pyGenomeTracks bigwig example](./examples/hic_track.png)
 
+Examples with Epilogos
+----------------------
+
+pyGenomeTracks can be used to visualize epigenetic states (for example from chromHMM) as epilogos. For more information see: https://epilogos.altiusinstitute.org/
+
+To plot epilogos a `qcat` file is needed. This file can be crated using the epilogos software (https://github.com/Altius/epilogos).
+
+An example track file for epilogos looks like:
+
+```INI
+
+[epilogos]
+file = epilog.qcat.bgz
+height = 5
+title = epilogos
+
+[x-axis]
+```
+
+![epilogos example](./examples/epilogos_track.png)
+
+
+The color of the bars can be set by using a `json` file. The structure of the file is like this
+
+```JSON
+{
+"categories":{
+          "1":["Active TSS","#ff0000"],
+          "2":["Flanking Active TSS","#ff4500"],
+          "3":["Transcr at gene 5\" and 3\"","#32cd32"],
+          "4":["Strong transcription","#008000"]
+          }
+}
+```
+
+In the following examples the top epilogo has the custom colors and the one below is shown inverted.
+
+```INI
+[epilogos]
+file = epilog.qcat.bgz
+height = 5
+title = epilogos with custom colors
+categories_file = epilog_cats.json
+
+[epilogos inverted]
+file = epilog.qcat.bgz
+height = 5
+title = epilogos inverted
+orientation = inverted
+
+[x-axis]
+```
+
+![epilogos example](./examples/epilogos_track2.png)
 
 Examples with multiple options
 ------------------------------

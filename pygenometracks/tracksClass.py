@@ -365,9 +365,12 @@ class PlotTracks(object):
         :param tracks_path: path of the tracks file
         :return: None
         """
-        for file_type in ['boundaries_file', 'file']:
-            if file_type in track_dict:
-                file_names = [x for x in track_dict[file_type].split(" ") if x != '']
+        for key in track_dict.keys():
+            if key.endswith("file"):
+                file_field_name = key
+        # for file_field_name in ['boundaries_file', 'file', 'categories_file']:
+        #     if file_field_name in track_dict:
+                file_names = [x for x in track_dict[file_field_name].split(" ") if x != '']
                 full_path_file_names = []
                 for file_name in file_names:
                     try:
@@ -386,7 +389,7 @@ class PlotTracks(object):
                                                                          file_name))
                             sys.exit(1)
 
-                track_dict[file_type] = " ".join(full_path_file_names)
+                track_dict[file_field_name] = " ".join(full_path_file_names)
         return track_dict
 
     @staticmethod
