@@ -127,3 +127,7 @@ categories_file = <path to json categories file>
         collection = PatchCollection(rects, match_original=True)
         ax.add_collection(collection)
         ax.set_ylim(ymin - ymin * 0.01, ymax + ymax * 0.01)
+
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            ymin, ymax = ax.get_ylim()
+            ax.set_ylim(ymax, ymin)

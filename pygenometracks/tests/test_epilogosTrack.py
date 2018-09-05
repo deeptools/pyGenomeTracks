@@ -22,6 +22,13 @@ file = epilog.qcat.bgz
 height = 5
 title = height=5
 
+[test bedgraph tabix]
+categories_file = epilog_cats.json
+file = epilog.qcat.bgz
+height = 5
+title = height=5
+orientation=inverted
+
 [spacer]
 width=0.5
 
@@ -36,7 +43,6 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 def test_narrow_track():
     region = "X:3100000-3150000"
-#    region = "X:3000000-3130000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_', delete=False)
     args = "--tracks {root}/epilogos.ini --region {region} --trackLabelFraction 0.2 " \
            "--dpi 130 --outFileName  {outfile}".format(root=ROOT, outfile=outfile.name, region=region).split()
