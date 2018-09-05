@@ -55,9 +55,19 @@ file_type = {}
             if self.properties['region'][2] == 1e15:
                 region = [str(self.properties['region'][0])]
             elif len(self.properties['region']) == 3:
-                region = [str(self.properties['region'][0]) + ':' + str(self.properties['region'][1]) + '-' + str(self.properties['region'][2])]
+                start = int(self.properties['region'][1]) - int(self.properties['depth'])
+                if start < 0:
+                    start = 0
+                end = int(self.properties['region'][2]) + int(self.properties['depth'])
 
-        self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
+                region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(end)]
+        # try to open with end region + depth to avoid triangle effect in the plot
+        # if it fails open it with given end region.
+        try:
+            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
+        except Exception:
+            region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(self.properties['region'][2])]
+            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
 
         if len(self.hic_ma.matrix.data) == 0:
             self.log.error("Matrix {} is empty".format(self.properties['file']))
