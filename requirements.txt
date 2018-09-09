@@ -1,9 +1,9 @@
-numpy >= 1.12.*
-matplotlib >= 2.0.0
-intervaltree >= 2.1.0
-pybigwig >= 0.3.7
-future >= 0.16.0
-hicmatrix >= 2.2
-pysam>=0.14
+numpy
+matplotlib
+intervaltree
+pybigwig
+future
+hicmatrix
+pysam
 pytest
 
