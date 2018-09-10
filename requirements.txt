@@ -1,4 +1,4 @@
-numpy
+numpy >= 1.15
 matplotlib
 intervaltree
 pybigwig
@@ -6,4 +6,3 @@ future
 hicmatrix
 pysam
 pytest
-
