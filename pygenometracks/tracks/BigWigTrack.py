@@ -138,6 +138,7 @@ file_type = {}
                     markersize=self.size, color=self.properties['negative color'])
 
         else:
+            scores_per_bin[np.isnan(scores_per_bin)]=0
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['color'],
                             facecolor=self.properties['color'], where=scores_per_bin >= 0, interpolate=True)
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['negative color'],
