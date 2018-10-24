@@ -196,13 +196,19 @@ file_type = {}
 
             elif self.properties['transform'] == '-log':
                 mask = matrix == 0
-                matrix[mask] = matrix[mask is False].min()
-                matrix = -1 * np.log(matrix)
+                try:
+                    matrix[mask] = matrix[mask == False].min()
+                    matrix = -1 * np.log(matrix)
+                except Exception:
+                    self.log.info('All values are 0, no log applied.')
 
             elif self.properties['transform'] == 'log':
                 mask = matrix == 0
-                matrix[mask] = matrix[mask is False].min()
-                matrix = np.log(matrix)
+                try:
+                    matrix[mask] = matrix[mask == False].min()
+                    matrix = np.log(matrix)
+                except Exception:
+                    self.log.info('All values are 0, no log applied.')
 
         if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
             vmax = self.properties['max_value']
