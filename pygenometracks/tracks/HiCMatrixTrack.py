@@ -199,7 +199,7 @@ file_type = {}
                 try:
                     matrix[mask] = matrix[mask == False].min()
                     matrix = -1 * np.log(matrix)
-                except Exception:
+                except ValueError:
                     self.log.info('All values are 0, no log applied.')
 
             elif self.properties['transform'] == 'log':
@@ -207,7 +207,7 @@ file_type = {}
                 try:
                     matrix[mask] = matrix[mask == False].min()
                     matrix = np.log(matrix)
-                except Exception:
+                except ValueError:
                     self.log.info('All values are 0, no log applied.')
 
         if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
