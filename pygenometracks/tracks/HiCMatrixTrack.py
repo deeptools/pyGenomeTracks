@@ -28,7 +28,7 @@ depth = 100000
 # hic matrix are kept (e.g. the image does not appear shrink or extended)
 # height = 10
 # min_value and max_value refer to the contacts in the matrix.
-#min_value =2.8
+#min_value = 2.8
 #max_value = 3.0
 # the matrix can be transformed using the log1 (or log, but zeros could be problematic)
 transform = log1p
@@ -144,7 +144,7 @@ file_type = {}
 
     def plot(self, ax, chrom_region, region_start, region_end):
 
-        log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
+        self.log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if chrom_region not in chrom_sizes:
             chrom_region = self.change_chrom_names(chrom_region)

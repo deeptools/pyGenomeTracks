@@ -100,11 +100,21 @@ class PlotTracks(object):
                 # for all other tracks that are not axis or spacer
                 # the track_class is obtained from the available tracks
                 track_class = self.available_tracks[properties['file_type']]
-                if properties['file_type'] == 'hic_matrix':
-                    properties['region'] = pRegion
-                    self.track_obj_list.append(track_class(properties))
+                # if properties['file_type'] == 'hic_matrix':
+                if 'reference_point' in properties and 'range' in properties:
+
+                    chrom_region, reference_point = properties['reference_point'].split(':')
+                    range_upstream, range_downstream = properties['range'].split(' ')
+                    region_start = int(reference_point) - int(range_upstream)
+                    region_end = int(reference_point) + int(range_downstream)
+                    properties['region'] = (chrom_region, region_start, region_end)
+                    log.debug('region {} '.format(properties['region']))
                 else:
-                    self.track_obj_list.append(track_class(properties))
+                    log.debug(pRegion)
+                    properties['region'] = pRegion
+                self.track_obj_list.append(track_class(properties))
+                # else:
+                #     self.track_obj_list.append(track_class(properties))
 
             if 'title' in properties:
                 # adjust titles that are too long
@@ -182,6 +192,11 @@ class PlotTracks(object):
                 hic_width = \
                     self.fig_width * (DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']) * self.width_ratios[1]
                 scale_factor = 0.6  # the scale factor is to obtain a 'pleasing' result.
+
+                if start_region is None:
+                    start_region = track_dict['region'][1]
+                if end_region is None:
+                    end_region = track_dict['region'][2]
                 depth = min(track_dict['depth'], (end_region - start_region))
 
                 height = scale_factor * depth * hic_width / (end_region - start_region)
@@ -193,6 +208,7 @@ class PlotTracks(object):
         return track_height
 
     def plot(self, file_name, chrom, start, end, title=None):
+
         track_height = self.get_tracks_height(start_region=start, end_region=end)
 
         if self.fig_height:
@@ -242,6 +258,10 @@ class PlotTracks(object):
                 label_axis = plt.subplot(grids[idx, 2])
                 label_axis.set_axis_off()
 
+            if 'region' in track.properties:
+                chrom = track.properties['region'][0]
+                start = track.properties['region'][1]
+                end = track.properties['region'][2]
             plot_axis.set_xlim(start, end)
             track.plot(plot_axis, chrom, start, end)
             track.plot_y_axis(y_axis, plot_axis)

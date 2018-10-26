@@ -189,6 +189,9 @@ def parse_arguments(args=None):
                        'the value of --outFileName',
                        type=argparse.FileType('r')
                        )
+    group.add_argument('--trackSpecific',
+                       help='Instead of a region or a BED file, a reference point and a range can be defined for Hi-C data tracks in tracks.ini file.',
+                       action='store_true')
 
     parser.add_argument('--width',
                         help='figure width in centimeters',
@@ -295,8 +298,10 @@ def main(args=None):
                 end += 100000
             sys.stderr.write("saving {}'\n".format(file_name))
             region = zip(chrom, start, end)
-    else:
+    elif args.region:
         region = get_region(args.region)
+    elif args.trackSpecific:
+        region = (None, None, None)
 
     trp = pygenometracks.tracksClass.PlotTracks(args.tracks.name, args.width, fig_height=args.height,
                                                 fontsize=args.fontSize, dpi=args.dpi,
