@@ -48,8 +48,8 @@ before_install:
 
 # Install packages
 install:
-  - conda install --yes -c conda-forge -c bioconda python=$TRAVIS_PYTHON_VERSION --file requirements.txt
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then conda install --yes -c defaults -c conda-forge -c bioconda configparser ; fi
+  - conda install --yes -c bioconda -c conda-forge python=$TRAVIS_PYTHON_VERSION --file requirements.txt
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then conda install --yes -c bioconda -c conda-forge -c defaults configparser ; fi
   - python setup.py install
 
 # command to run tests
