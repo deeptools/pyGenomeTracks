@@ -289,8 +289,9 @@ def main(args=None):
                 start, end = map(int, [start, end])
             except ValueError as detail:
                 sys.stderr.write("Invalid value found at line\t{}\t. {}\n".format(line, detail))
-            file_suffix = args.outFileName.split(".")[-1][0]
-            file_prefix = args.outFileName.split(".")[:-1][0]
+            name = args.outFileName.split(".")
+            file_suffix = name[-1]
+            file_prefix = ".".join(name[:-1])
 
             file_name = "{}_{}:{}-{}.{}".format(file_prefix, chrom, start, end, file_suffix)
             if end - start < 200000:
