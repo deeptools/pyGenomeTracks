@@ -37,7 +37,7 @@ transform = log1p
 # the default is to extend neighboring bins to
 # obtain an aesthetically pleasant output
 show_masked_bins = no
-# if the track wants to be plotted upside-down:
+# if you want to plot the track upside-down:
 # orientation = inverted
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
