@@ -22,7 +22,7 @@ pyGenomeTracks can make plots with or without Hi-C data. The following is an exa
 
 Installation
 ------------
-pyGenomeTracks works with python 2.7 and python 3.6.
+pyGenomeTracks works with python >=3.6.
 
 Currently, the best way to install pyGenomeTracks is with anaconda
 
@@ -167,7 +167,7 @@ Examples with peaks
 
 pyGenomeTracks has an option to plot peaks using MACS2 narrowPeak format.
 
-The following is an example of the output in which the peak shape is 
+The following is an example of the output in which the peak shape is
 drawn based on the start, end, summit and height of the peak.
 
 ```INI
@@ -345,7 +345,7 @@ The configuration file for this image is [here](./pygenometracks/tests/test_data
 
 Adding new tracks
 -----------------
-Adding new tracks to pyGenomeTracks only requires adding a new class to the `pygenometracks/tracks` folder. 
+Adding new tracks to pyGenomeTracks only requires adding a new class to the `pygenometracks/tracks` folder.
 The class should inherit the the `GenomeTrack` (or other track class available) and should have a `plot` method.
 Additionally, some basic description should be added.
 
@@ -378,7 +378,7 @@ x position =
 
 ```
 
-The OPTIONS_TXT should contain the text to build a default configuration file. 
+The OPTIONS_TXT should contain the text to build a default configuration file.
 This information, together with the information about SUPPORTED_ENDINGS is used
 by the program `make_tracks_file` to create a default configuration file
 based on the endings of the files given.
@@ -405,29 +405,29 @@ pgt --tracks new_track.ini --region X:3000000-3200000 -o new_track.png
 
 ![pyGenomeTracks example](./examples/new_track.png)
 
-Notice that the resulting track already includes a y-axis (to the left) and 
+Notice that the resulting track already includes a y-axis (to the left) and
 a label to the right. This are the defaults that can be changed by
-adding a `plot_y_axis` and `plot_label` methods. 
+adding a `plot_y_axis` and `plot_label` methods.
 
 Another more complex example is the plotting of multiple bedgraph data as matrices. The output of `HiCExplorer hicFindTADs` produces a data format that
 is similar to a bedgraph but with more value columns. We call this a bedgraph matrix. The following track plot this bedgraph matrix:
- 
+
  ```python
 import numpy as np
 from pygenometracks.tracksClass import BedGraphTrack
 from pygenometracks.tracksClass import GenomeTrack
 
  class BedGraphMatrixTrack(BedGraphTrack):
-    # this track class extends a BedGraphTrack that is already part of 
+    # this track class extends a BedGraphTrack that is already part of
     # pyGenomeTracks. The advantage of extending this class is that
     # we can re-use the code for reading a bedgraph file
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz']
     TRACK_TYPE = 'bedgraph_matrix'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
         # a bedgraph matrix file is like a bedgraph, except that per bin there
-        # are more than one value (separated by tab). This file type is 
+        # are more than one value (separated by tab). This file type is
         # produced by the HiCExplorer tool hicFindTads and contains
-        # the TAD-separation score at different window sizes. 
+        # the TAD-separation score at different window sizes.
         # E.g.
         # chrX	18279	40131	0.399113	0.364118	0.320857	0.274307
         # chrX	40132	54262	0.479340	0.425471	0.366541	0.324736
@@ -450,21 +450,21 @@ from pygenometracks.tracksClass import GenomeTrack
         # here we used the get_scores method inherited from the
         # BedGraphTrack class
         values_list, start_pos = self.get_scores(chrom_region, start_region, end_region)
-        
+
         # the values_list is a python list, containing one element
         # per row in the selected genomic range.
         # In this case, the bedgraph matrix contains per row a list
         # of values, thus, each element of the values_list is itself
-        # a list. 
+        # a list.
         # In the following code, such list is converted to floats and
-        # appended to a new list. 
+        # appended to a new list.
         matrix_rows = []
         for values in values_list:
             values = map(float, values)
             matrix_rows.append(values)
 
         # using numpy, the list of values per line in the bedgraph file
-        # is converted into a matrix whose columns contain 
+        # is converted into a matrix whose columns contain
         # the bedgraph values for the same line (notice that
         # the matrix is transposed to achieve this)
         matrix = np.vstack(matrix_rows).T
@@ -509,7 +509,7 @@ pgt --tracks bedgraph_matrix.ini --region X:2000000-3500000 -o bedgraph_matrix.p
 ![pyGenomeTracks example](./examples/bedgraph_matrix.png)
 
 Although this image looks interesting another way to plot
-the data is a overlapping lines with the mean value highlighted. 
+the data is a overlapping lines with the mean value highlighted.
 Using the bedgraph version of `pyGenomeTracks` the following image
 can be obtained:
 
