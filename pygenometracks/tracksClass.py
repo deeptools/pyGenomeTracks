@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from __future__ import division
 
 import logging
 from configparser import ConfigParser
-
+from ast import literal_eval
+import time
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -306,7 +306,6 @@ class PlotTracks(object):
         :param tracks_file: file path containing the track configuration
         :return: array of dictionaries and vlines_file. One dictionary per track
         """
-        from ast import literal_eval
         parser = ConfigParser(dict_type=MultiDict, strict=False)
         parser.read_file(open(tracks_file, 'r'))
 
@@ -436,7 +435,6 @@ class PlotTracks(object):
 
     @staticmethod
     def print_elapsed(start):
-        import time
         if start:
             log.info(time.time() - start)
         return time.time()

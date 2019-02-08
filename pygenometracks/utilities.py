@@ -1,4 +1,5 @@
 import sys
+import gzip
 from intervaltree import IntervalTree, Interval
 
 
@@ -38,7 +39,6 @@ def opener(filename):
     """
     Determines if a file is compressed or not
     """
-    import gzip
     f = open(filename, 'rb')
     if f.read(2) == b'\x1f\x8b':
         f.seek(0)

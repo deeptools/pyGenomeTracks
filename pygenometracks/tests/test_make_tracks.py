@@ -2,6 +2,7 @@ from tempfile import NamedTemporaryFile
 import os.path
 import filecmp
 import pygenometracks.makeTracksFile
+import difflib
 
 ROOT = os.path.dirname(os.path.abspath(__file__)) + "/test_data/"
 # the relative path is needed to compare the two .ini files correctly. Otherwise
@@ -18,7 +19,6 @@ def test_make_tracks():
     pygenometracks.makeTracksFile.main(args)
 
     if filecmp.cmp(outfile.name, ROOT + '/master_tracks.ini') is False:
-        import difflib
         diff = difflib.unified_diff(open(outfile.name).readlines(),
                                     open(ROOT + '/master_tracks.ini').readlines(), lineterm='')
         print(''.join(list(diff)))
