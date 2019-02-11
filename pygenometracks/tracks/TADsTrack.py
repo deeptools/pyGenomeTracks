@@ -20,12 +20,14 @@ class TADsTrack(BedTrack):
             self.log.info('Chromosome name: {} does not exists. Changing name to {}'.format(orig, chrom_region))
 
         for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
-            """      ______ y2
+            """
+                    ______ y2
                   /\
                  /  \
                 /    \ _____ y1
             _____________________
                x1 x2 x3
+
             """
             x1 = region.begin
             x2 = x1 + float(region.end - region.begin) / 2

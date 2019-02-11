@@ -534,8 +534,9 @@ file_type = {}
             The vertices correspond to 5 points along the path of a form like the following,
             starting in the lower left corner and progressing in a clock wise manner.
 
-            /-----------------
-            \-----------------
+            / -----------------
+            \ -----------------
+            
             """
             vertices = [(x0, y0), (x0 - self.small_relative, y0 + half_height), (x0, y1), (x1, y1), (x1, y0)]
 
