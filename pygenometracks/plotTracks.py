@@ -275,7 +275,7 @@ def get_region(region_string):
 def main(args=None):
 
     args = parse_arguments().parse_args(args)
-    trp = pygenometracks.tracksClass.PlotTracks(args.tracks.name, args.width, fig_height=args.height,fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
+    trp = pygenometracks.tracksClass.PlotTracks(args.tracks.name, args.width, fig_height=args.height, fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
 
     if args.BED:
         count = 0
@@ -298,7 +298,7 @@ def main(args=None):
                 start -= 100000
                 end += 100000
             sys.stderr.write("saving {}\n".format(file_name))
-            print("{} {} {}".format(chrom,start,end))
+            print("{} {} {}".format(chrom, start, end))
             trp.plot(file_name, chrom, start, end, title=args.title)
     else:
         region = get_region(args.region)
