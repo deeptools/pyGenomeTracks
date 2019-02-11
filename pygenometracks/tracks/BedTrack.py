@@ -536,7 +536,7 @@ file_type = {}
 
             / -----------------
             \ -----------------
-            
+
             """
             vertices = [(x0, y0), (x0 - self.small_relative, y0 + half_height), (x0, y1), (x1, y1), (x1, y0)]
 
