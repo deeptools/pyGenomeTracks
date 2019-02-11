@@ -2,7 +2,6 @@ language: c
 sudo: true
 
 env:
-  - TRAVIS_PYTHON_VERSION=2.7
   - TRAVIS_PYTHON_VERSION=3.6
 
 os:
@@ -14,7 +13,7 @@ jobs:
     - stage: lint
       env:
         - LINT=1
-        - TRAVIS_PYTHON_VERSION=2.7
+        - TRAVIS_PYTHON_VERSION=3.6
         - TRAVIS_OS_NAME=linux
       before_install:
         - curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o miniconda.sh
@@ -33,9 +32,7 @@ jobs:
 before_install:
   - export TEST_DATA_DIR="`pwd`/pygenometracks/test/test_data/"
   - echo $TEST_DATA_DIR
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o miniconda.sh ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" && "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then curl https://repo.continuum.io/miniconda/Miniconda2-latest-MacOSX-x86_64.sh -o miniconda.sh ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" && "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then curl https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o miniconda.sh ; fi
   - bash miniconda.sh -b -p $HOME/miniconda
   - PATH_WITHOUT_CONDA="$PATH"
@@ -49,7 +46,7 @@ before_install:
 # Install packages
 install:
   - conda install --yes -c bioconda -c conda-forge python=$TRAVIS_PYTHON_VERSION --file requirements.txt
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then conda install --yes -c bioconda -c conda-forge -c defaults configparser ; fi
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then conda install --yes -c bioconda -c conda-forge -c defaults configparser ; fi
   - python setup.py install
 
 # command to run tests
