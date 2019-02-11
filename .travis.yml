@@ -24,7 +24,7 @@ jobs:
         - conda config --set always_yes yes --set changeps1 no
         - conda update -q conda
       install:
-        - conda install --yes python=2.7 flake8
+        - conda install --yes python=3.6 flake8
       script:
         - if [[ "$LINT" == "1" ]]; then flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712 ; fi
 
