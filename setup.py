@@ -108,7 +108,7 @@ if sys.version_info[0] == 2 or (sys.version_info[0] == 3 and sys.version_info[1]
 setup(
     name='pyGenomeTracks',
     version=get_version(),
-    author='Fidel Ramírez, Joachim Wolf, Björn Grüning, Vivek Bhardwaj',
+    author='Fidel Ramírez, Vivek Bhardwaj, Joachim Wolf, Björn Grüning',
     author_email='deeptools@googlegroups.com',
     packages=find_packages(exclude=['tests']),
     scripts=['bin/make_tracks_file', 'bin/pgt', 'bin/pyGenomeTracks'],
@@ -116,7 +116,7 @@ setup(
     package_dir={'pygenometracks': 'pygenometracks'},
     url='http://pygenometracks.readthedocs.io',
     license='LICENSE.txt',
-    description='Set of programs to process, analyze and visualize Hi-C data',
+    description='Command-line tool to make beautiful and reproducible genome browser snapshots',
     long_description=open('README.md').read(),
     classifiers=[
         'Intended Audience :: Science/Research',

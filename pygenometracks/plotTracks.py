@@ -273,6 +273,7 @@ def get_region(region_string):
 def main(args=None):
 
     args = parse_arguments().parse_args(args)
+    trp = pygenometracks.tracksClass.PlotTracks(args.tracks.name, args.width, fig_height=args.height, fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
 
     if args.BED:
         count = 0
@@ -286,16 +287,17 @@ def main(args=None):
                 start, end = map(int, [start, end])
             except ValueError as detail:
                 sys.stderr.write("Invalid value found at line\t{}\t. {}\n".format(line, detail))
-            file_name = "{}_{}:{}-{}".format(args.outFileName, chrom, start, end)
+            name = args.outFileName.split(".")
+            file_suffix = name[-1]
+            file_prefix = ".".join(name[:-1])
+
+            file_name = "{}_{}-{}-{}.{}".format(file_prefix, chrom, start, end, file_suffix)
             if end - start < 200000:
                 start -= 100000
                 end += 100000
-            sys.stderr.write("saving {}'\n".format(file_name))
-            region = zip(chrom, start, end)
+            sys.stderr.write("saving {}\n".format(file_name))
+            print("{} {} {}".format(chrom, start, end))
+            trp.plot(file_name, chrom, start, end, title=args.title)
     else:
         region = get_region(args.region)
-
-    trp = pygenometracks.tracksClass.PlotTracks(args.tracks.name, args.width, fig_height=args.height,
-                                                fontsize=args.fontSize, dpi=args.dpi,
-                                                track_label_width=args.trackLabelFraction, pRegion=region)
-    trp.plot(args.outFileName, *region, title=args.title)
+        trp.plot(args.outFileName, *region, title=args.title)

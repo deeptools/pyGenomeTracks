@@ -13,9 +13,10 @@ jobs:
     - stage: lint
       env:
         - LINT=1
+        - TRAVIS_PYTHON_VERSION=3.6
         - TRAVIS_OS_NAME=linux
       before_install:
-        - curl https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -o miniconda.sh
+        - curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
         - bash miniconda.sh -b -p $HOME/miniconda
         - PATH_WITHOUT_CONDA="$PATH"
         - export PATH="$HOME/miniconda/bin:$PATH"
@@ -23,7 +24,7 @@ jobs:
         - conda config --set always_yes yes --set changeps1 no
         - conda update -q conda
       install:
-        - conda install --yes flake8
+        - conda install --yes python=3.6 flake8
       script:
         - if [[ "$LINT" == "1" ]]; then flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712 ; fi
 
@@ -45,6 +46,7 @@ before_install:
 # Install packages
 install:
   - conda install --yes -c bioconda -c conda-forge python=$TRAVIS_PYTHON_VERSION --file requirements.txt
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then conda install --yes -c bioconda -c conda-forge -c defaults configparser ; fi
   - python setup.py install
 
 # command to run tests
