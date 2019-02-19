@@ -1,7 +1,7 @@
 from . BedGraphTrack import BedGraphTrack
 from . GenomeTrack import GenomeTrack
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 class BedGraphMatrixTrack(BedGraphTrack):
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz', '.bedgraphmatrix', '.bm.bgz']
@@ -104,11 +104,11 @@ file_type = {}
             self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
             self.img.set_rasterized(True)
 
+
     def plot_y_axis(self, ax, plot_axis):
         if self.properties['type'] == 'lines':
             super(BedGraphMatrixTrack, self).plot_y_axis(ax, plot_axis)
         else:
-            import matplotlib.pyplot as plt
 
             cobar = plt.colorbar(self.img, ax=ax, fraction=0.95)
 
