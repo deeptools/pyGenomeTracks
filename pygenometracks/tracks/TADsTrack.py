@@ -21,10 +21,10 @@ class TADsTrack(BedTrack):
 
         for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
             """
-                    ______ y2
-                  /\ _
-                 /  \ _
-                /    \ _____ y1
+                   ______ y2
+                  /\_
+                 /  \_
+                /    \_____ y1
             _____________________
                x1 x2 x3
             """
