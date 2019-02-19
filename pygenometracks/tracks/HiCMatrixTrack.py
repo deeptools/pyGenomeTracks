@@ -37,7 +37,7 @@ transform = log1p
 # the default is to extend neighboring bins to
 # obtain an aesthetically pleasant output
 show_masked_bins = no
-# if the track wants to be plotted upside-down:
+# if you want to plot the track upside-down:
 # orientation = inverted
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
@@ -196,13 +196,19 @@ file_type = {}
 
             elif self.properties['transform'] == '-log':
                 mask = matrix == 0
-                matrix[mask] = matrix[mask is False].min()
-                matrix = -1 * np.log(matrix)
+                try:
+                    matrix[mask] = matrix[mask == False].min()
+                    matrix = -1 * np.log(matrix)
+                except ValueError:
+                    self.log.info('All values are 0, no log applied.')
 
             elif self.properties['transform'] == 'log':
                 mask = matrix == 0
-                matrix[mask] = matrix[mask is False].min()
-                matrix = np.log(matrix)
+                try:
+                    matrix[mask] = matrix[mask == False].min()
+                    matrix = np.log(matrix)
+                except ValueError:
+                    self.log.info('All values are 0, no log applied.')
 
         if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
             vmax = self.properties['max_value']

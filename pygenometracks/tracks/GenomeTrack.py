@@ -21,9 +21,9 @@ class GenomeTrack(object):
 title =
 # height of track in cm (ignored if the track is overlay on top the previous track)
 height = 2
-# if the track wants to be plotted upside-down:
+# if you want to plot the track upside-down:
 # orientation = inverted
-# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
 # option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
 #overlay previous = yes
 """
