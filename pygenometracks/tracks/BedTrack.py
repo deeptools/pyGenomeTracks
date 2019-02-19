@@ -53,7 +53,7 @@ fontsize = 10
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
 #gene rows = 10
-# if the track wants to be plotted on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
 # option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
 #overlay previous = yes
 # by default the ymax is the number of
@@ -518,8 +518,7 @@ file_type = {}
             The vertices correspond to 5 points along the path of a form like the following,
             starting in the lower left corner and progressing in a clock wise manner.
 
-            -----------------\
-            ---------------- /
+            ----------------->
 
             """
 
@@ -534,8 +533,8 @@ file_type = {}
             The vertices correspond to 5 points along the path of a form like the following,
             starting in the lower left corner and progressing in a clock wise manner.
 
-            /-----------------
-            \-----------------
+            <-----------------
+
             """
             vertices = [(x0, y0), (x0 - self.small_relative, y0 + half_height), (x0, y1), (x1, y1), (x1, y0)]
 

@@ -18,11 +18,12 @@ def test_make_tracks():
     print("using args: {}".format(" ".join(args)))
     pygenometracks.makeTracksFile.main(args)
 
-    if filecmp.cmp(outfile.name, ROOT + '/master_tracks.ini') is False:
-        diff = difflib.unified_diff(open(outfile.name).readlines(),
-                                    open(ROOT + '/master_tracks.ini').readlines(), lineterm='')
-        print(''.join(list(diff)))
 
-    assert(filecmp.cmp(outfile.name, ROOT + '/master_tracks.ini') is True)
+    if filecmp.cmp(outfile.name, ROOT + '/master_tracks.ini') is False:
+
+        diff = difflib.unified_diff(open(outfile.name).readlines(),
+                                    open(ROOT + 'master_tracks.ini').readlines(), lineterm='')
+        print(''.join(list(diff)))
+    assert(filecmp.cmp(outfile.name, ROOT + 'master_tracks.ini') is True)
 
     os.remove(outfile.name)
