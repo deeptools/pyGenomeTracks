@@ -32,7 +32,8 @@ class EpilogosTrack(BedGraphTrack):
 #           "5":["Weak transcription","#006400"]
 # 	}}
 #}}
-categories_file = <path to json categories file>""".format(TRACK_TYPE)
+categories_file = <path to json categories file>
+    """.format(TRACK_TYPE)
 
     def __init__(self, *args, **kwarg):
         super(EpilogosTrack, self).__init__(*args, **kwarg)
