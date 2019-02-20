@@ -28,4 +28,3 @@ def test_make_tracks():
 
 
     os.remove(outfile.name)
-
