@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division
-
 import sys
 import collections
 from .utilities import to_string

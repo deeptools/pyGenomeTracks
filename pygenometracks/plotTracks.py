@@ -141,10 +141,8 @@ type = vlines
 
 """
 
-from __future__ import division
 import sys
 import argparse
-
 import matplotlib
 matplotlib.use('Agg')
 

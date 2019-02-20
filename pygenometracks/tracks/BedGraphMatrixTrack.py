@@ -1,6 +1,7 @@
 from . BedGraphTrack import BedGraphTrack
 from . GenomeTrack import GenomeTrack
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class BedGraphMatrixTrack(BedGraphTrack):
@@ -108,7 +109,6 @@ file_type = {}
         if self.properties['type'] == 'lines':
             super(BedGraphMatrixTrack, self).plot_y_axis(ax, plot_axis)
         else:
-            import matplotlib.pyplot as plt
 
             cobar = plt.colorbar(self.img, ax=ax, fraction=0.95)
 
