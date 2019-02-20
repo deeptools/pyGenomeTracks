@@ -3,6 +3,7 @@ from . GenomeTrack import GenomeTrack
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class BedGraphMatrixTrack(BedGraphTrack):
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz', '.bedgraphmatrix', '.bm.bgz']
     TRACK_TYPE = 'bedgraph_matrix'
@@ -103,7 +104,6 @@ file_type = {}
             vmin = self.properties['min_value']
             self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
             self.img.set_rasterized(True)
-
 
     def plot_y_axis(self, ax, plot_axis):
         if self.properties['type'] == 'lines':

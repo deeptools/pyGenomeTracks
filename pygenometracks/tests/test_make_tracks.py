@@ -17,7 +17,6 @@ def test_make_tracks():
     print("using args: {}".format(" ".join(args)))
     pygenometracks.makeTracksFile.main(args)
 
-
     if filecmp.cmp(outfile.name, ROOT + 'master_tracks.ini') is False:
         import difflib
 
@@ -25,6 +24,5 @@ def test_make_tracks():
                                     open(ROOT + 'master_tracks.ini').readlines(), lineterm='')
         print(''.join(list(diff)))
     assert(filecmp.cmp(outfile.name, ROOT + 'master_tracks.ini') is True)
-
 
     os.remove(outfile.name)

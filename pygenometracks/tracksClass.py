@@ -111,14 +111,10 @@ class PlotTracks(object):
                 # if the track label space is small
                 assert(sys.version_info[0] != 2)
                 if track_label_width < 0.1:
-            #        if sys.version_info[0] == 2:
-            #            properties['title'] = textwrap.fill(properties['title'].encode("UTF-8"), 12)
-            #        else:
+
                     properties['title'] = textwrap.fill(properties['title'], 12)
                 else:
-            #        if sys.version_info[0] == 2:
-            #            properties['title'] = textwrap.fill(properties['title'].encode("UTF-8"), 30)
-            #        else:
+        
                     properties['title'] = textwrap.fill(properties['title'], 30)
 
         log.info("time initializing track(s):")
