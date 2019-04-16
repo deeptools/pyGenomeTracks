@@ -296,9 +296,9 @@ def main(args=None):
                 sys.stderr.write("A region shorter than 200kb has been "
                                  "detected! This can be too small to return "
                                  "a proper TAD plot!")
-                #start -= 100000
-                #start = max(0, start)
-                #end += 100000
+                # start -= 100000
+                # start = max(0, start)
+                # end += 100000
             sys.stderr.write("saving {}\n".format(file_name))
             print("{} {} {}".format(chrom, start, end))
             trp.plot(file_name, chrom, start, end, title=args.title)
