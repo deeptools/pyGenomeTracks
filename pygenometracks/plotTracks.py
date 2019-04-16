@@ -293,7 +293,11 @@ def main(args=None):
 
             file_name = "{}_{}-{}-{}.{}".format(file_prefix, chrom, start, end, file_suffix)
             if end - start < 200000:
+                sys.stderr.write("A region shorter than 200kb has been "
+                                 "detected! This will be expanded by max "
+                                 "200kb.")
                 start -= 100000
+                start = max(0, start)
                 end += 100000
             sys.stderr.write("saving {}\n".format(file_name))
             print("{} {} {}".format(chrom, start, end))
