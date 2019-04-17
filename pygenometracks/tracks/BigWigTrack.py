@@ -119,7 +119,7 @@ file_type = {}
         x_values = np.linspace(start_region, end_region, num_bins)
         if self.plot_type == 'line':
             if self.properties['color'] == self.properties['negative color']:
-                    ax.plot(x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['color'])
+                ax.plot(x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['color'])
             else:
                 import warnings
                 warnings.warn('Line plots with a different negative color might not look pretty')
