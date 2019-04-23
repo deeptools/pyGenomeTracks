@@ -295,7 +295,7 @@ def main(args=None):
             if end - start < 200000:
                 sys.stderr.write("A region shorter than 200kb has been "
                                  "detected! This can be too small to return "
-                                 "a proper TAD plot!")
+                                 "a proper TAD plot!\n")
                 # start -= 100000
                 # start = max(0, start)
                 # end += 100000
