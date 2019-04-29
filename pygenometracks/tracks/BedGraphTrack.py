@@ -47,6 +47,9 @@ file_type = {}
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BEDGRAPH_COLOR
 
+        if 'alpha' not in self.properties:
+            self.properties['alpha'] = 1
+
         if 'negative color' not in self.properties:
             self.properties['negative color'] = self.properties['color']
 
