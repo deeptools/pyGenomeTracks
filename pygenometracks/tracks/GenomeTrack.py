@@ -7,8 +7,8 @@ import numpy as np
 
 class GenomeTrack(object):
     """
-    The TrackPlot object is a holder for all tracks that are to be plotted.
-    For example, to plot a bedgraph file a new class that extends TrackPlot
+    The GenomeTrack object is a holder for all tracks that are to be plotted.
+    For example, to plot a bedgraph file a new class that extends GenomeTrack
     should be created.
 
     It is expected that all GenomeTrack objects have a plot method.
