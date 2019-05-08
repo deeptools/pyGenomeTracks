@@ -18,7 +18,7 @@ class TADsTrack(BedTrack):
             chrom_region = self.change_chrom_names(chrom_region)
             chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
             self.log.info('Chromosome name: {} does not exists. Changing name to {}'.format(orig, chrom_region))
-
+            return
         for region in sorted(self.interval_tree[chrom_region][start_region:end_region]):
             """
                    ______ y2

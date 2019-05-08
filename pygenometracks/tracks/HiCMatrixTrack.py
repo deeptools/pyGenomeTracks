@@ -144,10 +144,18 @@ file_type = {}
 
     def plot(self, ax, chrom_region, region_start, region_end):
 
+        #if chrom_regio
+
         log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if chrom_region not in chrom_sizes:
+            chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
+            if chrom_region not in chrom_sizes:
+                self.log.error("*Error*\nNeither "+chrom_region_before +
+                               " nor "+chrom_region+" exits as a chromosome "
+                               "name on the matrix.\n")
+                return
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
         if region_end > chrom_sizes[chrom_region]:
@@ -245,6 +253,11 @@ file_type = {}
 
     def plot_y_axis(self, cbar_ax, plot_ax):
 
+#        try:
+#            self.img
+#        except AttributeError:
+#            return
+
         if 'transform' in self.properties and \
                 self.properties['transform'] in ['log', 'log1p']:
             # get a useful log scale
@@ -256,9 +269,15 @@ file_type = {}
             formatter = LogFormatter(10, labelOnlyBase=False)
             aa = np.array([1, 2, 5])
             tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
-            cobar = plt.colorbar(self.img, ticks=tick_values, format=formatter, ax=cbar_ax, fraction=0.95)
+            try:
+                cobar = plt.colorbar(self.img, ticks=tick_values, format=formatter, ax=cbar_ax, fraction=0.95)
+            except AttributeError:
+                return
         else:
-            cobar = plt.colorbar(self.img, ax=cbar_ax, fraction=0.95)
+            try:
+                cobar = plt.colorbar(self.img, ax=cbar_ax, fraction=0.95)
+            except AttributeError:
+                return
 
         cobar.solids.set_edgecolor("face")
         cobar.ax.tick_params(labelsize='smaller')
