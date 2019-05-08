@@ -144,8 +144,6 @@ file_type = {}
 
     def plot(self, ax, chrom_region, region_start, region_end):
 
-        #if chrom_regio
-
         log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if chrom_region not in chrom_sizes:
