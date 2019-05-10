@@ -83,7 +83,14 @@ file_type = {}
                                                                                self.properties['file']))
 
         if chrom_region not in self.bw.chroms().keys():
+            chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
+            if chrom_region not in self.bw.chroms().keys():
+                self.log.error("*Error*\nNeither " + chrom_region_before + " "
+                               "nor " + chrom_region + " exits as a chromosome"
+                               " name inside the bigwig file.\n")
+                return
+
         chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
 
         if chrom_region not in self.bw.chroms().keys():
@@ -119,7 +126,7 @@ file_type = {}
         x_values = np.linspace(start_region, end_region, num_bins)
         if self.plot_type == 'line':
             if self.properties['color'] == self.properties['negative color']:
-                    ax.plot(x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['color'])
+                ax.plot(x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['color'])
             else:
                 import warnings
                 warnings.warn('Line plots with a different negative color might not look pretty')

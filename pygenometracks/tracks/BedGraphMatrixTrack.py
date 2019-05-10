@@ -1,6 +1,7 @@
 from . BedGraphTrack import BedGraphTrack
 from . GenomeTrack import GenomeTrack
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class BedGraphMatrixTrack(BedGraphTrack):
@@ -54,9 +55,10 @@ file_type = {}
         Plots a bedgraph matrix file, that instead of having
         a single value per bin, it has several values.
         """
-
-        values_list, start_pos = self.get_scores(chrom_region, start_region, end_region)
-
+        try:
+            values_list, start_pos = self.get_scores(chrom_region, start_region, end_region)
+        except TypeError:
+            return
         matrix_rows = []
         for values in values_list:
             values = list(map(float, values))
@@ -108,9 +110,10 @@ file_type = {}
         if self.properties['type'] == 'lines':
             super(BedGraphMatrixTrack, self).plot_y_axis(ax, plot_axis)
         else:
-            import matplotlib.pyplot as plt
-
-            cobar = plt.colorbar(self.img, ax=ax, fraction=0.95)
+            try:
+                cobar = plt.colorbar(self.img, ax=ax, fraction=0.95)
+            except AttributeError:
+                return
 
             cobar.solids.set_edgecolor("face")
             cobar.ax.tick_params(labelsize='smaller')

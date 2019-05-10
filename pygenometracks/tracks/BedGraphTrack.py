@@ -1,6 +1,7 @@
 from . GenomeTrack import GenomeTrack
 from .. utilities import file_to_intervaltree
 import numpy as np
+import sys
 
 DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
 
@@ -126,12 +127,31 @@ file_type = {}
         pos_list = []
         if self.tbx is not None:
             if chrom_region not in self.tbx.contigs:
+                chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
-            chrom_region = self.check_chrom_str_bytes(self.tbx.contigs, chrom_region)
+                if chrom_region not in self.tbx.contigs:
+                    sys.stderr.write("*Error*\nNeither"
+                                     " " + chrom_region_before + " nor"
+                                     " " + chrom_region + " exits as a "
+                                     "chromosome name inside the provided "
+                                     "file.\n")
+                    return
+
+            chrom_region = self.check_chrom_str_bytes(self.tbx.contigs,
+                                                      chrom_region)
             iterator = self.tbx.fetch(chrom_region, start_region, end_region)
+
         else:
             if chrom_region not in list(self.interval_tree):
+                chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
+                if chrom_region not in list(self.interval_tree):
+                    sys.stderr.write("*Error*\nNeither"
+                                     " " + chrom_region_before + " nor"
+                                     " " + chrom_region + " exits as a "
+                                     "chromosome name inside the bedgraph "
+                                     "file.\n")
+                    return
             chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
             iterator = iter(sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]))
 
