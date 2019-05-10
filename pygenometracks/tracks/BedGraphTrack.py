@@ -130,13 +130,15 @@ file_type = {}
                 chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
                 if chrom_region not in self.tbx.contigs:
-                    sys.stderr.write("*Error*\nNeither "+chrom_region_before +
-                                     " nor "+chrom_region+" exits as a "
+                    sys.stderr.write("*Error*\nNeither"
+                                     " " + chrom_region_before + " nor"
+                                     " " + chrom_region + " exits as a "
                                      "chromosome name inside the provided "
                                      "file.\n")
                     return
 
-            chrom_region = self.check_chrom_str_bytes(self.tbx.contigs, chrom_region)
+            chrom_region = self.check_chrom_str_bytes(self.tbx.contigs,
+                                                      chrom_region)
             iterator = self.tbx.fetch(chrom_region, start_region, end_region)
 
         else:

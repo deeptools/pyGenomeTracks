@@ -118,9 +118,9 @@ file_type = {}
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in list(self.interval_tree):
-                self.log.error("*Error*\nNeither "+chrom_region_before +
-                               " nor "+chrom_region+" exits as a chromosome "
-                               "name inside the link file.\n")
+                self.log.error("*Error*\nNeither " + chrom_region_before + " "
+                               "nor " + chrom_region + " exits as a chromosome"
+                               " name inside the link file.\n")
                 return
 
         chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)

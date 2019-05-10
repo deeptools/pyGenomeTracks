@@ -150,9 +150,9 @@ file_type = {}
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in chrom_sizes:
-                self.log.error("*Error*\nNeither "+chrom_region_before +
-                               " nor "+chrom_region+" exits as a chromosome "
-                               "name on the matrix.\n")
+                self.log.error("*Error*\nNeither " + chrom_region_before + " "
+                               "nor " + chrom_region + " exits as a chromosome"
+                               " name on the matrix.\n")
                 return
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
@@ -250,11 +250,6 @@ file_type = {}
             ax.set_ylim(0, depth)
 
     def plot_y_axis(self, cbar_ax, plot_ax):
-
-#        try:
-#            self.img
-#        except AttributeError:
-#            return
 
         if 'transform' in self.properties and \
                 self.properties['transform'] in ['log', 'log1p']:
