@@ -115,7 +115,14 @@ file_type = {}
         count = 0
 
         if chrom_region not in list(self.interval_tree):
+            chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
+            if chrom_region not in list(self.interval_tree):
+                self.log.error("*Error*\nNeither " + chrom_region_before + " "
+                               "nor " + chrom_region + " exits as a chromosome"
+                               " name inside the link file.\n")
+                return
+
         chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
 
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
