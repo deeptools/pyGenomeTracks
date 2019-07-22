@@ -1,5 +1,6 @@
 from . GenomeTrack import GenomeTrack
 from .. readBed import ReadBed
+from .. readGtf import ReadGtf
 from matplotlib.patches import Rectangle
 import matplotlib
 from .. utilities import opener
@@ -10,7 +11,9 @@ DEFAULT_BED_COLOR = '#1f78b4'
 
 
 class BedTrack(GenomeTrack):
-    SUPPORTED_ENDINGS = ['bed', 'bed3', 'bed6', 'bed12', 'bed.gz', 'bed3.gz', 'bed6.gz', 'bed12.gz']
+    SUPPORTED_ENDINGS = ['bed', 'bed3', 'bed6', 'bed12',
+                         'bed.gz', 'bed3.gz', 'bed6.gz', 'bed12.gz',
+                         'gtf', 'gtf.gz']
     TRACK_TYPE = 'bed'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 # if the type=genes is given
@@ -144,7 +147,12 @@ file_type = {}
 
     def process_bed(self):
 
-        bed_file_h = ReadBed(opener(self.properties['file']))
+        if self.properties['file'].endswith('gtf') or \
+           self.properties['file'].endswith('gtf.gz') or \
+           ('type' in self.properties and self.properties['type'] == 'gtf'):
+            bed_file_h = ReadGtf(self.properties['file'])
+        else:
+            bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
 
         if 'color' in self.properties and self.properties['color'] == 'bed_rgb' and \
