@@ -466,7 +466,10 @@ file_type = {}
         for idx in range(0, bed.block_count):
             x0 = bed.start + bed.block_starts[idx]
             x1 = x0 + bed.block_sizes[idx]
-            if x0 < bed.thick_start < x1:
+            if bed.thick_start == bed.thick_end:
+                positions.append((x0, x1, 'UTR'))
+
+            elif x0 < bed.thick_start < x1:
                 positions.append((x0, bed.thick_start, 'UTR'))
                 positions.append((bed.thick_start, x1, 'coding'))
 
@@ -573,7 +576,8 @@ file_type = {}
         for idx in range(0, bed.block_count):
             x0 = bed.start + bed.block_starts[idx]
             x1 = x0 + bed.block_sizes[idx]
-            if x1 < bed.thick_start or x0 > bed.thick_end:
+            if x1 < bed.thick_start or x0 > bed.thick_end or \
+               bed.thick_start == bed.thick_end:
                 y0 = ypos + quarter_height
                 y1 = ypos + three_quarter_height
             else:
