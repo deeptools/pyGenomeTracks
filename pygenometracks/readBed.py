@@ -11,9 +11,9 @@ class ReadBed(object):
     are bed3, bed6 and bed12
 
     Example:
-    bed = readBed(open("file.bed", 'r'))
+    bed = ReadBed(open("file.bed", 'r'))
     for interval in bed:
-        print bed['start']
+        print interval.start
 
     """
 
