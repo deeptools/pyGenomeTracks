@@ -281,7 +281,7 @@ class ReadBed(object):
             # If there is less than 6 fields, the default values will be added
             default = [".", 0, "."]
             line_values = [line_values[i] if i < len(line_values)
-                           else default[i-3]
+                           else default[i - 3]
                            for i in range(6)]
 
         return self.BedInterval._make(line_values)
