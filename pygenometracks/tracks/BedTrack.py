@@ -378,7 +378,7 @@ file_type = {}
 
             if self.properties['labels'] == 'off':
                 pass
-            elif bed.start > start_region and bed.end < end_region:
+            elif bed.end > start_region and bed.end < end_region:
                 ax.text(bed.end + self.small_relative,
                         ypos + (float(self.properties['interval_height']) / 2),
                         bed.name, horizontalalignment='left',
