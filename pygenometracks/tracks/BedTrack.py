@@ -96,7 +96,7 @@ file_type = {}
             self.properties['style'] = 'flybase'
         if 'display' not in self.properties:
             self.properties['display'] = 'stacked'
-        if 'interval height' not in self.properties:
+        if 'interval_height' not in self.properties:
             self.properties['interval_height'] = 100
         if 'line width' not in self.properties:
             self.properties['line width'] = 0.5
