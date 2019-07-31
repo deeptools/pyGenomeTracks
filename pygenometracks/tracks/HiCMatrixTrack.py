@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 
 class HiCMatrixTrack(GenomeTrack):
-    SUPPORTED_ENDINGS = ['.h5', '.cool' '.mcool']
+    SUPPORTED_ENDINGS = ['.h5', '.cool', '.mcool']
     TRACK_TYPE = 'hic_matrix'
     OPTIONS_TXT = """
 title =
