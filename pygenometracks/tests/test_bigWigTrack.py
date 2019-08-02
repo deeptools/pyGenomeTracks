@@ -104,3 +104,15 @@ def test_narrow_track():
     assert res is None, res
 
     os.remove(outfile.name)
+
+def test_alpha():
+    region = "X:2700000-3100000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_alpha_test_', delete=False)
+    args = "--tracks {root}/alpha.ini --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName  {outfile}".format(root=ROOT, outfile=outfile.name, region=region).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(ROOT + '/master_alpha.png', outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
