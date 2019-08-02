@@ -92,7 +92,7 @@ file_type = {}
 
             if self.properties['plot horizontal lines'] == 'yes':
                 ax.grid(True)
-                ax.grid(True, which='y')
+                ax.grid(True, axis='y')
                 ax.axhline(y=0, color='black', linewidth=1)
                 ax.tick_params(axis='y', which='minor', left='on')
 
