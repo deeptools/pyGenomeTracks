@@ -105,6 +105,7 @@ def test_narrow_track():
 
     os.remove(outfile.name)
 
+
 def test_alpha():
     region = "X:2700000-3100000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_alpha_test_', delete=False)

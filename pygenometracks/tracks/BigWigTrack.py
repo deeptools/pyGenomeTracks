@@ -149,7 +149,7 @@ file_type = {}
 
         else:
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['color'],
-                            facecolor=self.properties['color'], where=scores_per_bin >= 0, interpolate=True, 
+                            facecolor=self.properties['color'], where=scores_per_bin >= 0, interpolate=True,
                             alpha=self.properties['alpha'])
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['negative color'],
                             facecolor=self.properties['negative color'], where=scores_per_bin < 0, interpolate=True,
