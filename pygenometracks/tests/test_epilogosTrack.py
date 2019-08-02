@@ -41,7 +41,7 @@ with open(ROOT + "epilogos.ini", 'w') as fh:
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
-def test_narrow_track():
+def test_epilogos_track():
     region = "X:3100000-3150000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_', delete=False)
     args = "--tracks {root}/epilogos.ini --region {region} --trackLabelFraction 0.2 " \
