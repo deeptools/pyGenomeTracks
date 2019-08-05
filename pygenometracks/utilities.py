@@ -1,4 +1,5 @@
 import sys
+import gzip
 from intervaltree import IntervalTree, Interval
 
 
@@ -9,8 +10,9 @@ def to_string(s):
     if isinstance(s, str):
         return s
     if isinstance(s, bytes):
-        if sys.version_info[0] == 2:
-            return str(s)
+        assert(sys.version_info[0] != 2)
+#        if sys.version_info[0] == 2:
+#            return str(s)
         return s.decode('ascii')
     if isinstance(s, list):
         return [to_string(x) for x in s]
@@ -21,8 +23,9 @@ def to_bytes(s):
     """
     Like toString, but for functions requiring bytes in python3
     """
-    if sys.version_info[0] == 2:
-        return s
+    assert(sys.version_info[0] != 2)
+#    if sys.version_info[0] == 2:
+#        return s
     if isinstance(s, bytes):
         return s
     if isinstance(s, str):
@@ -36,7 +39,6 @@ def opener(filename):
     """
     Determines if a file is compressed or not
     """
-    import gzip
     f = open(filename, 'rb')
     if f.read(2) == b'\x1f\x8b':
         f.seek(0)

@@ -241,7 +241,13 @@ file_type = {}
             self.get_max_num_row(self.len_w, self.small_relative)
 
         if chrom_region not in self.interval_tree.keys():
+            chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
+            if chrom_region not in self.interval_tree.keys():
+                self.log.error("*Error*\nNeither " + chrom_region_before + " "
+                               "nor " + chrom_region + " exits as a chromosome"
+                               " name inside the bed file.\n")
+                return
         chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
 
         genes_overlap = sorted(self.interval_tree[chrom_region][start_region:end_region])
