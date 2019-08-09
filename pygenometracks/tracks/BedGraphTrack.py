@@ -7,7 +7,10 @@ DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
 
 
 class BedGraphTrack(GenomeTrack):
-    SUPPORTED_ENDINGS = ['.bg', '.bg.gz', '.bg.bgz']
+    SUPPORTED_ENDINGS = ['.bg', '.bg.gz', '.bg.bgz',
+                         '.bedgraph', '.bedgraph.gz', '.bedgraph.bgz',
+                         '.bedGraph', '.bedGraph.gz', '.bedGraph.bgz',
+                         '.bdg', '.bdg.gz', '.bdg.bgz']
     TRACK_TYPE = 'bedgraph'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 color = green
