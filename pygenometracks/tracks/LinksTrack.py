@@ -4,7 +4,7 @@ import numpy as np
 
 
 class LinksTrack(GenomeTrack):
-    SUPPORTED_ENDINGS = ['.arcs', '.arc' '.link', '.links']
+    SUPPORTED_ENDINGS = ['.arcs', '.arc', '.link', '.links']
     TRACK_TYPE = 'links'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 # the file format for links is (tab separated)

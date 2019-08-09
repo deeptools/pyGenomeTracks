@@ -2,7 +2,7 @@ from . BedTrack import BedTrack
 
 
 class TADsTrack(BedTrack):
-    SUPPORTED_ENDINGS = ['.domain', '.domains' '.tad', '.tads']
+    SUPPORTED_ENDINGS = ['.domain', '.domains', '.tad', '.tads']
     TRACK_TYPE = 'domains'
 
     def plot(self, ax, chrom_region, start_region, end_region):

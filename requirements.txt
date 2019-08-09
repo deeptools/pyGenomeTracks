@@ -6,3 +6,4 @@ future
 hicmatrix
 pysam
 pytest
+gffutils

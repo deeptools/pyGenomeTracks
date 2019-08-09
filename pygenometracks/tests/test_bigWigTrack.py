@@ -93,7 +93,7 @@ with open(ROOT + "bigwig.ini", 'w') as fh:
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
-def test_narrow_track():
+def test_bigwig_track():
     region = "X:2700000-3100000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_', delete=False)
     args = "--tracks {root}/bigwig.ini --region {region} --trackLabelFraction 0.2 " \
