@@ -40,6 +40,9 @@ file_type = {}
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BIGWIG_COLOR
 
+        if 'alpha' not in self.properties:
+            self.properties['alpha'] = 1
+
         if 'negative color' not in self.properties:
             self.properties['negative color'] = self.properties['color']
 
@@ -146,9 +149,11 @@ file_type = {}
 
         else:
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['color'],
-                            facecolor=self.properties['color'], where=scores_per_bin >= 0, interpolate=True)
+                            facecolor=self.properties['color'], where=scores_per_bin >= 0, interpolate=True,
+                            alpha=self.properties['alpha'])
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['negative color'],
-                            facecolor=self.properties['negative color'], where=scores_per_bin < 0, interpolate=True)
+                            facecolor=self.properties['negative color'], where=scores_per_bin < 0, interpolate=True,
+                            alpha=self.properties['alpha'])
 
         ymin, ymax = ax.get_ylim()
         if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
