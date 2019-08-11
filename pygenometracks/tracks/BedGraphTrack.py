@@ -51,6 +51,9 @@ file_type = {}
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BEDGRAPH_COLOR
 
+        if 'alpha' not in self.properties:
+            self.properties['alpha'] = 1
+
         if 'negative color' not in self.properties:
             self.properties['negative color'] = self.properties['color']
 
@@ -197,7 +200,7 @@ file_type = {}
             # draw a vertical line for each fragment region center
             ax.fill_between(pos_list, score_list, linewidth=0.1,
                             facecolor=self.properties['color'],
-                            edgecolor='none')
+                            edgecolor='none', alpha=self.properties['alpha'])
             ax.vlines(pos_list, [0], score_list, color='olive', linewidth=0.5)
             ax.plot(pos_list, score_list, '-', color='slateblue', linewidth=0.7)
         else:
@@ -223,9 +226,9 @@ file_type = {}
 
             else:
                 ax.fill_between(x_values, score_list, linewidth=0.1, color=self.properties['color'],
-                                facecolor=self.properties['color'], where=score_list >= 0)
+                                facecolor=self.properties['color'], where=score_list >= 0, alpha=self.properties['alpha'])
                 ax.fill_between(x_values, score_list, linewidth=0.1, color=self.properties['negative color'],
-                                facecolor=self.properties['negative color'], where=score_list < 0)
+                                facecolor=self.properties['negative color'], where=score_list < 0, alpha=self.properties['alpha'])
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
