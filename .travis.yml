@@ -5,11 +5,18 @@ deploy:
   user: bgruening
   password:
     secure: WXZ0MK7hk5hfwmEIOHyDSOAiqQyDH/PfXBqUQ6+pQ/1iApi7iGDwHnSmMY0mSmIqksRLr1C37+E2xZKY7Ig2D7GXx3X2aSUFDZMYyhDhz2nP5qwGLNxQCSKROuVg90ArDhfl1aIPZoYK77mqfXCxP8nmnJq9xhzWNAkhjA/fypyfYV0ZlSqVYKFL7vTz0Vz+RUvizrRMtdXsceuCZ1v0bIT2BJ2zkvcggah9s2xRrEa4wTFogYFLXTOodUsfJJ8hC0TKs0eqgnxj/lFMeMuS2VE3sKE7QAOoBGvRmppd1SK6RrBpF3DnLmpW6sLsMWOMbNnvgGGbja4oJ0zTUcJ5G6YEzv9nAQTwPjf+24ZWUcmpEOMe1LrqDiqw8FePvZOAfOqrZXodFvXcI2ZXmXchgBCA2h8l9vwno5Y7gUmZVLpzsArukcr6vhwmnMerwxWFwkNljpT5DZxDE9vJ76MfneR4m5PrKZQgfpmMpAgLH8F2xwRCMpoMuq86bOm0QbI2zzkcADGvkgEFifk8Zlr0s7fJD66H570qqawEQ5PYLAhZ7zXK8AGIyy2mtDmBvZUEnXvjmsTQo4Tp1ARQzqQm8M41IEDcF92/WoMNJ21ECsiFq72qWKIdzl8Co7umVdF6sfhoTVq4Q5kTldvkvfTnK0vCExCDHI9+C3kwzplSQIM=
+  on:
+    tags: true
+  distributions: "sdist bdist_wheel"
+  python: 3.6
+
 env:
 - TRAVIS_PYTHON_VERSION=3.6
+
 os:
 - linux
 - osx
+
 jobs:
   include:
   - stage: lint
