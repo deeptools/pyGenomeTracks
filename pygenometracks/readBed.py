@@ -11,9 +11,9 @@ class ReadBed(object):
     are bed3, bed6 and bed12
 
     Example:
-    bed = readBed(open("file.bed", 'r'))
+    bed = ReadBed(open("file.bed", 'r'))
     for interval in bed:
-        print bed['start']
+        print interval.start
 
     """
 
@@ -48,6 +48,8 @@ class ReadBed(object):
             self.BedInterval = collections.namedtuple('BedInterval', self.fields)
         elif self.file_type == 'bed9':
             self.BedInterval = collections.namedtuple('BedInterval', self.fields[:9])
+        elif self.file_type == 'bed8':
+            self.BedInterval = collections.namedtuple('BedInterval', self.fields[:8])
         else:
             self.BedInterval = collections.namedtuple('BedInterval', self.fields[:6])
 
@@ -72,25 +74,37 @@ class ReadBed(object):
     def guess_file_type(self, line_values):
         """try to guess type of bed file by counting the fields
         """
+        assert len(line_values) > 2, \
+            "The number of field is less than 3.\n" \
+            "This is not a bed file.\n" \
+            "File: {}\n" \
+            "First line: {}\n".format(self.file_handle.name,
+                                      line_values)
         if len(line_values) == 3:
             self.file_type = 'bed3'
         elif len(line_values) == 4:
-            self.file_type = 'bedgraph'
+            try:
+                float(line_values[3])
+                self.file_type = 'bedgraph'
+            except ValueError:
+                self.file_type = 'bed4'
+        elif len(line_values) == 5:
+            self.file_type = 'bed5'
         elif len(line_values) == 6:
             self.file_type = 'bed6'
+        elif len(line_values) == 8:
+            self.file_type = 'bed8'
         elif len(line_values) == 12:
             self.file_type = 'bed12'
         elif len(line_values) == 9:
-            # this is a case where a specific color is encoded in the 10 field of the bed file
+            # this is a case where a specific color is encoded
+            # in the 9th field of the bed file
             self.file_type = 'bed9'
-        elif len(line_values) > 6:
+        else:
             # assume bed6
             self.file_type = 'bed6'
-            sys.stderr.write("Number of fields in BED file is not standard. Assuming bed6\n")
-        else:
-            # assume bed3
-            self.file_type = 'bed3'
-            sys.stderr.write("Number of fields in BED file is not standard. Assuming bed3\n")
+            sys.stderr.write("Number of fields in BED file is not standard."
+                             "Assuming bed6\n")
         return self.file_type
 
     def next(self):
@@ -159,16 +173,27 @@ class ReadBed(object):
         line_data = line_data.split("\t")
 
         if self.file_type == 'bed12':
-            assert len(line_data) == 12, "File type detected is bed12 but line {}: {} does " \
-                                         "not have 12 fields.".format(self.line_number, bed_line)
+            assert len(line_data) == 12, \
+                "File type detected is bed12 but line {}: {} does " \
+                "not have 12 fields.".format(self.line_number, bed_line)
 
-        elif self.file_type == 'bed3':
-            assert len(line_data) == 3, "File type detected is bed3 but line {}: {} does " \
-                "not have 3 fields.".format(self.line_number, bed_line)
+        elif self.file_type == 'bed9':
+            assert len(line_data) == 9, \
+                "File type detected is bed9 but line {}: {} does " \
+                "not have 9 fields.".format(self.line_number, bed_line)
+
+        elif self.file_type == 'bed8':
+            assert len(line_data) == 8, \
+                "File type detected is bed8 but line {}: {} does " \
+                "not have 8 fields.".format(self.line_number, bed_line)
 
         elif self.file_type == 'bed6':
-            assert len(line_data) == 6, "File type detected is bed6 but line {}: {} does " \
-                "not have 6 fields.".format(self.line_number, bed_line)
+            # It is possible that the number of fields was standard.
+            # To be able to process it as bed6, the extra-fields are removed.
+            line_data = line_data[:6]
+
+        # If the file_type is below, values will be added.
+
         line_values = []
         for idx, r in enumerate(line_data):
             # first field is always chromosome/contig name
@@ -184,8 +209,11 @@ class ReadBed(object):
                     elif r == '-1':
                         r = '-'
                     else:
-                        sys.stderr.write("*Warning, invalid strand value found {} for line #{}:\n{}\n "
-                                         "Setting strand to '.'\n".format(r, bed_line, self.line_number))
+                        sys.stderr.write("*Warning, invalid strand value"
+                                         "found {} for line #{}:\n{}\n "
+                                         "Setting strand to '.'"
+                                         "\n".format(r, bed_line,
+                                                     self.line_number))
                         r = '.'
                 line_values.append(r)
 
@@ -195,8 +223,10 @@ class ReadBed(object):
                 try:
                     line_values.append(int(r))
                 except ValueError:
-                    sys.stderr.write("Value: {} in field {} at line {} is not an integer\n".format(r, idx + 1,
-                                                                                                   self.line_number))
+                    sys.stderr.write("Value: {} in field {} at line {}"
+                                     " is not an integer"
+                                     "\n".format(r, idx + 1,
+                                                 self.line_number))
                     return dict()
             # check item rgb
             elif idx == 8:
@@ -206,8 +236,11 @@ class ReadBed(object):
                     try:
                         r = list(map(int, rgb))
                     except ValueError as detail:
-                        sys.stderr.write("Error reading line: #{}. The rgb field {} is not "
-                                         "valid.\nError message: {}\n".format(self.line_number, r, detail))
+                        sys.stderr.write("Error reading line: #{}. "
+                                         "The rgb field {} is not "
+                                         "valid.\nError message: {}"
+                                         "\n".format(self.line_number, r,
+                                                     detail))
                 line_values.append(r)
 
             elif idx in [10, 11]:
@@ -217,11 +250,14 @@ class ReadBed(object):
                 try:
                     r = [int(x) for x in r_parts if x != '']
                 except ValueError as detail:
-                    sys.stderr.write("Error reading line #{}. The block field {} is not "
-                                     "valid.\nError message: {}\n".format(self.line_number, r, detail))
+                    sys.stderr.write("Error reading line #{}. "
+                                     "The block field {} is not "
+                                     "valid.\nError message: {}"
+                                     "\n".format(self.line_number, r, detail))
                 line_values.append(r)
 
             else:
+                # idx = 4 (score)
                 try:
                     tmp = float(r)
                 except ValueError:
@@ -231,15 +267,21 @@ class ReadBed(object):
                 line_values.append(tmp)
 
         assert line_values[2] > line_values[1], \
-            "Start position larger or equal than end for line #{}:\n{}\n".format(self.line_number,
-                                                                                 bed_line)
+            "Start position larger or equal than end" \
+            " for line #{}:\n{}\n".format(self.line_number,
+                                          bed_line)
 
-        if self.file_type == 'bed3':
-            line_values = line_values[0:3]
-            # in case of a bed3, the id, score and strand
-            # values are added as ".", 0, "." respectively
-            line_values.extend([".", 0, "."])
-        elif self.file_type == 'bed6':
-            line_values = line_values[0:6]
+        if len(line_values) < 6:
+            assert len(line_values) > 2, \
+                "The number of field is less than 3.\n" \
+                "This is not a bed file.\n" \
+                "File: {}\n" \
+                "Current line: {}\n".format(self.file_handle.name,
+                                            line_values)
+            # If there is less than 6 fields, the default values will be added
+            default = [".", 0, "."]
+            line_values = [line_values[i] if i < len(line_values)
+                           else default[i - 3]
+                           for i in range(6)]
 
         return self.BedInterval._make(line_values)

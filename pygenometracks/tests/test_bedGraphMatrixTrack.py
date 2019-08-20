@@ -92,7 +92,7 @@ with open(ROOT + "bedgraph.ini", 'w') as fh:
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
-def test_narrow_track():
+def test_bedgraphmatrix_track():
     region = "X:2850000-3150000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_', delete=False)
     args = "--tracks {root}/bedgraph.ini --region {region} --trackLabelFraction 0.2 " \
