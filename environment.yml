@@ -6,12 +6,14 @@ channels:
    - bioconda
    - conda-forge
 dependencies:
-    - numpy >= 1.12.1
-    - matplotlib >= 2.0.0
-    - intervaltree >= 2.1.0
-    - pybigwig >= 0.3.7
-    - hicexplorer >= 2.1.1
-    - pysam >= 0.14
+    - numpy >=1.16
+    - matplotlib >=3.0
+    - intervaltree >=2.1.0
+    - pybigwig >=0.3.4
+    - future >=0.17.0
+    - hicmatrix >=9
+    - pysam >=0.14
     - pytest
+    - gffutils >=0.9
     - pip:
         - "git+https://github.com/deeptools/pyGenomeTracks.git"
