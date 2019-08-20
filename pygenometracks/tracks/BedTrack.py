@@ -96,7 +96,7 @@ file_type = {}
             self.properties['style'] = 'flybase'
         if 'display' not in self.properties:
             self.properties['display'] = 'stacked'
-        if 'interval height' not in self.properties:
+        if 'interval_height' not in self.properties:
             self.properties['interval_height'] = 100
         if 'line width' not in self.properties:
             self.properties['line width'] = 0.5
@@ -136,9 +136,9 @@ file_type = {}
 
     def get_length_w(self, fig_width, region_start, region_end):
         '''
-        to improve the visualization of the genes 
+        to improve the visualization of the genes
         it is good to have an estimation of the label
-        length. In the following code I try to get the 
+        length. In the following code I try to get the
         length of a 'W' in base pairs.
         '''
         if self.properties['labels'] == 'on':
@@ -242,7 +242,7 @@ file_type = {}
 
         The algorithm uses a interval tree (self.region_interval)
         to check the overlaps
-        and a sort of coverage vector 'rows used' 
+        and a sort of coverage vector 'rows used'
         to identify the row in which to plot
         :return: int y position
         """
@@ -274,11 +274,7 @@ file_type = {}
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
-                self.log.error("*Error*\nNeither " +
-                               chrom_region_before +
-                               " nor " + chrom_region +
-                               " exits as a chromosome"
-                               " name inside the bed file.\n")
+                self.log.error("*Error*\nNeither " + chrom_region_before + " nor " + chrom_region + " exits as a chromosome name inside the bed file.\n")
                 return
         chrom_region = self.check_chrom_str_bytes(self.interval_tree,
                                                   chrom_region)
@@ -336,8 +332,7 @@ file_type = {}
             if self.properties['labels'] == 'on':
                 num_name_characters = len(bed.name) + 2
                 # +2 to account for a space before and after the name
-                bed_extended_end = int(bed.end +
-                                       (num_name_characters * self.len_w))
+                bed_extended_end = int(bed.end + (num_name_characters * self.len_w))
             else:
                 bed_extended_end = (bed.end + 2 * self.small_relative)
 
@@ -383,9 +378,9 @@ file_type = {}
 
             if self.properties['labels'] == 'off':
                 pass
-            elif bed.start > start_region and bed.end < end_region:
-                ax.text(bed.end + self.small_relative, ypos +
-                        (float(self.properties['interval_height']) / 2),
+            elif bed.end > start_region and bed.end < end_region:
+                ax.text(bed.end + self.small_relative,
+                        ypos + (float(self.properties['interval_height']) / 2),
                         bed.name, horizontalalignment='left',
                         verticalalignment='center', fontproperties=self.fp)
 
@@ -393,7 +388,7 @@ file_type = {}
             self.log.warning("*Warning* No intervals were found for file {} "
                              "in section '{}' for the interval plotted"
                              " ({}:{}-{}).\n".
-                             format(self.properties['file'], 
+                             format(self.properties['file'],
                                     self.properties['section_name'],
                                     chrom_region, start_region, end_region))
         ymax = 0
@@ -434,18 +429,18 @@ file_type = {}
             cobar.ax.tick_params(labelsize='smaller')
             cobar.ax.yaxis.set_ticks_position('left')
             # adjust the labels of the colorbar
-            labels = cobar.ax.get_yticklabels()
             ticks = cobar.ax.get_yticks()
-            if ticks[0] == 0:
+            labels = cobar.ax.set_yticklabels(ticks.astype('float32'))
+            (vmin, vmax) = cobar.mappable.get_clim()
+            for idx in np.where(ticks == vmin)[0]:
                 # if the label is at the start of the colobar
                 # move it above avoid being cut or overlapping with other track
-                labels[0].set_verticalalignment('bottom')
-            if ticks[-1] == 1:
+                labels[idx].set_verticalalignment('bottom')
+            for idx in np.where(ticks == vmax)[0]:
                 # if the label is at the end of the colobar
                 # move it a bit inside to avoid overlapping
                 # with other labels
-                labels[-1].set_verticalalignment('top')
-            cobar.ax.set_yticklabels(labels)
+                labels[idx].set_verticalalignment('top')
 
     def get_rgb_and_edge_color(self, bed):
         rgb = self.properties['color']

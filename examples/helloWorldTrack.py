@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from . GenomeTrack import GenomeTrack
+from pygenometracks.tracks import GenomeTrack
 
 
 class TextTrack(GenomeTrack):
