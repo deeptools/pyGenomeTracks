@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pygenometracks.tracks import GenomeTrack
+from . GenomeTrack import GenomeTrack
 
 
 class TextTrack(GenomeTrack):
@@ -11,7 +11,8 @@ title =
 text =
 # x position of text in the plot (in bp)
 x position =
-"""
+file_type = {}
+    """.format(TRACK_TYPE)
 
     def plot(self, ax, chrom, region_start, region_end):
         """
