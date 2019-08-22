@@ -1,5 +1,6 @@
 from . GenomeTrack import GenomeTrack
 from .. readBed import ReadBed
+from .. readGtf import ReadGtf
 from matplotlib.patches import Rectangle
 import matplotlib
 from .. utilities import opener
@@ -10,7 +11,11 @@ DEFAULT_BED_COLOR = '#1f78b4'
 
 
 class BedTrack(GenomeTrack):
-    SUPPORTED_ENDINGS = ['bed', 'bed3', 'bed6', 'bed12', 'bed.gz', 'bed3.gz', 'bed6.gz', 'bed12.gz']
+    SUPPORTED_ENDINGS = ['bed', 'bed3', 'bed4', 'bed5', 'bed6', 'bed8',
+                         'bed9', 'bed12',
+                         'bed.gz', 'bed3.gz', 'bed4.gz', 'bed5.gz', 'bed6.gz',
+                         'bed9.gz', 'bed12.gz',
+                         'gtf', 'gtf.gz']
     TRACK_TYPE = 'bed'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 # if the type=genes is given
@@ -68,7 +73,8 @@ file_type = {}
 
     def __init__(self, *args, **kwarg):
         super(BedTrack, self).__init__(*args, **kwarg)
-        self.bed_type = None  # once the bed file is read, this is bed3, bed6 or bed12
+        self.bed_type = None  # once the bed file is read,
+        # this is bed3, bed4, bed5, bed6, bed8, bed9 or bed12
         self.len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions
 
@@ -90,7 +96,7 @@ file_type = {}
             self.properties['style'] = 'flybase'
         if 'display' not in self.properties:
             self.properties['display'] = 'stacked'
-        if 'interval height' not in self.properties:
+        if 'interval_height' not in self.properties:
             self.properties['interval_height'] = 100
         if 'line width' not in self.properties:
             self.properties['line width'] = 0.5
@@ -98,12 +104,16 @@ file_type = {}
         self.colormap = None
 
         # check if the color given is a color map
-        if not matplotlib.colors.is_color_like(self.properties['color']) and self.properties['color'] != 'bed_rgb':
+        if not matplotlib.colors.is_color_like(self.properties['color']) \
+           and self.properties['color'] != 'bed_rgb':
             # check if the color is a valid colormap name
             if self.properties['color'] not in matplotlib.cm.datad:
-                self.log.warning("*WARNING* color: '{}' for section {} is not valid. Color has "
-                                 "been set to {}".format(self.properties['color'], self.properties['section_name'],
-                                                         DEFAULT_BED_COLOR))
+                self.log.warning("*WARNING* color: '{}' for section {}"
+                                 " is not valid. Color has "
+                                 "been set to "
+                                 "{}".format(self.properties['color'],
+                                             self.properties['section_name'],
+                                             DEFAULT_BED_COLOR))
                 self.properties['color'] = DEFAULT_BED_COLOR
             else:
                 self.colormap = self.properties['color']
@@ -126,8 +136,10 @@ file_type = {}
 
     def get_length_w(self, fig_width, region_start, region_end):
         '''
-        to improve the visualization of the genes it is good to have an estimation of the label
-        length. In the following code I try to get the length of a 'W' in base pairs.
+        to improve the visualization of the genes
+        it is good to have an estimation of the label
+        length. In the following code I try to get the
+        length of a 'W' in base pairs.
         '''
         if self.properties['labels'] == 'on':
             # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
@@ -144,12 +156,19 @@ file_type = {}
 
     def process_bed(self):
 
-        bed_file_h = ReadBed(opener(self.properties['file']))
+        if self.properties['file'].endswith('gtf') or \
+           self.properties['file'].endswith('gtf.gz') or \
+           ('type' in self.properties and self.properties['type'] == 'gtf'):
+            bed_file_h = ReadGtf(self.properties['file'])
+        else:
+            bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
 
-        if 'color' in self.properties and self.properties['color'] == 'bed_rgb' and \
+        if 'color' in self.properties and \
+           self.properties['color'] == 'bed_rgb' and \
            self.bed_type not in ['bed12', 'bed9']:
-            self.log.warning("*WARNING* Color set to 'bed_rgb', but bed file does not have the rgb field. "
+            self.log.warning("*WARNING* Color set to 'bed_rgb', "
+                             "but bed file does not have the rgb field. "
                              "The color has been set to {}".format(DEFAULT_BED_COLOR))
             self.properties['color'] = DEFAULT_BED_COLOR
 
@@ -167,16 +186,19 @@ file_type = {}
             if bed.chromosome not in interval_tree:
                 interval_tree[bed.chromosome] = IntervalTree()
 
-            interval_tree[bed.chromosome].add(Interval(bed.start, bed.end, bed))
+            interval_tree[bed.chromosome].add(Interval(bed.start,
+                                                       bed.end, bed))
             valid_intervals += 1
 
         if valid_intervals == 0:
-            self.log.warning("No valid intervals were found in file {}".format(self.properties['file_name']))
+            self.log.warning("No valid intervals were found in file "
+                             "{}".format(self.properties['file_name']))
 
         return interval_tree, min_score, max_score
 
     def get_max_num_row(self, len_w, small_relative):
-        ''' Process the whole bed regions at the given figure length and font size to
+        ''' Process the whole bed regions at the given figure length
+        and font size to
         determine the maximum number of rows required.
         :return:
         '''
@@ -214,17 +236,23 @@ file_type = {}
 
     def get_y_pos(self, free_row):
         """
-        The y_pos is set such that regions to be plotted do not overlap (stacked). To override this
+        The y_pos is set such that regions to be plotted
+        do not overlap (stacked). To override this
         the properties['collapsed'] needs to be set.
 
-        The algorithm uses a interval tree (self.region_interval) to check the overlaps
-        and a sort of coverage vector 'rows used' to identify the row in which to plot
+        The algorithm uses a interval tree (self.region_interval)
+        to check the overlaps
+        and a sort of coverage vector 'rows used'
+        to identify the row in which to plot
         :return: int y position
         """
 
-        # if the domain directive is given, ypos simply oscilates between 0 and 100
+        # if the domain directive is given,
+        # ypos simply oscilates between 0 and 100
         if self.properties['display'] == 'interlaced':
-            ypos = self.properties['interval_height'] if self.counter % 2 == 0 else 1
+            ypos = self.properties['interval_height'] \
+                if self.counter % 2 == 0 \
+                else 1
 
         elif self.properties['display'] == 'collapsed':
             ypos = 0
@@ -236,21 +264,23 @@ file_type = {}
     def plot(self, ax, chrom_region, start_region, end_region):
         self.counter = 0
         self.small_relative = 0.004 * (end_region - start_region)
-        self.get_length_w(ax.get_figure().get_figwidth(), start_region, end_region)
-        if 'global max row' in self.properties and self.properties['global max row'] == 'yes':
+        self.get_length_w(ax.get_figure().get_figwidth(), start_region,
+                          end_region)
+        if 'global max row' in self.properties and \
+           self.properties['global max row'] == 'yes':
             self.get_max_num_row(self.len_w, self.small_relative)
 
         if chrom_region not in self.interval_tree.keys():
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
-                self.log.error("*Error*\nNeither " + chrom_region_before + " "
-                               "nor " + chrom_region + " exits as a chromosome"
-                               " name inside the bed file.\n")
+                self.log.error("*Error*\nNeither " + chrom_region_before + " nor " + chrom_region + " exits as a chromosome name inside the bed file.\n")
                 return
-        chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
+        chrom_region = self.check_chrom_str_bytes(self.interval_tree,
+                                                  chrom_region)
 
-        genes_overlap = sorted(self.interval_tree[chrom_region][start_region:end_region])
+        genes_overlap = \
+            sorted(self.interval_tree[chrom_region][start_region:end_region])
 
         # turn labels off when too many intervals are visible.
         if self.properties['labels'] != 'off' and len(genes_overlap) > 60:
@@ -272,7 +302,8 @@ file_type = {}
         # for 3 row_last_position = [9, 14, 19]
         # for 4 row_last_position = [26, 14, 19]
 
-        row_last_position = []  # each entry in this list contains the end position
+        row_last_position = []
+        # each entry in this list contains the end position
         # of genomic interval. The list index is the row
         # in which the genomic interval was plotted.
         # Any new genomic interval that wants to be plotted,
@@ -299,7 +330,8 @@ file_type = {}
             bed = region.data
 
             if self.properties['labels'] == 'on':
-                num_name_characters = len(bed.name) + 2  # +2 to account for an space before and after the name
+                num_name_characters = len(bed.name) + 2
+                # +2 to account for a space before and after the name
                 bed_extended_end = int(bed.end + (num_name_characters * self.len_w))
             else:
                 bed_extended_end = (bed.end + 2 * self.small_relative)
@@ -310,7 +342,8 @@ file_type = {}
                 row_last_position.append(bed_extended_end)
             else:
                 # get list of rows that are less than bed.start, then take the min
-                idx_list = [idx for idx, value in enumerate(row_last_position) if value < bed.start]
+                idx_list = [idx for idx, value in enumerate(row_last_position)
+                            if value < bed.start]
                 if len(idx_list):
                     free_row = min(idx_list)
                     row_last_position[free_row] = bed_extended_end
@@ -323,7 +356,8 @@ file_type = {}
             ypos = self.get_y_pos(free_row)
 
             # do not plot if the maximum interval rows to plot is reached
-            if 'gene rows' in self.properties and free_row >= int(self.properties['gene rows']):
+            if 'gene rows' in self.properties and \
+               free_row >= int(self.properties['gene rows']):
                 continue
 
             if free_row > max_num_row_local:
@@ -333,27 +367,34 @@ file_type = {}
 
             if self.bed_type == 'bed12':
                 if self.properties['style'] == 'flybase':
-                    self.draw_gene_with_introns_flybase_style(ax, bed, ypos, rgb, edgecolor, linewidth)
+                    self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
+                                                              rgb, edgecolor,
+                                                              linewidth)
                 else:
-                    self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor, linewidth)
+                    self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor,
+                                                linewidth)
             else:
                 self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
 
             if self.properties['labels'] == 'off':
                 pass
-            elif bed.start > start_region and bed.end < end_region:
-                ax.text(bed.end + self.small_relative, ypos + (float(self.properties['interval_height']) / 2),
+            elif bed.end > start_region and bed.end < end_region:
+                ax.text(bed.end + self.small_relative,
+                        ypos + (float(self.properties['interval_height']) / 2),
                         bed.name, horizontalalignment='left',
                         verticalalignment='center', fontproperties=self.fp)
 
         if self.counter == 0:
             self.log.warning("*Warning* No intervals were found for file {} "
-                             "in section '{}' for the interval plotted ({}:{}-{}).\n".
-                             format(self.properties['file'], self.properties['section_name'],
+                             "in section '{}' for the interval plotted"
+                             " ({}:{}-{}).\n".
+                             format(self.properties['file'],
+                                    self.properties['section_name'],
                                     chrom_region, start_region, end_region))
         ymax = 0
 
-        if 'global max row' in self.properties and self.properties['global max row'] == 'yes':
+        if 'global max row' in self.properties and \
+           self.properties['global max row'] == 'yes':
             ymin = self.max_num_row[chrom_region] * self.row_scale
 
         elif 'gene rows' in self.properties:
@@ -381,31 +422,33 @@ file_type = {}
             import matplotlib.pyplot as plt
             self.colormap.set_array([])
 
-            cobar = plt.colorbar(self.colormap, ax=ax, fraction=1, orientation='vertical')
+            cobar = plt.colorbar(self.colormap, ax=ax, fraction=1,
+                                 orientation='vertical')
 
             cobar.solids.set_edgecolor("face")
             cobar.ax.tick_params(labelsize='smaller')
             cobar.ax.yaxis.set_ticks_position('left')
             # adjust the labels of the colorbar
-            labels = cobar.ax.get_yticklabels()
             ticks = cobar.ax.get_yticks()
-            if ticks[0] == 0:
+            labels = cobar.ax.set_yticklabels(ticks.astype('float32'))
+            (vmin, vmax) = cobar.mappable.get_clim()
+            for idx in np.where(ticks == vmin)[0]:
                 # if the label is at the start of the colobar
                 # move it above avoid being cut or overlapping with other track
-                labels[0].set_verticalalignment('bottom')
-            if ticks[-1] == 1:
+                labels[idx].set_verticalalignment('bottom')
+            for idx in np.where(ticks == vmax)[0]:
                 # if the label is at the end of the colobar
                 # move it a bit inside to avoid overlapping
                 # with other labels
-                labels[-1].set_verticalalignment('top')
-            cobar.ax.set_yticklabels(labels)
+                labels[idx].set_verticalalignment('top')
 
     def get_rgb_and_edge_color(self, bed):
         rgb = self.properties['color']
         edgecolor = self.properties['border color']
 
         if self.colormap:
-            # translate value field (in the example above is 0 or 0.2686...) into a color
+            # translate value field (in the example above is 0 or 0.2686...)
+            # into a color
             rgb = self.colormap.to_rgba(bed.score)
             self.rgb = rgb
         if self.properties['color'] == 'bed_rgb':
@@ -431,8 +474,11 @@ file_type = {}
         from matplotlib.patches import Polygon
 
         if bed.strand not in ['+', '-']:
-            ax.add_patch(Rectangle((bed.start, ypos), bed.end - bed.start, self.properties['interval_height'],
-                                   edgecolor=edgecolor, facecolor=rgb, linewidth=linewidth))
+            ax.add_patch(Rectangle((bed.start, ypos),
+                         bed.end - bed.start,
+                         self.properties['interval_height'],
+                         edgecolor=edgecolor, facecolor=rgb,
+                         linewidth=linewidth))
         else:
             vertices = self._draw_arrow(bed.start, bed.end, bed.strand, ypos)
             ax.add_patch(Polygon(vertices, closed=True, fill=True,
@@ -440,25 +486,30 @@ file_type = {}
                                  facecolor=rgb,
                                  linewidth=linewidth))
 
-    def draw_gene_with_introns_flybase_style(self, ax, bed, ypos, rgb, edgecolor, linewidth):
+    def draw_gene_with_introns_flybase_style(self, ax, bed, ypos, rgb,
+                                             edgecolor, linewidth):
         """
         draws a gene using different styles
         """
         from matplotlib.patches import Polygon
-        if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
+        if bed.block_count == 0 and bed.thick_start == bed.start and \
+           bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor)
             return
         half_height = float(self.properties['interval_height']) / 2
         # draw 'backbone', a line from the start until the end of the gene
-        ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height], 'black',
-                linewidth=linewidth, zorder=-1)
+        ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height],
+                'black', linewidth=linewidth, zorder=-1)
 
         # get start, end of all the blocks
         positions = []
         for idx in range(0, bed.block_count):
             x0 = bed.start + bed.block_starts[idx]
             x1 = x0 + bed.block_sizes[idx]
-            if x0 < bed.thick_start < x1:
+            if bed.thick_start == bed.thick_end:
+                positions.append((x0, x1, 'UTR'))
+
+            elif x0 < bed.thick_start < x1:
                 positions.append((x0, bed.thick_start, 'UTR'))
                 positions.append((bed.thick_start, x1, 'coding'))
 
@@ -565,7 +616,8 @@ file_type = {}
         for idx in range(0, bed.block_count):
             x0 = bed.start + bed.block_starts[idx]
             x1 = x0 + bed.block_sizes[idx]
-            if x1 < bed.thick_start or x0 > bed.thick_end:
+            if x1 < bed.thick_start or x0 > bed.thick_end or \
+               bed.thick_start == bed.thick_end:
                 y0 = ypos + quarter_height
                 y1 = ypos + three_quarter_height
             else:

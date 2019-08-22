@@ -11,7 +11,8 @@ title =
 text =
 # x position of text in the plot (in bp)
 x position =
-"""
+file_type = {}
+    """.format(TRACK_TYPE)
 
     def plot(self, ax, chrom, region_start, region_end):
         """

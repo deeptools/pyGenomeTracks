@@ -93,7 +93,7 @@ with open(ROOT + "bigwig.ini", 'w') as fh:
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
-def test_narrow_track():
+def test_bigwig_track():
     region = "X:2700000-3100000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_', delete=False)
     args = "--tracks {root}/bigwig.ini --region {region} --trackLabelFraction 0.2 " \
@@ -101,6 +101,19 @@ def test_narrow_track():
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
     res = compare_images(ROOT + '/master_bigwig.png', outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_alpha():
+    region = "X:2700000-3100000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_alpha_test_', delete=False)
+    args = "--tracks {root}/alpha.ini --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName  {outfile}".format(root=ROOT, outfile=outfile.name, region=region).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(ROOT + '/master_alpha.png', outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)

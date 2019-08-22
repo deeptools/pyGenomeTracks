@@ -10,10 +10,12 @@ pyGenomeTracks aims to produce high-quality genome browser tracks that
 are highly customizable. Currently, it is possible to plot:
 
  * bigwig
- * bed (many options)
+ * bed/gtf (many options)
  * bedgraph
+ * epilogos
+ * narrow peaks
  * links (represented as arcs)
- * Hi-C matrices (if [HiCExplorer](http://hicexplorer.readthedocs.io) is installed)
+ * Hi-C matrices
 
 pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
 
@@ -39,7 +41,7 @@ $ pip install pyGenomeTracks
 If the latest version wants to be installed use:
 
 ```bash
-$ pip install  git+https://github.com/maxplanck-ie/pyGenomeTracks.git
+$ pip install  git+https://github.com/deeptools/pyGenomeTracks.git
 ```
 
 
@@ -161,6 +163,65 @@ $ pyGenomeTracks --tracks bigwig_with_genes_and_vlines.ini --region X:2,800,000-
 
 
 ![pyGenomeTracks bigwig example](./examples/bigwig_with_genes_and_vlines.png)
+
+You can also overlay bigwig with or without transparency.
+```INI
+[test bigwig]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+height = 7
+title = (bigwig color=blue 2000 bins) overlayed with (bigwig mean color=red alpha = 0.5 max over 300 bins) overlayed with (bigwig mean color=red alpha=0.5 200 bins)
+number of bins = 2000
+
+[test bigwig max]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = red
+alpha = 0.5
+summary method = max
+number of bins = 300
+overlay previous = share-y
+
+[test bigwig mean]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = green
+alpha = 0.5
+type = fill
+number of bins = 200
+overlay previous = share-y
+
+[spacer]
+
+
+[test bigwig]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+height = 7
+title = (bigwig color=blue 2000 bins) overlayed with (bigwig mean color=redmax over 300 bins) overlayed with (bigwig mean color=red 200 bins)
+number of bins = 2000
+
+[test bigwig max]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = red
+summary method = max
+number of bins = 300
+overlay previous = share-y
+
+[test bigwig mean]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = green
+type = fill
+number of bins = 200
+overlay previous = share-y
+
+
+[x-axis]
+```
+
+```bash
+$ pyGenomeTracks --tracks alpha.ini --region X:2700000-3100000 -o master_alpha.png
+```
+
+![pyGenomeTracks bigwig example with transparency](./pygenometracks/tests/test_data/master_alpha.png)
 
 Examples with peaks
 -------------------
@@ -414,8 +475,7 @@ is similar to a bedgraph but with more value columns. We call this a bedgraph ma
 
  ```python
 import numpy as np
-from pygenometracks.tracksClass import BedGraphTrack
-from pygenometracks.tracksClass import GenomeTrack
+from . BedGraphTrack import BedGraphTrack
 
  class BedGraphMatrixTrack(BedGraphTrack):
     # this track class extends a BedGraphTrack that is already part of
@@ -444,23 +504,19 @@ from pygenometracks.tracksClass import GenomeTrack
             start_region: start coordinate of genomic position
             end_region: end coordinate
         """
-
+        start_pos = []
+        matrix_rows = []
+        
         # the BedGraphTrack already has methods to read files
         # in which the first three columns are chrom, start,end
-        # here we used the get_scores method inherited from the
+        # here we used the interval_tree method inherited from the
         # BedGraphTrack class
-        values_list, start_pos = self.get_scores(chrom_region, start_region, end_region)
-
-        # the values_list is a python list, containing one element
-        # per row in the selected genomic range.
-        # In this case, the bedgraph matrix contains per row a list
-        # of values, thus, each element of the values_list is itself
-        # a list.
-        # In the following code, such list is converted to floats and
-        # appended to a new list.
-        matrix_rows = []
-        for values in values_list:
-            values = map(float, values)
+        for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
+            start_pos.append(region.begin)
+            # the region.data contains all the values for a given region
+            # In the following code, such list is converted to floats and
+            # appended to a new list.
+            values = list(map(float, region.data))
             matrix_rows.append(values)
 
         # using numpy, the list of values per line in the bedgraph file
