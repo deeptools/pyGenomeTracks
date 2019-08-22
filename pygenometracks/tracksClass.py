@@ -153,7 +153,7 @@ class PlotTracks(object):
             if track_dict['overlay previous'] != 'no':
                 continue
             elif 'x-axis' in track_dict and track_dict['x-axis'] is True:
-                height = track_dict['fontsize'] / 10
+                height = track_dict['fontsize'] / 8
             elif 'height' in track_dict:
                 height = track_dict['height']
             # compute the height of a Hi-C track
@@ -477,12 +477,11 @@ class XAxisTrack(GenomeTrack):
             label_y_pos = 0.99
             vert_align = 'top'
         else:
-            ax.axis["x"] = ax.new_floating_axis(0, 0.99)  # create a little more room
-            label_y_pos = 0
-            vert_align = 'top'  # this probably causes text to go beyond axis lims desired- but makes more space
+            ax.axis["x"] = ax.new_floating_axis(0, 0.9)
+            label_y_pos = 0.01
+            vert_align = 'bottom'
         ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
-                fontsize=int(self.properties['fontsize']), verticalalignment=vert_align, transform=ax.transAxes,
-                clip_on=False)  # in practice I need to set another spacer below to avoid clipping
+                fontsize=int(self.properties['fontsize']), verticalalignment=vert_align, transform=ax.transAxes)
 
         ax.axis["x"].axis.set_ticklabels(labels)
         ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
