@@ -38,8 +38,8 @@ file_type = {}
             self.properties['show data range'] = 'yes'
         if 'show labels' not in self.properties:
             self.properties['show labels'] = 'yes'
-        if 'use summits' not in self.properties:
-            self.properties['use summits'] = 'yes'
+        if 'use summit' not in self.properties:
+            self.properties['use summit'] = 'yes'
         if 'width adjust' not in self.properties:
             self.properties['width adjust'] = 1.5
         else:
@@ -97,7 +97,7 @@ file_type = {}
             q_value = float(q_value)
             summit = int(summit)
             start, end = pos_list[idx]
-            if summit > 0:
+            if summit > 0 and self.properties['use summit'] == 'yes':
                 summit = start + summit
             else:
                 summit = None
