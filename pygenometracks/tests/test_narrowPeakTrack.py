@@ -49,6 +49,9 @@ title = type=box;color=blue;
 with open(ROOT + "narrow_peak.ini", 'w') as fh:
     fh.write(tracks)
 
+with open(ROOT + "narrow_peak2.ini", 'w') as fh:
+    fh.write(tracks.replace('test.narrowPeak', 'test2.narrowPeak'))
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -60,6 +63,19 @@ def test_narrow_track():
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
     res = compare_images(ROOT + '/master_narrowPeak.png', outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_narrow_track_2():
+    region = "X:2760000-2802000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='narrowTrack2_test_', delete=False)
+    args = "--tracks {root}/narrow_peak2.ini --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName  {outfile}".format(root=ROOT, outfile=outfile.name, region=region).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(ROOT + '/master_narrowPeak2.png', outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)

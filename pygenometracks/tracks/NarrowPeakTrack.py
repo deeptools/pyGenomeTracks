@@ -38,8 +38,8 @@ file_type = {}
             self.properties['show data range'] = 'yes'
         if 'show labels' not in self.properties:
             self.properties['show labels'] = 'yes'
-        if 'use summits' not in self.properties:
-            self.properties['use summits'] = 'yes'
+        if 'use summit' not in self.properties:
+            self.properties['use summit'] = 'yes'
         if 'width adjust' not in self.properties:
             self.properties['width adjust'] = 1.5
         else:
@@ -97,18 +97,22 @@ file_type = {}
             q_value = float(q_value)
             summit = int(summit)
             start, end = pos_list[idx]
-            if summit > 0:
+            if summit > 0 and self.properties['use summit'] == 'yes':
                 summit = start + summit
             else:
                 summit = None
             if self.properties['type'] == 'box':
-                self.patches.append(Rectangle((start, 0), end - start, 100, edgecolor='black',))
+                self.patches.append(Rectangle((start, 20), end - start, 60, edgecolor='black',))
+                if summit is not None:
+                    self.patches.append(Rectangle((summit, 0), 1, 100, edgecolor='black',))
                 max_signal = 110
             else:
                 if signal_value > max_signal:
                     max_signal = signal_value
-                self.patches.append(self.peak_plot(start, end, signal_value, center=summit,
-                                                   width_adjust=self.properties['width adjust']))
+                p = self.peak_plot(start, end, signal_value, center=summit,
+                                   width_adjust=self.properties['width adjust'])
+                p.set_edgecolor(self.properties['color'])
+                self.patches.append(p)
 
             x_pos = start + float(end - start) / 2
             y_pos = 0 - max_signal * 0.05
@@ -116,7 +120,7 @@ file_type = {}
                 ax.text(x_pos, y_pos, "{}\np-val:{:.1f}\nq-val:{:.1f}".format(name, p_value, q_value),
                         horizontalalignment='center', size='smaller', verticalalignment='top')
 
-        collection = PatchCollection(self.patches, facecolor=self.properties['color'])
+        collection = PatchCollection(self.patches, facecolor=self.properties['color'], match_original=True)
         ax.add_collection(collection)
 
         if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
