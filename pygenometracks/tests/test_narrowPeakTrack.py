@@ -67,6 +67,7 @@ def test_narrow_track():
 
     os.remove(outfile.name)
 
+
 def test_narrow_track_2():
     region = "X:2760000-2802000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='narrowTrack2_test_', delete=False)

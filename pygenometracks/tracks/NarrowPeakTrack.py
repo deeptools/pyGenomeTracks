@@ -110,7 +110,7 @@ file_type = {}
                 if signal_value > max_signal:
                     max_signal = signal_value
                 p = self.peak_plot(start, end, signal_value, center=summit,
-                                                   width_adjust=self.properties['width adjust'])
+                                   width_adjust=self.properties['width adjust'])
                 p.set_edgecolor(self.properties['color'])
                 self.patches.append(p)
 
