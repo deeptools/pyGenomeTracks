@@ -215,23 +215,23 @@ file_type = {}
         else:
             if self.plot_type == 'line':
                 if self.properties['color'] == self.properties['negative color']:
-                    ax.plot(x_values, score_list, '-', linewidth=self.size, color=self.properties['color'])
+                    ax.plot(x_values, score_list, '-', linewidth=self.size, color=self.properties['color'], alpha=self.properties['alpha'])
                 else:
                     import warnings
                     warnings.warn('Line plots with a different negative color might not look pretty')
                     pos_x_values = x_values.copy()
                     pos_x_values[score_list < 0] = np.nan
-                    ax.plot(pos_x_values, score_list, '-', linewidth=self.size, color=self.properties['color'])
+                    ax.plot(pos_x_values, score_list, '-', linewidth=self.size, color=self.properties['color'], alpha=self.properties['alpha'])
 
                     neg_x_values = x_values.copy()
                     neg_x_values[score_list >= 0] = np.nan
-                    ax.plot(neg_x_values, score_list, '-', linewidth=self.size, color=self.properties['negative color'])
+                    ax.plot(neg_x_values, score_list, '-', linewidth=self.size, color=self.properties['negative color'], alpha=self.properties['alpha'])
 
             elif self.plot_type == 'points':
                 ax.plot(x_values[score_list >= 0], score_list[score_list >= 0], '.',
-                        markersize=self.size, color=self.properties['color'])
+                        markersize=self.size, color=self.properties['color'], alpha=self.properties['alpha'])
                 ax.plot(x_values[score_list < 0], score_list[score_list < 0], '.',
-                        markersize=self.size, color=self.properties['negative color'])
+                        markersize=self.size, color=self.properties['negative color'], alpha=self.properties['alpha'])
 
             else:
                 ax.fill_between(x_values, score_list, linewidth=0.1, color=self.properties['color'],
