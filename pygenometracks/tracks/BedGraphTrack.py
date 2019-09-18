@@ -189,7 +189,8 @@ file_type = {}
                                    for i, t in enumerate(pos_list)
                                    if not np.isnan(score_list[i])],
                                   dtype=np.float)
-            score_list = [x for x in score_list if not np.isnan(x)]
+            score_list = np.asarray([x for x in score_list if not np.isnan(x)],
+                                    dtype=np.float)
         else:
             # the following two lines will convert the score_list and the
             # tuples in pos list (where is item is tuple(start, end)
