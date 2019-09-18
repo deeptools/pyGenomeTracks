@@ -184,18 +184,27 @@ file_type = {}
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         score_list = [float(x[0]) for x in score_list]
 
-        # the following two lines will convert the score_list and the
-        # tuples in pos list (where is item is tuple(start, end)
-        # into an x value (pos_list) and a y value (score_list)
-        # where x = start1, end1, star2, end2 ...
-        # and y = score1, score1, score2, score2 ...
-
-        # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
-        score_list = np.repeat(score_list, 2)
         if self.properties['nans to zeros']:
             score_list[np.isnan(score_list)] = 0
-        # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
-        x_values = np.asarray(sum(pos_list, tuple()), dtype=np.float)
+
+        if 'use middle' in self.properties and self.properties['use middle'] == 'yes':
+            x_values = np.asarray([(t[0] + t[1]) / 2
+                                   for i, t in enumerate(pos_list)
+                                   if not np.isnan(score_list[i])],
+                                  dtype=np.float)
+            score_list = [x for x in score_list if not np.isnan(x)]
+        else:
+            # the following two lines will convert the score_list and the
+            # tuples in pos list (where is item is tuple(start, end)
+            # into an x value (pos_list) and a y value (score_list)
+            # where x = start1, end1, star2, end2 ...
+            # and y = score1, score1, score2, score2 ...
+
+            # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
+            score_list = np.repeat(score_list, 2)
+            # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
+            x_values = np.asarray(sum(pos_list, tuple()), dtype=np.float)
+
         if 'extra' in self.properties and self.properties['extra'][0] == '4C':
             # draw a vertical line for each fragment region center
             ax.fill_between(pos_list, score_list, linewidth=0.1,
