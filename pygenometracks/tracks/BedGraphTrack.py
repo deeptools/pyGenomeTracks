@@ -184,9 +184,6 @@ file_type = {}
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         score_list = [float(x[0]) for x in score_list]
 
-        if self.properties['nans to zeros']:
-            score_list[np.isnan(score_list)] = 0
-
         if 'use middle' in self.properties and self.properties['use middle'] == 'yes':
             x_values = np.asarray([(t[0] + t[1]) / 2
                                    for i, t in enumerate(pos_list)
@@ -204,6 +201,9 @@ file_type = {}
             score_list = np.repeat(score_list, 2)
             # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
             x_values = np.asarray(sum(pos_list, tuple()), dtype=np.float)
+
+            if self.properties['nans to zeros']:
+                score_list[np.isnan(score_list)] = 0
 
         if 'extra' in self.properties and self.properties['extra'][0] == '4C':
             # draw a vertical line for each fragment region center
