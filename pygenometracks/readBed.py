@@ -271,35 +271,7 @@ class ReadBed(object):
             " for line #{}:\n{}\n".format(self.line_number,
                                           bed_line)
         if len(line_values) == 12:
-            block_counts = line_values[9]
-            block_sizes = line_values[10]
-            block_relative_starts = line_values[11]
-            assert len(block_sizes) == block_counts, \
-                "The number of blocks: {} does not correspond to" \
-                "the number of blocks sizes: {}\nline #{}:\n" \
-                "{}".format(block_counts, str(block_sizes),
-                            self.line_number, bed_line)
-            assert len(block_relative_starts) == block_counts, \
-                "The number of blocks: {} does not correspond to" \
-                "the number of blocks relative starts: {}\nline #{}:\n" \
-                "{}".format(block_counts, str(block_relative_starts),
-                            self.line_number, bed_line)
-            for i in range(block_counts):
-                block_start = line_values[1] + block_relative_starts[i]
-                block_end = block_start + block_sizes[i]
-                assert block_start <= line_values[2], \
-                    "The block number {} of line {} has a starting position " \
-                    "greater than the end of the feature:\n{}The" \
-                    " 12th field of a bed12 should contains relative start" \
-                    " positions of blocks.".format(i, self.line_number,
-                                                   bed_line)
-                assert block_end <= line_values[2], \
-                    "The block number {} of line {} has an ending position " \
-                    "greater than the end of the feature:\n{}The" \
-                    " 12th field of a bed12 should contains relative start" \
-                    " positions of blocks and the 11th field should contains" \
-                    " the length of each block.".format(i, self.line_number,
-                                                        bed_line)
+            check_bed12(line_values, self.line_number, bed_line)
 
         if len(line_values) < 6:
             assert len(line_values) > 2, \
@@ -315,3 +287,33 @@ class ReadBed(object):
                            for i in range(6)]
 
         return self.BedInterval._make(line_values)
+
+
+def check_bed12(line_values, line_number, bed_line):
+    block_counts = line_values[9]
+    block_sizes = line_values[10]
+    block_relative_starts = line_values[11]
+    assert len(block_sizes) == block_counts, \
+        "The number of blocks: {} does not correspond to" \
+        "the number of blocks sizes: {}\nline #{}:\n" \
+        "{}".format(block_counts, str(block_sizes),
+                    line_number, bed_line)
+    assert len(block_relative_starts) == block_counts, \
+        "The number of blocks: {} does not correspond to" \
+        "the number of blocks relative starts: {}\nline #{}:\n" \
+        "{}".format(block_counts, str(block_relative_starts),
+                    line_number, bed_line)
+    for i in range(block_counts):
+        block_start = line_values[1] + block_relative_starts[i]
+        block_end = block_start + block_sizes[i]
+        assert block_start <= line_values[2], \
+            "The block number {} of line {} has a starting position " \
+            "greater than the end of the feature:\n{}The" \
+            " 12th field of a bed12 should contains relative start" \
+            " positions of blocks.".format(i, line_number, bed_line)
+        assert block_end <= line_values[2], \
+            "The block number {} of line {} has an ending position " \
+            "greater than the end of the feature:\n{}The" \
+            " 12th field of a bed12 should contains relative start" \
+            " positions of blocks and the 11th field should contains" \
+            " the length of each block.".format(i, line_number, bed_line)
