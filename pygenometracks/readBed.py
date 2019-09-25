@@ -188,7 +188,7 @@ class ReadBed(object):
                 "not have 8 fields.".format(self.line_number, bed_line)
 
         elif self.file_type == 'bed6':
-            # It is possible that the number of fields was standard.
+            # It is possible that the number of fields was not standard.
             # To be able to process it as bed6, the extra-fields are removed.
             line_data = line_data[:6]
 
