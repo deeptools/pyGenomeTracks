@@ -184,7 +184,7 @@ file_type = {}
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         score_list = [float(x[0]) for x in score_list]
 
-        if 'use middle' in self.properties and self.properties['use middle'] == 'yes':
+        if self.properties.get('use middle', False) == 'yes':
             x_values = np.asarray([(t[0] + t[1]) / 2
                                    for i, t in enumerate(pos_list)
                                    if not np.isnan(score_list[i])],
