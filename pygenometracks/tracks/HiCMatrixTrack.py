@@ -243,7 +243,8 @@ file_type = {}
         self.log.info("setting min, max values for track {} to: {}, {}\n".
                       format(self.properties['section_name'], vmin, vmax))
         self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
-        self.img.set_rasterized(True)
+        if self.properties.get('rasterize', False) != 'no':
+            self.img.set_rasterized(True)
         if self.plot_inverted:
             ax.set_ylim(depth, 0)
         else:
