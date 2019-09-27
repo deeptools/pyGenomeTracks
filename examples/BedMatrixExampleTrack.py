@@ -47,7 +47,8 @@ class BedGraphMatrixExampleTrack(BedGraphTrack):
         vmin = self.properties['min_value']
 
         img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
-        img.set_rasterized(True)
+        if self.properties.get('rasterize', False) != 'no':
+            img.set_rasterized(True)
 
     def plot_y_axis(self, ax, plot_axis):
         pass
