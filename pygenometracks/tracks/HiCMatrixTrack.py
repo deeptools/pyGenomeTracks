@@ -351,3 +351,5 @@ file_type = {}
                                              self.properties['section_name'],
                                              DEFAULT_MATRIX_COLORMAP))
                 return(DEFAULT_MATRIX_COLORMAP)
+            else
+                return(self.properties['colormap'])
