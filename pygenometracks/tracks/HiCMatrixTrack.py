@@ -336,8 +336,8 @@ file_type = {}
                     return(colors.LinearSegmentedColormap.from_list(
                            'custom', custom_colors, N=100))
                 except ValueError:
-                    self.log.warning("*WARNING* the list specified for colormap"
-                                     " ({}) cannot be evaluated."
+                    self.log.warning("*WARNING* the list specified for "
+                                     "colormap ({}) cannot be evaluated."
                                      "\nColormap has been set to "
                                      "{}".format(self.properties['colormap'],
                                                  DEFAULT_MATRIX_COLORMAP))
