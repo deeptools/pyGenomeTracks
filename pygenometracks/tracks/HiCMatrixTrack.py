@@ -316,7 +316,7 @@ file_type = {}
     def process_colormap(self):
         if 'colormap' not in self.properties:
             return(DEFAULT_MATRIX_COLORMAP)
-            # If someone what to use its own colormap, 
+            # If someone what to use its own colormap,
             # he can specify the rgb values or color values:
             # For example:
             # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
@@ -334,7 +334,7 @@ file_type = {}
             else:
                 try:
                     return(colors.LinearSegmentedColormap.from_list(
-                               'custom', custom_colors, N=100))
+                           'custom', custom_colors, N=100))
                 except ValueError:
                     self.log.warning("*WARNING* the list specified for colormap"
                                      " ({}) cannot be evaluated."
