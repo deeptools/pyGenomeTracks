@@ -189,6 +189,9 @@ file_type = {}
         depth_in_bins = int(1.5 * region_len / self.hic_ma.getBinSize())
 
         if depth < self.properties['depth']:
+            log.warn("The depth was set to {} which is more than 125%"
+                     " of the region plotted. The depth will be set "
+                     "to {}".format(self.properties['depth'], depth))
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         matrix = np.asarray(matrix.todense().astype(float))
