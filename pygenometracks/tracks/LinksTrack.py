@@ -21,7 +21,7 @@ class LinksTrack(GenomeTrack):
 # links whose start or end is not in the region plotted are not shown.
 # color of the lines
 color = red
-# if color is a valid colormap name (like RbBlGn), then the score is mapped
+# if color is a valid colormap name (like RdYlGn), then the score is mapped
 # to the colormap.
 # for the links type, the options are arcs and triangles, the triangles option is convenient to overlay over a
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
