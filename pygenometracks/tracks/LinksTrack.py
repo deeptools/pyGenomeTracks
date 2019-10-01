@@ -1,6 +1,9 @@
 from . GenomeTrack import GenomeTrack
 from intervaltree import IntervalTree, Interval
+import matplotlib
 import numpy as np
+
+DEFAULT_LINKS_COLOR = 'blue'
 
 
 class LinksTrack(GenomeTrack):
@@ -18,6 +21,8 @@ class LinksTrack(GenomeTrack):
 # links whose start or end is not in the region plotted are not shown.
 # color of the lines
 color = red
+# if color is a valid colormap name (like RbBlGn), then the score is mapped
+# to the colormap.
 # for the links type, the options are arcs and triangles, the triangles option is convenient to overlay over a
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
 links type = arcs
@@ -46,6 +51,8 @@ file_type = {}
         valid_intervals = 0
         interval_tree = {}
         line_number = 0
+        max_score = float('-inf')
+        min_score = float('inf')
         with open(self.properties['file'], 'r') as file_h:
             for line in file_h.readlines():
                 line_number += 1
@@ -77,6 +84,11 @@ file_type = {}
                                    "\nError message: {}".format(line_number, detail))
                     exit(1)
 
+                if score < min_score:
+                    min_score = score
+                if score > max_score:
+                    max_score = score
+
                 if chrom1 != chrom2:
                     self.log.warn("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
                     continue
@@ -98,11 +110,37 @@ file_type = {}
         file_h.close()
         self.interval_tree = interval_tree
 
-        if 'color' not in self.properties:
-            self.properties['color'] = 'blue'
-
         if 'alpha' not in self.properties:
             self.properties['alpha'] = 0.8
+
+        if 'color' not in self.properties:
+            self.properties['color'] = DEFAULT_LINKS_COLOR
+        self.colormap = None
+        # check if the color given is a color map
+        if not matplotlib.colors.is_color_like(self.properties['color']):
+            # check if the color is a valid colormap name
+            if self.properties['color'] not in matplotlib.cm.datad:
+                self.log.warning("*WARNING* color: '{}' for section {}"
+                                 " is not valid. Color has "
+                                 "been set to "
+                                 "{}".format(self.properties['color'],
+                                             self.properties['section_name'],
+                                             DEFAULT_LINKS_COLOR))
+                self.properties['color'] = DEFAULT_LINKS_COLOR
+            else:
+                self.colormap = self.properties['color']
+
+        if self.colormap is not None:
+            if 'min_value' in self.properties:
+                min_score = self.properties['min_value']
+            if 'max_value' in self.properties:
+                max_score = self.properties['max_value']
+
+            norm = matplotlib.colors.Normalize(vmin=min_score,
+                                               vmax=max_score)
+
+            cmap = matplotlib.cm.get_cmap(self.properties['color'])
+            self.colormap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
     def plot(self, ax, chrom_region, region_start, region_end):
         """
@@ -156,7 +194,29 @@ file_type = {}
         self.log.debug('title is {}'.format(self.properties['title']))
 
     def plot_y_axis(self, ax, plot_ax):
-        pass
+        if self.colormap is not None:
+            import matplotlib.pyplot as plt
+            self.colormap.set_array([])
+
+            cobar = plt.colorbar(self.colormap, ax=ax, fraction=1,
+                                 orientation='vertical')
+
+            cobar.solids.set_edgecolor("face")
+            cobar.ax.tick_params(labelsize='smaller')
+            cobar.ax.yaxis.set_ticks_position('left')
+            # adjust the labels of the colorbar
+            ticks = cobar.ax.get_yticks()
+            labels = cobar.ax.set_yticklabels(ticks.astype('float32'))
+            (vmin, vmax) = cobar.mappable.get_clim()
+            for idx in np.where(ticks == vmin)[0]:
+                # if the label is at the start of the colobar
+                # move it above avoid being cut or overlapping with other track
+                labels[idx].set_verticalalignment('bottom')
+            for idx in np.where(ticks == vmax)[0]:
+                # if the label is at the end of the colobar
+                # move it a bit inside to avoid overlapping
+                # with other labels
+                labels[idx].set_verticalalignment('top')
 
     def plot_arcs(self, ax, interval):
         from matplotlib.patches import Arc
@@ -167,8 +227,14 @@ file_type = {}
         if radius > self.max_height:
             self.max_height = radius
         ax.plot([center], [diameter])
+        if self.colormap:
+            # translate score field
+            # into a color
+            rgb = self.colormap.to_rgba(interval.data)
+        else:
+            rgb = self.properties['color']
         ax.add_patch(Arc((center, 0), diameter,
-                         diameter, 0, 0, 180, color=self.properties['color'],
+                         diameter, 0, 0, 180, color=rgb,
                          linewidth=self.line_width, ls=self.properties['line style']))
 
     def plot_triangles(self, ax, interval):
@@ -178,9 +244,15 @@ file_type = {}
         x3 = interval.end
         y1 = 0
         y2 = (interval.end - interval.begin)
+        if self.colormap:
+            # translate score field
+            # into a color
+            rgb = self.colormap.to_rgba(interval.score)
+        else:
+            rgb = self.properties['color']
 
         triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]), closed=False,
-                           facecolor='none', edgecolor=self.properties['color'],
+                           facecolor='none', edgecolor=rgb,
                            linewidth=self.line_width,
                            ls=self.properties['line style'])
         ax.add_artist(triangle)
