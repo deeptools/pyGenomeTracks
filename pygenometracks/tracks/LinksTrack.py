@@ -153,7 +153,8 @@ file_type = {}
         else:
             ax.set_ylim(-1, self.max_height)
 
-        self.log.debug('title is {}'.format(self.properties['title']))
+        # I guess this was forgotten
+        # self.log.debug('title is {}'.format(self.properties['title']))
 
     def plot_y_axis(self, ax, plot_ax):
         pass
