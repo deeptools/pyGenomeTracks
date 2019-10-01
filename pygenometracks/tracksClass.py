@@ -189,7 +189,8 @@ class PlotTracks(object):
                 # the scale factor is to obtain each bin as a square
                 # (a 45 degree rotated matrix)
                 scale_factor = 0.5
-                depth = min(track_dict['depth'], (end_region - start_region))
+                depth = min(track_dict['depth'],
+                            int((end_region - start_region) * 1.25))
 
                 height = scale_factor * depth * hic_width / (end_region - start_region)
             else:
