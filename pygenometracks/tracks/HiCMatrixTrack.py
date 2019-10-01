@@ -23,6 +23,8 @@ title =
 # the default color map is RdYlBu_r (_r) stands for reverse
 #colormap = RdYlBu_r
 # depth is the maximum distance that should be plotted.
+# If it is more than 125% of the plotted region, it will
+# be adjsted to this maximum value.
 depth = 100000
 # height of track (in cm) can be given. Otherwise, the height is computed such that the proportions of the
 # hic matrix are kept (e.g. the image does not appear shrink or extended)
