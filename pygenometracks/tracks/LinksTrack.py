@@ -194,7 +194,7 @@ file_type = {}
         self.log.debug('title is {}'.format(self.properties['title']))
 
     def plot_y_axis(self, ax, plot_ax):
-        if self.colormap is not None:
+        if self.colormap is not None and self.properties['overlay previous'] == 'no':
             import matplotlib.pyplot as plt
             self.colormap.set_array([])
 
