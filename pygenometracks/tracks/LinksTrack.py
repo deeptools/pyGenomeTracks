@@ -248,7 +248,7 @@ file_type = {}
         if self.colormap:
             # translate score field
             # into a color
-            rgb = self.colormap.to_rgba(interval.score)
+            rgb = self.colormap.to_rgba(interval.data)
         else:
             rgb = self.properties['color']
 
