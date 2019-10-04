@@ -28,6 +28,7 @@ color = red
 # for the links type, the options are arcs, triangles, and loops,
 # the triangles, and loops options are convenient to overlay over a
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
+# For these tracks do not hesitate to put large line width like 5 or 10.
 links type = arcs
 # if line width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
