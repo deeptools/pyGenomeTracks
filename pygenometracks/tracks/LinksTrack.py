@@ -263,20 +263,20 @@ file_type = {}
         from matplotlib.patches import Polygon
         width1 = loop[1] - loop[0]
         width2 = loop[3] - loop[2]
-        x0 = (loop[1]+loop[2])/2
+        x0 = (loop[1] + loop[2]) / 2
         y0 = loop[2] - loop[1]
 
-        x1 = x0 + width2/2
-        y1 = y0 + width2#/2
+        x1 = x0 + width2 / 2
+        y1 = y0 + width2
 
-        x2 = (loop[1]+loop[2])/2
+        x2 = (loop[1] + loop[2]) / 2
         y2 = loop[3] - loop[0]
 
-        x3 = x0 - width1/2
-        y3 = y0 + width1#/2
+        x3 = x0 - width1 / 2
+        y3 = y0 + width1
 
         rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
-                           facecolor='none', edgecolor=self.properties['color'],
-                           linewidth=self.line_width,
-                           ls=self.properties['line style'])
+                            facecolor='none', edgecolor=self.properties['color'],
+                            linewidth=self.line_width,
+                            ls=self.properties['line style'])
         ax.add_artist(rectangle)
