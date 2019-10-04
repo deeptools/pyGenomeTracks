@@ -7,7 +7,7 @@ DEFAULT_LINKS_COLOR = 'blue'
 
 
 class LinksTrack(GenomeTrack):
-    SUPPORTED_ENDINGS = ['.arcs', '.arc', '.link', '.links']
+    SUPPORTED_ENDINGS = ['.arcs', '.arc', '.link', '.links', '.bedpe']
     TRACK_TYPE = 'links'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 # the file format for links is (tab separated)
