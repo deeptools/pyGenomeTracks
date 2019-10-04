@@ -259,3 +259,25 @@ file_type = {}
         ax.add_artist(triangle)
         if y2 > self.max_height:
             self.max_height = y2
+
+    def plot_loops(self, ax, loop):
+        from matplotlib.patches import Polygon
+        width1 = loop[1] - loop[0]
+        width2 = loop[3] - loop[2]
+        x0 = (loop[1]+loop[2])/2
+        y0 = loop[2] - loop[1]
+
+        x1 = x0 + width2/2
+        y1 = y0 + width2#/2
+
+        x2 = (loop[1]+loop[2])/2
+        y2 = loop[3] - loop[0]
+
+        x3 = x0 - width1/2
+        y3 = y0 + width1#/2
+
+        rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
+                           facecolor='none', edgecolor=self.properties['color'],
+                           linewidth=self.line_width,
+                           ls=self.properties['line style'])
+        ax.add_artist(rectangle)
