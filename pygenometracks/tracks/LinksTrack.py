@@ -44,8 +44,6 @@ file_type = {}
         # circos:
         # chr1 100 200 chr1 250 300 0.5
         # where the last value is a score.
-        if 'line width' not in self.properties:
-            self.properties['line width'] = 0.5
         if 'line style' not in self.properties:
             self.properties['line style'] = 'solid'
         if 'links type' not in self.properties:
@@ -121,6 +119,14 @@ file_type = {}
 
         file_h.close()
         self.interval_tree = interval_tree
+
+        if 'line width' not in self.properties and not has_score:
+            self.log.warning("*WARNING* for section {}"
+                             " no line width has been set but some "
+                             "lines do not have scores."
+                             "line width has been set to "
+                             "0.5".format(self.properties['section_name']))
+            self.properties['line width'] = 0.5
 
         if 'alpha' not in self.properties:
             self.properties['alpha'] = 0.8
