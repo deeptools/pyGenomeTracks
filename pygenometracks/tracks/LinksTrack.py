@@ -54,6 +54,7 @@ file_type = {}
         valid_intervals = 0
         interval_tree = {}
         line_number = 0
+        has_score = True
         max_score = float('-inf')
         min_score = float('inf')
         with open(self.properties['file'], 'r') as file_h:
@@ -62,11 +63,16 @@ file_type = {}
                 if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
                     continue
                 try:
-                    chrom1, start1, end1, chrom2, start2, end2, score = line.strip().split('\t')
+                    chrom1, start1, end1, chrom2, start2, end2 = line.strip().split('\t')[:6]
                 except Exception as detail:
                     self.log.error('File not valid. The format is chrom1 start1, end1, '
-                                   'chrom2, start2, end2, score\nError: {}\n in line\n {}'.format(detail, line))
+                                   'chrom2, start2, end2\nError: {}\n in line\n {}'.format(detail, line))
                     exit(1)
+                try:
+                    score = line.strip().split('\t')[6]
+                except IndexError:
+                    has_score = False
+                    score = np.nan
 
                 try:
                     start1 = int(start1)
@@ -80,17 +86,20 @@ file_type = {}
 
                 assert start1 <= end1, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
                 assert start2 <= end2, "Error in line #{}, end2 larger than start2 in {}".format(line_number, line)
-                try:
-                    score = float(score)
-                except ValueError as detail:
-                    self.log.error("Error reading line: {}. The score is not valid {}. "
-                                   "\nError message: {}".format(line_number, detail))
-                    exit(1)
 
-                if score < min_score:
-                    min_score = score
-                if score > max_score:
-                    max_score = score
+                if has_score:
+                    try:
+                        score = float(score)
+                    except ValueError as detail:
+                        self.log.warning("Warning: reading line: {}. The score is not valid {} will not be used. "
+                                         "\nError message: {}".format(line_number, detail))
+                        score = np.nan
+                        has_score = False
+                    else:
+                        if score < min_score:
+                            min_score = score
+                        if score > max_score:
+                            max_score = score
 
                 if chrom1 != chrom2:
                     self.log.warn("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
@@ -104,7 +113,7 @@ file_type = {}
                     end1, end2 = end2, end1
 
                 # each interval spans from the smallest start to the largest end
-                interval_tree[chrom1].add(Interval(start1, end2, score))
+                interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
                 valid_intervals += 1
 
         if valid_intervals == 0:
@@ -131,7 +140,16 @@ file_type = {}
                                              DEFAULT_LINKS_COLOR))
                 self.properties['color'] = DEFAULT_LINKS_COLOR
             else:
-                self.colormap = self.properties['color']
+                if not has_score:
+                    self.log.warning("*WARNING* for section {}"
+                                     " a colormap was chosen but some "
+                                     "lines do not have scores."
+                                     "Color has been set to "
+                                     "{}".format(self.properties['section_name'],
+                                                 DEFAULT_LINKS_COLOR))
+                    self.properties['color'] = DEFAULT_LINKS_COLOR
+                else:
+                    self.colormap = self.properties['color']
 
         if self.colormap is not None:
             if 'min_value' in self.properties:
@@ -176,10 +194,12 @@ file_type = {}
             if 'line width' in self.properties:
                 self.line_width = float(self.properties['line width'])
             else:
-                self.line_width = 0.5 * np.sqrt(interval.data)
+                self.line_width = 0.5 * np.sqrt(interval.data[4])
 
             if self.properties['links type'] == 'triangles':
                 self.plot_triangles(ax, interval)
+            elif self.properties['links type'] == 'loops':
+                self.plot_loops(ax, interval.data)
             else:
                 self.plot_arcs(ax, interval)
 
@@ -233,7 +253,7 @@ file_type = {}
         if self.colormap:
             # translate score field
             # into a color
-            rgb = self.colormap.to_rgba(interval.data)
+            rgb = self.colormap.to_rgba(interval.data[4])
         else:
             rgb = self.properties['color']
         ax.add_patch(Arc((center, 0), diameter,
@@ -250,7 +270,7 @@ file_type = {}
         if self.colormap:
             # translate score field
             # into a color
-            rgb = self.colormap.to_rgba(interval.data)
+            rgb = self.colormap.to_rgba(interval.data[4])
         else:
             rgb = self.properties['color']
 
@@ -279,8 +299,15 @@ file_type = {}
         x3 = x0 - width1 / 2
         y3 = y0 + width1
 
+        if self.colormap:
+            # translate score field
+            # into a color
+            rgb = self.colormap.to_rgba(loop[4])
+        else:
+            rgb = self.properties['color']
+
         rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
-                            facecolor='none', edgecolor=self.properties['color'],
+                            facecolor='none', edgecolor=rgb,
                             linewidth=self.line_width,
                             ls=self.properties['line style'])
         ax.add_artist(rectangle)
