@@ -251,7 +251,8 @@ file_type = {}
         else:
             rgb = self.properties['color']
 
-        triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]), closed=False,
+        triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]),
+                           closed=False,
                            facecolor='none', edgecolor=rgb,
                            linewidth=self.line_width,
                            ls=self.properties['line style'])
