@@ -253,3 +253,6 @@ file_type = {}
             ax.set_ylim(ymax, ymin)
         else:
             ax.set_ylim(ymin, ymax)
+
+        if self.properties.get('rasterize', False) == 'yes':
+            ax.set_rasterized(True)
