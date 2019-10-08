@@ -327,8 +327,10 @@ class PlotTracks(object):
             elif section_name.endswith('[x-axis]'):
                 track_options['x-axis'] = True
             for name, value in parser.items(section_name):
-                if name in ['max_value', 'min_value', 'depth', 'height', 'line width',
-                            'fontsize', 'scale factor', 'number of bins', 'interval_height', 'alpha'] and value != 'auto':
+                if name in ['max_value', 'min_value', 'depth', 'height',
+                            'line width', 'fontsize', 'scale factor',
+                            'number of bins', 'interval_height', 'alpha',
+                            'max_labels'] and value != 'auto':
                     track_options[name] = literal_eval(value)
                 else:
                     track_options[name] = value
