@@ -43,7 +43,7 @@ file_type = {}
             try:
                 self.tbx = pysam.TabixFile(self.properties['file'])
             except IOError:
-                pass
+                self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
         # load the file as an interval tree
         else:
             self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
