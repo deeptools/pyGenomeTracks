@@ -211,6 +211,13 @@ class PlotTracks(object):
 
         log.debug("Figure size in cm is {} x {}. Dpi is set to {}\n".format(self.fig_width, fig_height, self.dpi))
         fig = plt.figure(figsize=self.cm2inch(self.fig_width, fig_height))
+
+        fig.subplots_adjust(wspace=0, hspace=0.0,
+                            left=DEFAULT_MARGINS['left'],
+                            right=DEFAULT_MARGINS['right'],
+                            bottom=DEFAULT_MARGINS['bottom'],
+                            top=DEFAULT_MARGINS['top'])
+
         if title:
             fig.suptitle(title)
 
@@ -264,12 +271,6 @@ class PlotTracks(object):
 
         if self.vlines_intval_tree:
             self.plot_vlines(axis_list, chrom, start, end)
-
-        fig.subplots_adjust(wspace=0, hspace=0.0,
-                            left=DEFAULT_MARGINS['left'],
-                            right=DEFAULT_MARGINS['right'],
-                            bottom=DEFAULT_MARGINS['bottom'],
-                            top=DEFAULT_MARGINS['top'])
 
         fig.savefig(file_name, dpi=self.dpi, transparent=False)
         return fig.get_size_inches()
