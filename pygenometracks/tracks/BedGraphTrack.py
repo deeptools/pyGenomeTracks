@@ -198,13 +198,13 @@ file_type = {}
             score_list = np.asarray([x for x in score_list if not np.isnan(x)],
                                     dtype=np.float)
         elif 'summary method' in self.properties:
-            score_list, x_values = self.get_values_as_bigwig(score_list, 
+            score_list, x_values = self.get_values_as_bigwig(score_list,
                                                              pos_list,
                                                              chrom_region,
                                                              start_region,
                                                              end_region)
         else:
-            score_list, x_values = self.get_values_as_bdg(score_list, 
+            score_list, x_values = self.get_values_as_bdg(score_list,
                                                           pos_list)
 
         if 'extra' in self.properties and self.properties['extra'][0] == '4C':
@@ -286,5 +286,5 @@ file_type = {}
 
         if self.properties['nans to zeros']:
             score_list[np.isnan(score_list)] = 0
-        
+
         return score_list, x_values
