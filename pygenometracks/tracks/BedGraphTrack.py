@@ -254,6 +254,7 @@ file_type = {}
                               "is not valid. Using default value (700)".format(self.properties['number of bins'],
                                                                                self.properties['file']))
         import tempfile
+        import os
         id, temp_bigwig_file = tempfile.mkstemp(suffix='.bw')
         bw = pyBigWig.open(temp_bigwig_file, 'w')
         bw.addHeader([(chrom_region, pos_list[-1][1])])
@@ -266,6 +267,7 @@ file_type = {}
         scores_per_bin = np.array(bw.stats(chrom_region, start_region,
                                            end_region, nBins=num_bins,
                                            type=self.properties['summary method'])).astype(float)
+        os.remove(temp_bigwig_file)
         if self.properties['nans to zeros'] and np.any(np.isnan(scores_per_bin)):
             scores_per_bin[np.isnan(scores_per_bin)] = 0
         x_values = np.linspace(start_region, end_region, num_bins)
