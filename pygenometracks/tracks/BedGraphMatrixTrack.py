@@ -48,10 +48,10 @@ file_type = {}
             self.properties['pos score in bin'] = 'center'
 
         if 'show data range' not in self.properties:
-            self.properties['show data range'] = 'yes'
+            self.properties['show data range'] = True
 
         if 'plot horizontal lines' not in self.properties:
-            self.properties['plot horizontal lines'] = 'no'
+            self.properties['plot horizontal lines'] = False
 
     def plot(self, ax, chrom_region, start_region, end_region):
         """
@@ -93,7 +93,7 @@ file_type = {}
             ymin = self.properties['min_value']
             ax.set_ylim(ymin, ymax)
 
-            if self.properties['plot horizontal lines'] == 'yes':
+            if self.properties['plot horizontal lines']:
                 ax.grid(True)
                 ax.grid(True, axis='y')
                 ax.axhline(y=0, color='black', linewidth=1)
@@ -107,7 +107,7 @@ file_type = {}
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
             self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
-            if self.properties.get('rasterize', False) != 'no':
+            if self.properties.get('rasterize', True):
                 self.img.set_rasterized(True)
 
     def plot_y_axis(self, ax, plot_axis):

@@ -48,7 +48,7 @@ height = 2
         Returns:
 
         """
-        if 'show data range' in self.properties and self.properties['show data range'] == 'no':
+        if not self.properties.get('show data range', True):
             return
 
         def value_to_str(value):

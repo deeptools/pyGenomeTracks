@@ -200,7 +200,7 @@ file_type = {}
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         score_list = [float(x[0]) for x in score_list]
 
-        if self.properties.get('use middle', False) == 'yes':
+        if self.properties.get('use middle', False):
             x_values = np.asarray([(t[0] + t[1]) / 2
                                    for i, t in enumerate(pos_list)
                                    if not np.isnan(score_list[i])],
@@ -243,7 +243,7 @@ file_type = {}
         else:
             ax.set_ylim(ymin, ymax)
 
-        if self.properties.get('rasterize', False) == 'yes':
+        if self.properties.get('rasterize', False):
             ax.set_rasterized(True)
 
     def get_values_as_bigwig(self, score_list, pos_list, chrom_region,
