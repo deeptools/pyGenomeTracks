@@ -300,7 +300,7 @@ file_type = {}
         x1 = x0 + width2 / 2
         y1 = y0 + width2
 
-        x2 = (loop[1] + loop[2]) / 2
+        x2 = (loop[0] + loop[3]) / 2
         y2 = loop[3] - loop[0]
 
         x3 = x0 - width1 / 2
