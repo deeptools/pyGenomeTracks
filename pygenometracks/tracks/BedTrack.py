@@ -159,7 +159,9 @@ file_type = {}
         if self.properties['file'].endswith('gtf') or \
            self.properties['file'].endswith('gtf.gz') or \
            ('type' in self.properties and self.properties['type'] == 'gtf'):
-            bed_file_h = ReadGtf(self.properties['file'])
+            bed_file_h = ReadGtf(self.properties['file'],
+                                 self.properties.get('prefered name', 'transcript_name'),
+                                 self.properties.get('merge transcripts', 'off'))
         else:
             bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
