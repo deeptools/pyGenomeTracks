@@ -95,7 +95,7 @@ file_type = {}
         if 'border color' not in self.properties:
             self.properties['border color'] = 'black'
         if 'labels' not in self.properties:
-            self.properties['labels'] = 'on'
+            self.properties['labels'] = True
         if 'style' not in self.properties:
             self.properties['style'] = 'flybase'
         if 'display' not in self.properties:
@@ -147,7 +147,7 @@ file_type = {}
         length. In the following code I try to get the
         length of a 'W' in base pairs.
         '''
-        if self.properties['labels'] == 'on':
+        if self.properties['labels']:
             # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
             inches_per_pt = 1.0 / 72.27
             font_in_inches = self.properties['fontsize'] * inches_per_pt
@@ -217,7 +217,7 @@ file_type = {}
             self.max_num_row[chrom] = 0
             for region in sorted(self.interval_tree[chrom][0:500000000]):
                 bed = region.data
-                if self.properties['labels'] == 'on':
+                if self.properties['labels']:
                     bed_extended_end = int(bed.end + (len(bed.name) * len_w))
                 else:
                     bed_extended_end = (bed.end + 2 * small_relative)
@@ -274,8 +274,7 @@ file_type = {}
         self.small_relative = 0.004 * (end_region - start_region)
         self.get_length_w(ax.get_figure().get_figwidth(), start_region,
                           end_region)
-        if 'global max row' in self.properties and \
-           self.properties['global max row'] == 'yes':
+        if self.properties.get('global max row', False):
             self.get_max_num_row(self.len_w, self.small_relative)
 
         if chrom_region not in self.interval_tree.keys():
@@ -291,9 +290,9 @@ file_type = {}
             sorted(self.interval_tree[chrom_region][start_region:end_region])
 
         # turn labels off when too many intervals are visible.
-        if self.properties['labels'] != 'off' and \
+        if self.properties['labels'] and \
            len(genes_overlap) > self.properties['max_labels']:
-            self.properties['labels'] = 'off'
+            self.properties['labels'] = False
 
         linewidth = self.properties['line width']
         max_num_row_local = 1
@@ -338,7 +337,7 @@ file_type = {}
             self.counter += 1
             bed = region.data
 
-            if self.properties['labels'] == 'on':
+            if self.properties['labels']:
                 num_name_characters = len(bed.name) + 2
                 # +2 to account for a space before and after the name
                 bed_extended_end = int(bed.end + (num_name_characters * self.len_w))
@@ -385,7 +384,7 @@ file_type = {}
             else:
                 self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
 
-            if self.properties['labels'] == 'off':
+            if not self.properties['labels']:
                 pass
             elif bed.end > start_region and bed.end < end_region:
                 ax.text(bed.end + self.small_relative,
@@ -402,8 +401,7 @@ file_type = {}
                                     chrom_region, start_region, end_region))
         ymax = 0
 
-        if 'global max row' in self.properties and \
-           self.properties['global max row'] == 'yes':
+        if self.properties.get('global max row', False):
             ymin = self.max_num_row[chrom_region] * self.row_scale
 
         elif 'gene rows' in self.properties:
