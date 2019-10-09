@@ -91,7 +91,7 @@ file_type = {}
                         score = float(score)
                     except ValueError as detail:
                         self.log.warning("Warning: reading line: {}. The score is not valid {} will not be used. "
-                                         "\nError message: {}".format(line_number, detail))
+                                         "\nError message: {}".format(line_number, score, detail))
                         score = np.nan
                         has_score = False
                     else:
