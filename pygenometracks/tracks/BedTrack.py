@@ -270,13 +270,6 @@ file_type = {}
         return ypos
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        self.counter = 0
-        self.small_relative = 0.004 * (end_region - start_region)
-        self.get_length_w(ax.get_figure().get_figwidth(), start_region,
-                          end_region)
-        if self.properties.get('global max row', False):
-            self.get_max_num_row(self.len_w, self.small_relative)
-
         if chrom_region not in self.interval_tree.keys():
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
@@ -289,135 +282,145 @@ file_type = {}
         genes_overlap = \
             sorted(self.interval_tree[chrom_region][start_region:end_region])
 
-        # turn labels off when too many intervals are visible.
-        if self.properties['labels'] and \
-           len(genes_overlap) > self.properties['max_labels']:
-            self.properties['labels'] = False
-
-        linewidth = self.properties['line width']
-        max_num_row_local = 1
-        max_ypos = 0
-        # check for the number of other intervals that overlap
-        #    with the given interval
-        #            1         2
-        #  012345678901234567890123456
-        #  1=========       4=========
-        #       2=========
-        #         3============
-        #
-        # for 1 row_last_position = [9]
-        # for 2 row_last_position = [9, 14]
-        # for 3 row_last_position = [9, 14, 19]
-        # for 4 row_last_position = [26, 14, 19]
-
-        row_last_position = []
-        # each entry in this list contains the end position
-        # of genomic interval. The list index is the row
-        # in which the genomic interval was plotted.
-        # Any new genomic interval that wants to be plotted,
-        # knows the row to use by finding the list index that
-        # is larger than its start
-
-        # check for overlapping genes including
-        # label size (if plotted)
-
-        for region in genes_overlap:
-            """
-            BED12 gene format with exon locations at the end
-            chrX    20850   23076   CG17636-RA      0       -       20850   23017   0       3       946,765,64,     0,1031,2162,
-
-            BED9
-            bed with rgb at end
-            chr2L   0       70000   ID_5    0.26864549832   .       0       70000   51,160,44
-
-            BED6
-            bed without rgb
-            chr2L   0       70000   ID_5    0.26864549832   .
-            """
-            self.counter += 1
-            bed = region.data
-
-            if self.properties['labels']:
-                num_name_characters = len(bed.name) + 2
-                # +2 to account for a space before and after the name
-                bed_extended_end = int(bed.end + (num_name_characters * self.len_w))
-            else:
-                bed_extended_end = (bed.end + 2 * self.small_relative)
-
-            # get smallest free row
-            if len(row_last_position) == 0:
-                free_row = 0
-                row_last_position.append(bed_extended_end)
-            else:
-                # get list of rows that are less than bed.start, then take the min
-                idx_list = [idx for idx, value in enumerate(row_last_position)
-                            if value < bed.start]
-                if len(idx_list):
-                    free_row = min(idx_list)
-                    row_last_position[free_row] = bed_extended_end
-                else:
-                    free_row = len(row_last_position)
-                    row_last_position.append(bed_extended_end)
-
-            rgb, edgecolor = self.get_rgb_and_edge_color(bed)
-
-            ypos = self.get_y_pos(free_row)
-
-            # do not plot if the maximum interval rows to plot is reached
-            if 'gene rows' in self.properties and \
-               free_row >= int(self.properties['gene rows']):
-                continue
-
-            if free_row > max_num_row_local:
-                max_num_row_local = free_row
-            if ypos > max_ypos:
-                max_ypos = ypos
-
-            if self.bed_type == 'bed12':
-                if self.properties['style'] == 'flybase':
-                    self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
-                                                              rgb, edgecolor,
-                                                              linewidth)
-                else:
-                    self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor,
-                                                linewidth)
-            else:
-                self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
-
-            if not self.properties['labels']:
-                pass
-            elif bed.end > start_region and bed.end < end_region:
-                ax.text(bed.end + self.small_relative,
-                        ypos + (float(self.properties['interval_height']) / 2),
-                        bed.name, horizontalalignment='left',
-                        verticalalignment='center', fontproperties=self.fp)
-
-        if self.counter == 0:
-            self.log.warning("*Warning* No intervals were found for file {} "
-                             "in section '{}' for the interval plotted"
-                             " ({}:{}-{}).\n".
-                             format(self.properties['file'],
-                                    self.properties['section_name'],
-                                    chrom_region, start_region, end_region))
-        ymax = 0
-
-        if self.properties.get('global max row', False):
-            ymin = self.max_num_row[chrom_region] * self.row_scale
-
-        elif 'gene rows' in self.properties:
-            ymin = int(self.properties['gene rows']) * self.row_scale
+        if self.properties['display'] == 'triangles':
+            self.plot_triangles(ax, genes_overlap)
         else:
-            ymin = max_ypos + self.properties['interval_height']
+            self.counter = 0
+            self.small_relative = 0.004 * (end_region - start_region)
+            self.get_length_w(ax.get_figure().get_figwidth(), start_region,
+                            end_region)
+            if self.properties.get('global max row', False):
+                self.get_max_num_row(self.len_w, self.small_relative)
 
-        self.log.debug("ylim {},{}".format(ymin, ymax))
-        # the axis is inverted (thus, ymax < ymin)
-        ax.set_ylim(ymin, ymax)
+            # turn labels off when too many intervals are visible.
+            if self.properties['labels'] and \
+            len(genes_overlap) > self.properties['max_labels']:
+                self.properties['labels'] = False
 
-        if 'display' in self.properties:
-            if self.properties['display'] == 'domain':
-                ax.set_ylim(-5, 205)
-            elif self.properties['display'] == 'collapsed':
-                ax.set_ylim(-5, 105)
+            linewidth = self.properties['line width']
+            max_num_row_local = 1
+            max_ypos = 0
+            # check for the number of other intervals that overlap
+            #    with the given interval
+            #            1         2
+            #  012345678901234567890123456
+            #  1=========       4=========
+            #       2=========
+            #         3============
+            #
+            # for 1 row_last_position = [9]
+            # for 2 row_last_position = [9, 14]
+            # for 3 row_last_position = [9, 14, 19]
+            # for 4 row_last_position = [26, 14, 19]
+
+            row_last_position = []
+            # each entry in this list contains the end position
+            # of genomic interval. The list index is the row
+            # in which the genomic interval was plotted.
+            # Any new genomic interval that wants to be plotted,
+            # knows the row to use by finding the list index that
+            # is larger than its start
+
+            # check for overlapping genes including
+            # label size (if plotted)
+
+            for region in genes_overlap:
+                """
+                BED12 gene format with exon locations at the end
+                chrX    20850   23076   CG17636-RA      0       -       20850   23017   0       3       946,765,64,     0,1031,2162,
+
+                BED9
+                bed with rgb at end
+                chr2L   0       70000   ID_5    0.26864549832   .       0       70000   51,160,44
+
+                BED6
+                bed without rgb
+                chr2L   0       70000   ID_5    0.26864549832   .
+                """
+                self.counter += 1
+                bed = region.data
+
+                if self.properties['labels']:
+                    num_name_characters = len(bed.name) + 2
+                    # +2 to account for a space before and after the name
+                    bed_extended_end = int(bed.end + (num_name_characters * self.len_w))
+                else:
+                    bed_extended_end = (bed.end + 2 * self.small_relative)
+
+                # get smallest free row
+                if len(row_last_position) == 0:
+                    free_row = 0
+                    row_last_position.append(bed_extended_end)
+                else:
+                    # get list of rows that are less than bed.start, then take the min
+                    idx_list = [idx for idx, value in enumerate(row_last_position)
+                                if value < bed.start]
+                    if len(idx_list):
+                        free_row = min(idx_list)
+                        row_last_position[free_row] = bed_extended_end
+                    else:
+                        free_row = len(row_last_position)
+                        row_last_position.append(bed_extended_end)
+
+                rgb, edgecolor = self.get_rgb_and_edge_color(bed)
+
+                ypos = self.get_y_pos(free_row)
+
+                # do not plot if the maximum interval rows to plot is reached
+                if 'gene rows' in self.properties and \
+                free_row >= int(self.properties['gene rows']):
+                    continue
+
+                if free_row > max_num_row_local:
+                    max_num_row_local = free_row
+                if ypos > max_ypos:
+                    max_ypos = ypos
+
+                if self.bed_type == 'bed12':
+                    if self.properties['style'] == 'flybase':
+                        self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
+                                                                rgb, edgecolor,
+                                                                linewidth)
+                    else:
+                        self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor,
+                                                    linewidth)
+                else:
+                    self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
+
+                if not self.properties['labels']:
+                    pass
+                elif bed.end > start_region and bed.end < end_region:
+                    ax.text(bed.end + self.small_relative,
+                            ypos + (float(self.properties['interval_height']) / 2),
+                            bed.name, horizontalalignment='left',
+                            verticalalignment='center', fontproperties=self.fp)
+
+            if self.counter == 0:
+                self.log.warning("*Warning* No intervals were found for file {} "
+                                "in section '{}' for the interval plotted"
+                                " ({}:{}-{}).\n".
+                                format(self.properties['file'],
+                                        self.properties['section_name'],
+                                        chrom_region, start_region, end_region))
+            ymax = 0
+
+            if self.properties.get('global max row', False):
+                ymin = self.max_num_row[chrom_region] * self.row_scale
+
+            elif 'gene rows' in self.properties:
+                ymin = int(self.properties['gene rows']) * self.row_scale
+            else:
+                ymin = max_ypos + self.properties['interval_height']
+
+            self.log.debug("ylim {},{}".format(ymin, ymax))
+            # the axis is inverted (thus, ymax < ymin)
+            ax.set_ylim(ymin, ymax)
+
+            if 'display' in self.properties:
+                if self.properties['display'] == 'domain':
+                    ax.set_ylim(-5, 205)
+                elif self.properties['display'] == 'collapsed':
+                    ax.set_ylim(-5, 105)
 
     def plot_label(self, label_ax):
         label_ax.text(0.05, 1, self.properties['title'],
@@ -670,3 +673,45 @@ file_type = {}
                     intron_center = x1 + int(intron_length) / 2
                     ax.plot([intron_center], [ypos + half_height], '.', marker=5,
                             fillstyle='none', color='blue', markersize=3)
+
+    def plot_triangles(self, ax, genes_overlap):
+        """
+        Plots the boundaries as triangles in the given ax.
+        """
+        from matplotlib.patches import Polygon
+        ymax = 0.001
+        valid_regions = 0
+        for region in genes_overlap:
+            """
+                   ______ y2
+                  ""
+                 "  "
+                "    "
+               "      "_____ y1
+            _____________________
+               x1 x2 x3
+
+            """
+            x1 = region.begin
+            x2 = x1 + float(region.end - region.begin) / 2
+            x3 = region.end
+            y1 = 0
+            y2 = (region.end - region.begin)
+
+            rgb, edgecolor = self.get_rgb_and_edge_color(region.data)
+
+            triangle = Polygon([[x1, y1], [x2, y2], [x3, y1]], closed=True,
+                               facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line width'])
+            ax.add_artist(triangle)
+            valid_regions += 1
+
+            if y2 > ymax:
+                ymax = y2
+
+        if valid_regions == 0:
+            self.log.warning("No regions found for section {}.".format(self.properties['section_name']))
+
+        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+            ax.set_ylim(ymax, 0)
+        else:
+            ax.set_ylim(0, ymax)
