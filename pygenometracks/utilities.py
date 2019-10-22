@@ -194,3 +194,37 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                             color=negative_color,
                             facecolor=negative_color,
                             alpha=alpha)
+
+    def transform(score_list, transform, file):
+        if transform == 'no':
+            return(score_list)
+        elif transform == 'log':
+            if score_list.min() < 0:
+                msg = ("\n*ERROR*\ncoverage contains negative values.\n"
+                       "log(<values>) transformation can not be applied to \n"
+                       "values in file: {}".format(file))
+                sys.exit(msg)
+            else:
+                return(np.log(score_list))
+        elif transform == 'log1p':
+            if score_list.min() < 1:
+                msg = ("\n*ERROR*\ncoverage contains values below 1.\n"
+                       "log1p(<values>) transformation can not be applied to \n"
+                       "values in file: {}".format(file))
+                sys.exit(msg)
+            else:
+                return(np.log(score_list + 1))
+        elif transform == '-log':
+            if score_list.max() > 0:
+                msg = ("\n*ERROR*\ncoverage contains positive values.\n"
+                       "-log(<values>) transformation can not be applied to \n"
+                       "values in file: {}".format(file))
+                sys.exit(msg)
+            else:
+                return(np.log(- score_list))
+        else:
+            import warnings
+            warnings.warn('The transform: {} for file {} is not valid.'
+                          'will not use any transformation'.format(transform,
+                                                                   file))
+            return(score_list)
