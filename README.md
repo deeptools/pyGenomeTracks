@@ -286,7 +286,7 @@ file = hic_data.h5
 title = Hi-C data
 # depth is the maximum distance plotted in bp. In Hi-C tracks
 # the height of the track is calculated based on the depth such
-# that the matrix does not look deformated
+# that the matrix does not look deformed
 depth = 300000
 transform = log1p
 file_type = hic_matrix
