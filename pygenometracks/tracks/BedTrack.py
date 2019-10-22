@@ -43,7 +43,7 @@ fontsize = 10
 # optional: line width
 #line width = 0.5
 # the display parameter defines how the bed file is plotted.
-# The options are ['colapsed', 'interleaved', 'triangles'] This options asume that the regions do not overlap.
+# The options are ['collapsed', 'interleaved', 'triangles'] This options asume that the regions do not overlap.
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
 # if display is not given, then each region is plotted using the gene style
@@ -117,6 +117,19 @@ file_type = {}
                 self.properties['color'] = DEFAULT_BED_COLOR
             else:
                 self.colormap = self.properties['color']
+
+        # check the display is valid:
+        if self.properties['display'] in ['interlaced', 'domain']:
+            self.properties['display'] = 'interleaved'
+
+        if not self.properties['display'] in ['collapsed', 'triangles',
+                                              'interleaved', 'stacked']:
+            self.log.warning("*WARNING* display: '{}' for section {}"
+                             " is not valid. Display has "
+                             "been set to stacked"
+                             ".".format(self.properties['display'],
+                                        self.properties['section_name']))
+            self.properties['display'] = 'stacked'
 
         # to set the distance between rows
         self.row_scale = self.properties['interval_height'] * 2.3
@@ -249,13 +262,14 @@ file_type = {}
         :return: int y position
         """
 
-        # if the domain directive is given,
+        # if the interleaved directive is given,
         # ypos simply oscilates between 0 and 100
-        if self.properties['display'] == 'interlaced':
+        if self.properties['display'] == 'interleaved':
             ypos = self.properties['interval_height'] \
                 if self.counter % 2 == 0 \
                 else 1
-
+        # if the collapsed directive is given
+        # ypos is always 0
         elif self.properties['display'] == 'collapsed':
             ypos = 0
 
@@ -282,7 +296,7 @@ file_type = {}
             self.counter = 0
             self.small_relative = 0.004 * (end_region - start_region)
             self.get_length_w(ax.get_figure().get_figwidth(), start_region,
-                            end_region)
+                             end_region)
             if self.properties.get('global max row', False):
                 self.get_max_num_row(self.len_w, self.small_relative)
 
@@ -410,11 +424,10 @@ file_type = {}
             # the axis is inverted (thus, ymax < ymin)
             ax.set_ylim(ymin, ymax)
 
-            if 'display' in self.properties:
-                if self.properties['display'] == 'domain':
-                    ax.set_ylim(-5, 205)
-                elif self.properties['display'] == 'collapsed':
-                    ax.set_ylim(-5, 105)
+            if self.properties['display'] == 'interleaved':
+                ax.set_ylim(-5, 205)
+            elif self.properties['display'] == 'collapsed':
+                ax.set_ylim(-5, 105)
 
     def plot_label(self, label_ax):
         label_ax.text(0.05, 1, self.properties['title'],
