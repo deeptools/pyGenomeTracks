@@ -302,13 +302,13 @@ file_type = {}
             self.counter = 0
             self.small_relative = 0.004 * (end_region - start_region)
             self.get_length_w(ax.get_figure().get_figwidth(), start_region,
-                             end_region)
+                              end_region)
             if self.properties.get('global max row', False):
                 self.get_max_num_row(self.len_w, self.small_relative)
 
             # turn labels off when too many intervals are visible.
             if self.properties['labels'] and \
-            len(genes_overlap) > self.properties['max_labels']:
+               len(genes_overlap) > self.properties['max_labels']:
                 self.properties['labels'] = False
 
             linewidth = self.properties['line width']
@@ -382,7 +382,7 @@ file_type = {}
 
                 # do not plot if the maximum interval rows to plot is reached
                 if 'gene rows' in self.properties and \
-                free_row >= int(self.properties['gene rows']):
+                   free_row >= int(self.properties['gene rows']):
                     continue
 
                 if free_row > max_num_row_local:
@@ -393,8 +393,8 @@ file_type = {}
                 if self.bed_type == 'bed12':
                     if self.properties['style'] == 'flybase':
                         self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
-                                                                rgb, edgecolor,
-                                                                linewidth)
+                                                                  rgb, edgecolor,
+                                                                  linewidth)
                     else:
                         self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor,
                                                     linewidth)
@@ -411,9 +411,9 @@ file_type = {}
 
             if self.counter == 0:
                 self.log.warning("*Warning* No intervals were found for file {} "
-                                "in section '{}' for the interval plotted"
-                                " ({}:{}-{}).\n".
-                                format(self.properties['file'],
+                                 "in section '{}' for the interval plotted"
+                                 " ({}:{}-{}).\n".
+                                 format(self.properties['file'],
                                         self.properties['section_name'],
                                         chrom_region, start_region, end_region))
             ymax = 0
