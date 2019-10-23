@@ -22,6 +22,11 @@ nans to zeros = True
 # similarly points:ms sets the point size (markersize (ms) to the given float
 # type = line:0.5
 # type = points:0.5
+# If you want to plot a 4C track where you want to link
+# the non-missing data (NaNs) together and only use the
+# middle of the region instead of the region itself:
+# Default is no.
+# use middle = yes
 
 file_type = {}
     """.format(TRACK_TYPE)
