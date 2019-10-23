@@ -129,6 +129,7 @@ def test_plot_tracks_bed_and_gtf():
 
     os.remove(outfile.name)
 
+
 def test_plot_tracks_bed_with_maxLab():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
@@ -140,4 +141,3 @@ def test_plot_tracks_bed_with_maxLab():
     assert res is None, res
 
     os.remove(outfile.name)
-
