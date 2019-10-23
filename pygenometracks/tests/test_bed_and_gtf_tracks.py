@@ -132,7 +132,7 @@ def test_plot_tracks_bed_and_gtf():
 def test_plot_tracks_bed_with_maxLab():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/bed_maxLab_tracks.ini --region X:2000000-3300000 --trackLabelFraction 0.2 --width 38 " \
+    args = "--tracks {0}/bed_maxLab_tracks.ini --region X:2000000-3500000 --trackLabelFraction 0.2 --width 38 " \
            "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
