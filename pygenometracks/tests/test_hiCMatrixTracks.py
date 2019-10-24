@@ -92,8 +92,10 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth=200000; show_masked_bins=yes;
+title = depth=200000; show_masked_bins=yes; colormap = ['blue', 'yellow', 'red']; max_value = 150
 depth = 200000
+colormap = ['blue', 'yellow', 'red']
+max_value = 150
 file_type = hic_matrix
 show_masked_bins = yes
 
@@ -193,8 +195,10 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.cool
-title = depth=200000; show_masked_bins=yes;
+title = depth=200000; show_masked_bins=yes; colormap = ['blue', 'yellow', 'red']; max_value = 150
 depth = 200000
+colormap = ['blue', 'yellow', 'red']
+max_value = 150
 file_type = hic_matrix
 show_masked_bins = yes
 
