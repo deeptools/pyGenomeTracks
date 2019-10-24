@@ -23,7 +23,7 @@ class BedTrack(GenomeTrack):
 # a region **with direction** is plotted.
 # If a gtf is given, it should end with gtf or gtf.gz or
 # the type should be defined as gtf:
-# type = gtf 
+# type = gtf
 # In the case of a gtf file, by default the transcript_name is used.
 # If you want to use the gene_name:
 # prefered name = gene_name
@@ -34,7 +34,7 @@ class BedTrack(GenomeTrack):
 # setting:
 # color = bed_rgb
 #if color is a valid colormap name (like RbBlGn), then the score is mapped
-# to the colormap. 
+# to the colormap.
 # In this case, the the min_value and max_value for the score can be provided, otherwise
 # the maximum score and minimum score found are used.
 #color = RdYlBu
