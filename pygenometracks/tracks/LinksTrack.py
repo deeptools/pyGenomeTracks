@@ -292,12 +292,9 @@ file_type = {}
 
     def plot_loops(self, ax, loop):
         """
-               
               " <- 2
         3->  "  " <- 1
                " <- 0
-                    
-
             """
         from matplotlib.patches import Polygon
         width1 = loop[1] - loop[0]
