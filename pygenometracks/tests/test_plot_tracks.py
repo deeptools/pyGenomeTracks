@@ -120,7 +120,6 @@ overlay previous = share-y
 
 [test arcs]
 file = test.arcs
-color = red
 line width = 3
 color = RdYlGn
 title = links line width=3 color RdYlGn
