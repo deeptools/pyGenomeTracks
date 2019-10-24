@@ -21,6 +21,9 @@ class HiCMatrixTrack(GenomeTrack):
 title =
 # The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
 # the default color map is RdYlBu_r (_r) stands for reverse
+# If you want your own colormap you can put the values of the color you want
+# For example, colormap = ['blue', 'yellow', 'red']
+# or colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
 #colormap = RdYlBu_r
 # depth is the maximum distance that should be plotted.
 # If it is more than 125% of the plotted region, it will
