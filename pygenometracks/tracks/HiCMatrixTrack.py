@@ -44,6 +44,9 @@ show_masked_bins = no
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
 # scale factor = 1
+# You can choose to keep the matrix as not rasterized
+# (only used if you use pdf or svg output format) by using:
+# rasterize = no
 file_type = {}
     """.format(TRACK_TYPE)
 
