@@ -16,7 +16,7 @@ class LinksTrack(GenomeTrack):
 # The fields after the score field will be ignored
 # for example:
 #   chr1 100 200 chr1 250 300 0.5
-# depending on the links type either an 'arc' or a 'triangle' or a 'loop' can be plotted. 
+# depending on the links type either an 'arc' or a 'triangle' or a 'loop' can be plotted.
 # If an arc, a line will be drawn from the center of the first region (chr1: 150),
 # to the center of the other region (chr1: 275).
 # if a triangle, the vertix of the triangle will be drawn at the center between the two points (also the center of
