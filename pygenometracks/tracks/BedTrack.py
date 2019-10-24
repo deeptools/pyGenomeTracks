@@ -21,17 +21,27 @@ class BedTrack(GenomeTrack):
 # If the bed file contains the exon
 # structure (bed 12) then this is plotted. Otherwise
 # a region **with direction** is plotted.
-# if the bed file contains a column for color (column 9), then this color can be used by
+# If a gtf is given, it should end with gtf or gtf.gz or
+# the type should be defined as gtf:
+# type = gtf 
+# In the case of a gtf file, by default the transcript_name is used.
+# If you want to use the gene_name:
+# prefered name = gene_name
+# By default, the gtf is transformed to transcripts
+# If you want to use see only one structure per gene
+# merge transcripts = on
+# If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 # color = bed_rgb
-color = darkblue
 #if color is a valid colormap name (like RbBlGn), then the score is mapped
-# to the colormap. If the color is simply a color name, then this color is used and the score is not considered.
-# For the colormap option, the the min_value and max_value for the score can be provided, otherwise
+# to the colormap. 
+# In this case, the the min_value and max_value for the score can be provided, otherwise
 # the maximum score and minimum score found are used.
 #color = RdYlBu
 #min_value=0
 #max_value=100
+# If the color is simply a color name, then this color is used and the score is not considered.
+color = darkblue
 # height of track in cm
 height = 5
 # to turn off/on printing of labels
