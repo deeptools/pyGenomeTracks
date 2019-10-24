@@ -129,24 +129,28 @@ file_type = {}
         x_values = np.linspace(start_region, end_region, num_bins)
         if self.plot_type == 'line':
             if self.properties['color'] == self.properties['negative color']:
-                ax.plot(x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['color'])
+                ax.plot(x_values, scores_per_bin, '-', linewidth=self.size,
+                        color=self.properties['color'], alpha=self.properties['alpha'])
             else:
                 import warnings
                 warnings.warn('Line plots with a different negative color might not look pretty')
                 pos_x_values = x_values.copy()
                 pos_x_values[scores_per_bin < 0] = np.nan
-                ax.plot(pos_x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['color'])
+                ax.plot(pos_x_values, scores_per_bin, '-', linewidth=self.size,
+                        color=self.properties['color'], alpha=self.properties['alpha'])
 
                 neg_x_values = x_values.copy()
                 neg_x_values[scores_per_bin >= 0] = np.nan
-                ax.plot(neg_x_values, scores_per_bin, '-', linewidth=self.size, color=self.properties['negative color'])
+                ax.plot(neg_x_values, scores_per_bin, '-', linewidth=self.size,
+                        color=self.properties['color'], alpha=self.properties['alpha'])
 
         elif self.plot_type == 'points':
             ax.plot(x_values[scores_per_bin >= 0], scores_per_bin[scores_per_bin >= 0], '.',
-                    markersize=self.size, color=self.properties['color'])
+                    markersize=self.size, color=self.properties['color'],
+                    alpha=self.properties['alpha'])
             ax.plot(x_values[scores_per_bin < 0], scores_per_bin[scores_per_bin < 0], '.',
-                    markersize=self.size, color=self.properties['negative color'])
-
+                    markersize=self.size, color=self.properties['negative color'],
+                    alpha=self.properties['alpha'])
         else:
             ax.fill_between(x_values, scores_per_bin, linewidth=0.1, color=self.properties['color'],
                             facecolor=self.properties['color'], where=scores_per_bin >= 0, interpolate=True,
