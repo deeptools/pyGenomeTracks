@@ -291,6 +291,14 @@ file_type = {}
             self.max_height = y2
 
     def plot_loops(self, ax, loop):
+        """
+               
+              " <- 2
+        3->  "  " <- 1
+               " <- 0
+                    
+
+            """
         from matplotlib.patches import Polygon
         width1 = loop[1] - loop[0]
         width2 = loop[3] - loop[2]
@@ -318,3 +326,5 @@ file_type = {}
                             linewidth=self.line_width,
                             ls=self.properties['line style'])
         ax.add_artist(rectangle)
+        if y2 > self.max_height:
+            self.max_height = y2
