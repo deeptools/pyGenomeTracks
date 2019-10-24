@@ -123,7 +123,6 @@ def test_plot_tracks_bed_and_gtf():
     args = "--tracks {0}/bed_and_gtf_tracks.ini --region X:3000000-3300000 --trackLabelFraction 0.2 --width 38 " \
            "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
     res = compare_images(ROOT + '/master_bed_and_gtf.png', outfile.name, tolerance)
     assert res is None, res
 
@@ -136,7 +135,6 @@ def test_plot_tracks_bed_with_maxLab():
     args = "--tracks {0}/bed_maxLab_tracks.ini --region X:2000000-3500000 --trackLabelFraction 0.2 --width 38 " \
            "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
     res = compare_images(ROOT + '/master_maxLab.png', outfile.name, tolerance)
     assert res is None, res
 
