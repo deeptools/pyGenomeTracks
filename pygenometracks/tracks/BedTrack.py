@@ -18,9 +18,7 @@ class BedTrack(GenomeTrack):
                          'gtf', 'gtf.gz']
     TRACK_TYPE = 'bed'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
-# if the type=genes is given
-# the the file is interpreted as gene
-# file. If the bed file contains the exon
+# If the bed file contains the exon
 # structure (bed 12) then this is plotted. Otherwise
 # a region **with direction** is plotted.
 # if the bed file contains a column for color (column 9), then this color can be used by
