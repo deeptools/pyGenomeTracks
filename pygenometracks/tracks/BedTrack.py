@@ -297,13 +297,14 @@ file_type = {}
             self.small_relative = 0.004 * (end_region - start_region)
             self.get_length_w(ax.get_figure().get_figwidth(), start_region,
                               end_region)
-            if self.properties.get('global max row', False):
+            if 'global max row' in self.properties and \
+               self.properties['global max row'] == 'yes':
                 self.get_max_num_row(self.len_w, self.small_relative)
 
             # turn labels off when too many intervals are visible.
-            if self.properties['labels'] and \
+            if self.properties['labels'] != 'off' and \
                len(genes_overlap) > 60:
-                self.properties['labels'] = False
+                self.properties['labels'] = 'off'
 
             linewidth = self.properties['line width']
             max_num_row_local = 1
@@ -348,7 +349,7 @@ file_type = {}
                 self.counter += 1
                 bed = region.data
 
-                if self.properties['labels']:
+                if self.properties['labels'] == 'on':
                     num_name_characters = len(bed.name) + 2
                     # +2 to account for a space before and after the name
                     bed_extended_end = int(bed.end + (num_name_characters * self.len_w))
@@ -395,7 +396,7 @@ file_type = {}
                 else:
                     self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
 
-                if not self.properties['labels']:
+                if self.properties['labels'] == 'off':
                     pass
                 elif bed.end > start_region and bed.end < end_region:
                     ax.text(bed.end + self.small_relative,
@@ -412,7 +413,8 @@ file_type = {}
                                         chrom_region, start_region, end_region))
             ymax = 0
 
-            if self.properties.get('global max row', False):
+            if 'global max row' in self.properties and \
+               self.properties['global max row'] == 'yes':
                 ymin = self.max_num_row[chrom_region] * self.row_scale
 
             elif 'gene rows' in self.properties:
