@@ -63,6 +63,7 @@ def test_plot_bedgraph_tracks():
 
     os.remove(outfile.name)
 
+
 def test_plot_bedgraph_tracks_rasterize():
 
     outfile = NamedTemporaryFile(suffix='.pdf', prefix='pyGenomeTracks_test_', delete=False)
