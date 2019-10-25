@@ -2,6 +2,8 @@ from . GenomeTrack import GenomeTrack
 from intervaltree import IntervalTree, Interval
 import matplotlib
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Arc, Polygon
 
 DEFAULT_LINKS_COLOR = 'blue'
 
@@ -225,7 +227,6 @@ file_type = {}
 
     def plot_y_axis(self, ax, plot_ax):
         if self.colormap is not None and self.properties['overlay previous'] == 'no':
-            import matplotlib.pyplot as plt
             self.colormap.set_array([])
 
             cobar = plt.colorbar(self.colormap, ax=ax, fraction=1,
@@ -249,7 +250,6 @@ file_type = {}
                 labels[idx].set_verticalalignment('top')
 
     def plot_arcs(self, ax, interval):
-        from matplotlib.patches import Arc
 
         diameter = (interval.end - interval.begin)
         radius = float(diameter) / 2
@@ -268,7 +268,6 @@ file_type = {}
                          linewidth=self.line_width, ls=self.properties['line style']))
 
     def plot_triangles(self, ax, interval):
-        from matplotlib.patches import Polygon
         x1 = interval.begin
         x2 = x1 + float(interval.end - interval.begin) / 2
         x3 = interval.end
@@ -296,7 +295,6 @@ file_type = {}
         3->  "  " <- 1
                " <- 0
             """
-        from matplotlib.patches import Polygon
         width1 = loop[1] - loop[0]
         width2 = loop[3] - loop[2]
         x0 = (loop[1] + loop[2]) / 2
