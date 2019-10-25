@@ -288,5 +288,5 @@ def test_plot_tracks_with_hic_rasterize_height():
     pygenometracks.plotTracks.main(args)
     res = compare_images(ROOT + '/master_plot_hic_rasterize_height.pdf', outfile.name, tolerance)
     assert res is None, res
-    
+
     os.remove(outfile.name)
