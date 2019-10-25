@@ -27,7 +27,7 @@ class BedTrack(GenomeTrack):
 # setting:
 # color = bed_rgb
 color = darkblue
-#if color is a valid colormap name (like RbBlGn), then the score is mapped
+#if color is a valid colormap name (like RdYlGn), then the score is mapped
 # to the colormap. If the color is simply a color name, then this color is used and the score is not considered.
 # For the colormap option, the the min_value and max_value for the score can be provided, otherwise
 # the maximum score and minimum score found are used.
