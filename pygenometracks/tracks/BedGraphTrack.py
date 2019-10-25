@@ -28,7 +28,17 @@ nans to zeros = True
 # middle of the region instead of the region itself:
 # Default is no.
 # use middle = yes
-
+# By default the bedgraph is plotted at the base pair
+# Resolution. This can lead to very large pdf/svg files
+# If plotting a large regions.
+# If you want to decrase the size of your file.
+# You can either rasterize the bedgraph profile by using:
+# rasterize = yes
+# Or use a summary method on a given number of bin:
+# The possible summary methods are given by pyBigWig:
+# mean/average/stdev/dev/max/min/cov/coverage/sum
+# summary method = mean
+# number of bins = 700
 file_type = {}
     """.format(TRACK_TYPE)
 
@@ -239,7 +249,8 @@ file_type = {}
     def get_values_as_bigwig(self, score_list, pos_list, chrom_region,
                              start_region, end_region):
         if self.properties['summary method'] not in \
-           ['mean', 'max', 'min', 'std', 'coverage']:
+           ['mean', 'average', 'max', 'min', 'stdev',
+           'dev', 'coverage', 'cov', 'sum']:
             self.log.warn("'summary method' value: {}"
                           " for bedgraph file {} is not valid"
                           "Using default bedgraph plot.")
