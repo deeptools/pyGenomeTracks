@@ -284,9 +284,9 @@ def test_plot_tracks_with_hic_rasterize_height():
 
     outfile = NamedTemporaryFile(suffix='.pdf', prefix='pyGenomeTracks_test_', delete=False)
     args = "--tracks {0}/browser_tracks_hic_rasterize_height.ini --region X:2500000-2600000 --trackLabelFraction 0.23 --width 38 " \
-           "--dpi 30 --outFileName  {1}".format(ROOT, outfile.name).split()
+           "--dpi 10 --outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(ROOT + '/master_plot_hic_rasterize_height.pdf', outfile.name, tolerance)
     assert res is None, res
-
+    
     os.remove(outfile.name)
