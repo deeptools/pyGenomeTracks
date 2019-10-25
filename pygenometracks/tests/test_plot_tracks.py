@@ -100,11 +100,29 @@ show data range = no
 overlay previous = yes
 number of bins = 100
 
-[test arcs]
+[spacer]
+height = 1
+
+[tads 3]
+file = tad_classification.bed
+title = TADs color=#cccccc; border color=red (next track: overlay previous=share-y links; type = loops)
+file_type = domains
+border color = red
+color = #cccccc
+height = 3
+
+[test arcs overlay]
 file = test.arcs
 color = red
+line width = 10
+links type = loops
+overlay previous = share-y
+
+[test arcs]
+file = test.arcs
 line width = 3
-title = links line width=3
+color = RdYlGn
+title = links line width=3 color RdYlGn
 height = 3
 
 [spacer]
