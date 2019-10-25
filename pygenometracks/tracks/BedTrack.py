@@ -8,7 +8,7 @@ from intervaltree import IntervalTree, Interval
 import numpy as np
 
 DEFAULT_BED_COLOR = '#1f78b4'
-DISPLAY_BED_VALID = ['collapsed', 'triangles','interleaved', 'stacked']
+DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
 
