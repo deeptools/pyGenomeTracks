@@ -8,6 +8,9 @@ from intervaltree import IntervalTree, Interval
 import numpy as np
 
 DEFAULT_BED_COLOR = '#1f78b4'
+DISPLAY_BED_VALID = ['collapsed', 'triangles','interleaved', 'stacked']
+DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
+DEFAULT_DISPLAY_BED = 'stacked'
 
 
 class BedTrack(GenomeTrack):
@@ -103,7 +106,7 @@ file_type = {}
         if 'style' not in self.properties:
             self.properties['style'] = 'flybase'
         if 'display' not in self.properties:
-            self.properties['display'] = 'stacked'
+            self.properties['display'] = DEFAULT_DISPLAY_BED
         if 'interval_height' not in self.properties:
             self.properties['interval_height'] = 100
         if 'line width' not in self.properties:
@@ -127,17 +130,18 @@ file_type = {}
                 self.colormap = self.properties['color']
 
         # check the display is valid:
-        if self.properties['display'] in ['interlaced', 'domain']:
-            self.properties['display'] = 'interleaved'
+        if self.properties['display'] in DISPLAY_BED_SYNONYMOUS:
+            self.properties['display'] = \
+                DISPLAY_BED_SYNONYMOUS[self.properties['display']]
 
-        if not self.properties['display'] in ['collapsed', 'triangles',
-                                              'interleaved', 'stacked']:
+        if not self.properties['display'] in DISPLAY_BED_VALID:
             self.log.warning("*WARNING* display: '{}' for section {}"
                              " is not valid. Display has "
-                             "been set to stacked"
+                             "been set to {}."
                              ".".format(self.properties['display'],
-                                        self.properties['section_name']))
-            self.properties['display'] = 'stacked'
+                                        self.properties['section_name'],
+                                        DEFAULT_DISPLAY_BED))
+            self.properties['display'] = DEFAULT_DISPLAY_BED
 
         # to set the distance between rows
         self.row_scale = self.properties['interval_height'] * 2.3
