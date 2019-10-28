@@ -21,8 +21,13 @@ class HiCMatrixTrack(GenomeTrack):
 title =
 # The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
 # the default color map is RdYlBu_r (_r) stands for reverse
+# If you want your own colormap you can put the values of the color you want
+# For example, colormap = ['blue', 'yellow', 'red']
+# or colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
 #colormap = RdYlBu_r
 # depth is the maximum distance that should be plotted.
+# If it is more than 125% of the plotted region, it will
+# be adjsted to this maximum value.
 depth = 100000
 # height of track (in cm) can be given. Otherwise, the height is computed such that the proportions of the
 # hic matrix are kept (e.g. the image does not appear shrink or extended)
@@ -42,6 +47,9 @@ show_masked_bins = no
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
 # scale factor = 1
+# You can choose to keep the matrix as not rasterized
+# (only used if you use pdf or svg output format) by using:
+# rasterize = no
 file_type = {}
     """.format(TRACK_TYPE)
 
@@ -135,8 +143,8 @@ file_type = {}
 
         self.norm = None
 
-        if 'colormap' not in self.properties:
-            self.properties['colormap'] = DEFAULT_MATRIX_COLORMAP
+        self.properties['colormap'] = self.process_colormap()
+
         self.cmap = cm.get_cmap(self.properties['colormap'])
         self.cmap.set_bad('white')
 
@@ -189,6 +197,9 @@ file_type = {}
         depth_in_bins = int(1.5 * region_len / self.hic_ma.getBinSize())
 
         if depth < self.properties['depth']:
+            log.warning("The depth was set to {} which is more than 125%"
+                        " of the region plotted. The depth will be set "
+                        "to {}".format(self.properties['depth'], depth))
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         matrix = np.asarray(matrix.todense().astype(float))
@@ -243,7 +254,8 @@ file_type = {}
         self.log.info("setting min, max values for track {} to: {}, {}\n".
                       format(self.properties['section_name'], vmin, vmax))
         self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
-        self.img.set_rasterized(True)
+        if self.properties.get('rasterize', False) != 'no':
+            self.img.set_rasterized(True)
         if self.plot_inverted:
             ax.set_ylim(depth, 0)
         else:
@@ -311,3 +323,44 @@ file_type = {}
         im = ax.pcolormesh(x, y, np.flipud(matrix_c),
                            vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
         return im
+
+    def process_colormap(self):
+        if 'colormap' not in self.properties:
+            return(DEFAULT_MATRIX_COLORMAP)
+            # If someone what to use its own colormap,
+            # he can specify the rgb values or color values:
+            # For example:
+            # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+        elif self.properties['colormap'][0] == '[':
+            try:
+                custom_colors = eval(self.properties['colormap'])
+            except SyntaxError as err:
+                self.log.warning("*WARNING* the list specified for colormap"
+                                 " ({}) is not valid: "
+                                 "{}.\nColormap has been set to "
+                                 "{}".format(self.properties['colormap'],
+                                             err,
+                                             DEFAULT_MATRIX_COLORMAP))
+                return(DEFAULT_MATRIX_COLORMAP)
+            else:
+                try:
+                    return(colors.LinearSegmentedColormap.from_list(
+                           'custom', custom_colors, N=100))
+                except ValueError:
+                    self.log.warning("*WARNING* the list specified for "
+                                     "colormap ({}) cannot be evaluated."
+                                     "\nColormap has been set to "
+                                     "{}".format(self.properties['colormap'],
+                                                 DEFAULT_MATRIX_COLORMAP))
+                    return(DEFAULT_MATRIX_COLORMAP)
+        else:
+            if self.properties['colormap'] not in cm.datad:
+                self.log.warning("*WARNING* colormap: '{}' for section {}"
+                                 " is not valid. Colormap has "
+                                 "been set to "
+                                 "{}".format(self.properties['colormap'],
+                                             self.properties['section_name'],
+                                             DEFAULT_MATRIX_COLORMAP))
+                return(DEFAULT_MATRIX_COLORMAP)
+            else:
+                return(self.properties['colormap'])

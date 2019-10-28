@@ -167,17 +167,30 @@ class PlotTracks(object):
             # ------------------
             #   region len
             #
-            # d (in cm) =  depth (in bp) * width (in cm) / region len (in bp)
+            # d (in cm) =  depth (in bp) * width (in cm) / region len (in bp) * scale_factor
+            # with scale_factor = 0.5
 
             elif 'depth' in track_dict and track_dict['file_type'] == 'hic_matrix':
                 # to compute the actual width of the figure the margins and the region
                 # set for the legends have to be considered
-                # DEFAULT_MARGINS[1] - DEFAULT_MARGINS[0] is the proportion of plotting area
+                # DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']
+                # is the proportion of plotting area
+                # This plotting area is divided in three part as specified in
+                # self.width_ratios (normalized to 1)
+                # And as wspace is specified 0.01,
+                # 0.01 of the mean of the 3 regions is not occupied.
+                # 1 / (1 + 2 / 3 * 0.01) is used to plot.
 
                 hic_width = \
-                    self.fig_width * (DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']) * self.width_ratios[1]
-                scale_factor = 0.6  # the scale factor is to obtain a 'pleasing' result.
-                depth = min(track_dict['depth'], (end_region - start_region))
+                    self.fig_width * \
+                    (DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']) / \
+                    (1 + 2 / 3 * 0.01) * \
+                    self.width_ratios[1] / sum(self.width_ratios)
+                # the scale factor is to obtain each bin as a square
+                # (a 45 degree rotated matrix)
+                scale_factor = 0.5
+                depth = min(track_dict['depth'],
+                            int((end_region - start_region) * 1.25))
 
                 height = scale_factor * depth * hic_width / (end_region - start_region)
             else:
@@ -193,10 +206,18 @@ class PlotTracks(object):
         if self.fig_height:
             fig_height = self.fig_height
         else:
-            fig_height = sum(track_height)
+            fig_height = sum(track_height) / \
+                (DEFAULT_MARGINS['top'] - DEFAULT_MARGINS['bottom'])
 
         log.debug("Figure size in cm is {} x {}. Dpi is set to {}\n".format(self.fig_width, fig_height, self.dpi))
         fig = plt.figure(figsize=self.cm2inch(self.fig_width, fig_height))
+
+        fig.subplots_adjust(wspace=0, hspace=0.0,
+                            left=DEFAULT_MARGINS['left'],
+                            right=DEFAULT_MARGINS['right'],
+                            bottom=DEFAULT_MARGINS['bottom'],
+                            top=DEFAULT_MARGINS['top'])
+
         if title:
             fig.suptitle(title)
 
@@ -211,7 +232,7 @@ class PlotTracks(object):
         for idx, track in enumerate(self.track_obj_list):
             log.info("plotting {}".format(track.properties['section_name']))
             if idx == 0 and track.properties['overlay previous'] != 'no':
-                log.warn("First track can not have the `overlay previous` option")
+                log.warning("First track can not have the `overlay previous` option")
                 track.properties['overlay previous'] = 'no'
 
             if track.properties['overlay previous'] in ['yes', 'share-y']:
@@ -250,12 +271,6 @@ class PlotTracks(object):
 
         if self.vlines_intval_tree:
             self.plot_vlines(axis_list, chrom, start, end)
-
-        fig.subplots_adjust(wspace=0, hspace=0.0,
-                            left=DEFAULT_MARGINS['left'],
-                            right=DEFAULT_MARGINS['right'],
-                            bottom=DEFAULT_MARGINS['bottom'],
-                            top=DEFAULT_MARGINS['top'])
 
         fig.savefig(file_name, dpi=self.dpi, transparent=False)
         return fig.get_size_inches()

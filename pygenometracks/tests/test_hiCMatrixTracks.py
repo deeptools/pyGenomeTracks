@@ -92,8 +92,10 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth=200000; show_masked_bins=yes;
+title = depth=200000; show_masked_bins=yes; colormap = ['blue', 'yellow', 'red']; max_value = 150
 depth = 200000
+colormap = ['blue', 'yellow', 'red']
+max_value = 150
 file_type = hic_matrix
 show_masked_bins = yes
 
@@ -193,8 +195,10 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.cool
-title = depth=200000; show_masked_bins=yes;
+title = depth=200000; show_masked_bins=yes; colormap = ['blue', 'yellow', 'red']; max_value = 150
 depth = 200000
+colormap = ['blue', 'yellow', 'red']
+max_value = 150
 file_type = hic_matrix
 show_masked_bins = yes
 
@@ -208,6 +212,47 @@ height = 0.1
 with open(ROOT + "browser_tracks_cool.ini", 'w') as fh:
     fh.write(browser_tracks_with_cool)
 
+browser_tracks_with_hic = """
+[hic matrix]
+file = Li_et_al_2015.h5
+title = depth=200000; transform=log1p;min_value=5; height = 5
+depth = 200000
+min_value=5
+transform = log1p
+file_type = hic_matrix
+show_masked_bins = no
+height = 5
+
+[hic matrix 2]
+file = Li_et_al_2015.h5
+title = same but orientation=inverted; no height
+depth = 200000
+min_value=5
+transform = log1p
+file_type = hic_matrix
+show_masked_bins = no
+orientation = inverted
+
+[spacer]
+height = 0.5
+
+[hic matrix 3]
+file = Li_et_al_2015.h5
+title = same rasterize = off
+depth = 200000
+min_value=5
+transform = log1p
+file_type = hic_matrix
+rasterize = no
+show_masked_bins = no
+
+[x-axis]
+
+"""
+
+with open(ROOT + "browser_tracks_hic_rasterize_height.ini", 'w') as fh:
+    fh.write(browser_tracks_with_hic)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -217,7 +262,6 @@ def test_plot_tracks_with_hic():
     args = "--tracks {0}/browser_tracks_hic.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 " \
            "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
     res = compare_images(ROOT + '/master_plot_hic.png', outfile.name, tolerance)
     assert res is None, res
 
@@ -230,8 +274,19 @@ def test_plot_tracks_with_cool_region():
     args = "--tracks {0}/browser_tracks_cool.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 " \
            "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
     res = compare_images(ROOT + '/master_plot_hic.png', outfile.name, tolerance)
     assert res is None, res
 
-    # os.remove(outfile.name)
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_with_hic_rasterize_height():
+
+    outfile = NamedTemporaryFile(suffix='.pdf', prefix='pyGenomeTracks_test_', delete=False)
+    args = "--tracks {0}/browser_tracks_hic_rasterize_height.ini --region X:2500000-2600000 --trackLabelFraction 0.23 --width 38 " \
+           "--dpi 10 --outFileName  {1}".format(ROOT, outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(ROOT + '/master_plot_hic_rasterize_height.pdf', outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
