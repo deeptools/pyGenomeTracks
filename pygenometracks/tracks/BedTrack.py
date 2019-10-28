@@ -27,7 +27,7 @@ class BedTrack(GenomeTrack):
 # setting:
 # color = bed_rgb
 color = darkblue
-#if color is a valid colormap name (like RbBlGn), then the score is mapped
+#if color is a valid colormap name (like RdYlGn), then the score is mapped
 # to the colormap. If the color is simply a color name, then this color is used and the score is not considered.
 # For the colormap option, the the min_value and max_value for the score can be provided, otherwise
 # the maximum score and minimum score found are used.
@@ -38,6 +38,10 @@ color = darkblue
 height = 5
 # to turn off/on printing of labels
 labels = off
+# optional:
+# by default the labels are turned off if you have more than 60 features.
+# to change it, just increase the value:
+#max_labels = 60
 # optional: font size can be given to override the default size
 fontsize = 10
 # optional: line width
@@ -100,6 +104,8 @@ file_type = {}
             self.properties['interval_height'] = 100
         if 'line width' not in self.properties:
             self.properties['line width'] = 0.5
+        if 'max_labels' not in self.properties:
+            self.properties['max_labels'] = 60
 
         self.colormap = None
 
@@ -283,7 +289,8 @@ file_type = {}
             sorted(self.interval_tree[chrom_region][start_region:end_region])
 
         # turn labels off when too many intervals are visible.
-        if self.properties['labels'] != 'off' and len(genes_overlap) > 60:
+        if self.properties['labels'] != 'off' and \
+           len(genes_overlap) > self.properties['max_labels']:
             self.properties['labels'] = 'off'
 
         linewidth = self.properties['line width']

@@ -1,6 +1,7 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree
+from .. utilities import file_to_intervaltree, plot_coverage
 import numpy as np
+import pyBigWig
 import sys
 
 DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
@@ -27,7 +28,17 @@ nans to zeros = True
 # middle of the region instead of the region itself:
 # Default is no.
 # use middle = yes
-
+# By default the bedgraph is plotted at the base pair
+# Resolution. This can lead to very large pdf/svg files
+# If plotting a large regions.
+# If you want to decrase the size of your file.
+# You can either rasterize the bedgraph profile by using:
+# rasterize = yes
+# Or use a summary method on a given number of bin:
+# The possible summary methods are given by pyBigWig:
+# mean/average/stdev/dev/max/min/cov/coverage/sum
+# summary method = mean
+# number of bins = 700
 file_type = {}
     """.format(TRACK_TYPE)
 
@@ -43,7 +54,7 @@ file_type = {}
             try:
                 self.tbx = pysam.TabixFile(self.properties['file'])
             except IOError:
-                pass
+                self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
         # load the file as an interval tree
         else:
             self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
@@ -196,20 +207,15 @@ file_type = {}
                                   dtype=np.float)
             score_list = np.asarray([x for x in score_list if not np.isnan(x)],
                                     dtype=np.float)
+        elif 'summary method' in self.properties:
+            score_list, x_values = self.get_values_as_bigwig(score_list,
+                                                             pos_list,
+                                                             chrom_region,
+                                                             start_region,
+                                                             end_region)
         else:
-            # the following two lines will convert the score_list and the
-            # tuples in pos list (where is item is tuple(start, end)
-            # into an x value (pos_list) and a y value (score_list)
-            # where x = start1, end1, star2, end2 ...
-            # and y = score1, score1, score2, score2 ...
-
-            # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
-            score_list = np.repeat(score_list, 2)
-            # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
-            x_values = np.asarray(sum(pos_list, tuple()), dtype=np.float)
-
-            if self.properties['nans to zeros']:
-                score_list[np.isnan(score_list)] = 0
+            score_list, x_values = self.get_values_as_bdg(score_list,
+                                                          pos_list)
 
         if 'extra' in self.properties and self.properties['extra'][0] == '4C':
             # draw a vertical line for each fragment region center
@@ -219,31 +225,10 @@ file_type = {}
             ax.vlines(pos_list, [0], score_list, color='olive', linewidth=0.5)
             ax.plot(pos_list, score_list, '-', color='slateblue', linewidth=0.7)
         else:
-            if self.plot_type == 'line':
-                if self.properties['color'] == self.properties['negative color']:
-                    ax.plot(x_values, score_list, '-', linewidth=self.size, color=self.properties['color'], alpha=self.properties['alpha'])
-                else:
-                    import warnings
-                    warnings.warn('Line plots with a different negative color might not look pretty')
-                    pos_x_values = x_values.copy()
-                    pos_x_values[score_list < 0] = np.nan
-                    ax.plot(pos_x_values, score_list, '-', linewidth=self.size, color=self.properties['color'], alpha=self.properties['alpha'])
-
-                    neg_x_values = x_values.copy()
-                    neg_x_values[score_list >= 0] = np.nan
-                    ax.plot(neg_x_values, score_list, '-', linewidth=self.size, color=self.properties['negative color'], alpha=self.properties['alpha'])
-
-            elif self.plot_type == 'points':
-                ax.plot(x_values[score_list >= 0], score_list[score_list >= 0], '.',
-                        markersize=self.size, color=self.properties['color'], alpha=self.properties['alpha'])
-                ax.plot(x_values[score_list < 0], score_list[score_list < 0], '.',
-                        markersize=self.size, color=self.properties['negative color'], alpha=self.properties['alpha'])
-
-            else:
-                ax.fill_between(x_values, score_list, linewidth=0.1, color=self.properties['color'],
-                                facecolor=self.properties['color'], where=score_list >= 0, alpha=self.properties['alpha'])
-                ax.fill_between(x_values, score_list, linewidth=0.1, color=self.properties['negative color'],
-                                facecolor=self.properties['negative color'], where=score_list < 0, alpha=self.properties['alpha'])
+            plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
+                          self.properties['color'],
+                          self.properties['negative color'],
+                          self.properties['alpha'])
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
@@ -257,3 +242,62 @@ file_type = {}
             ax.set_ylim(ymax, ymin)
         else:
             ax.set_ylim(ymin, ymax)
+
+        if self.properties.get('rasterize', False) == 'yes':
+            ax.set_rasterized(True)
+
+    def get_values_as_bigwig(self, score_list, pos_list, chrom_region,
+                             start_region, end_region):
+        if self.properties['summary method'] not in \
+           ['mean', 'average', 'max', 'min', 'stdev',
+           'dev', 'coverage', 'cov', 'sum']:
+            self.log.warn("'summary method' value: {}"
+                          " for bedgraph file {} is not valid"
+                          "Using default bedgraph plot.")
+            return self.get_values_as_bdg(score_list, pos_list)
+        num_bins = 700
+        if 'number of bins' in self.properties:
+            try:
+                num_bins = int(self.properties['number of bins'])
+            except TypeError:
+                num_bins = 700
+                self.log.warn("'number of bins' value: {} for bedgraph file {} "
+                              "is not valid. Using default value (700)".format(self.properties['number of bins'],
+                                                                               self.properties['file']))
+        import tempfile
+        import os
+        id, temp_bigwig_file = tempfile.mkstemp(suffix='.bw')
+        bw = pyBigWig.open(temp_bigwig_file, 'w')
+        bw.addHeader([(chrom_region, pos_list[-1][1])])
+        bw.addEntries(np.repeat(chrom_region, len(pos_list)),
+                      [p[0] for p in pos_list],
+                      ends=[p[1] for p in pos_list],
+                      values=score_list)
+        bw.close()
+        bw = pyBigWig.open(temp_bigwig_file)
+        scores_per_bin = np.array(bw.stats(chrom_region, start_region,
+                                           end_region, nBins=num_bins,
+                                           type=self.properties['summary method'])).astype(float)
+        os.remove(temp_bigwig_file)
+        if self.properties['nans to zeros'] and np.any(np.isnan(scores_per_bin)):
+            scores_per_bin[np.isnan(scores_per_bin)] = 0
+        x_values = np.linspace(start_region, end_region, num_bins)
+
+        return scores_per_bin, x_values
+
+    def get_values_as_bdg(self, score_list, pos_list):
+        # the following two lines will convert the score_list and the
+        # tuples in pos list (where is item is tuple(start, end)
+        # into an x value (pos_list) and a y value (score_list)
+        # where x = start1, end1, star2, end2 ...
+        # and y = score1, score1, score2, score2 ...
+
+        # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
+        score_list = np.repeat(score_list, 2)
+        # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
+        x_values = np.asarray(sum(pos_list, tuple()), dtype=np.float)
+
+        if self.properties['nans to zeros']:
+            score_list[np.isnan(score_list)] = 0
+
+        return score_list, x_values
