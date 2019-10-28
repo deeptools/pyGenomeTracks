@@ -49,6 +49,10 @@ color = darkblue
 height = 5
 # to turn off/on printing of labels
 labels = off
+# optional:
+# by default the labels are turned off if you have more than 60 features.
+# to change it, just increase the value:
+#max_labels = 60
 # optional: font size can be given to override the default size
 fontsize = 10
 # optional: line width
@@ -111,6 +115,8 @@ file_type = {}
             self.properties['interval_height'] = 100
         if 'line width' not in self.properties:
             self.properties['line width'] = 0.5
+        if 'max_labels' not in self.properties:
+            self.properties['max_labels'] = 60
 
         self.colormap = None
 
@@ -315,7 +321,7 @@ file_type = {}
 
             # turn labels off when too many intervals are visible.
             if self.properties['labels'] != 'off' and \
-               len(genes_overlap) > 60:
+               len(genes_overlap) > self.properties['max_labels']:
                 self.properties['labels'] = 'off'
 
             linewidth = self.properties['line width']
