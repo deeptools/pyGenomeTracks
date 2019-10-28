@@ -82,9 +82,9 @@ file_type = {}
                 num_bins = int(self.properties['number of bins'])
             except TypeError:
                 num_bins = 700
-                self.log.warn("'number of bins' value: {} for bigwig file {} "
-                              "is not valid. Using default value (700)".format(self.properties['number of bins'],
-                                                                               self.properties['file']))
+                self.log.warning("'number of bins' value: {} for bigwig file {} "
+                                 "is not valid. Using default value (700)".format(self.properties['number of bins'],
+                                                                                  self.properties['file']))
 
         if chrom_region not in self.bw.chroms().keys():
             chrom_region_before = chrom_region
@@ -98,9 +98,9 @@ file_type = {}
         chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
 
         if chrom_region not in self.bw.chroms().keys():
-            self.log.warn("Can not read region {} from bigwig file:\n\n"
-                          "{}\n\nPlease check that the chromosome name is part of the bigwig file "
-                          "and that the region is valid".format(formated_region, self.properties['file']))
+            self.log.warning("Can not read region {} from bigwig file:\n\n"
+                             "{}\n\nPlease check that the chromosome name is part of the bigwig file "
+                             "and that the region is valid".format(formated_region, self.properties['file']))
 
         # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
         # of the memory. This only occurs when calling trackPlot from different

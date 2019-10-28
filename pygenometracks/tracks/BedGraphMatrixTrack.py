@@ -19,6 +19,9 @@ class BedGraphMatrixTrack(BedGraphTrack):
 # if type is set as lines, then the TAD score lines are drawn instead
 # of the matrix otherwise a heatmap is plotted
 type = lines
+# If the type is not lines, you can choose to keep the matrix as not rasterized
+# (only used if you use pdf or svg output format) by using:
+# rasterize = no
 # pos score in bin means 'position of score with respect to bin start and end'
 # if the lines option is used, the y values can be put at the
 # center of the bin (default) or they can be plot as 'block',
@@ -104,7 +107,8 @@ file_type = {}
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
             self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
-            self.img.set_rasterized(True)
+            if self.properties.get('rasterize', False) != 'no':
+                self.img.set_rasterized(True)
 
     def plot_y_axis(self, ax, plot_axis):
         if self.properties['type'] == 'lines':

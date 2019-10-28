@@ -103,7 +103,7 @@ file_type = {}
                             max_score = score
 
                 if chrom1 != chrom2:
-                    self.log.warn("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
+                    self.log.warning("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
                     continue
 
                 if chrom1 not in interval_tree:
@@ -118,7 +118,7 @@ file_type = {}
                 valid_intervals += 1
 
         if valid_intervals == 0:
-            self.log.warn("No valid intervals were found in file {}".format(self.properties['file']))
+            self.log.warning("No valid intervals were found in file {}".format(self.properties['file']))
 
         file_h.close()
         self.interval_tree = interval_tree
@@ -223,7 +223,8 @@ file_type = {}
         else:
             ax.set_ylim(-1, self.max_height)
 
-        self.log.debug('title is {}'.format(self.properties['title']))
+        # I guess this was forgotten
+        # self.log.debug('title is {}'.format(self.properties['title']))
 
     def plot_y_axis(self, ax, plot_ax):
         if self.colormap is not None and self.properties['overlay previous'] == 'no':
