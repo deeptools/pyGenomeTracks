@@ -251,9 +251,9 @@ file_type = {}
         if self.properties['summary method'] not in \
            ['mean', 'average', 'max', 'min', 'stdev',
            'dev', 'coverage', 'cov', 'sum']:
-            self.log.warn("'summary method' value: {}"
-                          " for bedgraph file {} is not valid"
-                          "Using default bedgraph plot.")
+            self.log.warning("'summary method' value: {}"
+                             " for bedgraph file {} is not valid"
+                             "Using default bedgraph plot.")
             return self.get_values_as_bdg(score_list, pos_list)
         num_bins = 700
         if 'number of bins' in self.properties:
@@ -261,9 +261,9 @@ file_type = {}
                 num_bins = int(self.properties['number of bins'])
             except TypeError:
                 num_bins = 700
-                self.log.warn("'number of bins' value: {} for bedgraph file {} "
-                              "is not valid. Using default value (700)".format(self.properties['number of bins'],
-                                                                               self.properties['file']))
+                self.log.warning("'number of bins' value: {} for bedgraph file {} "
+                                 "is not valid. Using default value (700)".format(self.properties['number of bins'],
+                                                                                  self.properties['file']))
         import tempfile
         import os
         id, temp_bigwig_file = tempfile.mkstemp(suffix='.bw')

@@ -232,7 +232,7 @@ class PlotTracks(object):
         for idx, track in enumerate(self.track_obj_list):
             log.info("plotting {}".format(track.properties['section_name']))
             if idx == 0 and track.properties['overlay previous'] != 'no':
-                log.warn("First track can not have the `overlay previous` option")
+                log.warning("First track can not have the `overlay previous` option")
                 track.properties['overlay previous'] = 'no'
 
             if track.properties['overlay previous'] in ['yes', 'share-y']:
