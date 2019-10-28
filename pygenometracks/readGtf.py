@@ -15,7 +15,8 @@ class ReadGtf(object):
 
     """
 
-    def __init__(self, file_path):
+    def __init__(self, file_path, prefered_name="transcript_name",
+                 merge_transcripts="on"):
         """
         :param file_path: the path of the gtf file
         :return:
@@ -38,10 +39,18 @@ class ReadGtf(object):
         # I think the name which should be written
         # should be the transcript_name
         # But we can change it to gene_name
-        self.prefered_name = "transcript_name"
-        # prefered_name = "gene_name"
-        self.all_transcripts = self.db.features_of_type("transcript",
-                                                        order_by='start')
+        self.prefered_name = prefered_name
+        if merge_transcripts == 'on':
+            self.merge_transcripts = True
+        else:
+            self.merge_transcripts = False
+
+        if self.merge_transcripts:
+            self.all_transcripts = self.db.features_of_type("gene",
+                                                            order_by='start')
+        else:
+            self.all_transcripts = self.db.features_of_type("transcript",
+                                                            order_by='start')
 
     def __iter__(self):
         return self

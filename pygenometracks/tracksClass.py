@@ -386,6 +386,12 @@ class PlotTracks(object):
                 file_field_name = key
         # for file_field_name in ['boundaries_file', 'file', 'categories_file']:
         #     if file_field_name in track_dict:
+                # # THIS COULD BE REMOVED IN A NEXT 1.0 VERSION
+                if file_field_name == 'boundaries_file':
+                    log.warn("The boundaries_file is not used anymore"
+                             " please use another track with the"
+                             " `overlay previous` option")
+                # # END
                 file_names = [x for x in track_dict[file_field_name].split(" ") if x != '']
                 full_path_file_names = []
                 for file_name in file_names:
