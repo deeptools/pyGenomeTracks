@@ -192,7 +192,7 @@ file_type = {}
            ('type' in self.properties and self.properties['type'] == 'gtf'):
             bed_file_h = ReadGtf(self.properties['file'],
                                  self.properties.get('prefered name', 'transcript_name'),
-                                 self.properties.get('merge transcripts', 'off'))
+                                 self.properties.get('merge transcripts', False))
         else:
             bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
