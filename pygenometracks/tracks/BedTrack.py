@@ -319,9 +319,9 @@ file_type = {}
                 self.get_max_num_row(self.len_w, self.small_relative)
 
             # turn labels off when too many intervals are visible.
-            if self.properties['labels'] != 'off' and \
+            if self.properties['labels'] and \
                len(genes_overlap) > self.properties['max_labels']:
-                self.properties['labels'] = 'off'
+                self.properties['labels'] = False
 
             linewidth = self.properties['line width']
             max_num_row_local = 1
