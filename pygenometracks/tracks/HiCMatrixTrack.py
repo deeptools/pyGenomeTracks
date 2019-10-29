@@ -158,9 +158,10 @@ file_type = {}
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in chrom_sizes:
-                self.log.error("*Error*\nNeither " + chrom_region_before + " "
-                               "nor " + chrom_region + " exits as a chromosome"
-                               " name on the matrix.\n")
+                self.log.warning("*Warning*\nNeither " + chrom_region_before +
+                                 " nor " + chrom_region + " exits as a "
+                                 "chromosome name on the matrix. "
+                                 "This will generate an empty track!!\n")
                 return
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
