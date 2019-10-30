@@ -166,12 +166,12 @@ file_type = {}
             self.colormap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
     def get_length_w(self, fig_width, region_start, region_end):
-        '''
+        """
         to improve the visualization of the genes
         it is good to have an estimation of the label
         length. In the following code I try to get the
         length of a 'W' in base pairs.
-        '''
+        """
         if self.properties['labels'] == 'on':
             # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
             inches_per_pt = 1.0 / 72.27
@@ -300,8 +300,8 @@ file_type = {}
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
-                self.log.warning("*Warning*\nNeither " + chrom_region_before +
-                                 " nor " + chrom_region + " exits as a "
+                self.log.warning("*Warning*\nNeither " + chrom_region_before
+                                 + " nor " + chrom_region + " exits as a "
                                  "chromosome name inside the bed file. "
                                  "This will generate an empty track!!\n")
                 return
