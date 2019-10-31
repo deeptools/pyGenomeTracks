@@ -137,6 +137,7 @@ file_type = {}
         """
         Retrieves the score (or scores or whatever fields are in a bedgraph like file) and the positions
         for a given region.
+        In case there is no item in the region. It returns [nan], (start_region, end_region)
         Args:
             chrom_region:
             start_region:
