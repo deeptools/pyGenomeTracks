@@ -412,7 +412,7 @@ Empty means this parameter is not used.
 not set means that by default the parameter is commented.
 
 parameter | bedgraph | links | bed | hic_matrix | bigwig | domains | bedgraph_matrix | narrow_peak | epilogos | 
-- | - | - | - | - | - | - | - | - | - | 
+-- | - | - | - | - | - | - | - | - | - | 
 max_value | not set | not set | not set | not set | not set | not set | not set | not set |  | 
 min_value | not set | not set | not set | not set | not set | not set | not set |  |  | 
 show data range | yes |  |  |  | yes |  | yes | yes |  | 

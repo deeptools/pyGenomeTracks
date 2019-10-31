@@ -49,7 +49,7 @@ def main():
     j = 1
     for track_type in all_tracks_with_default:
         mat[0, j] = track_type
-        mat[1, j] = '-'
+        mat[1, j] = '--'
         for i, p in enumerate(all_default_parameters):
             if j == 1:
                 mat[i + 2, 0] = p
