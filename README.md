@@ -405,6 +405,96 @@ required when overlying other type of data like a bigwig file that has a differe
 
 The configuration file for this image is [here](./pygenometracks/tests/test_data/browser_tracks_hic.ini)
 
+Possible parameters
+-------------------
+Here is a table to summarize which are the parameters that can be use for each of the `file_type` and which is the default value:
+Empty means this parameter is not used.
+not set means that by default the parameter is commented.
+
+parameter | bedgraph | links | bed | hic_matrix | bigwig | domains | bedgraph_matrix | narrow_peak | epilogos | 
+- | - | - | - | - | - | - | - | - | - | 
+max_value | not set | not set | not set | not set | not set | not set | not set | not set |  | 
+min_value | not set | not set | not set | not set | not set | not set | not set |  |  | 
+show data range | yes |  |  |  | yes |  | yes | yes |  | 
+orientation | not set | not set | not set | not set | not set | not set | not set | not set | not set | 
+color | #a6cee3 | blue | #1f78b4 |  | #33a02c | #1f78b4 |  | #FF000080 |  | 
+alpha | 1 | 0.8 |  |  | 1 |  |  |  |  | 
+nans to zeros | False |  |  |  | False |  |  |  |  | 
+use middle | no |  |  |  |  |  |  |  |  | 
+summary method | not set |  |  |  | mean |  |  |  |  | 
+rasterize | no |  |  | yes |  |  | yes |  |  | 
+number of bins | 700 |  |  |  | 700 |  |  |  |  | 
+links type |  | arcs |  |  |  |  |  |  |  | 
+line width |  | not set | 0.5 |  |  | 0.5 |  |  |  | 
+line style |  | solid |  |  |  |  |  |  |  | 
+fontsize |  |  | 12 |  |  | 12 |  |  |  | 
+border color |  |  | black |  |  | black |  |  |  | 
+labels |  |  | on |  |  | on |  |  |  | 
+style |  |  | flybase |  |  | flybase |  |  |  | 
+display |  |  | stacked |  |  | stacked |  |  |  | 
+interval_height |  |  | 100 |  |  | 100 |  |  |  | 
+max_labels |  |  | 60 |  |  | 60 |  |  |  | 
+prefered name |  |  | transcript_name |  |  | transcript_name |  |  |  | 
+merge transcripts |  |  | off |  |  | off |  |  |  | 
+global max row |  |  | no |  |  | no |  |  |  | 
+gene rows |  |  | not set |  |  | not set |  |  |  | 
+region |  |  |  | not set |  |  |  |  |  | 
+depth |  |  |  | 100000 |  |  |  |  |  | 
+show_masked_bins |  |  |  | no |  |  |  |  |  | 
+scale factor |  |  |  | 1 |  |  |  |  |  | 
+transform |  |  |  | no |  |  |  |  |  | 
+colormap |  |  |  | RdYlBu_r |  |  |  |  |  | 
+type |  |  |  |  |  |  | matrix | peak |  | 
+pos score in bin |  |  |  |  |  |  | center |  |  | 
+plot horizontal lines |  |  |  |  |  |  | no |  |  | 
+show labels |  |  |  |  |  |  |  | yes |  | 
+use summit |  |  |  |  |  |  |  | yes |  | 
+width adjust |  |  |  |  |  |  |  | 1.5 |  | 
+categories_file |  |  |  |  |  |  |  |  | not set | 
+
+
+Some parameters can take only discrete values.
+They are summarized here:
+orientation:
+        for bedgraph,links,bed,hic_matrix,bigwig,domains,bedgraph_matrix,narrow_peak,epilogos: inverted, not set
+summary method:
+        for bedgraph: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
+        for bigwig: mean, average, max, min, stdev, dev, coverage, cov, sum
+links type:
+        for links: arcs, triangles, loops
+line style:
+        for links: solid, dashed, dotted, dashdot
+style:
+        for bed,domains: flybase, UCSC
+display:
+        for bed,domains: collapsed, triangles, interleaved, stacked
+transform:
+        for hic_matrix: no, log, log1p, -log
+type:
+        for bedgraph_matrix: matrix, lines
+        for narrow_peak: peak, box
+pos score in bin:
+        for bedgraph_matrix: center, block
+labels:
+        for bed, domains: on, off
+show data range:
+        for bedgraph, bigwig, bedgraph_matrix, narrow_peak: yes, no
+plot horizontal lines:
+        for bedgraph_matrix: yes, no
+use middle:
+        for bedgraph: yes, no
+rasterize:
+        for bedgraph, hic_matrix, bedgraph_matrix: yes, no
+global max row:
+        for bed, domains: yes, no
+show_masked_bins:
+        for hic_matrix: yes, no
+show labels:
+        for narrow_peak: yes, no
+use summit:
+        for narrow_peak: yes, no
+merge transcripts:
+        for bed, domains: on, off
 
 Adding new tracks
 -----------------
