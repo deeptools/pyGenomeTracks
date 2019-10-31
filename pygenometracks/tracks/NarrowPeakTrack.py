@@ -4,6 +4,7 @@ from . GenomeTrack import GenomeTrack
 from . BedGraphTrack import BedGraphTrack
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
+import numpy as np
 
 
 class NarrowPeakTrack(BedGraphTrack):
@@ -85,7 +86,9 @@ file_type = {}
 
         '''
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region, return_nans=False)
-
+        # If there is no item in the region score_list is [nan]:
+        if score_list == [np.nan]:
+            score_list = []
         self.patches = []
 
         max_signal = -1
