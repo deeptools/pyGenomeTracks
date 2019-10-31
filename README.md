@@ -454,47 +454,49 @@ categories_file |  |  |  |  |  |  |  |  | not set |
 
 
 Some parameters can take only discrete values.
+
 They are summarized here:
-orientation:
-        for bedgraph,links,bed,hic_matrix,bigwig,domains,bedgraph_matrix,narrow_peak,epilogos: inverted, not set
-summary method:
-        for bedgraph: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
-        for bigwig: mean, average, max, min, stdev, dev, coverage, cov, sum
-links type:
-        for links: arcs, triangles, loops
-line style:
-        for links: solid, dashed, dotted, dashdot
-style:
-        for bed,domains: flybase, UCSC
-display:
-        for bed,domains: collapsed, triangles, interleaved, stacked
-transform:
-        for hic_matrix: no, log, log1p, -log
-type:
-        for bedgraph_matrix: matrix, lines
-        for narrow_peak: peak, box
-pos score in bin:
-        for bedgraph_matrix: center, block
-labels:
-        for bed, domains: on, off
-show data range:
-        for bedgraph, bigwig, bedgraph_matrix, narrow_peak: yes, no
-plot horizontal lines:
-        for bedgraph_matrix: yes, no
-use middle:
-        for bedgraph: yes, no
-rasterize:
-        for bedgraph, hic_matrix, bedgraph_matrix: yes, no
-global max row:
-        for bed, domains: yes, no
-show_masked_bins:
-        for hic_matrix: yes, no
-show labels:
-        for narrow_peak: yes, no
-use summit:
-        for narrow_peak: yes, no
-merge transcripts:
-        for bed, domains: on, off
+
+- **orientation**:
+  - for *bedgraph,links,bed,hic_matrix,bigwig,domains,bedgraph_matrix,narrow_peak,epilogos*: inverted, not set
+- **summary method**:
+  - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
+  - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
+- **links type**:
+  - for *links*: arcs, triangles, loops
+- **line style**:
+  - for *links*: solid, dashed, dotted, dashdot
+- **style**:
+  - for *bed,domains*: flybase, UCSC
+- **display**:
+  - for *bed,domains*: collapsed, triangles, interleaved, stacked
+- **transform**:
+  - for *hic_matrix*: no, log, log1p, -log
+- **type**:
+  - for *bedgraph_matrix*: matrix, lines
+  - for *narrow_peak*: peak, box
+- **pos score in bin**:
+  - for *bedgraph_matrix*: center, block
+- **labels**:
+  - for *bed, domains*: on, off
+- **show data range**:
+  - for *bedgraph, bigwig, bedgraph_matrix, narrow_peak*: yes, no
+- **plot horizontal lines**:
+  - for *bedgraph_matrix*: yes, no
+- **use middle**:
+  - for *bedgraph*: yes, no
+- **rasterize**:
+  - for *bedgraph, hic_matrix, bedgraph_matrix*: yes, no
+- **global max row**:
+  - for *bed, domains*: yes, no
+- **show_masked_bins**:
+  - for *hic_matrix*: yes, no
+- **show labels**:
+  - for *narrow_peak*: yes, no
+- **use summit**:
+  - for *narrow_peak*: yes, no
+- **merge transcripts**:
+  - for *bed, domains*: on, off
 
 Adding new tracks
 -----------------

@@ -45,11 +45,11 @@ def main():
     mat = np.empty((len(all_default_parameters) + 2, len(all_tracks) + 1),
                    dtype='U25')
     mat[0, 0] = 'parameter'
-    mat[1, 0] = '-'
+    mat[1, 0] = '--'
     j = 1
     for track_type in all_tracks_with_default:
         mat[0, j] = track_type
-        mat[1, j] = '--'
+        mat[1, j] = '-'
         for i, p in enumerate(all_default_parameters):
             if j == 1:
                 mat[i + 2, 0] = p
@@ -84,21 +84,21 @@ def main():
                         break
                 if not added:
                     possible_values[track_type] = pv
-        print(p + ":")
+        print("- **" + p + "**:")
         for name in [k for k in possible_values]:
             reformated_possible = ", ".join([v for v in possible_values[name] if v is not None])
             if None in possible_values[name]:
                 reformated_possible += ", " + not_set_string
-            print("\tfor " + name + ": " + reformated_possible)
+            print("  - for *" + name + "*: " + reformated_possible)
     for p, pv in GOOD_PRACTICES.items():
         names = []
         for track_type in all_tracks_with_default:
             if track_type in all_default_parameters[p]:
                 names += [track_type]
-        print(p + ":")
+        print("- **" + p + "**:")
         name = ", ".join(names)
         reformated_possible = ", ".join([v for k, v in pv.items()])
-        print("\tfor " + name + ": " + reformated_possible)
+        print("  - for *" + name + "*: " + reformated_possible)
 
 
 if __name__ == "__main__":
