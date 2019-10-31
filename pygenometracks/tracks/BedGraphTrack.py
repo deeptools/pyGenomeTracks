@@ -70,7 +70,7 @@ file_type = {}
                              'min_value': {'auto': None}}
 
     def __init__(self, properties_dict):
-        self.properties = properties_dict
+        super(BedGraphTrack, self).__init__(properties_dict)
 
         self.tbx = None
         # try to load a tabix file is available
@@ -86,7 +86,6 @@ file_type = {}
             self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
 
         self.num_fields = None
-        self.set_properties_defaults()
 
     def set_properties_defaults(self):
         super(BedGraphTrack, self).set_properties_defaults()
