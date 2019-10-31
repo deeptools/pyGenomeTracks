@@ -38,8 +38,7 @@ color = red
 # if line width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
 # line width = 0.5
-# options for line style are 'solid', 'dashed', 'dotted' etc. The full list of
-# styles can be found here: https://matplotlib.org/gallery/lines_bars_and_markers/linestyles.html
+# options for line style are 'solid', 'dashed', 'dotted', and 'dashdot'
 line style = solid
 file_type = {}
     """.format(TRACK_TYPE)
@@ -52,7 +51,9 @@ file_type = {}
                            'max_value': None,
                            'min_value': None}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'links type': ['arcs', 'triangles', 'loops']}
+                           'links type': ['arcs', 'triangles', 'loops'],
+                           'line style': ['solid', 'dashed',
+                                          'dotted', 'dashdot']}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
 
