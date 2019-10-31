@@ -39,7 +39,8 @@ file_type = {}
                            'pos score in bin': 'center',
                            'show data range': True,
                            'plot horizontal lines': False,
-                           'orientation': None}
+                           'orientation': None,
+                           'rasterize': True}
     POSSIBLE_PROPERTIES = {'type': ['matrix', 'lines'],
                            'pos score in bin': ['center', 'block'],
                            'orientation': [None, 'inverted']}
@@ -103,7 +104,7 @@ file_type = {}
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
             self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
-            if self.properties.get('rasterize', True):
+            if self.properties['rasterize']:
                 self.img.set_rasterized(True)
 
     def plot_y_axis(self, ax, plot_axis):
