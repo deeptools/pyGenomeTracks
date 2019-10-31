@@ -43,7 +43,7 @@ file_type = {}
     """.format(TRACK_TYPE)
 
     def __init__(self, properties_dict):
-        self.properties = properties_dict
+        super(BedGraphTrack, self).__init__(properties_dict)
 
         self.tbx = None
         # try to load a tabix file is available
