@@ -6,6 +6,22 @@ not_used_string = ''
 not_set_string = 'not set'
 track_separator = ','
 
+# Here is the keyword we want people to use
+# for boolean values
+# The first one is True, the second is False
+GOOD_PRACTICES = {'labels': {True:'on', False:'off'},
+                  'show data range': {True:'yes', False:'no'},
+                  'plot horizontal lines': {True:'yes', False:'no'},
+                  'use middle': {True:'yes', False:'no'},
+                  'rasterize': {True:'yes', False:'no'},
+                  'global max row': {True:'yes', False:'no'},
+                  'show_masked_bins': {True:'yes', False:'no'},
+                  'show labels': {True:'yes', False:'no'},
+                  'use summit': {True:'yes', False:'no'},
+                  # 'skip': {True:'yes', False:'no'},
+                  'merge transcripts': {True:'on', False:'off'}}
+
+
 def main():
     all_tracks = PlotTracks.get_available_tracks()
 
@@ -38,10 +54,16 @@ def main():
         for i, p in enumerate(all_default_parameters):
             if j == 1:
                 mat[i + 2, 0] = p
+
             default = all_default_parameters[p].get(track_type,
                                                     not_used_string)
+
+            if p in GOOD_PRACTICES and default is not not_used_string:
+                default = GOOD_PRACTICES[p][default]
+
             if default is None:
                 default = not_set_string
+
             mat[i + 2, j] = default
         j += 1
     # The matrix is written in a file to be able to use it in the README.md
@@ -69,6 +91,15 @@ def main():
             if None in possible_values[name]:
                 reformated_possible += ", " + not_set_string
             print("\tfor " + name + ": " + reformated_possible)
+    for p, pv in GOOD_PRACTICES.items():
+        names = []
+        for track_type in all_tracks_with_default:
+            if track_type in all_default_parameters[p]:
+                names += [track_type]
+        print(p + ":")
+        name = ", ".join(names)
+        reformated_possible = ", ".join([v for k, v in pv.items()])
+        print("\tfor " + name + ": " + reformated_possible)
 
 if __name__ == "__main__":
     main()
