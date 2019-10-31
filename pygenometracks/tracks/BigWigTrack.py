@@ -84,9 +84,10 @@ file_type = {}
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in self.bw.chroms().keys():
-                self.log.error("*Error*\nNeither " + chrom_region_before + " "
-                               "nor " + chrom_region + " exits as a chromosome"
-                               " name inside the bigwig file.\n")
+                self.log.warning("*Warning*\nNeither " + chrom_region_before
+                                 + " nor " + chrom_region + " exits as a "
+                                 "chromosome name inside the bigwig file. "
+                                 "This will generate an empty track!!\n")
                 return
 
         chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)

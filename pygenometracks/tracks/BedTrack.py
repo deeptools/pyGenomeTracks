@@ -165,12 +165,12 @@ file_type = {}
         self.row_scale = self.properties['interval_height'] * 2.3
 
     def get_length_w(self, fig_width, region_start, region_end):
-        '''
+        """
         to improve the visualization of the genes
         it is good to have an estimation of the label
         length. In the following code I try to get the
         length of a 'W' in base pairs.
-        '''
+        """
         if self.properties['labels']:
             # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
             inches_per_pt = 1.0 / 72.27
@@ -299,7 +299,10 @@ file_type = {}
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
-                self.log.error("*Error*\nNeither " + chrom_region_before + " nor " + chrom_region + " exits as a chromosome name inside the bed file.\n")
+                self.log.warning("*Warning*\nNeither " + chrom_region_before
+                                 + " nor " + chrom_region + " exits as a "
+                                 "chromosome name inside the bed file. "
+                                 "This will generate an empty track!!\n")
                 return
         chrom_region = self.check_chrom_str_bytes(self.interval_tree,
                                                   chrom_region)
