@@ -1,4 +1,3 @@
-from pygenometracks.tracks import *
 from pygenometracks.tracksClass import PlotTracks
 import numpy as np
 
@@ -9,17 +8,17 @@ track_separator = ','
 # Here is the keyword we want people to use
 # for boolean values
 # The first one is True, the second is False
-GOOD_PRACTICES = {'labels': {True:'on', False:'off'},
-                  'show data range': {True:'yes', False:'no'},
-                  'plot horizontal lines': {True:'yes', False:'no'},
-                  'use middle': {True:'yes', False:'no'},
-                  'rasterize': {True:'yes', False:'no'},
-                  'global max row': {True:'yes', False:'no'},
-                  'show_masked_bins': {True:'yes', False:'no'},
-                  'show labels': {True:'yes', False:'no'},
-                  'use summit': {True:'yes', False:'no'},
-                  # 'skip': {True:'yes', False:'no'},
-                  'merge transcripts': {True:'on', False:'off'}}
+GOOD_PRACTICES = {'labels': {True: 'on', False: 'off'},
+                  'show data range': {True: 'yes', False: 'no'},
+                  'plot horizontal lines': {True: 'yes', False: 'no'},
+                  'use middle': {True: 'yes', False: 'no'},
+                  'rasterize': {True: 'yes', False: 'no'},
+                  'global max row': {True: 'yes', False: 'no'},
+                  'show_masked_bins': {True: 'yes', False: 'no'},
+                  'show labels': {True: 'yes', False: 'no'},
+                  'use summit': {True: 'yes', False: 'no'},
+                  # 'skip': {True: 'yes', False: 'no'},
+                  'merge transcripts': {True: 'on', False: 'off'}}
 
 
 def main():
@@ -37,7 +36,7 @@ def main():
             has_default = True
         if has_default:
             all_tracks_with_default += [track_type]
-        
+
         for p, value in track_class.POSSIBLE_PROPERTIES.items():
             all_possible_parameters[p] = all_possible_parameters.get(p, {})
             all_possible_parameters[p][track_type] = value
@@ -100,6 +99,7 @@ def main():
         name = ", ".join(names)
         reformated_possible = ", ".join([v for k, v in pv.items()])
         print("\tfor " + name + ": " + reformated_possible)
+
 
 if __name__ == "__main__":
     main()
