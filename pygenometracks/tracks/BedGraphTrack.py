@@ -175,7 +175,7 @@ file_type = {}
                                      "chromosome name inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")
-                    return
+                    return score_list, pos_list
             chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
             iterator = iter(sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]))
 
@@ -200,6 +200,8 @@ file_type = {}
 
     def plot(self, ax, chrom_region, start_region, end_region):
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
+        if pos_list == []:
+            return
         score_list = [float(x[0]) for x in score_list]
 
         if self.properties.get('use middle', False) == 'yes':
