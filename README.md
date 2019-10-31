@@ -429,15 +429,15 @@ line width |  | not set | 0.5 |  |  | 0.5 |  |  |  |
 line style |  | solid |  |  |  |  |  |  |  | 
 fontsize |  |  | 12 |  |  | 12 |  |  |  | 
 border color |  |  | black |  |  | black |  |  |  | 
-labels |  |  | on |  |  | on |  |  |  | 
-style |  |  | flybase |  |  | flybase |  |  |  | 
-display |  |  | stacked |  |  | stacked |  |  |  | 
+labels |  |  | on |  |  |  |  |  |  | 
+style |  |  | flybase |  |  |  |  |  |  | 
+display |  |  | stacked |  |  |  |  |  |  | 
 interval_height |  |  | 100 |  |  | 100 |  |  |  | 
-max_labels |  |  | 60 |  |  | 60 |  |  |  | 
+max_labels |  |  | 60 |  |  |  |  |  |  | 
 prefered name |  |  | transcript_name |  |  | transcript_name |  |  |  | 
 merge transcripts |  |  | off |  |  | off |  |  |  | 
-global max row |  |  | no |  |  | no |  |  |  | 
-gene rows |  |  | not set |  |  | not set |  |  |  | 
+global max row |  |  | no |  |  |  |  |  |  | 
+gene rows |  |  | not set |  |  |  |  |  |  | 
 region |  |  |  | not set |  |  |  |  |  | 
 depth |  |  |  | 100000 |  |  |  |  |  | 
 show_masked_bins |  |  |  | no |  |  |  |  |  | 
@@ -467,9 +467,9 @@ They are summarized here:
 - **line style**:
   - for *links*: solid, dashed, dotted, dashdot
 - **style**:
-  - for *bed,domains*: flybase, UCSC
+  - for *bed*: flybase, UCSC
 - **display**:
-  - for *bed,domains*: collapsed, triangles, interleaved, stacked
+  - for *bed*: collapsed, triangles, interleaved, stacked
 - **transform**:
   - for *hic_matrix*: no, log, log1p, -log
 - **type**:
@@ -478,7 +478,7 @@ They are summarized here:
 - **pos score in bin**:
   - for *bedgraph_matrix*: center, block
 - **labels**:
-  - for *bed, domains*: on, off
+  - for *bed*: on, off
 - **show data range**:
   - for *bedgraph, bigwig, bedgraph_matrix, narrow_peak*: yes, no
 - **plot horizontal lines**:
@@ -488,7 +488,7 @@ They are summarized here:
 - **rasterize**:
   - for *bedgraph, hic_matrix, bedgraph_matrix*: yes, no
 - **global max row**:
-  - for *bed, domains*: yes, no
+  - for *bed*: yes, no
 - **show_masked_bins**:
   - for *hic_matrix*: yes, no
 - **show labels**:
