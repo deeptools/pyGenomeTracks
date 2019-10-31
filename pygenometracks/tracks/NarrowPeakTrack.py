@@ -2,14 +2,21 @@
 
 from . GenomeTrack import GenomeTrack
 from . BedGraphTrack import BedGraphTrack
+
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
+from matplotlib.path import Path
+import matplotlib.patches as patches
+from .. utilities import file_to_intervaltree
+
+DEFAULT_NARROWPEAK_COLOR = '#FF000080'  # red, alpha=0.55
 
 
 class NarrowPeakTrack(BedGraphTrack):
     SUPPORTED_ENDINGS = ['.narrowPeak']
     TRACK_TYPE = 'narrow_peak'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+color = #FF000080
 #max_value = 0.70
 show data range = yes
 show labels = yes
@@ -26,32 +33,26 @@ type = peak
 width adjust = 1.5
 file_type = {}
     """.format(TRACK_TYPE)
-
-    def __init__(self, properties_dict):
-        super(NarrowPeakTrack, self).__init__(properties_dict)
-        self.patches = []
+    DEFAULTS_PROPERTIES = {'orientation': None,
+                           'color': DEFAULT_NARROWPEAK_COLOR,
+                           'max_value': None,
+                           'show data range': True,
+                           'show labels': True,
+                           'use summit': True,
+                           'width adjust': 1.5,
+                           'type': 'peak'}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
+                           'type': ['peak', 'box']}
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None}}
 
     def set_properties_defaults(self):
-        if 'color' not in self.properties:
-            self.properties['color'] = '#FF000080'  # red, alpha=0.55
-        if 'show data range' not in self.properties:
-            self.properties['show data range'] = True
-        if 'show labels' not in self.properties:
-            self.properties['show labels'] = True
-        if 'use summit' not in self.properties:
-            self.properties['use summit'] = True
-        if 'width adjust' not in self.properties:
-            self.properties['width adjust'] = 1.5
-        else:
-            self.properties['width adjust'] = float(self.properties['width adjust'])
-        if 'type' not in self.properties:
-            self.properties['type'] = 'peak'
+        GenomeTrack.set_properties_defaults(self)
+        self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+        self.properties['width adjust'] = float(self.properties['width adjust'])
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
         # uses bezier curves to plot a shape that
         # looks like a peak
-        from matplotlib.path import Path
-        import matplotlib.patches as patches
         peak_width = float(end - start)
         if center is None:
             center = peak_width / 2 + start
@@ -123,7 +124,7 @@ file_type = {}
         collection = PatchCollection(self.patches, facecolor=self.properties['color'], match_original=True)
         ax.add_collection(collection)
 
-        if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
+        if self.properties['max_value'] is None:
             self.properties['max_value'] = max_signal
 
         ymax = self.properties['max_value']
@@ -135,7 +136,7 @@ file_type = {}
         else:
             ymin = 0
 
-        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+        if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, ymin)
         else:
             ax.set_ylim(ymin, ymax)
@@ -150,7 +151,7 @@ file_type = {}
         Returns:
 
         """
-        if not self.properties.get('show data range', True):
+        if not self.properties['show data range']:
             return
 
         if self.properties['type'] == 'box':
@@ -172,7 +173,7 @@ file_type = {}
         ymax_str = value_to_str(ymax)
         ymin_str = '0'
 
-        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+        if self.properties['orientation'] == 'inverted':
             ymax = -0.99
         else:
             ymax = 0.99

@@ -5,11 +5,12 @@ from matplotlib import cm
 from matplotlib import colors
 import matplotlib.pyplot as plt
 import numpy as np
-
+from matplotlib.ticker import LogFormatter
 from . GenomeTrack import GenomeTrack
+import logging
+import itertools
 
 DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
-import logging
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ depth = 100000
 # min_value and max_value refer to the contacts in the matrix.
 #min_value =2.8
 #max_value = 3.0
-# the matrix can be transformed using the log1 (or log, but zeros could be problematic)
+# the matrix can be transformed using the log1p (or log or -log, but zeros could be problematic)
 transform = log1p
 # show masked bins plots as white lines
 # those bins that were not used during the correction
@@ -52,12 +53,27 @@ show_masked_bins = no
 # rasterize = no
 file_type = {}
     """.format(TRACK_TYPE)
+    DEFAULTS_PROPERTIES = {'region': None,
+                           'depth': 100000,
+                           'orientation': None,
+                           'show_masked_bins': False,
+                           'scale factor': 1,
+                           'transform': 'no',
+                           'max_value': None,
+                           'min_value': None,
+                           'rasterize': True,
+                           'colormap': DEFAULT_MATRIX_COLORMAP}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
+                           'transform': ['no', 'log', 'log1p', '-log']}
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
 
     def __init__(self, *args, **kwargs):
         super(HiCMatrixTrack, self).__init__(*args, **kwargs)
-
         log.debug('FILE {}'.format(self.properties))
-        # log.debug('pRegion {}'.format(pRegion))
+
+    def set_properties_defaults(self):
+        super(HiCMatrixTrack, self).set_properties_defaults()
         region = None
         if self.properties['region'] is not None:
             if self.properties['region'][2] == 1e15:
@@ -80,7 +96,7 @@ file_type = {}
         if len(self.hic_ma.matrix.data) == 0:
             self.log.error("Matrix {} is empty".format(self.properties['file']))
             exit(1)
-        if self.properties.get('show_masked_bins', False):
+        if self.properties['show_masked_bins']:
             pass
         else:
             self.hic_ma.maskBins(self.hic_ma.nan_bins)
@@ -137,17 +153,11 @@ file_type = {}
                                                     shape=self.hic_ma.matrix.shape)
             self.hic_ma.matrix = self.hic_ma.matrix + main_diagonal
 
-        self.plot_inverted = False
-        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
-            self.plot_inverted = True
-
         self.norm = None
 
         self.properties['colormap'] = self.process_colormap()
 
         self.cmap = cm.get_cmap(self.properties['colormap'])
-        self.cmap.set_bad('white')
-
         self.cmap.set_bad('black')
 
     def plot(self, ax, chrom_region, region_start, region_end):
@@ -203,38 +213,37 @@ file_type = {}
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         matrix = np.asarray(matrix.todense().astype(float))
-        if 'scale factor' in self.properties:
-            matrix = matrix * self.properties['scale factor']
 
-        if 'transform' in self.properties:
-            if self.properties['transform'] == 'log1p':
-                matrix += 1
-                self.norm = colors.LogNorm()
+        matrix = matrix * self.properties['scale factor']
 
-            elif self.properties['transform'] == '-log':
-                mask = matrix == 0
-                try:
-                    matrix[mask] = matrix[mask == False].min()
-                    matrix = -1 * np.log(matrix)
-                except ValueError:
-                    self.log.info('All values are 0, no log applied.')
+        if self.properties['transform'] == 'log1p':
+            matrix += 1
+            self.norm = colors.LogNorm()
 
-            elif self.properties['transform'] == 'log':
-                mask = matrix == 0
-                try:
-                    matrix[mask] = matrix[mask == False].min()
-                    matrix = np.log(matrix)
-                except ValueError:
-                    self.log.info('All values are 0, no log applied.')
+        elif self.properties['transform'] == '-log':
+            mask = matrix == 0
+            try:
+                matrix[mask] = matrix[mask == False].min()
+                matrix = -1 * np.log(matrix)
+            except ValueError:
+                self.log.info('All values are 0, no log applied.')
 
-        if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
+        elif self.properties['transform'] == 'log':
+            mask = matrix == 0
+            try:
+                matrix[mask] = matrix[mask == False].min()
+                matrix = np.log(matrix)
+            except ValueError:
+                self.log.info('All values are 0, no log applied.')
+
+        if self.properties['max_value'] is not None:
             vmax = self.properties['max_value']
 
         else:
             # try to use a 'aesthetically pleasant' max value
             vmax = np.percentile(matrix.diagonal(1), 80)
 
-        if 'min_value' in self.properties and self.properties['min_value'] != 'auto':
+        if self.properties['min_value'] is not None:
             vmin = self.properties['min_value']
         else:
             if depth_in_bins > matrix.shape[0]:
@@ -254,23 +263,19 @@ file_type = {}
         self.log.info("setting min, max values for track {} to: {}, {}\n".
                       format(self.properties['section_name'], vmin, vmax))
         self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
-        if self.properties.get('rasterize', True):
+        if self.properties['rasterize']:
             self.img.set_rasterized(True)
-        if self.plot_inverted:
+        if self.properties['orientation'] == 'inverted':
             ax.set_ylim(depth, 0)
         else:
             ax.set_ylim(0, depth)
 
     def plot_y_axis(self, cbar_ax, plot_ax):
 
-        if 'transform' in self.properties and \
-                self.properties['transform'] in ['log', 'log1p']:
+        if self.properties['transform'] in ['log', 'log1p']:
             # get a useful log scale
             # that looks like [1, 2, 5, 10, 20, 50, 100, ... etc]
 
-            # The following code is problematic with some versions of matplotlib.
-            # Should be uncommented once the problem is clarified
-            from matplotlib.ticker import LogFormatter
             formatter = LogFormatter(10, labelOnlyBase=False)
             aa = np.array([1, 2, 5])
             tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
@@ -307,7 +312,6 @@ file_type = {}
         Turns the matrix 45 degrees and adjusts the
         bins to match the actual start end positions.
         """
-        import itertools
         # code for rotating the image 45 degrees
         n = matrix_c.shape[0]
         # create rotation/scaling matrix
@@ -325,13 +329,11 @@ file_type = {}
         return im
 
     def process_colormap(self):
-        if 'colormap' not in self.properties:
-            return(DEFAULT_MATRIX_COLORMAP)
-            # If someone what to use its own colormap,
-            # he can specify the rgb values or color values:
-            # For example:
-            # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
-        elif self.properties['colormap'][0] == '[':
+        # If someone what to use its own colormap,
+        # he can specify the rgb values or color values:
+        # For example:
+        # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+        if self.properties['colormap'][0] == '[':
             try:
                 custom_colors = eval(self.properties['colormap'])
             except SyntaxError as err:

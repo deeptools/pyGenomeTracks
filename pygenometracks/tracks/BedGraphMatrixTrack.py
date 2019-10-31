@@ -33,25 +33,21 @@ show data range = yes
 plot horizontal lines = no
 file_type = {}
     """.format(TRACK_TYPE)
+    DEFAULTS_PROPERTIES = {'max_value': None,
+                           'min_value': None,
+                           'type': 'matrix',
+                           'pos score in bin': 'center',
+                           'show data range': True,
+                           'plot horizontal lines': False,
+                           'orientation': None}
+    POSSIBLE_PROPERTIES = {'type': ['matrix', 'lines'],
+                           'pos score in bin': ['center', 'block'],
+                           'orientation': [None, 'inverted']}
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
 
     def set_properties_defaults(self):
-        if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
-            self.properties['max_value'] = None
-
-        if 'min_value' not in self.properties or self.properties['min_value'] == 'auto':
-            self.properties['min_value'] = None
-
-        if 'type' not in self.properties:
-            self.properties['type'] = 'matrix'
-
-        if 'pos score in bin' not in self.properties:
-            self.properties['pos score in bin'] = 'center'
-
-        if 'show data range' not in self.properties:
-            self.properties['show data range'] = True
-
-        if 'plot horizontal lines' not in self.properties:
-            self.properties['plot horizontal lines'] = False
+        GenomeTrack.set_properties_defaults(self)
 
     def plot(self, ax, chrom_region, start_region, end_region):
         """
