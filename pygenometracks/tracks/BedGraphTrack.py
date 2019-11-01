@@ -136,7 +136,7 @@ file_type = {}
         """
         Retrieves the score (or scores or whatever fields are in a bedgraph like file) and the positions
         for a given region.
-        In case there is no item in the region. It returns [nan], (start_region, end_region)
+        In case there is no item in the region. It returns [], []
         Args:
             chrom_region:
             start_region:
@@ -190,11 +190,6 @@ file_type = {}
             prev_end = end
             score_list.append(values)
             pos_list.append((start, end))
-
-        # default values in case the selected region is empty
-        if len(score_list) == 0:
-            score_list = [np.nan]
-            pos_list = (start_region, end_region)
 
         return score_list, pos_list
 
