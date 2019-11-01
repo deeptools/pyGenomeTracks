@@ -4,7 +4,6 @@ from . GenomeTrack import GenomeTrack
 from . BedGraphTrack import BedGraphTrack
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
-import numpy as np
 
 
 class NarrowPeakTrack(BedGraphTrack):

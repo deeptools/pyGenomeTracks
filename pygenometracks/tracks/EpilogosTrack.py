@@ -73,7 +73,7 @@ categories_file = <path to json categories file>
         """
         from matplotlib import cm
         cmap = cm.get_cmap('tab20b')
-        
+
         values_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         if pos_list == []:
             return
