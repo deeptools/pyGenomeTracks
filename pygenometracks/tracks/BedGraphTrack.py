@@ -2,7 +2,6 @@ from . GenomeTrack import GenomeTrack
 from .. utilities import file_to_intervaltree, plot_coverage
 import numpy as np
 import pyBigWig
-import sys
 
 DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
 
@@ -153,12 +152,13 @@ file_type = {}
                 chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
                 if chrom_region not in self.tbx.contigs:
-                    sys.stderr.write("*Error*\nNeither"
-                                     " " + chrom_region_before + " nor"
-                                     " " + chrom_region + " exits as a "
-                                     "chromosome name inside the provided "
-                                     "file.\n")
-                    return
+                    self.log.warning("*Warning*\nNeither "
+                                     + chrom_region_before + " nor "
+                                     + chrom_region + " exits as a "
+                                     "chromosome name inside the bedgraph "
+                                     "file. This will generate an empty "
+                                     "track!!\n")
+                    return score_list, pos_list
 
             chrom_region = self.check_chrom_str_bytes(self.tbx.contigs,
                                                       chrom_region)
