@@ -34,9 +34,9 @@ max_value = 10
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = blue
 height = 5
-title = bedgraph with use middle = yes
+title = bedgraph with use_middle = yes
 max_value = 10
-use middle = yes
+use_middle = yes
 
 [genes]
 file = HoxD_cluster_regulatory_regions_mm10.bed

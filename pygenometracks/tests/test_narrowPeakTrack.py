@@ -18,21 +18,21 @@ title = max_value=40
 [narrow 2]
 file = test.narrowPeak
 height = 2
-show labels = no
-show data range =  no
+show_labels = no
+show_data_range =  no
 color = #00FF0080
-use summit = no
-title = show labels=no; show data range=no; use summit=no;color=#00FF0080
+use_summit = no
+title = show_labels=no; show_data_range=no; use_summit=no;color=#00FF0080
 [spacer]
 
 [narrow 3]
 file = test.narrowPeak
 height = 2
-show labels = no
+show_labels = no
 color = #0000FF80
-use summit = no
-width adjust = 4
-title = show labels=no;use summit=no;width adjust=4
+use_summit = no
+width_adjust = 4
+title = show_labels=no;use_summit=no;width_adjust=4
 
 [spacer]
 

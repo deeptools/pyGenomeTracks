@@ -26,7 +26,7 @@ file = bedgraph_chrx_2e6_5e6_2.bg.bgz
 color = brown
 height = 2
 title = tabix color=brown; type=line:0.5;nans to zeros=True; orientation=inverted
-nans to zeros = True
+nans_to_zeros = True
 min_value = -5
 max_value = 50
 type = line:0.5
@@ -50,8 +50,8 @@ type = points:0.5
 file = bedgraph_chrx_2e6_5e6.bg
 color = red
 height = 2
-title = color=red;type=points:0.5;summary method = max
-summary method = max
+title = color=red;type=points:0.5;summary_method = max
+summary_method = max
 min_value = 0
 max_value = 50
 type = points:0.5
@@ -62,9 +62,9 @@ type = points:0.5
 file = bedgraph_chrx_2e6_5e6.bg
 color = red
 height = 2
-title = color=red;type=points:0.5;summary method = max;nbins=3000
-summary method = max
-number of bins = 3000
+title = color=red;type=points:0.5;summary_method = max;nbins=3000
+summary_method = max
+number_of_bins = 3000
 min_value = 0
 max_value = 50
 type = points:0.5
@@ -85,7 +85,7 @@ title = type=lines
 height = 5
 file_type = bedgraph_matrix
 type = lines
-pos score in bin = block
+pos_score_in_bin = block
 
 [spacer]
 width = 0.01
@@ -96,8 +96,8 @@ title = type=lines; show data range=no (file type is tabix with a gap)
 height = 5
 file_type = bedgraph_matrix
 type = lines
-pos score in bin = center
-show data range = no
+pos_score_in_bin = center
+show_data_range = no
 
 [test bedgraph matrix lines tabix]
 file = tad_separation_score.bm.gz
@@ -105,7 +105,7 @@ title = type=lines;plot horizontal lines=yes
 height = 6
 file_type = bedgraph_matrix
 type = lines
-plot horizontal lines=yes
+plot_horizontal_lines=yes
 [spacer]
 
 [x-axis]

@@ -27,17 +27,17 @@ class LinksTrack(GenomeTrack):
 # the triangles, and loops options are convenient to overlay over a
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
 # For these tracks do not hesitate to put large line width like 5 or 10.
-links type = arcs
+links_type = arcs
 # color of the lines
 # if color is a valid colormap name (like RdYlGn),
 # then the score is mapped to the colormap.
 color = red
 # if line width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
-# line width = 0.5
+# line_width = 0.5
 # options for line style are 'solid', 'dashed', 'dotted' etc. The full list of
 # styles can be found here: https://matplotlib.org/gallery/lines_bars_and_markers/linestyles.html
-line style = solid
+line_style = solid
 file_type = {}
     """.format(TRACK_TYPE)
 

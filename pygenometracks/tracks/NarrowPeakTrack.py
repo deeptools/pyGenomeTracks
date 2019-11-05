@@ -11,12 +11,12 @@ class NarrowPeakTrack(BedGraphTrack):
     TRACK_TYPE = 'narrow_peak'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 #max_value = 0.70
-show data range = yes
-show labels = yes
+show_data_range = yes
+show_labels = yes
 # the narrowPeak format provides the information of the
 # peak summit. By default this information is used
 # although some peaks may look crooked.
-use summit = yes
+use_summit = yes
 # type of plot: either box or peak
 # box will plot a rectangle of the peak width
 # peak will plot the shape of the peak, whose height is the

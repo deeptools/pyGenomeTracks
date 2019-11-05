@@ -27,10 +27,10 @@ categories_file = epilog_cats.json
 file = epilog.qcat.bgz
 height = 5
 title = height=5
-orientation=inverted
+orientation = inverted
 
 [spacer]
-width=0.5
+width = 0.5
 
 [x-axis]
 """

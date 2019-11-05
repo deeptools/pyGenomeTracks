@@ -18,17 +18,17 @@ height = 0.05
 
 [tads]
 file = tad_classification.bed
-title = TADs color=bed_rgb; border color = black
+title = TADs color=bed_rgb; border_color = black
 file_type = domains
-border color = black
+border_color = black
 color = bed_rgb
 height = 5
 
 [tads 2]
 file = tad_classification.bed
-title = TADs orientation=inverted; color=#cccccc; border color=red
+title = TADs orientation=inverted; color=#cccccc; border_color=red
 file_type = domains
-border color = red
+border_color = red
 color = #cccccc
 orientation = inverted
 height = 3
@@ -69,7 +69,7 @@ max_value = 100
 file = test.arcs
 title = links orientation=inverted
 orientation = inverted
-line style = dashed
+line_style = dashed
 height = 2
 
 [test bigwig]
@@ -77,18 +77,19 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 1.5
 title = bigwig number of bins=2000
-number of bins = 2000
+number_of_bins = 2000
 
 [spacer]
 
 [test bigwig overlay]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
-title = color:red; max_value=50; number of bins=100 (next track: overlay previous=yes; max_value=50; show data range=no; color=#0000FF80 (blue, with alpha 0.5))
+title = color:red; max_value=50; number_of_bins=100 (next_track: overlay_previous=yes;
+        max_value=50; show_data_range=no; color=#0000FF80 (blue, with alpha 0.5))
 min_value =0
 max_value = 50
 height = 2
-number of bins = 100
+number_of_bins = 100
 
 [test bigwig overlay]
 file = bigwig_chrx_2e6_5e6.bw
@@ -96,27 +97,27 @@ color = #0000FF80
 title =
 min_value =0
 max_value = 50
-show data range = no
-overlay previous = yes
-number of bins = 100
+show_data_range = no
+overlay_previous = yes
+number_of_bins = 100
 
 [spacer]
 height = 1
 
 [tads 3]
 file = tad_classification.bed
-title = TADs color=#cccccc; border color=red (next track: overlay previous=share-y links; type = loops)
+title = TADs color=#cccccc; border_color=red (next track: overlay_previous=share-y links; type = loops)
 file_type = domains
-border color = red
+border_color = red
 color = #cccccc
 height = 3
 
 [test arcs overlay]
 file = test.arcs
 color = red
-line width = 10
-links type = loops
-overlay previous = share-y
+line_width = 10
+links_type = loops
+overlay_previous = share-y
 
 [test arcs]
 file = test.arcs
@@ -133,7 +134,7 @@ title = height=0.5
 file = dm3_genes.bed.gz
 height = 7
 title = genes (bed12) style=flybase;fontsize=10
-style=flybase
+style =flybase
 fontsize = 10
 
 [spacer]
@@ -145,7 +146,7 @@ height = 3
 title = max num rows=3; style=UCSC
 fontsize = 8
 style = UCSC
-gene rows = 3
+gene_rows = 3
 
 [spacer]
 height = 1
@@ -153,7 +154,9 @@ height = 1
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 7
-title = bed6 border color=black; gene rows=10; fontsize=8; color=Reds (when a color map is used for the color (e.g. coolwarm, Reds) the bed score column mapped to a color)
+title = bed6 border_color=black; gene_rows=10; fontsize=8; color=Reds (when a
+        color map is used for the color (e.g. coolwarm, Reds) the bed score
+        column mapped to a color)
 fontsize = 7
 file_type = bed
 color = Reds
@@ -163,12 +166,14 @@ gene rows = 10
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 10
-title = bed6 fontsize=10; line width=1.5; global max row=yes (global max row sets the number of genes per row as the maximum found anywhere in the genome, hence the white space at the bottom)
+title = bed6 fontsize=10; line_width=1.5; global_max_row=yes
+        (global max row sets the number of genes per row as the maximum found
+        anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed
-global max row = yes
+global_max_row = yes
 interval_height = 200
-line width = 1.5
+line_width = 1.5
 
 [x-axis]
 fontsize=30

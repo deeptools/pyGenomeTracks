@@ -16,7 +16,7 @@ height = 2
 type = line
 title = orientation=inverted; show data range=no
 orientation = inverted
-show data range = no
+show_data_range = no
 max_value = 50
 
 [test bigwig lines:0.2]
@@ -52,35 +52,35 @@ title = nans to zeros =True
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = gray
 height = 5
-title = gray:summary method=mean; blue:summary method=max; red:summary method=min
+title = gray:summary_method=mean; blue:summary_method=max; red:summary_method=min
 type = line
-summary method = mean
+summary_method = mean
 max_value = 150
 min_value = -5
-show data range = no
-number of bins = 300
+show_data_range = no
+number_of_bins = 300
 
 [test bigwig max]
 file = bigwig2_X_2.5e6_3.5e6.bw
 #title = test
 color = blue
 type = line
-summary method = max
+summary_method = max
 max_value = 150
 min_value = -15
-show data range = no
-overlay previous = share-y
-number of bins = 300
+show_data_range = no
+overlay_previous = share-y
+number_of_bins = 300
 
 [test bigwig min]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
 type=line
-summary method = min
+summary_method = min
 max_value = 150
 min_value = -25
-overlay previous = share-y
-number of bins = 300
+overlay_previous = share-y
+number_of_bins = 300
 
 [spacer]
 

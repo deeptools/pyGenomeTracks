@@ -20,7 +20,7 @@ height = 0.05
 file = dm3_genes.bed.gz
 height = 7
 title = genes (bed12) style=flybase;fontsize=10
-style=UCSC
+style = UCSC
 fontsize = 10
 
 [spacer]
@@ -34,7 +34,7 @@ fontsize = 7
 file_type = bed
 color = Reds
 border color = black
-gene rows = 10
+gene_rows = 10
 
 [spacer]
 height = 1
@@ -45,9 +45,9 @@ height = 10
 title = bed4 fontsize=10; line width=1.5; global max row=yes (global max row sets the number of genes per row as the maximum found anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed
-global max row = yes
+global_max_row = yes
 interval_height = 200
-line width = 1.5
+line_width = 1.5
 
 
 [spacer]

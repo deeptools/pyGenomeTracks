@@ -12,7 +12,7 @@ browser_tracks_with_hic = """
 file = Li_et_al_2015.h5
 title = depth=200000; transform=log1p;min_value=5
 depth = 200000
-min_value=5
+min_value = 5
 transform = log1p
 file_type = hic_matrix
 show_masked_bins = no
@@ -45,12 +45,12 @@ file_type = hic_matrix
 file = tad_classification.bed
 #title = TADs color=bed_rgb; border color = black
 file_type = domains
-border color = black
+border_color = black
 color = none
 height = 5
-line width = 1.5
-overlay previous = share-y
-show data range = no
+line_width = 1.5
+overlay_previous = share-y
+show_data_range = no
 
 [spacer]
 height = 0.5
@@ -69,12 +69,12 @@ show_masked_bins = no
 [test arcs]
 file = links2.links
 title =
-links type = triangles
-line style = dashed
-overlay previous = share-y
-line width = 0.8
+links_type = triangles
+line_style = dashed
+overlay_previous = share-y
+line_width = 0.8
 color = darkred
-show data range = no
+show_data_range = no
 
 
 [test bigwig]

@@ -12,8 +12,8 @@ color = black
 min_value = 0
 #max_value = auto
 height = 1.5
-number of bins = 500
-nans to zeros = True
+number_of_bins = 500
+nans_to_zeros = True
 # options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -79,13 +79,13 @@ fontsize = 10
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size
 # genes in all images
-#gene rows = 10
+#gene_rows = 10
 # by default the ymax is the number of
 # rows occupied by the genes in the region plotted. However,
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
-#global max row = yes
+#global_max_row = yes
 
 
 [chrom states]

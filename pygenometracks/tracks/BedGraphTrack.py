@@ -26,7 +26,7 @@ nans to zeros = True
 # the non-missing data (NaNs) together and only use the
 # middle of the region instead of the region itself:
 # Default is no.
-# use middle = yes
+# use_middle = yes
 # By default the bedgraph is plotted at the base pair
 # Resolution. This can lead to very large pdf/svg files
 # If plotting a large regions.
@@ -36,8 +36,8 @@ nans to zeros = True
 # Or use a summary method on a given number of bin:
 # The possible summary methods are given by pyBigWig:
 # mean/average/stdev/dev/max/min/cov/coverage/sum
-# summary method = mean
-# number of bins = 700
+# summary_method = mean
+# number_of_bins = 700
 file_type = {}
     """.format(TRACK_TYPE)
 

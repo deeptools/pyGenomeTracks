@@ -17,12 +17,12 @@ min_value = 0
 # The number of bins takes the region to be plotted and divides it into the number of bins specified
 # Then, at each bin the bigwig mean value is computed and plotted.
 # A lower number of bins produces a coarser tracks
-number of bins = 500
+number_of_bins = 500
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
-nans to zeros = True
+nans_to_zeros = True
 # the summary method by default is mean. Other
 # methods are min and max
-summary method = mean
+summary_method = mean
 # for type, the options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -30,7 +30,7 @@ summary method = mean
 # type = line:0.5
 # type = points:0.5
 # set show data range to no to hide the text on the upper-left showing the data range
-show data range = yes
+show_data_range = yes
 file_type = {}
     """.format(TRACK_TYPE)
 

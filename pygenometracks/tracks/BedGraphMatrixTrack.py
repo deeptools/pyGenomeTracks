@@ -27,7 +27,7 @@ type = lines
 # center of the bin (default) or they can be plot as 'block',
 # which mean to plot the values as a line between the start and end of bin
 pos score in bin = center
-show data range = yes
+show_data_range = yes
 
 # only when type lines is used. Adds horizontal lines
 plot horizontal lines = no
