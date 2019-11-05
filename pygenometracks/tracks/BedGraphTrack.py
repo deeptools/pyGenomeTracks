@@ -2,7 +2,6 @@ from . GenomeTrack import GenomeTrack
 from .. utilities import file_to_intervaltree, plot_coverage
 import numpy as np
 import pyBigWig
-import sys
 
 DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
 
@@ -43,7 +42,7 @@ file_type = {}
     """.format(TRACK_TYPE)
 
     def __init__(self, properties_dict):
-        self.properties = properties_dict
+        super(BedGraphTrack, self).__init__(properties_dict)
 
         self.tbx = None
         # try to load a tabix file is available
@@ -137,6 +136,7 @@ file_type = {}
         """
         Retrieves the score (or scores or whatever fields are in a bedgraph like file) and the positions
         for a given region.
+        In case there is no item in the region. It returns [], []
         Args:
             chrom_region:
             start_region:
@@ -152,12 +152,13 @@ file_type = {}
                 chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
                 if chrom_region not in self.tbx.contigs:
-                    sys.stderr.write("*Error*\nNeither"
-                                     " " + chrom_region_before + " nor"
-                                     " " + chrom_region + " exits as a "
-                                     "chromosome name inside the provided "
-                                     "file.\n")
-                    return
+                    self.log.warning("*Warning*\nNeither "
+                                     + chrom_region_before + " nor "
+                                     + chrom_region + " exits as a "
+                                     "chromosome name inside the bedgraph "
+                                     "file. This will generate an empty "
+                                     "track!!\n")
+                    return score_list, pos_list
 
             chrom_region = self.check_chrom_str_bytes(self.tbx.contigs,
                                                       chrom_region)
@@ -174,7 +175,7 @@ file_type = {}
                                      "chromosome name inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")
-                    return
+                    return score_list, pos_list
             chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
             iterator = iter(sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]))
 
@@ -190,15 +191,12 @@ file_type = {}
             score_list.append(values)
             pos_list.append((start, end))
 
-        # default values in case the selected region is empty
-        if len(score_list) == 0:
-            score_list = [np.nan]
-            pos_list = (start_region, end_region)
-
         return score_list, pos_list
 
     def plot(self, ax, chrom_region, start_region, end_region):
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
+        if pos_list == []:
+            return
         score_list = [float(x[0]) for x in score_list]
 
         if self.properties.get('use middle', False) == 'yes':

@@ -300,7 +300,7 @@ def main(args=None):
                 # start = max(0, start)
                 # end += 100000
             sys.stderr.write("saving {}\n".format(file_name))
-            print("{} {} {}".format(chrom, start, end))
+            # print("{} {} {}".format(chrom, start, end))
             trp.plot(file_name, chrom, start, end, title=args.title)
     else:
         region = get_region(args.region)
