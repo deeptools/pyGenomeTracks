@@ -32,7 +32,7 @@ links_type = arcs
 # if color is a valid colormap name (like RdYlGn),
 # then the score is mapped to the colormap.
 color = red
-# if line width is not given, the score is used to set the line width
+# if line_width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
 # line_width = 0.5
 # options for line style are 'solid', 'dashed', 'dotted' etc. The full list of
@@ -125,9 +125,9 @@ file_type = {}
 
         if 'line_width' not in self.properties and not has_score:
             self.log.warning("*WARNING* for section {}"
-                             " no line width has been set but some "
+                             " no line_width has been set but some "
                              "lines do not have scores."
-                             "line width has been set to "
+                             "line_width has been set to "
                              "0.5".format(self.properties['section_name']))
             self.properties['line_width'] = 0.5
 

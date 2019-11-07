@@ -55,7 +55,7 @@ labels = off
 #max_labels = 60
 # optional: font size can be given to override the default size
 fontsize = 10
-# optional: line width
+# optional: line_width
 #line_width = 0.5
 # the display parameter defines how the bed file is plotted.
 # The options are ['collapsed', 'interleaved', 'triangles'] This options asume that the regions do not overlap.

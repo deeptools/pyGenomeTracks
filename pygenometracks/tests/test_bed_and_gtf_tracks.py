@@ -106,8 +106,8 @@ height = 0.05
 [genes 1]
 file = dm3_genes.bed.gz
 height = 7
-title = genes (bed12) style=flybase;fontsize=10
-style=UCSC
+title = genes (bed12) style = flybase; fontsize = 10
+style = UCSC
 fontsize = 10
 
 [spacer]
@@ -116,11 +116,10 @@ height = 1
 [genes 2]
 file = dm3_genes.bed.gz
 height = 7
-title = genes (bed12) style=flybase;fontsize=10;max_labels = 600
-style=UCSC
+title = genes (bed12) style = flybase; fontsize = 10; max_labels = 600
+style = UCSC
 fontsize = 10
 max_labels = 600
-
 
 """
 with open(ROOT + "bed_maxLab_tracks.ini", 'w') as fh:
@@ -132,9 +131,11 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 def test_plot_tracks_bed_and_gtf():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/bed_and_gtf_tracks.ini --region X:3000000-3300000 --trackLabelFraction 0.2 --width 38 " \
-           "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0}/bed_and_gtf_tracks.ini --region X:3000000-3300000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(ROOT + '/master_bed_and_gtf.png', outfile.name, tolerance)
     assert res is None, res
@@ -144,9 +145,11 @@ def test_plot_tracks_bed_and_gtf():
 
 def test_plot_tracks_bed_with_maxLab():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/bed_maxLab_tracks.ini --region X:2000000-3500000 --trackLabelFraction 0.2 --width 38 " \
-           "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0}/bed_maxLab_tracks.ini --region X:2000000-3500000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(ROOT + '/master_maxLab.png', outfile.name, tolerance)
     assert res is None, res

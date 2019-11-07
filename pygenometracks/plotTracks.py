@@ -123,8 +123,8 @@ file_type = bedgraph
 title =  arcs
 color = red
 # orientation = inverted
-# if line width is not given, the score is used to set the line width
-#line width = 0.5
+# if line_width is not given, the score is used to set the line width
+#line_width = 0.5
 file = arcs.txt
 
 [vlines]

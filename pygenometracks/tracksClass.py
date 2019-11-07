@@ -149,9 +149,9 @@ class PlotTracks(object):
         """
         track_height = []
         for track_dict in self.track_list:
-            # if overlay previous is set to a value other than no
+            # if overlay_previous is set to a value other than no
             # then, skip this track height
-            if track_dict['overlay previous'] != 'no':
+            if track_dict['overlay_previous'] != 'no':
                 continue
             elif 'x-axis' in track_dict and track_dict['x-axis'] is True:
                 height = track_dict['fontsize'] / 8
@@ -227,13 +227,13 @@ class PlotTracks(object):
                                              width_ratios=self.width_ratios, wspace=0.01)
         axis_list = []
         # skipped_tracks is the count of tracks that have the
-        # 'overlay previous' parameter and should be skipped
+        # 'overlay_previous' parameter and should be skipped
         skipped_tracks = 0
         plot_axis = None
         for idx, track in enumerate(self.track_obj_list):
             log.info("plotting {}".format(track.properties['section_name']))
-            if idx == 0 and track.properties['overlay previous'] != 'no':
-                log.warning("First track can not have the `overlay previous` option")
+            if idx == 0 and track.properties['overlay_previous'] != 'no':
+                log.warning("First track can not have the `overlay_previous` option")
                 track.properties['overlay_previous'] = 'no'
 
             if track.properties['overlay_previous'] in ['yes', 'share-y']:
@@ -401,7 +401,7 @@ class PlotTracks(object):
                 if file_field_name == 'boundaries_file':
                     log.warn("The boundaries_file is not used anymore"
                              " please use another track with the"
-                             " `overlay previous` option")
+                             " `overlay_previous` option")
                 # # END
                 file_names = [x for x in track_dict[file_field_name].split(" ") if x != '']
                 full_path_file_names = []
