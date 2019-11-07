@@ -8,11 +8,10 @@ import pygenometracks.plotTracks
 ROOT = os.path.dirname(os.path.abspath(__file__)) + "/test_data/"
 
 tracks = """
-
 [test with categories]
 file = epilog.qcat.bgz
 height = 5
-title = height=5; categories_file=epilog_cats.json
+title = height = 5; categories_file = epilog_cats.json
 categories_file = epilog_cats.json
 
 [spacer]
@@ -20,13 +19,13 @@ categories_file = epilog_cats.json
 [test bedgraph tabix]
 file = epilog.qcat.bgz
 height = 5
-title = height=5
+title = height = 5
 
 [test bedgraph tabix]
 categories_file = epilog_cats.json
 file = epilog.qcat.bgz
 height = 5
-title = height=5
+title = height = 5
 orientation = inverted
 
 [spacer]

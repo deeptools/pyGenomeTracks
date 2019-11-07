@@ -204,8 +204,8 @@ file_type = {}
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         matrix = np.asarray(matrix.todense().astype(float))
-        if 'scale factor' in self.properties:
-            matrix = matrix * self.properties['scale factor']
+        if 'scale-factor' in self.properties:
+            matrix = matrix * self.properties['scale_factor']
 
         if 'transform' in self.properties:
             if self.properties['transform'] == 'log1p':

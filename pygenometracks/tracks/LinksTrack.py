@@ -47,10 +47,10 @@ file_type = {}
         # circos:
         # chr1 100 200 chr1 250 300 0.5
         # where the last value is a score.
-        if 'line style' not in self.properties:
-            self.properties['line style'] = 'solid'
-        if 'links type' not in self.properties:
-            self.properties['links type'] = 'arcs'
+        if 'line_style' not in self.properties:
+            self.properties['line_style'] = 'solid'
+        if 'links_type' not in self.properties:
+            self.properties['links_type'] = 'arcs'
         self.max_height = None
         valid_intervals = 0
         interval_tree = {}
@@ -123,13 +123,13 @@ file_type = {}
         file_h.close()
         self.interval_tree = interval_tree
 
-        if 'line width' not in self.properties and not has_score:
+        if 'line_width' not in self.properties and not has_score:
             self.log.warning("*WARNING* for section {}"
                              " no line width has been set but some "
                              "lines do not have scores."
                              "line width has been set to "
                              "0.5".format(self.properties['section_name']))
-            self.properties['line width'] = 0.5
+            self.properties['line_width'] = 0.5
 
         if 'alpha' not in self.properties:
             self.properties['alpha'] = 0.8
@@ -201,14 +201,14 @@ file_type = {}
             if interval.begin < region_start and interval.end > region_end:
                 continue
 
-            if 'line width' in self.properties:
-                self.line_width = float(self.properties['line width'])
+            if 'line_width' in self.properties:
+                self.line_width = float(self.properties['line_width'])
             else:
                 self.line_width = 0.5 * np.sqrt(interval.data[4])
 
-            if self.properties['links type'] == 'triangles':
+            if self.properties['links_type'] == 'triangles':
                 self.plot_triangles(ax, interval)
-            elif self.properties['links type'] == 'loops':
+            elif self.properties['links_type'] == 'loops':
                 self.plot_loops(ax, interval.data)
             else:
                 self.plot_arcs(ax, interval)
@@ -228,7 +228,7 @@ file_type = {}
         # self.log.debug('title is {}'.format(self.properties['title']))
 
     def plot_y_axis(self, ax, plot_ax):
-        if self.colormap is not None and self.properties['overlay previous'] == 'no':
+        if self.colormap is not None and self.properties['overlay_previous'] == 'no':
             self.colormap.set_array([])
 
             cobar = plt.colorbar(self.colormap, ax=ax, fraction=1,
@@ -267,7 +267,7 @@ file_type = {}
             rgb = self.properties['color']
         ax.add_patch(Arc((center, 0), diameter,
                          diameter, 0, 0, 180, color=rgb,
-                         linewidth=self.line_width, ls=self.properties['line style']))
+                         linewidth=self.line_width, ls=self.properties['line_style']))
 
     def plot_triangles(self, ax, interval):
         x1 = interval.begin
@@ -286,7 +286,7 @@ file_type = {}
                            closed=False,
                            facecolor='none', edgecolor=rgb,
                            linewidth=self.line_width,
-                           ls=self.properties['line style'])
+                           ls=self.properties['line_style'])
         ax.add_artist(triangle)
         if y2 > self.max_height:
             self.max_height = y2
@@ -321,7 +321,7 @@ file_type = {}
         rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
                             facecolor='none', edgecolor=rgb,
                             linewidth=self.line_width,
-                            ls=self.properties['line style'])
+                            ls=self.properties['line_style'])
         ax.add_artist(rectangle)
         if y2 > self.max_height:
             self.max_height = y2

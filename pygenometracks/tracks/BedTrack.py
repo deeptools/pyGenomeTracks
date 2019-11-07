@@ -103,8 +103,8 @@ file_type = {}
 
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BED_COLOR
-        if 'border color' not in self.properties:
-            self.properties['border color'] = 'black'
+        if 'border_color' not in self.properties:
+            self.properties['border_color'] = 'black'
         if 'labels' not in self.properties:
             self.properties['labels'] = 'on'
         if 'style' not in self.properties:
@@ -113,8 +113,8 @@ file_type = {}
             self.properties['display'] = DEFAULT_DISPLAY_BED
         if 'interval_height' not in self.properties:
             self.properties['interval_height'] = 100
-        if 'line width' not in self.properties:
-            self.properties['line width'] = 0.5
+        if 'line_width' not in self.properties:
+            self.properties['line_width'] = 0.5
         if 'max_labels' not in self.properties:
             self.properties['max_labels'] = 60
 
@@ -191,8 +191,8 @@ file_type = {}
            self.properties['file'].endswith('gtf.gz') or \
            ('type' in self.properties and self.properties['type'] == 'gtf'):
             bed_file_h = ReadGtf(self.properties['file'],
-                                 self.properties.get('prefered name', 'transcript_name'),
-                                 self.properties.get('merge transcripts', 'off'))
+                                 self.properties.get('prefered_name', 'transcript_name'),
+                                 self.properties.get('merge_transcripts', 'off'))
         else:
             bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
@@ -318,8 +318,8 @@ file_type = {}
             self.small_relative = 0.004 * (end_region - start_region)
             self.get_length_w(ax.get_figure().get_figwidth(), start_region,
                               end_region)
-            if 'global max row' in self.properties and \
-               self.properties['global max row'] == 'yes':
+            if 'global_max_row' in self.properties and \
+               self.properties['global_max_row'] == 'yes':
                 self.get_max_num_row(self.len_w, self.small_relative)
 
             # turn labels off when too many intervals are visible.
@@ -327,7 +327,7 @@ file_type = {}
                len(genes_overlap) > self.properties['max_labels']:
                 self.properties['labels'] = 'off'
 
-            linewidth = self.properties['line width']
+            linewidth = self.properties['line_width']
             max_num_row_local = 1
             max_ypos = 0
             # check for the number of other intervals that overlap
@@ -397,8 +397,8 @@ file_type = {}
                 ypos = self.get_y_pos(free_row)
 
                 # do not plot if the maximum interval rows to plot is reached
-                if 'gene rows' in self.properties and \
-                   free_row >= int(self.properties['gene rows']):
+                if 'gene_rows' in self.properties and \
+                   free_row >= int(self.properties['gene_rows']):
                     continue
 
                 if free_row > max_num_row_local:
@@ -434,12 +434,12 @@ file_type = {}
                                         chrom_region, start_region, end_region))
             ymax = 0
 
-            if 'global max row' in self.properties and \
-               self.properties['global max row'] == 'yes':
+            if 'global_max_row' in self.properties and \
+               self.properties['global_max_row'] == 'yes':
                 ymin = self.max_num_row[chrom_region] * self.row_scale
 
-            elif 'gene rows' in self.properties:
-                ymin = int(self.properties['gene rows']) * self.row_scale
+            elif 'gene_rows' in self.properties:
+                ymin = int(self.properties['gene_rows']) * self.row_scale
             else:
                 ymin = max_ypos + self.properties['interval_height']
 
@@ -484,7 +484,7 @@ file_type = {}
 
     def get_rgb_and_edge_color(self, bed):
         rgb = self.properties['color']
-        edgecolor = self.properties['border color']
+        edgecolor = self.properties['border_color']
 
         if self.colormap:
             # translate value field (in the example above is 0 or 0.2686...)
@@ -497,8 +497,8 @@ file_type = {}
             if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
                 try:
                     rgb = [float(x) / 255 for x in bed.rgb]
-                    if 'border color' in self.properties:
-                        edgecolor = self.properties['border color']
+                    if 'border_color' in self.properties:
+                        edgecolor = self.properties['border_color']
                     else:
                         edgecolor = self.properties['color']
                 except IndexError:
@@ -731,7 +731,7 @@ file_type = {}
             rgb, edgecolor = self.get_rgb_and_edge_color(region.data)
 
             triangle = Polygon([[x1, y1], [x2, y2], [x3, y1]], closed=True,
-                               facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line width'])
+                               facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line_width'])
             ax.add_artist(triangle)
             valid_regions += 1
 

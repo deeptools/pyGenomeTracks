@@ -44,14 +44,14 @@ file_type = {}
         if 'alpha' not in self.properties:
             self.properties['alpha'] = 1
 
-        if 'negative color' not in self.properties:
-            self.properties['negative color'] = self.properties['color']
+        if 'negative_color' not in self.properties:
+            self.properties['negative_color'] = self.properties['color']
 
-        if 'summary method' not in self.properties:
-            self.properties['summary method'] = 'mean'
+        if 'summary_method' not in self.properties:
+            self.properties['summary_method'] = 'mean'
 
-        if 'nans to zeros' not in self.properties:
-            self.properties['nans to zeros'] = False
+        if 'nans_to_zeros' not in self.properties:
+            self.properties['nans_to_zeros'] = False
 
         self.plot_type = 'fill'
         self.size = None
@@ -77,13 +77,13 @@ file_type = {}
         formated_region = "{}:{}-{}".format(chrom_region, start_region, end_region)
 
         num_bins = 700
-        if 'number of bins' in self.properties:
+        if 'number_of_bins' in self.properties:
             try:
-                num_bins = int(self.properties['number of bins'])
+                num_bins = int(self.properties['number_of_bins'])
             except TypeError:
                 num_bins = 700
                 self.log.warning("'number of bins' value: {} for bigwig file {} "
-                                 "is not valid. Using default value (700)".format(self.properties['number of bins'],
+                                 "is not valid. Using default value (700)".format(self.properties['number_of_bins'],
                                                                                   self.properties['file']))
 
         if chrom_region not in self.bw.chroms().keys():
@@ -113,8 +113,8 @@ file_type = {}
             try:
                 scores_per_bin = np.array(self.bw.stats(chrom_region, start_region,
                                                         end_region, nBins=num_bins,
-                                                        type=self.properties['summary method'])).astype(float)
-                if self.properties['nans to zeros'] and np.any(np.isnan(scores_per_bin)):
+                                                        type=self.properties['summary_method'])).astype(float)
+                if self.properties['nans_to_zeros'] and np.any(np.isnan(scores_per_bin)):
                     scores_per_bin[np.isnan(scores_per_bin)] = 0
             except Exception as e:
                 import pyBigWig
@@ -132,7 +132,7 @@ file_type = {}
 
         plot_coverage(ax, x_values, scores_per_bin, self.plot_type, self.size,
                       self.properties['color'],
-                      self.properties['negative color'],
+                      self.properties['negative_color'],
                       self.properties['alpha'])
 
         ymin, ymax = ax.get_ylim()

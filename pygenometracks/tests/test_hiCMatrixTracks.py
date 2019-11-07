@@ -10,7 +10,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__)) + "/test_data/"
 browser_tracks_with_hic = """
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth=200000; transform=log1p;min_value=5
+title = depth = 200000; transform = log1p; min_value = 5
 depth = 200000
 min_value = 5
 transform = log1p
@@ -19,7 +19,8 @@ show_masked_bins = no
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth=250000; orientation=inverted; colormap=PrRd; min_value=5; max_value=70
+title = depth = 250000; orientation = inverted; colormap = PrRd; min_value=5;
+        max_value = 70
 min_value = 5
 max_value = 70
 depth = 250000
@@ -33,7 +34,8 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth=300000; transform=log1p; colormap Blues (TADs: overlay previous=yes; line width=1.5)
+title = depth = 300000; transform = log1p; colormap Blues (TADs:
+        overlay_previous = yes; line_width = 1.5)
 colormap = Blues
 min_value = 10
 max_value = 150
@@ -43,21 +45,22 @@ file_type = hic_matrix
 
 [tads]
 file = tad_classification.bed
-#title = TADs color=bed_rgb; border color = black
+#title = TADs color = bed_rgb; border color = black
 file_type = domains
-border_color = black
+border color = black
 color = none
 height = 5
-line_width = 1.5
-overlay_previous = share-y
-show_data_range = no
+line width = 1.5
+overlay previous = share-y
+show data range = no
 
 [spacer]
 height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth=250000; transform=log1p; colormap=bone_r (links: overlay previous=share-y; links type=triangles; color=darkred; line style=dashed, bigwig: color=red)
+title = depth = 250000; transform = log1p; colormap = bone_r (links: overlay_previous = share-y;
+        links_type = triangles; color=darkred; line style=dashed, bigwig: color=red)
 colormap = bone_r
 min_value = 15
 max_value = 200
@@ -82,17 +85,18 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
 height = 4
 title =
-overlay previous = yes
+overlay_previous = yes
 min_value = 0
 max_value = 50
-show data range = no
+show_data_range = no
 
 [spacer]
 height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth=200000; show_masked_bins=yes; colormap = ['blue', 'yellow', 'red']; max_value = 150
+title = depth = 200000; show_masked_bins = yes; colormap =
+        ['blue', 'yellow', 'red']; max_value = 150
 depth = 200000
 colormap = ['blue', 'yellow', 'red']
 max_value = 150

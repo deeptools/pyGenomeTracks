@@ -13,7 +13,7 @@ tracks = """
 file = test.narrowPeak
 height = 4
 max_value = 40
-title = max_value=40
+title = max_value = 40
 
 [narrow 2]
 file = test.narrowPeak
@@ -22,7 +22,8 @@ show_labels = no
 show_data_range =  no
 color = #00FF0080
 use_summit = no
-title = show_labels=no; show_data_range=no; use_summit=no;color=#00FF0080
+title = show_labels = no; show_data_range = no; use_summit = no; color = #00FF0080
+
 [spacer]
 
 [narrow 3]
@@ -32,7 +33,7 @@ show_labels = no
 color = #0000FF80
 use_summit = no
 width_adjust = 4
-title = show_labels=no;use_summit=no;width_adjust=4
+title = show_labels = no; use_summit = no; width_adjust = 4
 
 [spacer]
 
@@ -41,7 +42,7 @@ file = test.narrowPeak
 height = 3
 type = box
 color = blue
-title = type=box;color=blue;
+title = type = box; color = blue;
 
 [x-axis]
 """
