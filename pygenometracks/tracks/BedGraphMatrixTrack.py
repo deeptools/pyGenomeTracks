@@ -64,7 +64,7 @@ file_type = {}
             matrix_rows.append(values)
 
         matrix = np.vstack(matrix_rows).T
-        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+        if self.properties['orientation'] == 'inverted':
             matrix = np.flipud(matrix)
 
         if self.properties['type'] == 'lines':
