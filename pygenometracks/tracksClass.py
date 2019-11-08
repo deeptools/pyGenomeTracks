@@ -15,6 +15,7 @@ import matplotlib.cm
 import mpl_toolkits.axisartist as axisartist
 import textwrap
 from . utilities import file_to_intervaltree
+from pygenometracks.tracks.GenomeTrack import GenomeTrack
 
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -251,12 +252,12 @@ class PlotTracks(object):
                 plot_axis.axis[:].set_visible(False)
                 # to make the background transparent
                 plot_axis.patch.set_visible(False)
+                if not overlay:
+                    y_axis = plt.subplot(grids[idx, 0])
+                    y_axis.set_axis_off()
 
-                y_axis = plt.subplot(grids[idx, 0])
-                y_axis.set_axis_off()
-
-                label_axis = plt.subplot(grids[idx, 2])
-                label_axis.set_axis_off()
+                    label_axis = plt.subplot(grids[idx, 2])
+                    label_axis.set_axis_off()
 
             plot_axis.set_xlim(start, end)
             track.plot(plot_axis, chrom, start, end)
@@ -294,7 +295,17 @@ class PlotTracks(object):
             line_width = 0.5
 
         if chrom_region not in list(self.vlines_intval_tree):
+            chrom_region_before = chrom_region
             chrom_region = GenomeTrack.change_chrom_names(chrom_region)
+            if chrom_region not in list(self.vlines_intval_tree):
+                log.warning("*Warning*\nNeither "
+                            + chrom_region_before + " nor "
+                            + chrom_region + " exits as a "
+                            "chromosome name inside the "
+                            "file with vertical lines. "
+                            "No vertical lines will be "
+                            "plotted!!\n")
+                return
         chrom_region = GenomeTrack.check_chrom_str_bytes(self.vlines_intval_tree, chrom_region)
 
         for region in sorted(self.vlines_intval_tree[chrom_region][start_region - 10000:end_region + 10000]):

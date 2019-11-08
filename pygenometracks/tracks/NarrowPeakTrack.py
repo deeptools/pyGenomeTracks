@@ -86,13 +86,13 @@ file_type = {}
 
         '''
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region, return_nans=False)
-
+        if pos_list == []:
+            return
         self.patches = []
 
         max_signal = -1
         for idx, peak in enumerate(score_list):
             name, score, strand, signal_value, p_value, q_value, summit = peak
-
             signal_value = float(signal_value)
             p_value = float(p_value)
             q_value = float(q_value)

@@ -55,9 +55,8 @@ file_type = {}
         Plots a bedgraph matrix file, that instead of having
         a single value per bin, it has several values.
         """
-        try:
-            values_list, start_pos = self.get_scores(chrom_region, start_region, end_region)
-        except TypeError:
+        values_list, start_pos = self.get_scores(chrom_region, start_region, end_region)
+        if start_pos == []:
             return
         matrix_rows = []
         for values in values_list:
