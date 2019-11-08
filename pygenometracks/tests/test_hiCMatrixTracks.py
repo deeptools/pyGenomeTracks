@@ -51,7 +51,7 @@ border color = black
 color = none
 height = 5
 line width = 1.5
-overlay previous = share-y
+overlay_previous = share-y
 show data range = no
 
 [spacer]
@@ -140,7 +140,7 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.cool
-title = depth=300000; transform=log1p; colormap Blues (TADs: overlay previous=yes; line width=1.5)
+title = depth=300000; transform=log1p; colormap Blues (TADs: overlay_previous=yes; line width=1.5)
 colormap = Blues
 min_value = 10
 max_value = 150
@@ -156,7 +156,7 @@ border color = black
 color = none
 height = 5
 line width = 1.5
-overlay previous = share-y
+overlay_previous = share-y
 show data range = no
 
 [spacer]
@@ -164,7 +164,7 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.cool
-title = depth=250000; transform=log1p; colormap=bone_r (links: overlay previous=share-y; links type=triangles; color=darkred; line style=dashed, bigwig: color=red)
+title = depth=250000; transform=log1p; colormap=bone_r (links: overlay_previous=share-y; links type=triangles; color=darkred; line style=dashed, bigwig: color=red)
 colormap = bone_r
 min_value = 15
 max_value = 200
@@ -178,7 +178,7 @@ file = links2.links
 title =
 links type = triangles
 line style = dashed
-overlay previous = share-y
+overlay_previous = share-y
 line width = 0.8
 color = darkred
 show data range = no
@@ -189,7 +189,7 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
 height = 4
 title =
-overlay previous = yes
+overlay_previous = yes
 min_value = 0
 max_value = 50
 show data range = no
