@@ -2,7 +2,6 @@ from . GenomeTrack import GenomeTrack
 from .. utilities import file_to_intervaltree, plot_coverage
 import numpy as np
 import pyBigWig
-import sys
 import tempfile
 import os
 import pysam
