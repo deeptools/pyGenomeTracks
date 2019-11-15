@@ -89,7 +89,7 @@ title = color:red; max_value = 50; number of bins = 100 (next track: overlay_pre
 min_value = 0
 max_value = 50
 height = 2
-number of bins = 100
+number_of_bins = 100
 
 [test bigwig overlay]
 file = bigwig_chrx_2e6_5e6.bw
@@ -144,7 +144,7 @@ height = 1
 [test gene rows]
 file = dm3_genes.bed.gz
 height = 3
-title = max num rows = 3; style = UCSC
+title = max_num_rows = 3; style = UCSC
 fontsize = 8
 style = UCSC
 gene_rows = 3
@@ -155,7 +155,7 @@ height = 1
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 7
-title = bed6 border color = black; gene rows = 10; fontsize = 8; color = Reds
+title = bed6 border_color = black; gene_rows = 10; fontsize = 8; color = Reds
         (when a color map is used for the color (e.g. coolwarm, Reds) the bed
         score column mapped to a color)
 fontsize = 7
@@ -167,7 +167,7 @@ gene_rows = 10
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 10
-title = bed6 fontsize = 10; line width = 1.5; global max row = yes
+title = bed6 fontsize = 10; line_width = 1.5; global_max_row = yes
         (global max row sets the number of genes per row as the maximum found
         anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
