@@ -273,6 +273,7 @@ def test_plot_tracks_with_hic():
            "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(ROOT + '/master_plot_hic.png', outfile.name, tolerance)
+    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)
