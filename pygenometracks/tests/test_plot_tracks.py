@@ -199,7 +199,7 @@ def test_plot_tracks():
            "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
-    res = compare_images(ROOT + '/master_plot.png', outfile.name, tolerance)
+    res = compare_images(ROOT + 'master_plot.png', outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
