@@ -41,6 +41,13 @@ file_type = {}
                            'orientation': None}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
     SYNONYMOUS_PROPERTIES = {}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = []
+    STRING_OR_NONE_PROPERTIES = ['categories_file']
+    FLOAT_OR_NONE_PROPERTIES = {}
+    FLOAT_CONSTRAINED_PROPERTIES = {}
+    INTEGER_OR_NONE_PROPERTIES = {}
+    INTEGER_CONSTRAINED_PROPERTIES = {}
 
     def __init__(self, *args, **kwarg):
         super(EpilogosTrack, self).__init__(*args, **kwarg)

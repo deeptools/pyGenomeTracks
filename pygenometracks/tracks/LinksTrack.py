@@ -56,6 +56,16 @@ file_type = {}
                                           'dotted', 'dashdot']}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = []
+    STRING_OR_NONE_PROPERTIES = []
+    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                                'min_value': [- np.inf, np.inf],
+                                'line width': [0, np.inf]}
+    FLOAT_CONSTRAINED_PROPERTIES = {}
+    INTEGER_OR_NONE_PROPERTIES = {}
+    INTEGER_CONSTRAINED_PROPERTIES = {}
+    # The color can be a color or a colormap (if there is a score)
 
     def set_properties_defaults(self):
         super(LinksTrack, self).set_properties_defaults()

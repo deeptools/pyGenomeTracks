@@ -68,6 +68,17 @@ file_type = {}
                                               'cov', 'sum', None]}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
+    BOOLEAN_PROPERTIES = ['show data range', 'nans to zeros',
+                          'use middle', 'rasterize']
+    STRING_PROPERTIES = []
+    STRING_OR_NONE_PROPERTIES = []
+    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                                'min_value': [- np.inf, np.inf]}
+    FLOAT_CONSTRAINED_PROPERTIES = {'alpha': [0, 1]}
+    INTEGER_OR_NONE_PROPERTIES = {}
+    INTEGER_CONSTRAINED_PROPERTIES = {'number of bins': [1, np.inf]}
+    # The color can only be a color
+    # negative color can only be a color or None
 
     def __init__(self, properties_dict):
         super(BedGraphTrack, self).__init__(properties_dict)

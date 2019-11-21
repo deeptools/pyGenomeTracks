@@ -110,6 +110,18 @@ file_type = {}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
                              'display': DISPLAY_BED_SYNONYMOUS}
+    BOOLEAN_PROPERTIES = ['labels', 'merge transcripts', 'global max row']
+    STRING_PROPERTIES = ['prefered name']
+    STRING_OR_NONE_PROPERTIES = []
+    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                                'min_value': [- np.inf, np.inf]}
+    FLOAT_CONSTRAINED_PROPERTIES = {'fontsize': [0, np.inf],
+                                    'interval_height': [0, np.inf],
+                                    'line width': [0, np.inf]}
+    INTEGER_OR_NONE_PROPERTIES = {'gene rows': [0, np.inf]}
+    INTEGER_CONSTRAINED_PROPERTIES = {'max_labels': [0, np.inf]}
+    # The color can be a color or a colormap or 'bed_rgb'
+    # border color can only be a color
 
     def __init__(self, *args, **kwarg):
         super(BedTrack, self).__init__(*args, **kwarg)

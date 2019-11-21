@@ -46,6 +46,16 @@ file_type = {}
                            'orientation': [None, 'inverted']}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
+    BOOLEAN_PROPERTIES = ['show data range', 'plot horizontal lines',
+                          'rasterize']
+    STRING_PROPERTIES = []
+    STRING_OR_NONE_PROPERTIES = []
+    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                                'min_value': [- np.inf, np.inf]}
+    FLOAT_CONSTRAINED_PROPERTIES = {}
+    INTEGER_OR_NONE_PROPERTIES = {}
+    INTEGER_CONSTRAINED_PROPERTIES = {}
+    # The color cannot be set for the moment
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)

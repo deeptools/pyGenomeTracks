@@ -55,6 +55,16 @@ file_type = {}
                                               'cov', 'sum']}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
+    BOOLEAN_PROPERTIES = ['nans to zeros', 'show data range']
+    STRING_PROPERTIES = []
+    STRING_OR_NONE_PROPERTIES = []
+    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                                'min_value': [- np.inf, np.inf]}
+    FLOAT_CONSTRAINED_PROPERTIES = {'alpha': [0, 1]}
+    INTEGER_OR_NONE_PROPERTIES = {}
+    INTEGER_CONSTRAINED_PROPERTIES = {'number of bins': [1, np.inf]}
+    # The color can only be a color
+    # negative color can only be a color or None
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
