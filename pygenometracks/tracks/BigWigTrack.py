@@ -44,6 +44,7 @@ file_type = {}
                            'show data range': True,
                            'orientation': None,
                            'color': DEFAULT_BIGWIG_COLOR,
+                           'negative color': None,
                            'alpha': 1,
                            'nans to zeros': False,
                            'summary method': 'mean',
@@ -62,7 +63,7 @@ file_type = {}
     def set_properties_defaults(self):
         super(BigWigTrack, self).set_properties_defaults()
         super(BigWigTrack, self).process_type_for_coverage_track()
-        if 'negative color' not in self.properties:
+        if self.properties['negative color'] is None:
             self.properties['negative color'] = self.properties['color']
         try:
             self.properties['number of bins'] = \
