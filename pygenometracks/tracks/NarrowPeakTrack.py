@@ -8,6 +8,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.path import Path
 import matplotlib.patches as patches
 from .. utilities import file_to_intervaltree
+import numpy as np
 
 DEFAULT_NARROWPEAK_COLOR = '#FF000080'  # red, alpha=0.55
 

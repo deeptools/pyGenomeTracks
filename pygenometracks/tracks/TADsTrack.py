@@ -1,4 +1,5 @@
 from . BedTrack import BedTrack
+import numpy as np
 
 DEFAULT_BED_COLOR = '#1f78b4'
 
