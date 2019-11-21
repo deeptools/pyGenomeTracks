@@ -195,8 +195,7 @@ file_type = {}
             bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
 
-        if 'color' in self.properties and \
-           self.properties['color'] == 'bed_rgb' and \
+        if self.properties['color'] == 'bed_rgb' and \
            self.bed_type not in ['bed12', 'bed9']:
             self.log.warning("*WARNING* Color set to 'bed_rgb', "
                              "but bed file does not have the rgb field. "
