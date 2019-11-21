@@ -102,7 +102,7 @@ file_type = {}
             self.hic_ma.maskBins(self.hic_ma.nan_bins)
 
         # check that the matrix can be log transformed
-        if 'transform' in self.properties:
+        if self.properties['transform'] != 'no':
             if self.properties['transform'] == 'log1p':
                 if self.hic_ma.matrix.data.min() + 1 < 0:
                     self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
