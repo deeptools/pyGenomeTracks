@@ -33,11 +33,8 @@ height = 2
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = []
-    STRING_OR_NONE_PROPERTIES = []
-    FLOAT_OR_NONE_PROPERTIES = {}
-    FLOAT_CONSTRAINED_PROPERTIES = {}
-    INTEGER_OR_NONE_PROPERTIES = {}
-    INTEGER_CONSTRAINED_PROPERTIES = {}
+    FLOAT_PROPERTIES = {}
+    INTEGER_PROPERTIES = {}
 
     def __init__(self, properties_dict):
         FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
