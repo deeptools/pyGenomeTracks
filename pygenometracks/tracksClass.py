@@ -14,7 +14,9 @@ import matplotlib.cm
 import mpl_toolkits.axisartist as axisartist
 import textwrap
 from . utilities import file_to_intervaltree
+from collections import OrderedDict
 from pygenometracks.tracks.GenomeTrack import GenomeTrack
+from pygenometracks.tracks import *
 
 import warnings
 
@@ -28,9 +30,6 @@ warnings.simplefilter(action='ignore', category=ImportWarning)
 
 # import warnings
 # warnings.filterwarnings('error')
-
-from collections import OrderedDict
-from pygenometracks.tracks import *
 
 FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
 logging.basicConfig(format=FORMAT)
