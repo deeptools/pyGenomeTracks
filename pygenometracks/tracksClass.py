@@ -4,10 +4,9 @@ import logging
 from configparser import ConfigParser
 from ast import literal_eval
 import time
+import numpy as np
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import matplotlib
 import matplotlib.textpath
 import matplotlib.colors
 import matplotlib.gridspec
@@ -18,6 +17,9 @@ from . utilities import file_to_intervaltree
 from pygenometracks.tracks.GenomeTrack import GenomeTrack
 
 import warnings
+
+matplotlib.use('Agg')
+
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ndarray size changed")
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -486,6 +488,16 @@ class PlotTracks(object):
 class SpacerTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
+    DEFAULTS_PROPERTIES = {}
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = []
+    STRING_OR_NONE_PROPERTIES = []
+    FLOAT_OR_NONE_PROPERTIES = {}
+    FLOAT_CONSTRAINED_PROPERTIES = {}
+    INTEGER_OR_NONE_PROPERTIES = {}
+    INTEGER_CONSTRAINED_PROPERTIES = {}
 
     def plot(self, ax, chrom_region, start_region, end_region):
         pass
@@ -497,11 +509,19 @@ class SpacerTrack(GenomeTrack):
 class XAxisTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
+    DEFAULTS_PROPERTIES = {'fontsize': 15}
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = []
+    STRING_OR_NONE_PROPERTIES = []
+    FLOAT_OR_NONE_PROPERTIES = {}
+    FLOAT_CONSTRAINED_PROPERTIES = {'fontsize': [0, np.inf]}
+    INTEGER_OR_NONE_PROPERTIES = {}
+    INTEGER_CONSTRAINED_PROPERTIES = {}
 
     def __init__(self, *args, **kwargs):
         super(XAxisTrack, self).__init__(*args, **kwargs)
-        if 'fontsize' not in self.properties:
-            self.properties['fontsize'] = 15
 
     def plot(self, ax, chrom_region, region_start, region_end):
         ticks = ax.get_xticks()
