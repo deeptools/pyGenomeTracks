@@ -63,12 +63,13 @@ file_type = {}
                            'min_value': None,
                            'rasterize': True,
                            'colormap': DEFAULT_MATRIX_COLORMAP}
-    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'transform': ['no', 'log', 'log1p', '-log']}
+    NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
+                           'transform': ['no', 'log', 'log1p', '-log']}
     BOOLEAN_PROPERTIES = ['show_masked_bins', 'rasterize']
-    STRING_PROPERTIES = []
+    STRING_PROPERTIES = ['file', 'file_type']
     STRING_OR_NONE_PROPERTIES = []
     FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
                                 'min_value': [- np.inf, np.inf]}

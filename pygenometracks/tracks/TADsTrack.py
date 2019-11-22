@@ -18,9 +18,10 @@ class TADsTrack(BedTrack):
                            'merge transcripts': False,
                            'max_value': None,
                            'min_value': None}
-    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
+    NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
     BOOLEAN_PROPERTIES = ['merge transcripts']
     STRING_PROPERTIES = ['prefered name']
     STRING_OR_NONE_PROPERTIES = []

@@ -62,15 +62,16 @@ file_type = {}
                            'summary method': None,
                            'rasterize': False,
                            'number of bins': 700}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'summary method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum', None]}
-    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
-                             'min_value': {'auto': None}}
     BOOLEAN_PROPERTIES = ['show data range', 'nans to zeros',
                           'use middle', 'rasterize']
-    STRING_PROPERTIES = []
+    STRING_PROPERTIES = ['file', 'file_type']
     STRING_OR_NONE_PROPERTIES = []
     FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
                                 'min_value': [- np.inf, np.inf]}

@@ -50,14 +50,15 @@ file_type = {}
                            'alpha': 0.8,
                            'max_value': None,
                            'min_value': None}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'links type': ['arcs', 'triangles', 'loops'],
                            'line style': ['solid', 'dashed',
                                           'dotted', 'dashdot']}
-    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
-                             'min_value': {'auto': None}}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = []
+    STRING_PROPERTIES = ['file', 'file_type']
     STRING_OR_NONE_PROPERTIES = []
     FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
                                 'min_value': [- np.inf, np.inf],

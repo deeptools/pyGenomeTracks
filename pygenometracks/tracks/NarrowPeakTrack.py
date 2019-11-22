@@ -42,12 +42,13 @@ file_type = {}
                            'use summit': True,
                            'width adjust': 1.5,
                            'type': 'peak'}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'type': ['peak', 'box']}
-    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None}}
     BOOLEAN_PROPERTIES = ['show data range', 'show labels',
                           'use summit']
-    STRING_PROPERTIES = []
+    STRING_PROPERTIES = ['file', 'file_type']
     STRING_OR_NONE_PROPERTIES = []
     FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf]}
     FLOAT_CONSTRAINED_PROPERTIES = {'width adjust': [0, np.inf]}

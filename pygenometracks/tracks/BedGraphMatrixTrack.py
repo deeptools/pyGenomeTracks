@@ -41,14 +41,15 @@ file_type = {}
                            'plot horizontal lines': False,
                            'orientation': None,
                            'rasterize': True}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'type': ['matrix', 'lines'],
                            'pos score in bin': ['center', 'block'],
                            'orientation': [None, 'inverted']}
-    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
-                             'min_value': {'auto': None}}
     BOOLEAN_PROPERTIES = ['show data range', 'plot horizontal lines',
                           'rasterize']
-    STRING_PROPERTIES = []
+    STRING_PROPERTIES = ['file', 'file_type']
     STRING_OR_NONE_PROPERTIES = []
     FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
                                 'min_value': [- np.inf, np.inf]}

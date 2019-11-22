@@ -104,14 +104,15 @@ file_type = {}
                            'gene rows': None,
                            'max_value': None,
                            'min_value': None}
-    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'style': ['flybase', 'UCSC'],
-                           'display': DISPLAY_BED_VALID}
+    NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
                              'display': DISPLAY_BED_SYNONYMOUS}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
+                           'style': ['flybase', 'UCSC'],
+                           'display': DISPLAY_BED_VALID}
     BOOLEAN_PROPERTIES = ['labels', 'merge transcripts', 'global max row']
-    STRING_PROPERTIES = ['prefered name']
+    STRING_PROPERTIES = ['prefered name', 'file', 'file_type']
     STRING_OR_NONE_PROPERTIES = []
     FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
                                 'min_value': [- np.inf, np.inf]}

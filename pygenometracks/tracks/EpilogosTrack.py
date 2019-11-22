@@ -39,10 +39,11 @@ file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'categories_file': None,
                            'orientation': None}
-    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
+    NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = []
+    STRING_PROPERTIES = ['file', 'file_type']
     STRING_OR_NONE_PROPERTIES = ['categories_file']
     FLOAT_OR_NONE_PROPERTIES = {}
     FLOAT_CONSTRAINED_PROPERTIES = {}

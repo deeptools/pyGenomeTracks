@@ -28,6 +28,7 @@ height = 2
 #overlay previous = yes
 """
     DEFAULTS_PROPERTIES = {}
+    NECESSARY_PROPERTIES = {}
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []

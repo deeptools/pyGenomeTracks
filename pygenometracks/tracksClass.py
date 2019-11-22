@@ -488,6 +488,7 @@ class SpacerTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
     DEFAULTS_PROPERTIES = {}
+    NECESSARY_PROPERTIES = []
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
@@ -508,6 +509,7 @@ class SpacerTrack(GenomeTrack):
 class XAxisTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
+    NECESSARY_PROPERTIES = []
     DEFAULTS_PROPERTIES = {'fontsize': 15}
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {}
