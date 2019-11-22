@@ -59,13 +59,10 @@ file_type = {}
                                           'dotted', 'dashdot']}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['file', 'file_type']
-    STRING_OR_NONE_PROPERTIES = []
-    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
-                                'min_value': [- np.inf, np.inf],
-                                'line width': [0, np.inf]}
-    FLOAT_CONSTRAINED_PROPERTIES = {}
-    INTEGER_OR_NONE_PROPERTIES = {}
-    INTEGER_CONSTRAINED_PROPERTIES = {}
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'line width': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
     # The color can be a color or a colormap (if there is a score)
 
     def set_properties_defaults(self):

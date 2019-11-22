@@ -72,12 +72,10 @@ file_type = {}
     BOOLEAN_PROPERTIES = ['show data range', 'nans to zeros',
                           'use middle', 'rasterize']
     STRING_PROPERTIES = ['file', 'file_type']
-    STRING_OR_NONE_PROPERTIES = []
-    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
-                                'min_value': [- np.inf, np.inf]}
-    FLOAT_CONSTRAINED_PROPERTIES = {'alpha': [0, 1]}
-    INTEGER_OR_NONE_PROPERTIES = {}
-    INTEGER_CONSTRAINED_PROPERTIES = {'number of bins': [1, np.inf]}
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'alpha': [0, 1]}
+    INTEGER_PROPERTIES = {'number of bins': [1, np.inf]}
     # The color can only be a color
     # negative color can only be a color or None
 

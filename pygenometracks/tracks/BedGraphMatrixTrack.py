@@ -50,12 +50,9 @@ file_type = {}
     BOOLEAN_PROPERTIES = ['show data range', 'plot horizontal lines',
                           'rasterize']
     STRING_PROPERTIES = ['file', 'file_type']
-    STRING_OR_NONE_PROPERTIES = []
-    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
-                                'min_value': [- np.inf, np.inf]}
-    FLOAT_CONSTRAINED_PROPERTIES = {}
-    INTEGER_OR_NONE_PROPERTIES = {}
-    INTEGER_CONSTRAINED_PROPERTIES = {}
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf]}
+    INTEGER_PROPERTIES = {}
     # The color cannot be set for the moment
 
     def set_properties_defaults(self):

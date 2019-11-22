@@ -23,15 +23,13 @@ class TADsTrack(BedTrack):
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
     BOOLEAN_PROPERTIES = ['merge transcripts']
-    STRING_PROPERTIES = ['prefered name']
-    STRING_OR_NONE_PROPERTIES = []
-    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
-                                'min_value': [- np.inf, np.inf]}
-    FLOAT_CONSTRAINED_PROPERTIES = {'fontsize': [0, np.inf],
-                                    'interval_height': [0, np.inf],
-                                    'line width': [0, np.inf]}
-    INTEGER_OR_NONE_PROPERTIES = {}
-    INTEGER_CONSTRAINED_PROPERTIES = {}
+    STRING_PROPERTIES = ['prefered name', 'file', 'file_type']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'fontsize': [0, np.inf],
+                        'interval_height': [0, np.inf],
+                        'line width': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
     # The color can be a color or a colormap if bed_type is bed12 or 'bed_rgb'
     # border color can only be a color
 

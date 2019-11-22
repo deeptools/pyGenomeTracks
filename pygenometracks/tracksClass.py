@@ -493,11 +493,8 @@ class SpacerTrack(GenomeTrack):
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = []
-    STRING_OR_NONE_PROPERTIES = []
-    FLOAT_OR_NONE_PROPERTIES = {}
-    FLOAT_CONSTRAINED_PROPERTIES = {}
-    INTEGER_OR_NONE_PROPERTIES = {}
-    INTEGER_CONSTRAINED_PROPERTIES = {}
+    FLOAT_PROPERTIES = {}
+    INTEGER_PROPERTIES = {}
 
     def plot(self, ax, chrom_region, start_region, end_region):
         pass
@@ -515,11 +512,8 @@ class XAxisTrack(GenomeTrack):
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = []
-    STRING_OR_NONE_PROPERTIES = []
-    FLOAT_OR_NONE_PROPERTIES = {}
-    FLOAT_CONSTRAINED_PROPERTIES = {'fontsize': [0, np.inf]}
-    INTEGER_OR_NONE_PROPERTIES = {}
-    INTEGER_CONSTRAINED_PROPERTIES = {}
+    FLOAT_PROPERTIES = {'fontsize': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
 
     def __init__(self, *args, **kwargs):
         super(XAxisTrack, self).__init__(*args, **kwargs)

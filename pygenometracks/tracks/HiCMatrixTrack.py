@@ -70,12 +70,10 @@ file_type = {}
                            'transform': ['no', 'log', 'log1p', '-log']}
     BOOLEAN_PROPERTIES = ['show_masked_bins', 'rasterize']
     STRING_PROPERTIES = ['file', 'file_type']
-    STRING_OR_NONE_PROPERTIES = []
-    FLOAT_OR_NONE_PROPERTIES = {'max_value': [- np.inf, np.inf],
-                                'min_value': [- np.inf, np.inf]}
-    FLOAT_CONSTRAINED_PROPERTIES = {'scale factor': [- np.inf, np.inf]}
-    INTEGER_OR_NONE_PROPERTIES = {}
-    INTEGER_CONSTRAINED_PROPERTIES = {'depth': [1, np.inf]}
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                                'min_value': [- np.inf, np.inf],
+                                'scale factor': [- np.inf, np.inf]}
+    INTEGER_PROPERTIES = {'depth': [1, np.inf]}
     # The colormap can only be a colormap
 
     def __init__(self, *args, **kwargs):
