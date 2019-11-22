@@ -44,7 +44,7 @@ file_type = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['categories_file', 'file', 'file_type',
-                         'overlay previous']
+                         'overlay previous', 'orientation']
     FLOAT_PROPERTIES = {}
     INTEGER_PROPERTIES = {}
 

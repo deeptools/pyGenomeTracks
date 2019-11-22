@@ -58,7 +58,8 @@ file_type = {}
                            'line style': ['solid', 'dashed',
                                           'dotted', 'dashdot']}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
+                         'orientation', 'links type', 'line style']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'line width': [0, np.inf]}
