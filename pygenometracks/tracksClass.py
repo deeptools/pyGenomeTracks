@@ -492,7 +492,7 @@ class SpacerTrack(GenomeTrack):
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = []
+    STRING_PROPERTIES = ['overlay previous']
     FLOAT_PROPERTIES = {}
     INTEGER_PROPERTIES = {}
 
@@ -511,7 +511,7 @@ class XAxisTrack(GenomeTrack):
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = []
+    STRING_PROPERTIES = ['overlay previous']
     FLOAT_PROPERTIES = {'fontsize': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 

@@ -49,7 +49,7 @@ file_type = {}
                            'orientation': [None, 'inverted']}
     BOOLEAN_PROPERTIES = ['show data range', 'plot horizontal lines',
                           'rasterize']
-    STRING_PROPERTIES = ['file', 'file_type']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf]}
     INTEGER_PROPERTIES = {}

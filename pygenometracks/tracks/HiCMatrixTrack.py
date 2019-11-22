@@ -69,7 +69,7 @@ file_type = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'transform': ['no', 'log', 'log1p', '-log']}
     BOOLEAN_PROPERTIES = ['show_masked_bins', 'rasterize']
-    STRING_PROPERTIES = ['file', 'file_type']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                                 'min_value': [- np.inf, np.inf],
                                 'scale factor': [- np.inf, np.inf]}

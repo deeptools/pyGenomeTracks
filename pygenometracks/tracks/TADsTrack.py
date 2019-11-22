@@ -23,7 +23,8 @@ class TADsTrack(BedTrack):
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
     BOOLEAN_PROPERTIES = ['merge transcripts']
-    STRING_PROPERTIES = ['prefered name', 'file', 'file_type']
+    STRING_PROPERTIES = ['prefered name', 'file', 'file_type',
+                         'overlay previous']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],

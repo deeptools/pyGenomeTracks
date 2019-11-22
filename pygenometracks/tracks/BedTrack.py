@@ -112,7 +112,8 @@ file_type = {}
                            'style': ['flybase', 'UCSC'],
                            'display': DISPLAY_BED_VALID}
     BOOLEAN_PROPERTIES = ['labels', 'merge transcripts', 'global max row']
-    STRING_PROPERTIES = ['prefered name', 'file', 'file_type']
+    STRING_PROPERTIES = ['prefered name', 'file', 'file_type',
+                         'overlay previous']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],

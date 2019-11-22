@@ -57,7 +57,7 @@ file_type = {}
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum']}
     BOOLEAN_PROPERTIES = ['nans to zeros', 'show data range']
-    STRING_PROPERTIES = ['file', 'file_type']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'alpha': [0, 1]}

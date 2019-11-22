@@ -48,7 +48,7 @@ file_type = {}
                            'type': ['peak', 'box']}
     BOOLEAN_PROPERTIES = ['show data range', 'show labels',
                           'use summit']
-    STRING_PROPERTIES = ['file', 'file_type']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'width adjust': [0, np.inf]}
     INTEGER_PROPERTIES = {'number of bins': [1, np.inf]}
