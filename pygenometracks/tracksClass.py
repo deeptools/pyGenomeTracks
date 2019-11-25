@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 from configparser import ConfigParser
-from ast import literal_eval
 import time
 import numpy as np
 import matplotlib
