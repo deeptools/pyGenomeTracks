@@ -59,7 +59,8 @@ file_type = {}
                                           'dotted', 'dashdot']}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
-                         'orientation', 'links type', 'line style']
+                         'orientation', 'links type', 'line style',
+                         'title']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'line width': [0, np.inf]}

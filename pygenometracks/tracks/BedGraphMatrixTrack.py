@@ -50,7 +50,8 @@ file_type = {}
     BOOLEAN_PROPERTIES = ['show data range', 'plot horizontal lines',
                           'rasterize']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
-                         'type', 'pos score in bin', 'orientation']
+                         'type', 'pos score in bin', 'orientation',
+                         'title']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf]}
     INTEGER_PROPERTIES = {}

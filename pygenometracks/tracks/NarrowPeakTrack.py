@@ -49,7 +49,7 @@ file_type = {}
     BOOLEAN_PROPERTIES = ['show data range', 'show labels',
                           'use summit']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
-                         'orientation', 'type']
+                         'orientation', 'type', 'title']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'width adjust': [0, np.inf]}
     INTEGER_PROPERTIES = {'number of bins': [1, np.inf]}

@@ -113,7 +113,8 @@ file_type = {}
                            'display': DISPLAY_BED_VALID}
     BOOLEAN_PROPERTIES = ['labels', 'merge transcripts', 'global max row']
     STRING_PROPERTIES = ['prefered name', 'file', 'file_type',
-                         'overlay previous', 'orientation']
+                         'overlay previous', 'orientation',
+                         'title']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],

@@ -58,7 +58,8 @@ file_type = {}
                                               'cov', 'sum']}
     BOOLEAN_PROPERTIES = ['nans to zeros', 'show data range']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
-                         'orientation', 'summary method']
+                         'orientation', 'summary method',
+                         'title']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'alpha': [0, 1]}
