@@ -29,8 +29,8 @@ def main():
                                       'hic_matrix']
     my_prefered_order_tracks_names = [k for k in my_prefered_order_tracks_names
                                       if k in all_tracks]
-    other_tracks = list(set(all_tracks.keys()) -
-                        set(my_prefered_order_tracks_names))
+    other_tracks = list(set(all_tracks.keys())
+                        - set(my_prefered_order_tracks_names))
     # Get all possible and default parameters
     all_default_parameters = {}
     all_tracks_with_default = []
