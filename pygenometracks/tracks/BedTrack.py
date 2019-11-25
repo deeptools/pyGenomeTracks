@@ -114,7 +114,8 @@ file_type = {}
     BOOLEAN_PROPERTIES = ['labels', 'merge transcripts', 'global max row']
     STRING_PROPERTIES = ['prefered name', 'file', 'file_type',
                          'overlay previous', 'orientation',
-                         'title', 'style', 'color', 'border color']
+                         'title', 'style', 'color', 'border color',
+                         'display']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
