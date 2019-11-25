@@ -49,6 +49,7 @@ class InputError(Exception):
     """Exception raised for errors in the input."""
     pass
 
+
 class MultiDict(OrderedDict):
     """
     Class to allow identically named
@@ -547,7 +548,7 @@ class PlotTracks(object):
                             raise InputError("File in section [{}] "
                                              "not found:\n{}\n\n"
                                              "".format(track_dict['section_name'],
-                                                file_name))
+                                                       file_name))
 
                 track_dict[file_field_name] = " ".join(full_path_file_names)
         return track_dict
