@@ -73,10 +73,11 @@ file_type = {}
                           'use middle', 'rasterize']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
                          'orientation', 'summary method',
-                         'title']
+                         'title', 'color', 'negative color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
-                        'alpha': [0, 1]}
+                        'alpha': [0, 1],
+                        'height': [0, np.inf]}
     INTEGER_PROPERTIES = {'number of bins': [1, np.inf]}
     # The color can only be a color
     # negative color can only be a color or None

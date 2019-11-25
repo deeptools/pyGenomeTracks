@@ -46,7 +46,7 @@ file_type = {}
     STRING_PROPERTIES = ['categories_file', 'file', 'file_type',
                          'overlay previous', 'orientation',
                          'title']
-    FLOAT_PROPERTIES = {}
+    FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
     def __init__(self, *args, **kwarg):

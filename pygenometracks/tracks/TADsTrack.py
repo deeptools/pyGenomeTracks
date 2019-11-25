@@ -25,12 +25,13 @@ class TADsTrack(BedTrack):
     BOOLEAN_PROPERTIES = ['merge transcripts']
     STRING_PROPERTIES = ['prefered name', 'file', 'file_type',
                          'overlay previous', 'orientation',
-                         'title']
+                         'title', 'color', 'border color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
                         'interval_height': [0, np.inf],
-                        'line width': [0, np.inf]}
+                        'line width': [0, np.inf],
+                        'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
     # The color can be a color or a colormap if bed_type is bed12 or 'bed_rgb'
     # border color can only be a color

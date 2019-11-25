@@ -53,7 +53,8 @@ file_type = {}
                          'type', 'pos score in bin', 'orientation',
                          'title']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
-                        'min_value': [- np.inf, np.inf]}
+                        'min_value': [- np.inf, np.inf],
+                        'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
     # The color cannot be set for the moment
 

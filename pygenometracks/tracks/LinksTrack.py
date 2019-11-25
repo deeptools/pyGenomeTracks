@@ -60,10 +60,11 @@ file_type = {}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
                          'orientation', 'links type', 'line style',
-                         'title']
+                         'title', 'color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
-                        'line width': [0, np.inf]}
+                        'line width': [0, np.inf],
+                        'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
     # The color can be a color or a colormap (if there is a score)
 
