@@ -365,6 +365,7 @@ class PlotTracks(object):
                 if 'file' not in all_keywords:
                     log.error("The section {} is supposed to be a vline but"
                               " there is no file.".format(section_name))
+                    sys.exit(1)
                 track_options['file'] = parser.get(section_name, 'file')
                 if len(all_keywords) > 2:
                     extra_keywords = [k for k in all_keywords
@@ -394,6 +395,7 @@ class PlotTracks(object):
                               "".format(section_name,
                                         track_options['file_type'],
                                         self.available_tracks.keys()))
+                    exit(1)
                 track_options['track_class'] = \
                     self.available_tracks[track_options['file_type']]
             # Or we guess it from the file:
@@ -410,6 +412,7 @@ class PlotTracks(object):
                           "specified and it is not a [spacer] nor a "
                           "[x-axis] section. This is not a valid section."
                           "".format(section_name))
+                exit(1)
             # Now we should have a 'track_class' set.
             # We can get for it all the necessary and possible keywords
             track_class = track_options['track_class']
@@ -421,6 +424,7 @@ class PlotTracks(object):
                               " of the config file."
                               "".format(section_name, track_class,
                                         necessary_name))
+                    exit(1)
             unused_keys = []
             # Now we can proceed with the keywords:
             for name, value in parser.items(section_name):
@@ -442,6 +446,7 @@ class PlotTracks(object):
                                   "Please, use "
                                   "{}".format(section_name, name, value,
                                               str([k for k in parser.BOOLEAN_STATES])))
+                        exit(1)
                 elif name in track_class.FLOAT_PROPERTIES:
                     try:
                         track_options[name] = float(value)
@@ -449,6 +454,7 @@ class PlotTracks(object):
                         log.error("In section {}, {} was set to {}"
                                   " whereas we should have a float value."
                                   "".format(section_name, name, value))
+                        exit(1)
                     min_value, max_value = track_class.FLOAT_PROPERTIES[name]
                     if track_options[name] < min_value or \
                        track_options[name] > max_value:
@@ -463,6 +469,7 @@ class PlotTracks(object):
                         log.error("In section {}, {} was set to {}"
                                   " whereas we should have an integer value."
                                   "".format(section_name, name, value))
+                        exit(1)
                     min_value, max_value = track_class.INTEGER_PROPERTIES[name]
                     if track_options[name] < min_value or \
                        track_options[name] > max_value:
@@ -470,6 +477,7 @@ class PlotTracks(object):
                                   " whereas we should be between {} and {}."
                                   "".format(section_name, name, value,
                                             min_value, max_value))
+                        exit(1)
                 else:
                     unused_keys.append(name)
             # If there are unused keys they are printed in a warning.
@@ -538,6 +546,7 @@ class PlotTracks(object):
                                       "not found:\n{}\n\n"
                                       "".format(track_dict['section_name'],
                                                 file_name))
+                            exit(1)
 
                 track_dict[file_field_name] = " ".join(full_path_file_names)
         return track_dict
@@ -562,6 +571,7 @@ class PlotTracks(object):
                     if file_type == track_class.TRACK_TYPE:
                         log.error("file_type already defined in other"
                                   " GenomeTrack")
+                        exit(1)
                     else:
                         file_type = track_class.TRACK_TYPE
 
@@ -569,6 +579,7 @@ class PlotTracks(object):
             log.error("Section {}: can not identify file type. Please specify "
                       "the file_type for '{}'"
                       "".format(track_dict['section_name'], file_))
+            exit(1)
 
         return file_type
 
