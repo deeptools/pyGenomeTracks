@@ -61,7 +61,8 @@ file_type = {}
                            'use middle': False,
                            'summary method': None,
                            'rasterize': False,
-                           'number of bins': 700}
+                           'number of bins': 700,
+                           'type': 'fill'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -73,7 +74,8 @@ file_type = {}
                           'use middle', 'rasterize']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
                          'orientation', 'summary method',
-                         'title', 'color', 'negative color']
+                         'title', 'color', 'negative color',
+                         'type']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'alpha': [0, 1],

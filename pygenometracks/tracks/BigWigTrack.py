@@ -48,7 +48,8 @@ file_type = {}
                            'alpha': 1,
                            'nans to zeros': False,
                            'summary method': 'mean',
-                           'number of bins': 700}
+                           'number of bins': 700,
+                           'type': 'fill'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -59,7 +60,8 @@ file_type = {}
     BOOLEAN_PROPERTIES = ['nans to zeros', 'show data range']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
                          'orientation', 'summary method',
-                         'title', 'color', 'negative color']
+                         'title', 'color', 'negative color',
+                         'type']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'alpha': [0, 1],
