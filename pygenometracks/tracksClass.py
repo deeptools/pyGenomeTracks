@@ -65,7 +65,8 @@ class MultiDict(OrderedDict):
 class PlotTracks(object):
 
     def __init__(self, tracks_file, fig_width=DEFAULT_FIGURE_WIDTH,
-                 fig_height=None, fontsize=None, dpi=None, track_label_width=None,
+                 fig_height=None, fontsize=None, dpi=None,
+                 track_label_width=None,
                  pRegion=None):
         self.fig_width = fig_width
         self.fig_height = fig_height
@@ -80,12 +81,15 @@ class PlotTracks(object):
             fontsize = fontsize
         else:
             fontsize = float(fig_width) * 0.3
-        # the track label width is the fraction of the figure width that is used
+        # the track label width is the fraction of
+        # the figure width that is used
         # for the track 'title' or label.
         if track_label_width is None:
             self.width_ratios = DEFAULT_WIDTH_RATIOS
         else:
-            self.width_ratios = (0.01, 1 - track_label_width, track_label_width)
+            self.width_ratios = (0.01,
+                                 1 - track_label_width,
+                                 track_label_width)
 
         font = {'size': fontsize}
         matplotlib.rc('font', **font)
@@ -113,9 +117,11 @@ class PlotTracks(object):
                 # if the track label space is small
                 assert(sys.version_info[0] != 2)
                 if track_label_width < 0.1:
-                    properties['title'] = textwrap.fill(properties['title'], 12)
+                    properties['title'] = textwrap.fill(properties['title'],
+                                                        12)
                 else:
-                    properties['title'] = textwrap.fill(properties['title'], 30)
+                    properties['title'] = textwrap.fill(properties['title'],
+                                                        30)
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
@@ -142,8 +148,10 @@ class PlotTracks(object):
         when each plot is going to be printed.
 
         Args:
-            start_region: start of the region to plot. Only used in case the plot is a Hi-C matrix
-            end_region: end of the region to plot. Only used in case the plot is a Hi-C matrix
+            start_region: start of the region to plot.
+                          Only used in case the plot is a Hi-C matrix
+            end_region: end of the region to plot.
+                        Only used in case the plot is a Hi-C matrix
 
         Returns:
 
@@ -169,11 +177,13 @@ class PlotTracks(object):
             # ------------------
             #   region len
             #
-            # d (in cm) =  depth (in bp) * width (in cm) / region len (in bp) * scale_factor
-            # with scale_factor = 0.5
+            # d (in cm) =  depth (in bp) * 0.5 *
+            #              width (in cm) / region len (in bp)
 
-            elif 'depth' in track_dict and track_dict['file_type'] == 'hic_matrix':
-                # to compute the actual width of the figure the margins and the region
+            elif 'depth' in track_dict and \
+                 track_dict['file_type'] == 'hic_matrix':
+                # to compute the actual width of the figure the margins
+                # and the region
                 # set for the legends have to be considered
                 # DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']
                 # is the proportion of plotting area
@@ -194,7 +204,8 @@ class PlotTracks(object):
                 depth = min(track_dict['depth'],
                             int((end_region - start_region) * 1.25))
 
-                height = scale_factor * depth * hic_width / (end_region - start_region)
+                height = scale_factor * depth * hic_width / \
+                    (end_region - start_region)
             else:
                 height = DEFAULT_TRACK_HEIGHT
 
@@ -203,7 +214,8 @@ class PlotTracks(object):
         return track_height
 
     def plot(self, file_name, chrom, start, end, title=None):
-        track_height = self.get_tracks_height(start_region=start, end_region=end)
+        track_height = self.get_tracks_height(start_region=start,
+                                              end_region=end)
 
         if self.fig_height:
             fig_height = self.fig_height
@@ -211,7 +223,8 @@ class PlotTracks(object):
             fig_height = sum(track_height) / \
                 (DEFAULT_MARGINS['top'] - DEFAULT_MARGINS['bottom'])
 
-        log.debug("Figure size in cm is {} x {}. Dpi is set to {}\n".format(self.fig_width, fig_height, self.dpi))
+        log.debug("Figure size in cm is {} x {}. Dpi is set to {}"
+                  "\n".format(self.fig_width, fig_height, self.dpi))
         fig = plt.figure(figsize=self.cm2inch(self.fig_width, fig_height))
 
         fig.subplots_adjust(wspace=0, hspace=0.0,
@@ -225,7 +238,8 @@ class PlotTracks(object):
 
         grids = matplotlib.gridspec.GridSpec(len(track_height), 3,
                                              height_ratios=track_height,
-                                             width_ratios=self.width_ratios, wspace=0.01)
+                                             width_ratios=self.width_ratios,
+                                             wspace=0.01)
         axis_list = []
         # skipped_tracks is the count of tracks that have the
         # 'overlay previous' parameter and should be skipped
@@ -315,7 +329,8 @@ class PlotTracks(object):
         for ax in axis_list:
             ymin, ymax = ax.get_ylim()
 
-            ax.vlines(vlines_list, ymin, ymax, linestyle='dashed', zorder=10, linewidth=line_width,
+            ax.vlines(vlines_list, ymin, ymax, linestyle='dashed', zorder=10,
+                      linewidth=line_width,
                       color=(0, 0, 0, 0.7), alpha=0.5)
 
         return
@@ -325,7 +340,8 @@ class PlotTracks(object):
         Parses a configuration file
 
         :param tracks_file: file path containing the track configuration
-        :return: array of dictionaries and vlines_file. One dictionary per track
+        :return: array of dictionaries and vlines_file.
+                 One dictionary per track
         """
         parser = ConfigParser(dict_type=MultiDict, strict=False)
         parser.read_file(open(tracks_file, 'r'))
@@ -375,7 +391,7 @@ class PlotTracks(object):
                 if track_options['file_type'] not in self.available_tracks:
                     log.error("Section {}: the file_type {} does not exists."
                               "\npossible file_type are:{}."
-                              "".format(section_name, 
+                              "".format(section_name,
                                         track_options['file_type'],
                                         self.available_tracks.keys()))
                 track_options['track_class'] = \
@@ -409,7 +425,7 @@ class PlotTracks(object):
             # Now we can proceed with the keywords:
             for name, value in parser.items(section_name):
                 SYNONYMOUS_PROPERTIES = track_class.SYNONYMOUS_PROPERTIES
-                # If the name is part of the synonymous we substitute by 
+                # If the name is part of the synonymous we substitute by
                 # the synonymous value
                 if name in SYNONYMOUS_PROPERTIES and \
                    value in SYNONYMOUS_PROPERTIES[name]:
@@ -427,7 +443,7 @@ class PlotTracks(object):
                                   "{}".format(section_name, name, value,
                                               str([k for k in parser.BOOLEAN_STATES])))
                 elif name in track_class.FLOAT_PROPERTIES:
-                    try: 
+                    try:
                         track_options[name] = float(value)
                     except ValueError:
                         log.error("In section {}, {} was set to {}"
@@ -441,7 +457,7 @@ class PlotTracks(object):
                                   "".format(section_name, name, value,
                                             min_value, max_value))
                 elif name in track_class.INTEGER_PROPERTIES:
-                    try: 
+                    try:
                         track_options[name] = float(value)
                     except ValueError:
                         log.error("In section {}, {} was set to {}"
@@ -461,7 +477,8 @@ class PlotTracks(object):
                 log.warn("In section {}, these parameters are unused:"
                          "{}".format(section_name, unused_keys))
             # The track_options will be checked for the file paths:
-            track_options = self.check_file_exists(track_options, tracks_file_path)
+            track_options = self.check_file_exists(track_options,
+                                                   tracks_file_path)
             # The 'overlay previous' is initialized:
             if 'overlay previous' not in track_options:
                 track_options['overlay previous'] = 'no'
@@ -478,14 +495,15 @@ class PlotTracks(object):
         # Now that they were all checked
         self.track_list = track_list
         if self.vlines_properties:
-            self.vlines_intval_tree, __, __ = file_to_intervaltree(self.vlines_properties['file'])
+            self.vlines_intval_tree, __, __ = \
+                file_to_intervaltree(self.vlines_properties['file'])
 
     @staticmethod
     def check_file_exists(track_dict, tracks_path):
         """
         Checks if a file or list of files exists. If the file does not exists
-        tries to check if the file may be relative to the track_file path, in such case
-        the path is updated.
+        tries to check if the file may be relative to the track_file path,
+        in such case the path is updated.
         :param track_dict: dictionary of track values. Should contain
                             a 'file' key containing the path of the file
                             or files to be checked separated by space
@@ -496,8 +514,6 @@ class PlotTracks(object):
         for key in track_dict.keys():
             if key.endswith("file"):
                 file_field_name = key
-        # for file_field_name in ['boundaries_file', 'file', 'categories_file']:
-        #     if file_field_name in track_dict:
                 # # THIS COULD BE REMOVED IN A NEXT 1.0 VERSION
                 if file_field_name == 'boundaries_file':
                     log.warn("The boundaries_file is not used anymore"
@@ -518,10 +534,10 @@ class PlotTracks(object):
                             open(name_with_tracks_path, 'r').close()
                             full_path_file_names.append(name_with_tracks_path)
                         except IOError:
-                            sys.stderr.write("\n*ERROR*\nFile in section [{}] "
-                                             "not found:\n{}\n\n".format(track_dict['section_name'],
-                                                                         file_name))
-                            sys.exit(1)
+                            log.error("File in section [{}] "
+                                      "not found:\n{}\n\n"
+                                      "".format(track_dict['section_name'],
+                                                file_name))
 
                 track_dict[file_field_name] = " ".join(full_path_file_names)
         return track_dict
@@ -531,8 +547,9 @@ class PlotTracks(object):
         """
 
         :param track_dict: dictionary of track values with the 'file' key
-                    containing a string path of the file or files. Only the ending
-                     of the last file is used in case when there are more files
+                    containing a string path of the file or files.
+                    Only the ending of the last file is used
+                    in case when there are more files
         :param: available_tracks: list of available tracks
 
         :return: string file type detected
@@ -543,14 +560,15 @@ class PlotTracks(object):
             for ending in track_class.SUPPORTED_ENDINGS:
                 if file_.endswith(ending):
                     if file_type == track_class.TRACK_TYPE:
-                        log.error("file_type already defined in other GenomeTrack")
-                        exit()
+                        log.error("file_type already defined in other"
+                                  " GenomeTrack")
                     else:
                         file_type = track_class.TRACK_TYPE
 
         if file_type is None:
-            sys.exit("Section {}: can not identify file type. Please specify "
-                     "the file_type for '{}'".format(track_dict['section_name'], file_))
+            log.error("Section {}: can not identify file type. Please specify "
+                      "the file_type for '{}'"
+                      "".format(track_dict['section_name'], file_))
 
         return file_type
 
@@ -634,7 +652,8 @@ class XAxisTrack(GenomeTrack):
             label_y_pos = 0.01
             vert_align = 'bottom'
         ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
-                fontsize=int(self.properties['fontsize']), verticalalignment=vert_align, transform=ax.transAxes)
+                fontsize=int(self.properties['fontsize']),
+                verticalalignment=vert_align, transform=ax.transAxes)
 
         ax.axis["x"].axis.set_ticklabels(labels)
         ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
