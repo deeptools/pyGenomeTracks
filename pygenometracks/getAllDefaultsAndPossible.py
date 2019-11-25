@@ -1,3 +1,10 @@
+"""
+This python script will generate one file: all_default_properties.txt
+This file is a markdown table with all the defaults values for each parameter
+for each track class. This table can be copy pasted in the README.md
+It will output in the standard output the possible values.
+This can also be copy pasted in the README.md
+"""
 from pygenometracks.tracksClass import PlotTracks, XAxisTrack
 import numpy as np
 
