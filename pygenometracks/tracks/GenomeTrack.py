@@ -32,8 +32,9 @@ height = 2
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = []
-    FLOAT_PROPERTIES = {}
+    STRING_PROPERTIES = ['file_type', 'orientation',  # For XAxisTrack and SpacerTrack these 2 are not used
+                         'overlay previous', 'title']
+    FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
     def __init__(self, properties_dict):

@@ -1,40 +1,42 @@
-parameter | bedgraph | links | bed | hic_matrix | bigwig | domains | bedgraph_matrix | narrow_peak | epilogos | 
--- | - | - | - | - | - | - | - | - | - | 
-max_value | not set | not set | not set | not set | not set | not set | not set | not set |  | 
-min_value | not set | not set | not set | not set | not set | not set | not set |  |  | 
-show data range | yes |  |  |  | yes |  | yes | yes |  | 
-orientation | not set | not set | not set | not set | not set | not set | not set | not set | not set | 
-color | #a6cee3 | blue | #1f78b4 |  | #33a02c | #1f78b4 |  | #FF000080 |  | 
-alpha | 1 | 0.8 |  |  | 1 |  |  |  |  | 
-nans to zeros | False |  |  |  | False |  |  |  |  | 
-use middle | no |  |  |  |  |  |  |  |  | 
-summary method | not set |  |  |  | mean |  |  |  |  | 
-rasterize | no |  |  | yes |  |  | yes |  |  | 
-number of bins | 700 |  |  |  | 700 |  |  |  |  | 
-links type |  | arcs |  |  |  |  |  |  |  | 
-line width |  | not set | 0.5 |  |  | 0.5 |  |  |  | 
-line style |  | solid |  |  |  |  |  |  |  | 
-fontsize |  |  | 12 |  |  | 12 |  |  |  | 
-border color |  |  | black |  |  | black |  |  |  | 
-labels |  |  | on |  |  |  |  |  |  | 
-style |  |  | flybase |  |  |  |  |  |  | 
-display |  |  | stacked |  |  |  |  |  |  | 
-interval_height |  |  | 100 |  |  | 100 |  |  |  | 
-max_labels |  |  | 60 |  |  |  |  |  |  | 
-prefered name |  |  | transcript_name |  |  | transcript_name |  |  |  | 
-merge transcripts |  |  | off |  |  | off |  |  |  | 
-global max row |  |  | no |  |  |  |  |  |  | 
-gene rows |  |  | not set |  |  |  |  |  |  | 
-region |  |  |  | not set |  |  |  |  |  | 
-depth |  |  |  | 100000 |  |  |  |  |  | 
-show_masked_bins |  |  |  | no |  |  |  |  |  | 
-scale factor |  |  |  | 1 |  |  |  |  |  | 
-transform |  |  |  | no |  |  |  |  |  | 
-colormap |  |  |  | RdYlBu_r |  |  |  |  |  | 
-type |  |  |  |  |  |  | matrix | peak |  | 
-pos score in bin |  |  |  |  |  |  | center |  |  | 
-plot horizontal lines |  |  |  |  |  |  | no |  |  | 
-show labels |  |  |  |  |  |  |  | yes |  | 
-use summit |  |  |  |  |  |  |  | yes |  | 
-width adjust |  |  |  |  |  |  |  | 1.5 |  | 
-categories_file |  |  |  |  |  |  |  |  | not set | 
+parameter | x-axis | epilogos | links | domains | bed | narrow_peak | bigwig | bedgraph | bedgraph_matrix | hic_matrix
+-- | - | - | - | - | - | - | - | - | - | -
+fontsize | 15 |  |  | 12 | 12 |  |  |  |  | 
+where | bottom |  |  |  |  |  |  |  |  | 
+categories_file |  | not set |  |  |  |  |  |  |  | 
+orientation |  | not set | not set | not set | not set | not set | not set | not set | not set | not set
+links type |  |  | arcs |  |  |  |  |  |  | 
+line width |  |  | not set | 0.5 | 0.5 |  |  |  |  | 
+line style |  |  | solid |  |  |  |  |  |  | 
+color |  |  | blue | #1f78b4 | #1f78b4 | #FF000080 | #33a02c | #a6cee3 |  | 
+alpha |  |  | 0.8 |  |  |  | 1 | 1 |  | 
+max_value |  |  | not set | not set | not set | not set | not set | not set | not set | not set
+min_value |  |  | not set | not set | not set |  | not set | not set | not set | not set
+border color |  |  |  | black | black |  |  |  |  | 
+interval_height |  |  |  | 100 | 100 |  |  |  |  | 
+prefered name |  |  |  | transcript_name | transcript_name |  |  |  |  | 
+merge transcripts |  |  |  | off | off |  |  |  |  | 
+labels |  |  |  |  | on |  |  |  |  | 
+style |  |  |  |  | flybase |  |  |  |  | 
+display |  |  |  |  | stacked |  |  |  |  | 
+max_labels |  |  |  |  | 60 |  |  |  |  | 
+global max row |  |  |  |  | no |  |  |  |  | 
+gene rows |  |  |  |  | not set |  |  |  |  | 
+show data range |  |  |  |  |  | yes | yes | yes | yes | 
+show labels |  |  |  |  |  | yes |  |  |  | 
+use summit |  |  |  |  |  | yes |  |  |  | 
+width adjust |  |  |  |  |  | 1.5 |  |  |  | 
+type |  |  |  |  |  | peak | fill | fill | matrix | 
+negative color |  |  |  |  |  |  | not set | not set |  | 
+nans to zeros |  |  |  |  |  |  | False | False |  | 
+summary method |  |  |  |  |  |  | mean | not set |  | 
+number of bins |  |  |  |  |  |  | 700 | 700 |  | 
+use middle |  |  |  |  |  |  |  | no |  | 
+rasterize |  |  |  |  |  |  |  | no | yes | yes
+pos score in bin |  |  |  |  |  |  |  |  | center | 
+plot horizontal lines |  |  |  |  |  |  |  |  | no | 
+region |  |  |  |  |  |  |  |  |  | not set
+depth |  |  |  |  |  |  |  |  |  | 100000
+show_masked_bins |  |  |  |  |  |  |  |  |  | no
+scale factor |  |  |  |  |  |  |  |  |  | 1
+transform |  |  |  |  |  |  |  |  |  | no
+colormap |  |  |  |  |  |  |  |  |  | RdYlBu_r

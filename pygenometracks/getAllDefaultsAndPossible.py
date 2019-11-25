@@ -1,4 +1,4 @@
-from pygenometracks.tracksClass import PlotTracks
+from pygenometracks.tracksClass import PlotTracks, XAxisTrack
 import numpy as np
 
 not_used_string = ''
@@ -23,12 +23,22 @@ GOOD_PRACTICES = {'labels': {True: 'on', False: 'off'},
 
 def main():
     all_tracks = PlotTracks.get_available_tracks()
-
+    my_prefered_order_tracks_names = [None, 'epilogos', 'links',
+                                      'domains', 'bed', 'narrow_peak',
+                                      'bigwig', 'bedgraph', 'bedgraph_matrix',
+                                      'hic_matrix']
+    my_prefered_order_tracks_names = [k for k in my_prefered_order_tracks_names
+                                      if k in all_tracks]
+    other_tracks = list(set(all_tracks.keys()) -
+                        set(my_prefered_order_tracks_names))
     # Get all possible and default parameters
     all_default_parameters = {}
     all_tracks_with_default = []
     all_possible_parameters = {}
-    for track_type, track_class in all_tracks.items():
+    for track_type in my_prefered_order_tracks_names + other_tracks:
+        track_class = all_tracks[track_type]
+        if track_class == XAxisTrack:
+            track_type = "x-axis"
         has_default = False
         for p, value in track_class.DEFAULTS_PROPERTIES.items():
             all_default_parameters[p] = all_default_parameters.get(p, {})
@@ -86,7 +96,8 @@ def main():
                     possible_values[track_type] = pv
         print("- **" + p + "**:")
         for name in [k for k in possible_values]:
-            reformated_possible = ", ".join([v for v in possible_values[name] if v is not None])
+            reformated_possible = ", ".join([v for v in possible_values[name]
+                                             if v is not None])
             if None in possible_values[name]:
                 reformated_possible += ", " + not_set_string
             print("  - for *" + name + "*: " + reformated_possible)
