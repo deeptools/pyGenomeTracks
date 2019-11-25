@@ -8,6 +8,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib import cm
 import numpy as np
 
+
 class EpilogosTrack(BedGraphTrack):
     """
     The data format for this type of track can be found
