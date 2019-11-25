@@ -422,7 +422,7 @@ class PlotTracks(object):
             for necessary_name in NECESSARY_PROPERTIES:
                 if necessary_name not in all_keywords:
                     raise InputError("The section {} is describing a object of"
-                                     " type {} but the necessary properties {}"
+                                     " type {} but the necessary property {}"
                                      " is not part of the config file."
                                      "".format(section_name, track_class,
                                                necessary_name))
@@ -460,7 +460,7 @@ class PlotTracks(object):
                     if track_options[name] < min_value or \
                        track_options[name] > max_value:
                         raise InputError("In section {}, {} was set to {}"
-                                         " whereas we should be between {} and"
+                                         " whereas it should be between {} and"
                                          " {}.".format(section_name, name,
                                                        value, min_value,
                                                        max_value))
@@ -476,7 +476,7 @@ class PlotTracks(object):
                     if track_options[name] < min_value or \
                        track_options[name] > max_value:
                         raise InputError("In section {}, {} was set to {}"
-                                         " whereas we should be between {} and"
+                                         " whereas it should be between {} and"
                                          " {}.".format(section_name, name,
                                                        value, min_value,
                                                        max_value))
