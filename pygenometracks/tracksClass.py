@@ -334,22 +334,89 @@ class PlotTracks(object):
 
         track_list = []
         for section_name in parser.sections():
+            # track_options is what will become the self.properties
             track_options = dict({"section_name": section_name})
+            all_keywords = [i[0] for i in parser.items(section_name)]
+            # First we check if there is a skip set to true:
+            if 'skip' in all_keywords and \
+               parser.getboolean(section_name, 'skip'):
+                # In this case we just do not explore the section
+                continue
+            # Then the vlines are treated differently:
+            if ('type', 'vlines') in parser.items(section_name):
+                # The only thing to check is the file
+                # There is no other parameters to use.
+                if 'file' not in all_keywords:
+                    log.error("The section {} is supposed to be a vline but"
+                              " there is no file.".format(section_name))
+                track_options['file'] = parser.get(section_name, 'file')
+                if len(all_keywords) > 2:
+                    extra_keywords = [k for k in all_keywords
+                                      if k not in ['file', 'type']]
+                    log.warn("These parameters were specified but will not"
+                             " be used {}".format(' '.join(extra_keywords)))
+                self.vlines_properties = \
+                    self.check_file_exists(track_options, tracks_file_path)
+                continue
+            # For the other cases, we will append properties dictionnaries
+            # to the track_list
+            # If the sections are spacer or x-axis there is no file needed:
             if section_name.endswith('[spacer]'):
                 track_options['spacer'] = True
+                track_options['track_class'] = SpacerTrack
             elif section_name.endswith('[x-axis]'):
                 track_options['x-axis'] = True
+                track_options['track_class'] = XAxisTrack
+            # For the others we need to have a 'file_type'
+            # Either the file_type is part of the keywords
+            elif 'file_type' in all_keywords:
+                track_options['file_type'] = parser.get(section_name,
+                                                        'file_type')
+                if track_options['file_type'] not in self.available_tracks:
+                    log.error("Section {}: the file_type {} does not exists."
+                              "\npossible file_type are:{}."
+                              "".format(section_name, 
+                                        track_options['file_type'],
+                                        self.available_tracks.keys()))
+                track_options['track_class'] = \
+                    self.available_tracks[track_options['file_type']]
+            # Or we guess it from the file:
+            elif 'file' in all_keywords:
+                track_options['file'] = parser.get(section_name,
+                                                   'file')
+                track_options['file_type'] = \
+                    self.guess_filetype(track_options,
+                                        self.available_tracks)
+                track_options['track_class'] = \
+                    self.available_tracks[track_options['file_type']]
+            else:
+                log.error("Section {}: there is no file_type nor file "
+                          "specified and it is not a [spacer] nor a "
+                          "[x-axis] section. This is not a valid section."
+                          "".format(section_name))
+            # Now we should have a 'track_class' set.
+            # We can get for it all the necessary and possible keywords
+            track_class = track_options['track_class']
+            NECESSARY_PROPERTIES = track_class.NECESSARY_PROPERTIES
+            for necessary_name in NECESSARY_PROPERTIES:
+                if necessary_name not in all_keywords:
+                    log.error("The section {} is describing a object of type"
+                              " {} but the necessary properties {} is not part"
+                              " of the config file."
+                              "".format(section_name, track_class,
+                                        necessary_name))
+            unused_keys = []
+            # Now we can proceed with the keywords:
             for name, value in parser.items(section_name):
-                if name in ['max_value', 'min_value', 'depth', 'height',
-                            'line width', 'fontsize', 'scale factor',
-                            'number of bins', 'interval_height', 'alpha',
-                            'max_labels'] and value != 'auto':
-                    track_options[name] = literal_eval(value)
-                elif name in ['labels', 'show data range',
-                              'plot horizontal lines', 'use middle',
-                              'rasterize', 'global max row',
-                              'show_masked_bins', 'show labels',
-                              'use summit', 'skip', 'merge transcripts']:
+                SYNONYMOUS_PROPERTIES = track_class.SYNONYMOUS_PROPERTIES
+                # If the name is part of the synonymous we substitute by 
+                # the synonymous value
+                if name in SYNONYMOUS_PROPERTIES and \
+                   value in SYNONYMOUS_PROPERTIES[name]:
+                    track_options[name] = SYNONYMOUS_PROPERTIES[name][value]
+                elif name in track_class.STRING_PROPERTIES:
+                    track_options[name] = value
+                elif name in track_class.BOOLEAN_PROPERTIES:
                     try:
                         track_options[name] = parser.getboolean(section_name,
                                                                 name)
@@ -359,39 +426,57 @@ class PlotTracks(object):
                                   "Please, use "
                                   "{}".format(section_name, name, value,
                                               str([k for k in parser.BOOLEAN_STATES])))
-                        exit()
+                elif name in track_class.FLOAT_PROPERTIES:
+                    try: 
+                        track_options[name] = float(value)
+                    except ValueError:
+                        log.error("In section {}, {} was set to {}"
+                                  " whereas we should have a float value."
+                                  "".format(section_name, name, value))
+                    min_value, max_value = track_class.FLOAT_PROPERTIES[name]
+                    if track_options[name] < min_value or \
+                       track_options[name] > max_value:
+                        log.error("In section {}, {} was set to {}"
+                                  " whereas we should be between {} and {}."
+                                  "".format(section_name, name, value,
+                                            min_value, max_value))
+                elif name in track_class.INTEGER_PROPERTIES:
+                    try: 
+                        track_options[name] = float(value)
+                    except ValueError:
+                        log.error("In section {}, {} was set to {}"
+                                  " whereas we should have an integer value."
+                                  "".format(section_name, name, value))
+                    min_value, max_value = track_class.INTEGER_PROPERTIES[name]
+                    if track_options[name] < min_value or \
+                       track_options[name] > max_value:
+                        log.error("In section {}, {} was set to {}"
+                                  " whereas we should be between {} and {}."
+                                  "".format(section_name, name, value,
+                                            min_value, max_value))
                 else:
-                    track_options[name] = value
-
-            if 'type' in track_options and track_options['type'] == 'vlines':
-                self.vlines_properties = self.check_file_exists(track_options, tracks_file_path)
-            elif track_options.get('skip', False):
-                pass
-            else:
-                track_list.append(track_options)
-
-        updated_track_list = []
-        for track_dict in track_list:
-            warn = None
-            if 'file' in track_dict and track_dict['file'] != '':
-                track_dict = self.check_file_exists(track_dict, tracks_file_path)
-                if 'file_type' not in track_dict:
-                    track_dict['file_type'] = self.guess_filetype(track_dict, self.available_tracks)
-
-            if 'overlay previous' not in track_dict:
-                track_dict['overlay previous'] = 'no'
-            #  set some default values
-            if 'title' not in track_dict:
-                track_dict['title'] = ''
-                if track_dict['overlay previous'] != 'no' or track_dict['section_name'].endswith('[x-axis]') \
-                        or track_dict['section_name'].endswith('[spacer]'):
-                    pass
-                else:
-                    warn = "\ntitle not set for 'section {}'\n".format(track_dict['section_name'])
-            if warn:
-                sys.stderr.write(warn)
-            updated_track_list.append(track_dict)
-        self.track_list = updated_track_list
+                    unused_keys.append(name)
+            # If there are unused keys they are printed in a warning.
+            if len(unused_keys) > 0:
+                log.warn("In section {}, these parameters are unused:"
+                         "{}".format(section_name, unused_keys))
+            # The track_options will be checked for the file paths:
+            track_options = self.check_file_exists(track_options, tracks_file_path)
+            # The 'overlay previous' is initialized:
+            if 'overlay previous' not in track_options:
+                track_options['overlay previous'] = 'no'
+            # If there is no title:
+            if 'title' not in track_options:
+                track_options['title'] = ''
+                if track_options['overlay previous'] == 'no' and \
+                   track_options['track_class'] not in [SpacerTrack,
+                                                        XAxisTrack]:
+                    log.warn = ("title not set for section {}"
+                                "\n").format(track_options['section_name'])
+            # The track_options are added to the track_list
+            track_list.append(track_options)
+        # Now that they were all checked
+        self.track_list = track_list
         if self.vlines_properties:
             self.vlines_intval_tree, __, __ = file_to_intervaltree(self.vlines_properties['file'])
 
@@ -494,7 +579,7 @@ class SpacerTrack(GenomeTrack):
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['overlay previous',
                          'title']
-    FLOAT_PROPERTIES = {}
+    FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
     def plot(self, ax, chrom_region, start_region, end_region):
@@ -508,13 +593,15 @@ class XAxisTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
     NECESSARY_PROPERTIES = []
-    DEFAULTS_PROPERTIES = {'fontsize': 15}
+    DEFAULTS_PROPERTIES = {'fontsize': 15,
+                           'where': 'bottom'}
     SYNONYMOUS_PROPERTIES = {}
-    POSSIBLE_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {'where': ['top', 'bottom']}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['overlay previous',
-                         'title']
-    FLOAT_PROPERTIES = {'fontsize': [0, np.inf]}
+                         'title', 'where']
+    FLOAT_PROPERTIES = {'fontsize': [0, np.inf],
+                        'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
     def __init__(self, *args, **kwargs):
