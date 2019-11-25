@@ -33,7 +33,7 @@ height = 2
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['file_type', 'orientation',  # For XAxisTrack and SpacerTrack these 2 are not used
-                         'overlay previous', 'title']
+                         'overlay_previous', 'title']
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 

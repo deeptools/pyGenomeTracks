@@ -36,21 +36,21 @@ file_type = {}
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
                            'type': 'matrix',
-                           'pos score in bin': 'center',
-                           'show data range': True,
-                           'plot horizontal lines': False,
+                           'pos_score_in_bin': 'center',
+                           'show_data_range': True,
+                           'plot_horizontal_lines': False,
                            'orientation': None,
                            'rasterize': True}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'type': ['matrix', 'lines'],
-                           'pos score in bin': ['center', 'block'],
+                           'pos_score_in_bin': ['center', 'block'],
                            'orientation': [None, 'inverted']}
-    BOOLEAN_PROPERTIES = ['show data range', 'plot horizontal lines',
+    BOOLEAN_PROPERTIES = ['show_data_range', 'plot_horizontal_lines',
                           'rasterize']
-    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
-                         'type', 'pos score in bin', 'orientation',
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'type', 'pos_score_in_bin', 'orientation',
                          'title']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],

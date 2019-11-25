@@ -28,13 +28,13 @@ text =
 x position =
 """
     DEFAULTS_PROPERTIES = {'text': 'hello world'}
-    NECESSARY_PROPERTIES = ['x position']
+    NECESSARY_PROPERTIES = ['x_position']
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['text', 'title', 'file_type']
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
-    INTEGER_PROPERTIES = {'x position': [0, np.inf]}
+    INTEGER_PROPERTIES = {'x_position': [0, np.inf]}
     def plot(self, ax, chrom, region_start, region_end):
         """
         This example simply plots the given title at a fixed
@@ -47,7 +47,7 @@ x position =
             end_region: end coordinate
         """
         # print text at position x = self.properties['x position'] and y = 0.5 (center of the plot)
-        ax.text(float(self.properties['x position']), 0.5, self.properties['text'])
+        ax.text(float(self.properties['x_position']), 0.5, self.properties['text'])
 
 ```
 
@@ -67,7 +67,7 @@ height = 4
 title = new pyGenomeTrack
 file_type = text
 text = hello world
-x position = 3100000
+x_position = 3100000
 ```
 
 ```bash
@@ -109,14 +109,14 @@ class BedGraphMatrixTrack(BedGraphTrack):
         """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
-                           'show data range': True,
+                           'show_data_range': True,
                            'orientation': None}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
-    BOOLEAN_PROPERTIES = ['show data range']
-    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
+    BOOLEAN_PROPERTIES = ['show_data_range']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'title']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],

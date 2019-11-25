@@ -52,37 +52,37 @@ file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
-                           'show data range': True,
+                           'show_data_range': True,
                            'orientation': None,
                            'color': DEFAULT_BEDGRAPH_COLOR,
-                           'negative color': None,
+                           'negative_color': None,
                            'alpha': 1,
-                           'nans to zeros': False,
-                           'use middle': False,
-                           'summary method': None,
+                           'nans_to_zeros': False,
+                           'use_middle': False,
+                           'summary_method': None,
                            'rasterize': False,
-                           'number of bins': 700,
+                           'number_of_bins': 700,
                            'type': 'fill'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'summary method': ['mean', 'average', 'max', 'min',
+                           'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum', None]}
-    BOOLEAN_PROPERTIES = ['show data range', 'nans to zeros',
-                          'use middle', 'rasterize']
+    BOOLEAN_PROPERTIES = ['show_data_range', 'nans_to_zeros',
+                          'use_middle', 'rasterize']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
-                         'orientation', 'summary method',
-                         'title', 'color', 'negative color',
+                         'orientation', 'summary_method',
+                         'title', 'color', 'negative_color',
                          'type']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'alpha': [0, 1],
                         'height': [0, np.inf]}
-    INTEGER_PROPERTIES = {'number of bins': [1, np.inf]}
+    INTEGER_PROPERTIES = {'number_of_bins': [1, np.inf]}
     # The color can only be a color
-    # negative color can only be a color or None
+    # negative_color can only be a color or None
 
     def __init__(self, properties_dict):
         super(BedGraphTrack, self).__init__(properties_dict)

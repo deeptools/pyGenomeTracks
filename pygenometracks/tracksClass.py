@@ -490,13 +490,13 @@ class PlotTracks(object):
             # The track_options will be checked for the file paths:
             track_options = self.check_file_exists(track_options,
                                                    tracks_file_path)
-            # The 'overlay previous' is initialized:
-            if 'overlay previous' not in track_options:
-                track_options['overlay previous'] = 'no'
+            # The 'overlay_previous' is initialized:
+            if 'overlay_previous' not in track_options:
+                track_options['overlay_previous'] = 'no'
             # If there is no title:
             if 'title' not in track_options:
                 track_options['title'] = ''
-                if track_options['overlay previous'] == 'no' and \
+                if track_options['overlay_previous'] == 'no' and \
                    track_options['track_class'] not in [SpacerTrack,
                                                         XAxisTrack]:
                     log.warn = ("title not set for section {}"
@@ -606,7 +606,7 @@ class SpacerTrack(GenomeTrack):
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = ['overlay previous',
+    STRING_PROPERTIES = ['overlay_previous',
                          'title']
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
@@ -627,7 +627,7 @@ class XAxisTrack(GenomeTrack):
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {'where': ['top', 'bottom']}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = ['overlay previous',
+    STRING_PROPERTIES = ['overlay_previous',
                          'title', 'where']
     FLOAT_PROPERTIES = {'fontsize': [0, np.inf],
                         'height': [0, np.inf]}
@@ -653,7 +653,7 @@ class XAxisTrack(GenomeTrack):
                       for x in ticks]
             labels[-2] += " Mbp"
 
-        if 'where' in self.properties and self.properties['where'] == 'top':
+        if self.properties['where'] == 'top':
             ax.axis["x"] = ax.new_floating_axis(0, 0.2)
             ax.axis["x"].set_axis_direction("top")
             label_y_pos = 0.99
@@ -663,13 +663,13 @@ class XAxisTrack(GenomeTrack):
             label_y_pos = 0.01
             vert_align = 'bottom'
         ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
-                fontsize=int(self.properties['fontsize']),
+                fontsize=self.properties['fontsize'],
                 verticalalignment=vert_align, transform=ax.transAxes)
 
         ax.axis["x"].axis.set_ticklabels(labels)
         ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
 
-        ax.axis["x"].major_ticklabels.set(size=int(self.properties['fontsize']))
+        ax.axis["x"].major_ticklabels.set(size=self.properties['fontsize'])
 
     def plot_y_axis(self, ax, plot_ax):
         pass

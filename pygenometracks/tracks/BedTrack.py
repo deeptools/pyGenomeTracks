@@ -70,7 +70,7 @@ fontsize = 10
 # style to plot the genes when they have exon information
 #style = UCSC
 #style = flybase
-# maximum number of gene rows to be plotted. This
+# maximum number of gene_rows to be plotted. This
 # field is useful to limit large number of close genes
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
@@ -91,17 +91,17 @@ file_type = {}
     DEFAULTS_PROPERTIES = {'fontsize': 12,
                            'orientation': None,
                            'color': DEFAULT_BED_COLOR,
-                           'border color': 'black',
+                           'border_color': 'black',
                            'labels': True,
                            'style': 'flybase',
                            'display': DEFAULT_DISPLAY_BED,
                            'interval_height': 100,  # This one is not defined in the documentation
-                           'line width': 0.5,
+                           'line_width': 0.5,
                            'max_labels': 60,
-                           'prefered name': 'transcript_name',
-                           'merge transcripts': False,
-                           'global max row': False,
-                           'gene rows': None,
+                           'prefered_name': 'transcript_name',
+                           'merge_transcripts': False,
+                           'global_max_row': False,
+                           'gene_rows': None,
                            'max_value': None,
                            'min_value': None}
     NECESSARY_PROPERTIES = ['file']
@@ -111,21 +111,21 @@ file_type = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'style': ['flybase', 'UCSC'],
                            'display': DISPLAY_BED_VALID}
-    BOOLEAN_PROPERTIES = ['labels', 'merge transcripts', 'global max row']
-    STRING_PROPERTIES = ['prefered name', 'file', 'file_type',
-                         'overlay previous', 'orientation',
-                         'title', 'style', 'color', 'border color',
+    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row']
+    STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
+                         'overlay_previous', 'orientation',
+                         'title', 'style', 'color', 'border_color',
                          'display']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
                         'interval_height': [0, np.inf],
-                        'line width': [0, np.inf],
+                        'line_width': [0, np.inf],
                         'height': [0, np.inf]}
-    INTEGER_PROPERTIES = {'gene rows': [0, np.inf],
+    INTEGER_PROPERTIES = {'gene_rows': [0, np.inf],
                           'max_labels': [0, np.inf]}
     # The color can be a color or a colormap or 'bed_rgb'
-    # border color can only be a color
+    # border_color can only be a color
 
     def __init__(self, *args, **kwarg):
         super(BedTrack, self).__init__(*args, **kwarg)

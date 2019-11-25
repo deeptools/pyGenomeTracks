@@ -57,7 +57,7 @@ file_type = {}
                            'depth': 100000,
                            'orientation': None,
                            'show_masked_bins': False,
-                           'scale factor': 1,
+                           'scale_factor': 1,
                            'transform': 'no',
                            'max_value': None,
                            'min_value': None,
@@ -69,12 +69,12 @@ file_type = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'transform': ['no', 'log', 'log1p', '-log']}
     BOOLEAN_PROPERTIES = ['show_masked_bins', 'rasterize']
-    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'transform',
                          'title', 'colormap']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
-                        'scale factor': [- np.inf, np.inf],
+                        'scale_factor': [- np.inf, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {'depth': [1, np.inf]}
     # The colormap can only be a colormap

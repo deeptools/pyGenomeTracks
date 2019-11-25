@@ -31,30 +31,30 @@ use_summit = yes
 # narrowPeak file signal value (usually peak coverage)
 type = peak
 # if the peaks look too thin, the can be adjusted
-width adjust = 1.5
+width_adjust = 1.5
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'orientation': None,
                            'color': DEFAULT_NARROWPEAK_COLOR,
                            'max_value': None,
-                           'show data range': True,
-                           'show labels': True,
-                           'use summit': True,
-                           'width adjust': 1.5,
+                           'show_data_range': True,
+                           'show_labels': True,
+                           'use_summit': True,
+                           'width_adjust': 1.5,
                            'type': 'peak'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'type': ['peak', 'box']}
-    BOOLEAN_PROPERTIES = ['show data range', 'show labels',
-                          'use summit']
-    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
+    BOOLEAN_PROPERTIES = ['show_data_range', 'show_labels',
+                          'use_summit']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'type', 'title',
                          'color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
-                        'width adjust': [0, np.inf],
+                        'width_adjust': [0, np.inf],
                         'height': [0, np.inf]}
-    INTEGER_PROPERTIES = {'number of bins': [1, np.inf]}
+    INTEGER_PROPERTIES = {}
     # color can only be a color
 
     def set_properties_defaults(self):

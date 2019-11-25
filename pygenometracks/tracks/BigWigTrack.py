@@ -34,41 +34,41 @@ summary_method = mean
 # similarly points:ms sets the point size (markersize (ms) to the given float
 # type = line:0.5
 # type = points:0.5
-# set show data range to no to hide the text on the upper-left showing the data range
+# set show_data_range to no to hide the text on the upper-left showing the data range
 show_data_range = yes
 file_type = {}
     """.format(TRACK_TYPE)
 
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
-                           'show data range': True,
+                           'show_data_range': True,
                            'orientation': None,
                            'color': DEFAULT_BIGWIG_COLOR,
-                           'negative color': None,
+                           'negative_color': None,
                            'alpha': 1,
-                           'nans to zeros': False,
-                           'summary method': 'mean',
-                           'number of bins': 700,
+                           'nans_to_zeros': False,
+                           'summary_method': 'mean',
+                           'number_of_bins': 700,
                            'type': 'fill'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'summary method': ['mean', 'average', 'max', 'min',
+                           'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum']}
-    BOOLEAN_PROPERTIES = ['nans to zeros', 'show data range']
-    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
-                         'orientation', 'summary method',
-                         'title', 'color', 'negative color',
+    BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'orientation', 'summary_method',
+                         'title', 'color', 'negative_color',
                          'type']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'alpha': [0, 1],
                         'height': [0, np.inf]}
-    INTEGER_PROPERTIES = {'number of bins': [1, np.inf]}
+    INTEGER_PROPERTIES = {'number_of_bins': [1, np.inf]}
     # The color can only be a color
-    # negative color can only be a color or None
+    # negative_color can only be a color or None
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -124,7 +124,7 @@ file_type = {}
                     self.log.warning("After {} the scores could be computed".format(num_tries))
                 break
 
-        x_values = np.linspace(start_region, end_region, self.properties['number of bins'])
+        x_values = np.linspace(start_region, end_region, self.properties['number_of_bins'])
 
         plot_coverage(ax, x_values, scores_per_bin, self.plot_type, self.size,
                       self.properties['color'],

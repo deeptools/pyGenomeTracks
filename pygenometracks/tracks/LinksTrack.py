@@ -42,9 +42,9 @@ color = red
 line_style = solid
 file_type = {}
     """.format(TRACK_TYPE)
-    DEFAULTS_PROPERTIES = {'links type': 'arcs',
-                           'line width': None,
-                           'line style': 'solid',
+    DEFAULTS_PROPERTIES = {'links_type': 'arcs',
+                           'line_width': None,
+                           'line_style': 'solid',
                            'orientation': None,
                            'color': DEFAULT_LINKS_COLOR,
                            'alpha': 0.8,
@@ -54,16 +54,16 @@ file_type = {}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'links type': ['arcs', 'triangles', 'loops'],
-                           'line style': ['solid', 'dashed',
+                           'links_type': ['arcs', 'triangles', 'loops'],
+                           'line_style': ['solid', 'dashed',
                                           'dotted', 'dashdot']}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
-                         'orientation', 'links type', 'line style',
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'orientation', 'links_type', 'line_style',
                          'title', 'color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
-                        'line width': [0, np.inf],
+                        'line_width': [0, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
     # The color can be a color or a colormap (if there is a score)
@@ -72,7 +72,7 @@ file_type = {}
         super(LinksTrack, self).set_properties_defaults()
         self.max_height = None
         self.interval_tree, min_score, max_score, has_score = self.process_link_file()
-        if self.properties['line width'] is None and not has_score:
+        if self.properties['line_width'] is None and not has_score:
             self.log.warning("*WARNING* for section {}"
                              " no line_width has been set but some "
                              "lines do not have scores."
