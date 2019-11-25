@@ -252,12 +252,12 @@ class PlotTracks(object):
                 plot_axis.axis[:].set_visible(False)
                 # to make the background transparent
                 plot_axis.patch.set_visible(False)
+                if not overlay:
+                    y_axis = plt.subplot(grids[idx, 0])
+                    y_axis.set_axis_off()
 
-                y_axis = plt.subplot(grids[idx, 0])
-                y_axis.set_axis_off()
-
-                label_axis = plt.subplot(grids[idx, 2])
-                label_axis.set_axis_off()
+                    label_axis = plt.subplot(grids[idx, 2])
+                    label_axis.set_axis_off()
 
             plot_axis.set_xlim(start, end)
             track.plot(plot_axis, chrom, start, end)
