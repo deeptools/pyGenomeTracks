@@ -30,7 +30,7 @@ title = height=5
 orientation=inverted
 
 [spacer]
-width=0.5
+height=0.5
 
 [x-axis]
 """
