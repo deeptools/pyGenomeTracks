@@ -148,17 +148,6 @@ file_type = {}
 
     def set_properties_defaults(self):
         super(BedTrack, self).set_properties_defaults()
-        try:
-            self.properties['fontsize'] = float(self.properties['fontsize'])
-        except TypeError:
-            default_value = self.DEFAULTS_PROPERTIES['fontsize']
-            self.log.warning("'fontsize' value: {} "
-                             "for bed file {} "
-                             "is not valid. Using default value ({}})"
-                             "".format(self.properties['fontsize'],
-                                       self.properties['file'],
-                                       default_value))
-            self.properties['fontsize'] = default_value
         self.fp = font_manager.FontProperties(size=self.properties['fontsize'])
         self.colormap = None
 

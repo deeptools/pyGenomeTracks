@@ -107,19 +107,6 @@ file_type = {}
         super(BedGraphTrack, self).process_type_for_coverage_track()
         if self.properties['negative color'] is None:
             self.properties['negative color'] = self.properties['color']
-        if self.properties['summary method'] is not None:
-            try:
-                self.properties['number of bins'] = \
-                    int(self.properties['number of bins'])
-            except TypeError:
-                default_value = self.DEFAULTS_PROPERTIES['number of bins']
-                self.log.warning("'number of bins' value: {} "
-                                 "for bedgraph file {} "
-                                 "is not valid. Using default value ({}})"
-                                 "".format(self.properties['number of bins'],
-                                           self.properties['file'],
-                                           default_value))
-                self.properties['number of bins'] = default_value
 
     def _get_row_data(self, row):
         """
