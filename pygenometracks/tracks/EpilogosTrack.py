@@ -6,7 +6,7 @@ import json
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 from matplotlib import cm
-
+import numpy as np
 
 class EpilogosTrack(BedGraphTrack):
     """
