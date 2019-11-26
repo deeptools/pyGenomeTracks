@@ -15,7 +15,7 @@ class TADsTrack(BedTrack):
                            'interval_height': 100,  # This one is not defined in the documentation
                            'line_width': 0.5,
                            'prefered_name': 'transcript_name',
-                           'merge transcripts': False,
+                           'merge_transcripts': False,
                            'max_value': None,
                            'min_value': None}
     NECESSARY_PROPERTIES = ['file']

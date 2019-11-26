@@ -427,12 +427,11 @@ min_value |  |  | not set | not set | not set |  | not set | not set | not set |
 border_color |  |  |  | black | black |  |  |  |  | 
 interval_height |  |  |  | 100 | 100 |  |  |  |  | 
 prefered_name |  |  |  | transcript_name | transcript_name |  |  |  |  | 
-merge transcripts |  |  |  | False |  |  |  |  |  | 
+merge_transcripts |  |  |  | off | off |  |  |  |  | 
 labels |  |  |  |  | on |  |  |  |  | 
 style |  |  |  |  | flybase |  |  |  |  | 
 display |  |  |  |  | stacked |  |  |  |  | 
 max_labels |  |  |  |  | 60 |  |  |  |  | 
-merge_transcripts |  |  |  |  | off |  |  |  |  | 
 global_max_row |  |  |  |  | no |  |  |  |  | 
 gene_rows |  |  |  |  | not set |  |  |  |  | 
 show_data_range |  |  |  |  |  | yes | yes | yes | yes | 
@@ -501,7 +500,7 @@ They are summarized here:
 - **use_summit**:
   - for *narrow_peak*: yes, no
 - **merge_transcripts**:
-  - for *bed*: on, off
+  - for *domains, bed*: on, off
 
 Adding new tracks
 -----------------
