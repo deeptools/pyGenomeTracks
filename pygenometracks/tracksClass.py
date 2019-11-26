@@ -486,6 +486,9 @@ class PlotTracks(object):
 class SpacerTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
+    DEFAULTS_PROPERTIES = {}
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {}
 
     def plot(self, ax, chrom_region, start_region, end_region):
         pass
@@ -497,11 +500,13 @@ class SpacerTrack(GenomeTrack):
 class XAxisTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
+    DEFAULTS_PROPERTIES = {'where': 'bottom',
+                           'fontsize': 15}
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {'where': ['top', 'bottom']}
 
     def __init__(self, *args, **kwargs):
         super(XAxisTrack, self).__init__(*args, **kwargs)
-        if 'fontsize' not in self.properties:
-            self.properties['fontsize'] = 15
 
     def plot(self, ax, chrom_region, region_start, region_end):
         ticks = ax.get_xticks()
@@ -520,7 +525,7 @@ class XAxisTrack(GenomeTrack):
                       for x in ticks]
             labels[-2] += " Mbp"
 
-        if 'where' in self.properties and self.properties['where'] == 'top':
+        if self.properties['where'] == 'top':
             ax.axis["x"] = ax.new_floating_axis(0, 0.2)
             ax.axis["x"].set_axis_direction("top")
             label_y_pos = 0.99
