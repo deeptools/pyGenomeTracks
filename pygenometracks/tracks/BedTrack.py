@@ -423,7 +423,7 @@ file_type = {}
                     pass
                 elif bed.end > start_region and bed.end < end_region:
                     ax.text(bed.end + self.small_relative,
-                            ypos + (float(self.properties['interval_height']) / 2),
+                            ypos + (self.properties['interval_height'] / 2),
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
 
@@ -530,7 +530,7 @@ file_type = {}
            bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor)
             return
-        half_height = float(self.properties['interval_height']) / 2
+        half_height = self.properties['interval_height'] / 2
         # draw 'backbone', a line from the start until the end of the gene
         ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height],
                 'black', linewidth=linewidth, zorder=-1)
@@ -599,7 +599,7 @@ file_type = {}
         :param ypos:
         :return: None
         """
-        half_height = float(self.properties['interval_height']) / 2
+        half_height = self.properties['interval_height'] / 2
         if strand == '+':
             x0 = start
             x1 = end  # - self.small_relative
@@ -639,8 +639,8 @@ file_type = {}
         if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
-        half_height = float(self.properties['interval_height']) / 2
-        quarter_height = float(self.properties['interval_height']) / 4
+        half_height = self.properties['interval_height'] / 2
+        quarter_height = self.properties['interval_height'] / 4
         three_quarter_height = quarter_height * 3
 
         # draw 'backbone', a line from the start until the end of the gene

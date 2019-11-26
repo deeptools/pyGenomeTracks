@@ -60,7 +60,6 @@ file_type = {}
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
         self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
-        self.properties['width_adjust'] = float(self.properties['width_adjust'])
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
         # uses bezier curves to plot a shape that
