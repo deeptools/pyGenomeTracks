@@ -106,7 +106,7 @@ height = 1
 
 [tads 3]
 file = tad_classification.bed
-title = TADs color = #cccccc; border color = red (next track: overlay
+title = TADs color = #cccccc; border_color = red (next track: overlay
         previous = share-y links; type = loops)
 file_type = domains
 border_color = red
