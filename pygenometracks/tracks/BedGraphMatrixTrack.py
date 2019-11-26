@@ -22,15 +22,15 @@ type = lines
 # If the type is not lines, you can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = no
-# pos score in bin means 'position of score with respect to bin start and end'
+# pos_score_in_bin means 'position of score with respect to bin start and end'
 # if the lines option is used, the y values can be put at the
 # center of the bin (default) or they can be plot as 'block',
 # which mean to plot the values as a line between the start and end of bin
-pos score in bin = center
-show data range = yes
+pos_score_in_bin = center
+show_data_range = yes
 
 # only when type lines is used. Adds horizontal lines
-plot horizontal lines = no
+plot_horizontal_lines = no
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
@@ -68,19 +68,19 @@ file_type = {}
             matrix = np.flipud(matrix)
 
         if self.properties['type'] == 'lines':
-            if self.properties['pos score in bin'] == 'block':
+            if self.properties['pos_score_in_bin'] == 'block':
                 # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
                 x_values = sum(start_pos, tuple())
             else:
                 x_values = [x[0] + (x[1] - x[0]) / 2 for x in start_pos]
 
             for row in matrix:
-                if self.properties['pos score in bin'] == 'block':
+                if self.properties['pos_score_in_bin'] == 'block':
                     # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
                     row = np.repeat(row, 2)
                 ax.plot(x_values, row, color='grey', linewidth=0.5)
 
-            if self.properties['pos score in bin'] == 'block':
+            if self.properties['pos_score_in_bin'] == 'block':
                 mean_values = np.repeat(matrix.mean(axis=0), 2)
             else:
                 mean_values = matrix.mean(axis=0)
@@ -89,7 +89,7 @@ file_type = {}
             ymin = self.properties['min_value']
             ax.set_ylim(ymin, ymax)
 
-            if self.properties['plot horizontal lines']:
+            if self.properties['plot_horizontal_lines']:
                 ax.grid(True)
                 ax.grid(True, axis='y')
                 ax.axhline(y=0, color='black', linewidth=1)

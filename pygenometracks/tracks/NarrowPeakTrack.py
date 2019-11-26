@@ -18,12 +18,12 @@ class NarrowPeakTrack(BedGraphTrack):
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 color = #FF000080
 #max_value = 0.70
-show data range = yes
-show labels = yes
+show_data_range = yes
+show_labels = yes
 # the narrowPeak format provides the information of the
 # peak summit. By default this information is used
 # although some peaks may look crooked.
-use summit = yes
+use_summit = yes
 # type of plot: either box or peak
 # box will plot a rectangle of the peak width
 # peak will plot the shape of the peak, whose height is the
@@ -48,7 +48,7 @@ file_type = {}
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
         self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
-        self.properties['width adjust'] = float(self.properties['width adjust'])
+        self.properties['width_adjust'] = float(self.properties['width_adjust'])
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
         # uses bezier curves to plot a shape that
@@ -75,7 +75,7 @@ file_type = {}
         return patches.PathPatch(path)
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        '''
+        """
 
         Args:
             chrom_region:
@@ -84,7 +84,7 @@ file_type = {}
 
         Returns:
 
-        '''
+        """
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region, return_nans=False)
         if pos_list == []:
             return
@@ -98,7 +98,7 @@ file_type = {}
             q_value = float(q_value)
             summit = int(summit)
             start, end = pos_list[idx]
-            if summit > 0 and self.properties['use summit']:
+            if summit > 0 and self.properties['use_summit']:
                 summit = start + summit
             else:
                 summit = None
@@ -111,13 +111,13 @@ file_type = {}
                 if signal_value > max_signal:
                     max_signal = signal_value
                 p = self.peak_plot(start, end, signal_value, center=summit,
-                                   width_adjust=self.properties['width adjust'])
+                                   width_adjust=self.properties['width_adjust'])
                 p.set_edgecolor(self.properties['color'])
                 self.patches.append(p)
 
             x_pos = start + float(end - start) / 2
             y_pos = 0 - max_signal * 0.05
-            if self.properties['show labels']:
+            if self.properties['show_labels']:
                 ax.text(x_pos, y_pos, "{}\np-val:{:.1f}\nq-val:{:.1f}".format(name, p_value, q_value),
                         horizontalalignment='center', size='smaller', verticalalignment='top')
 
@@ -128,7 +128,7 @@ file_type = {}
             self.properties['max_value'] = max_signal
 
         ymax = self.properties['max_value']
-        if self.properties['show labels']:
+        if self.properties['show_labels']:
             if self.properties['type'] == 'box':
                 ymin = ymax * -3
             else:
@@ -151,7 +151,7 @@ file_type = {}
         Returns:
 
         """
-        if not self.properties['show data range']:
+        if not self.properties['show_data_range']:
             return
 
         if self.properties['type'] == 'box':

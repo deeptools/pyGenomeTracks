@@ -31,7 +31,7 @@ pyGenomeTracks works with python >=3.6.
 Currently, the best way to install pyGenomeTracks is with anaconda
 
 ```bash
-$ conda install -c bioconda pygenometracks
+$ conda install -c bioconda -c conda-forge pygenometracks
 ```
 
 Also, pyGenomeTracks can be installed using pip

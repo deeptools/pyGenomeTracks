@@ -21,13 +21,13 @@ min_value = 0
 # The number of bins takes the region to be plotted and divides it into the number of bins specified
 # Then, at each bin the bigwig mean value is computed and plotted.
 # A lower number of bins produces a coarser tracks
-number of bins = 700
+number_of_bins = 700
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
-nans to zeros = True
+nans_to_zeros = True
 # The possible summary methods are given by pyBigWig:
 # mean/average/stdev/dev/max/min/cov/coverage/sum
 # default is mean
-summary method = mean
+summary_method = mean
 # for type, the options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -35,7 +35,7 @@ summary method = mean
 # type = line:0.5
 # type = points:0.5
 # set show data range to no to hide the text on the upper-left showing the data range
-show data range = yes
+show_data_range = yes
 file_type = {}
     """.format(TRACK_TYPE)
 
@@ -63,20 +63,20 @@ file_type = {}
     def set_properties_defaults(self):
         super(BigWigTrack, self).set_properties_defaults()
         super(BigWigTrack, self).process_type_for_coverage_track()
-        if self.properties['negative color'] is None:
-            self.properties['negative color'] = self.properties['color']
+        if self.properties['negative_color'] is None:
+            self.properties['negative_color'] = self.properties['color']
         try:
-            self.properties['number of bins'] = \
-                int(self.properties['number of bins'])
+            self.properties['number_of_bins'] = \
+                int(self.properties['number_of_bins'])
         except TypeError:
-            default_value = self.DEFAULTS_PROPERTIES['number of bins']
+            default_value = self.DEFAULTS_PROPERTIES['number_of_bins']
             self.log.warning("'number of bins' value: {} "
                              "for bedgraph file {} "
                              "is not valid. Using default value ({}})"
                              "".format(self.properties['number of bins'],
                                        self.properties['file'],
                                        default_value))
-            self.properties['number of bins'] = default_value
+            self.properties['number_of_bins'] = default_value
 
     def plot(self, ax, chrom_region, start_region, end_region):
         formated_region = "{}:{}-{}".format(chrom_region, start_region, end_region)
@@ -107,8 +107,8 @@ file_type = {}
             num_tries += 1
             try:
                 scores_per_bin = np.array(self.bw.stats(chrom_region, start_region,
-                                                        end_region, nBins=self.properties['number of bins'],
-                                                        type=self.properties['summary method'])).astype(float)
+                                                        end_region, nBins=self.properties['number_of_bins'],
+                                                        type=self.properties['summary_method'])).astype(float)
                 if self.properties['nans to zeros'] and np.any(np.isnan(scores_per_bin)):
                     scores_per_bin[np.isnan(scores_per_bin)] = 0
             except Exception as e:
@@ -126,7 +126,7 @@ file_type = {}
 
         plot_coverage(ax, x_values, scores_per_bin, self.plot_type, self.size,
                       self.properties['color'],
-                      self.properties['negative color'],
+                      self.properties['negative_color'],
                       self.properties['alpha'])
 
         ymin, ymax = ax.get_ylim()

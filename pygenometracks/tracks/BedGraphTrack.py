@@ -25,7 +25,7 @@ color = green
 min_value = 0
 #max_value = auto
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
-nans to zeros = True
+nans_to_zeros = True
 # for type, the options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -36,7 +36,7 @@ nans to zeros = True
 # the non-missing data (NaNs) together and only use the
 # middle of the region instead of the region itself:
 # Default is no.
-# use middle = yes
+# use_middle = yes
 # By default the bedgraph is plotted at the base pair
 # Resolution. This can lead to very large pdf/svg files
 # If plotting a large regions.
@@ -46,8 +46,8 @@ nans to zeros = True
 # Or use a summary method on a given number of bin:
 # The possible summary methods are given by pyBigWig:
 # mean/average/stdev/dev/max/min/cov/coverage/sum
-# summary method = mean
-# number of bins = 700
+# summary_method = mean
+# number_of_bins = 700
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
@@ -90,21 +90,21 @@ file_type = {}
     def set_properties_defaults(self):
         super(BedGraphTrack, self).set_properties_defaults()
         super(BedGraphTrack, self).process_type_for_coverage_track()
-        if self.properties['negative color'] is None:
-            self.properties['negative color'] = self.properties['color']
-        if self.properties['summary method'] is not None:
+        if self.properties['negative_color'] is None:
+            self.properties['negative_color'] = self.properties['color']
+        if self.properties['summary_method'] is not None:
             try:
-                self.properties['number of bins'] = \
-                    int(self.properties['number of bins'])
+                self.properties['number_of_bins'] = \
+                    int(self.properties['number_of_bins'])
             except TypeError:
-                default_value = self.DEFAULTS_PROPERTIES['number of bins']
-                self.log.warning("'number of bins' value: {} "
+                default_value = self.DEFAULTS_PROPERTIES['number_of_bins']
+                self.log.warning("'number_of_bins' value: {} "
                                  "for bedgraph file {} "
                                  "is not valid. Using default value ({}})"
                                  "".format(self.properties['number of bins'],
                                            self.properties['file'],
                                            default_value))
-                self.properties['number of bins'] = default_value
+                self.properties['number_of_bins'] = default_value
 
     def _get_row_data(self, row):
         """
@@ -203,14 +203,14 @@ file_type = {}
         if pos_list == []:
             return
         score_list = [float(x[0]) for x in score_list]
-        if self.properties['use middle']:
+        if self.properties['use_middle']:
             x_values = np.asarray([(t[0] + t[1]) / 2
                                    for i, t in enumerate(pos_list)
                                    if not np.isnan(score_list[i])],
                                   dtype=np.float)
             score_list = np.asarray([x for x in score_list if not np.isnan(x)],
                                     dtype=np.float)
-        elif self.properties['summary method'] is not None:
+        elif self.properties['summary_method'] is not None:
             score_list, x_values = self.get_values_as_bigwig(score_list,
                                                              pos_list,
                                                              chrom_region,
@@ -231,7 +231,7 @@ file_type = {}
         else:
             plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
                           self.properties['color'],
-                          self.properties['negative color'],
+                          self.properties['negative_color'],
                           self.properties['alpha'])
 
         ymax = self.properties['max_value']
@@ -271,13 +271,13 @@ file_type = {}
         scores_per_bin = np.array(bw.stats(chrom_region,
                                            start_region,
                                            end_region,
-                                           nBins=self.properties['number of bins'],
-                                           type=self.properties['summary method'])).astype(float)
+                                           nBins=self.properties['number_of_bins'],
+                                           type=self.properties['summary_method'])).astype(float)
         os.remove(temp_bigwig_file)
-        if self.properties['nans to zeros'] and np.any(np.isnan(scores_per_bin)):
+        if self.properties['nans_to_zeros'] and np.any(np.isnan(scores_per_bin)):
             scores_per_bin[np.isnan(scores_per_bin)] = 0
         x_values = np.linspace(start_region, end_region,
-                               self.properties['number of bins'])
+                               self.properties['number_of_bins'])
 
         return scores_per_bin, x_values
 
@@ -293,7 +293,7 @@ file_type = {}
         # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
         x_values = np.asarray(sum(pos_list, tuple()), dtype=np.float)
 
-        if self.properties['nans to zeros']:
+        if self.properties['nans_to_zeros']:
             score_list[np.isnan(score_list)] = 0
 
         return score_list, x_values

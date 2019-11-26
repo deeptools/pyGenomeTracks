@@ -27,7 +27,7 @@ class LinksTrack(GenomeTrack):
 # the triangles, and loops options are convenient to overlay over a
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
 # For these tracks do not hesitate to put large line width like 5 or 10.
-links type = arcs
+links_type = arcs
 # color of the lines
 # if color is a valid colormap name (like RdYlGn),
 # then the score is mapped to the colormap.
@@ -37,22 +37,22 @@ color = red
 # alpha = 0.5
 # if line width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
-# line width = 0.5
+# line_width = 0.5
 # options for line style are 'solid', 'dashed', 'dotted', and 'dashdot'
 line style = solid
 file_type = {}
     """.format(TRACK_TYPE)
-    DEFAULTS_PROPERTIES = {'links type': 'arcs',
-                           'line width': None,
-                           'line style': 'solid',
+    DEFAULTS_PROPERTIES = {'links_type': 'arcs',
+                           'line_width': None,
+                           'line_style': 'solid',
                            'orientation': None,
                            'color': DEFAULT_LINKS_COLOR,
                            'alpha': 0.8,
                            'max_value': None,
                            'min_value': None}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'links type': ['arcs', 'triangles', 'loops'],
-                           'line style': ['solid', 'dashed',
+                           'links_type': ['arcs', 'triangles', 'loops'],
+                           'line_style': ['solid', 'dashed',
                                           'dotted', 'dashdot']}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -61,13 +61,13 @@ file_type = {}
         super(LinksTrack, self).set_properties_defaults()
         self.max_height = None
         self.interval_tree, min_score, max_score, has_score = self.process_link_file()
-        if self.properties['line width'] is None and not has_score:
+        if self.properties['line_width'] is None and not has_score:
             self.log.warning("*WARNING* for section {}"
-                             " no line width has been set but some "
+                             " no line_width has been set but some "
                              "lines do not have scores."
-                             "line width has been set to "
+                             "line_width has been set to "
                              "0.5".format(self.properties['section_name']))
-            self.properties['line width'] = 0.5
+            self.properties['line_width'] = 0.5
 
         self.colormap = None
         # check if the color given is a color map
@@ -134,14 +134,14 @@ file_type = {}
             if interval.begin < region_start and interval.end > region_end:
                 continue
 
-            if self.properties['line width'] is not None:
-                self.line_width = float(self.properties['line width'])
+            if self.properties['line_width'] is not None:
+                self.line_width = float(self.properties['line_width'])
             else:
                 self.line_width = 0.5 * np.sqrt(interval.data[4])
 
-            if self.properties['links type'] == 'triangles':
+            if self.properties['links_type'] == 'triangles':
                 self.plot_triangles(ax, interval)
-            elif self.properties['links type'] == 'loops':
+            elif self.properties['links_type'] == 'loops':
                 self.plot_loops(ax, interval.data)
             else:
                 self.plot_arcs(ax, interval)
@@ -161,7 +161,7 @@ file_type = {}
         # self.log.debug('title is {}'.format(self.properties['title']))
 
     def plot_y_axis(self, ax, plot_ax):
-        if self.colormap is not None and self.properties['overlay previous'] == 'no':
+        if self.colormap is not None and self.properties['overlay_previous'] == 'no':
             self.colormap.set_array([])
 
             cobar = plt.colorbar(self.colormap, ax=ax, fraction=1,
@@ -200,7 +200,7 @@ file_type = {}
             rgb = self.properties['color']
         ax.add_patch(Arc((center, 0), diameter,
                          diameter, 0, 0, 180, color=rgb,
-                         linewidth=self.line_width, ls=self.properties['line style']))
+                         linewidth=self.line_width, ls=self.properties['line_style']))
 
     def plot_triangles(self, ax, interval):
         x1 = interval.begin
@@ -219,7 +219,7 @@ file_type = {}
                            closed=False,
                            facecolor='none', edgecolor=rgb,
                            linewidth=self.line_width,
-                           ls=self.properties['line style'])
+                           ls=self.properties['line_style'])
         ax.add_artist(triangle)
         if y2 > self.max_height:
             self.max_height = y2
@@ -254,7 +254,7 @@ file_type = {}
         rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
                             facecolor='none', edgecolor=rgb,
                             linewidth=self.line_width,
-                            ls=self.properties['line style'])
+                            ls=self.properties['line_style'])
         ax.add_artist(rectangle)
         if y2 > self.max_height:
             self.max_height = y2

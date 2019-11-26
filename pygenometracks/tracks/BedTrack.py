@@ -31,10 +31,10 @@ class BedTrack(GenomeTrack):
 # type = gtf
 # In the case of a gtf file, by default the transcript_name is used.
 # If you want to use the gene_name:
-# prefered name = gene_name
+# prefered_name = gene_name
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
-# merge transcripts = on
+# merge_transcripts = on
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 # color = bed_rgb
@@ -57,8 +57,8 @@ labels = off
 #max_labels = 60
 # optional: font size can be given to override the default size
 fontsize = 10
-# optional: line width
-#line width = 0.5
+# optional: line_width
+#line_width = 0.5
 # the display parameter defines how the bed file is plotted.
 # The options are ['collapsed', 'interleaved', 'triangles'] This options asume that the regions do not overlap.
 # `collapsed`: The bed regions are plotted one after the other in one line.
@@ -66,7 +66,7 @@ fontsize = 10
 # if display is not given, then each region is plotted using the gene style
 #optional, default is black. To remove the background color, simply set 'color' and 'background color' to the
 # same value
-#border color = black
+#border_color = black
 # style to plot the genes when they have exon information
 #style = UCSC
 #style = flybase
@@ -74,16 +74,16 @@ fontsize = 10
 # field is useful to limit large number of close genes
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
-#gene rows = 10
+#gene_rows = 10
 # if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
 # option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
-#overlay previous = yes
+#overlay_previous = yes
 # by default the ymax is the number of
 # rows occupied by the genes in the region plotted. However,
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
-#global max row = yes
+#global_max_row = yes
 # optional. If not given is guessed from the file ending.
 file_type = {}
     """.format(TRACK_TYPE)
@@ -189,8 +189,8 @@ file_type = {}
         if self.properties['file'].endswith('gtf') or \
            self.properties['file'].endswith('gtf.gz'):
             bed_file_h = ReadGtf(self.properties['file'],
-                                 self.properties['prefered name'],
-                                 self.properties['merge transcripts'])
+                                 self.properties['prefered_name'],
+                                 self.properties['merge_transcripts'])
         else:
             bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
@@ -316,7 +316,7 @@ file_type = {}
             self.small_relative = 0.004 * (end_region - start_region)
             self.get_length_w(ax.get_figure().get_figwidth(), start_region,
                               end_region)
-            if self.properties['global max row']:
+            if self.properties['global_max_row']:
                 self.get_max_num_row(self.len_w, self.small_relative)
 
             # turn labels off when too many intervals are visible.
@@ -324,7 +324,7 @@ file_type = {}
                len(genes_overlap) > self.properties['max_labels']:
                 self.properties['labels'] = False
 
-            linewidth = self.properties['line width']
+            linewidth = self.properties['line_width']
             max_num_row_local = 1
             max_ypos = 0
             # check for the number of other intervals that overlap
@@ -394,8 +394,8 @@ file_type = {}
                 ypos = self.get_y_pos(free_row)
 
                 # do not plot if the maximum interval rows to plot is reached
-                if self.properties['gene rows'] is not None and \
-                   free_row >= int(self.properties['gene rows']):
+                if self.properties['gene_rows'] is not None and \
+                   free_row >= int(self.properties['gene_rows']):
                     continue
 
                 if free_row > max_num_row_local:
@@ -431,11 +431,11 @@ file_type = {}
                                         chrom_region, start_region, end_region))
             ymax = 0
 
-            if self.properties['global max row']:
+            if self.properties['global_max_row']:
                 ymin = self.max_num_row[chrom_region] * self.row_scale
 
-            elif self.properties['gene rows'] is not None:
-                ymin = int(self.properties['gene rows']) * self.row_scale
+            elif self.properties['gene_rows'] is not None:
+                ymin = int(self.properties['gene_rows']) * self.row_scale
             else:
                 ymin = max_ypos + self.properties['interval_height']
 
@@ -479,7 +479,7 @@ file_type = {}
 
     def get_rgb_and_edge_color(self, bed):
         rgb = self.properties['color']
-        edgecolor = self.properties['border color']
+        edgecolor = self.properties['border_color']
 
         if self.colormap:
             # translate value field (in the example above is 0 or 0.2686...)
@@ -718,7 +718,7 @@ file_type = {}
             rgb, edgecolor = self.get_rgb_and_edge_color(region.data)
 
             triangle = Polygon([[x1, y1], [x2, y2], [x3, y1]], closed=True,
-                               facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line width'])
+                               facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line_width'])
             ax.add_artist(triangle)
             valid_regions += 1
 

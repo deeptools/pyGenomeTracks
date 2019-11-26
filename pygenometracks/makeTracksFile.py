@@ -41,9 +41,9 @@ def main(args=None):
     args.out.write("""
 [x-axis]
 #optional
-#fontsize=20
+#fontsize = 20
 # default is bottom meaning below the axis line
-# where=top
+# where = top
 
 [spacer]
 # height of space in cm (optional)
@@ -58,7 +58,7 @@ height = 0.5
                 if file_h.name.endswith(ending):
                     default_values = track_class.OPTIONS_TXT
                     default_values = default_values.replace("title =", "title = {}".format(label))
-                    args.out.write("\n[{label}]\nfile={file}\n{default_values}".
+                    args.out.write("\n[{label}]\nfile = {file}\n{default_values}".
                                    format(label=label, file=file_h.name, default_values=default_values))
 
                     sys.stdout.write("Adding {} file: {}\n".format(track_type, file_h.name))
