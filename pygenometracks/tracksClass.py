@@ -430,6 +430,15 @@ class PlotTracks(object):
             unused_keys = []
             # Now we can proceed with the keywords:
             for name, value in parser.items(section_name):
+                # To be remove in the next 1.0 version
+                if ' ' in name:
+                    old_name = name
+                    name = '_'.join(name.split(' '))
+                    log.warn("Deprecated Warning: The section {} uses"
+                             " parameter {} but there is no more parameter"
+                             " with space in name. Will be substituted by {}."
+                             "".format(section_name, old_name, name))
+                # end
                 SYNONYMOUS_PROPERTIES = track_class.SYNONYMOUS_PROPERTIES
                 # If the name is part of the synonymous we substitute by
                 # the synonymous value
