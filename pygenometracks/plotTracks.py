@@ -32,7 +32,7 @@ orientation = inverted
 file = file.bed
 title = peaks
 color = red
-# optional border color. Set to none for no border color
+# optional border_color. Set to none for no border_color
 border_color = black
 height = 0.5
 # optional. If not given it is guessed from the file ending (file has to end in .bed)
@@ -97,7 +97,7 @@ title = chromatin states
 # color is replaced by the color in the bed file
 # in this case
 color = black
-# optional boder color. Set to none for no border color
+# optional border_color. Set to none for no border_color
 border_color = black
 # default behaviour when plotting intervals from a
 # bed file is to 'expand' them such that they
