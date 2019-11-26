@@ -39,7 +39,7 @@ with open(ROOT + "test_tracks_4.ini", 'w') as fh:
 test_tracks_5 = """
 [problem with boolean]
 file_type = bed
-file = dm3_subset_BDGP5.78_asbed_sorted.bed.gz
+file = empty.bed
 labels = 2
 """
 with open(ROOT + "test_tracks_5.ini", 'w') as fh:
@@ -48,7 +48,7 @@ with open(ROOT + "test_tracks_5.ini", 'w') as fh:
 test_tracks_6 = """
 [problem with float]
 file_type = bed
-file = dm3_subset_BDGP5.78_asbed_sorted.bed.gz
+file = empty.bed
 max_value = a
 """
 with open(ROOT + "test_tracks_6.ini", 'w') as fh:
@@ -57,7 +57,7 @@ with open(ROOT + "test_tracks_6.ini", 'w') as fh:
 test_tracks_7 = """
 [problem with float range]
 file_type = bed
-file = dm3_subset_BDGP5.78_asbed_sorted.bed.gz
+file = empty.bed
 fontsize = -2
 """
 with open(ROOT + "test_tracks_7.ini", 'w') as fh:
@@ -66,8 +66,8 @@ with open(ROOT + "test_tracks_7.ini", 'w') as fh:
 test_tracks_8 = """
 [problem with integer]
 file_type = bed
-file = dm3_subset_BDGP5.78_asbed_sorted.bed.gz
-gene rows = 1a2
+file = empty.bed
+gene_rows = 1a2
 """
 with open(ROOT + "test_tracks_8.ini", 'w') as fh:
     fh.write(test_tracks_8)
@@ -75,8 +75,8 @@ with open(ROOT + "test_tracks_8.ini", 'w') as fh:
 test_tracks_9 = """
 [problem with integer range]
 file_type = bed
-file = dm3_subset_BDGP5.78_asbed_sorted.bed.gz
-gene rows = -2
+file = empty.bed
+gene_rows = -2
 """
 with open(ROOT + "test_tracks_9.ini", 'w') as fh:
     fh.write(test_tracks_9)
