@@ -46,7 +46,7 @@ show_masked_bins = no
 # orientation = inverted
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
-# scale factor = 1
+# scale_factor = 1
 # You can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = no
@@ -204,8 +204,8 @@ file_type = {}
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         matrix = np.asarray(matrix.todense().astype(float))
-        if 'scale factor' in self.properties:
-            matrix = matrix * self.properties['scale factor']
+        if 'scale-factor' in self.properties:
+            matrix = matrix * self.properties['scale_factor']
 
         if 'transform' in self.properties:
             if self.properties['transform'] == 'log1p':

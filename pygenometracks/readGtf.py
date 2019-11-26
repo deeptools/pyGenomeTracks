@@ -72,9 +72,9 @@ class ReadGtf(object):
         return bed
 
     def get_bed_interval(self):
-        r"""
-        Processes a transcript from the database,
-        retrieve all the values and returns
+        """
+        Process a transcript from the database,
+        retrieve all the values and return
         a namedtuple object
         """
         tr = next(self.all_transcripts)

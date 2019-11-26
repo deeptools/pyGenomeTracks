@@ -7,7 +7,7 @@ channels:
    - conda-forge
 dependencies:
     - numpy >=1.16
-    - matplotlib >=3.0
+    - matplotlib =3.1.1
     - intervaltree >=2.1.0
     - pybigwig >=0.3.4
     - future >=0.17.0

@@ -57,14 +57,14 @@ categories_file = <path to json categories file>
         if 'type' not in self.properties:
             self.properties['type'] = 'matrix'
 
-        if 'pos score in bin' not in self.properties:
-            self.properties['pos score in bin'] = 'center'
+        if 'pos_score_in_bin' not in self.properties:
+            self.properties['pos_score_in_bin'] = 'center'
 
-        if 'show data range' not in self.properties:
-            self.properties['show data range'] = 'yes'
+        if 'show_data_range' not in self.properties:
+            self.properties['show_data_range'] = 'yes'
 
-        if 'plot horizontal lines' not in self.properties:
-            self.properties['plot horizontal lines'] = 'no'
+        if 'plot_horizontal_lines' not in self.properties:
+            self.properties['plot_horizontal_lines'] = 'no'
 
     def plot(self, ax, chrom_region, start_region, end_region):
         """
