@@ -400,7 +400,7 @@ file_type = {}
 
                 # do not plot if the maximum interval rows to plot is reached
                 if self.properties['gene_rows'] is not None and \
-                   free_row >= int(self.properties['gene_rows']):
+                   free_row >= self.properties['gene_rows']:
                     continue
 
                 if free_row > max_num_row_local:
@@ -440,7 +440,7 @@ file_type = {}
                 ymin = self.max_num_row[chrom_region] * self.row_scale
 
             elif self.properties['gene_rows'] is not None:
-                ymin = int(self.properties['gene_rows']) * self.row_scale
+                ymin = self.properties['gene_rows'] * self.row_scale
             else:
                 ymin = max_ypos + self.properties['interval_height']
 

@@ -90,10 +90,10 @@ file_type = {}
             if self.properties['region'][2] == 1e15:
                 region = [str(self.properties['region'][0])]
             elif len(self.properties['region']) == 3:
-                start = int(self.properties['region'][1]) - int(self.properties['depth'])
+                start = int(self.properties['region'][1]) - self.properties['depth']
                 if start < 0:
                     start = 0
-                end = int(self.properties['region'][2]) + int(self.properties['depth'])
+                end = int(self.properties['region'][2]) + self.properties['depth']
 
                 region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(end)]
         # try to open with end region + depth to avoid triangle effect in the plot
