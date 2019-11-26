@@ -25,7 +25,7 @@ height = 2
 # orientation = inverted
 # if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
 # option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
-#overlay previous = yes
+#overlay_previous = yes
 """
 
     def __init__(self, properties_dict):
@@ -48,7 +48,7 @@ height = 2
         Returns:
 
         """
-        if not self.properties.get('show data range', True):
+        if not self.properties.get('show_data_range', True):
             return
 
         def value_to_str(value):

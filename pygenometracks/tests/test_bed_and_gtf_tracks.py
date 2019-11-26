@@ -11,7 +11,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__)) + "/test_data/"
 browser_tracks = """
 [x-axis]
 where = top
-title = where=top
+title = where =top
 
 [spacer]
 height = 0.05
@@ -19,8 +19,8 @@ height = 0.05
 [genes 2]
 file = dm3_genes.bed.gz
 height = 7
-title = genes (bed12) style=flybase;fontsize=10
-style=UCSC
+title = genes (bed12) style = flybase; fontsize = 10
+style = UCSC
 fontsize = 10
 
 [spacer]
@@ -29,12 +29,14 @@ height = 1
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 7
-title = bed6 border color=black; gene rows=10; fontsize=8; color=Reds (when a color map is used for the color (e.g. coolwarm, Reds) the bed score column mapped to a color)
+title = bed6 border color = black; gene_rows=10; fontsize=8; color=Reds
+        (when a color map is used for the color (e.g. coolwarm, Reds) the bed
+        score column mapped to a color)
 fontsize = 7
 file_type = bed
 color = Reds
-border color = black
-gene rows = 10
+border_color = black
+gene_rows = 10
 
 [spacer]
 height = 1
@@ -42,13 +44,14 @@ height = 1
 [test bed4]
 file = dm3_genes.bed4.gz
 height = 10
-title = bed4 fontsize=10; line width=1.5; global max row=yes (global max row sets the number of genes per row as the maximum found anywhere in the genome, hence the white space at the bottom)
+title = bed4 fontsize = 10; line_width = 1.5; global_max_row = yes
+        (global max row sets the number of genes per row as the maximum found
+        anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed
-global max row = yes
+global_max_row = yes
 interval_height = 200
-line width = 1.5
-
+line_width = 1.5
 
 [spacer]
 height = 1
@@ -60,7 +63,6 @@ title = gtf from ensembl
 fontsize = 12
 file_type = bed
 
-
 [spacer]
 height = 1
 
@@ -71,7 +73,6 @@ title = gtf from ensembl in bed12
 fontsize = 12
 file_type = bed
 
-
 [spacer]
 height = 1
 
@@ -79,8 +80,8 @@ height = 1
 file = dm3_subset_BDGP5.78.gtf.gz
 height = 10
 title = gtf from ensembl one entry per gene
-merge transcripts = on
-prefered name = gene_name
+merge_transcripts = on
+prefered_name = gene_name
 fontsize = 12
 file_type = bed
 
@@ -88,8 +89,8 @@ file_type = bed
 height = 1
 
 [x-axis]
-fontsize=30
-title = fontsize=30
+fontsize = 30
+title = fontsize = 30
 
 """
 with open(ROOT + "bed_and_gtf_tracks.ini", 'w') as fh:
@@ -105,8 +106,8 @@ height = 0.05
 [genes 1]
 file = dm3_genes.bed.gz
 height = 7
-title = genes (bed12) style=flybase;fontsize=10
-style=UCSC
+title = genes (bed12) style = flybase; fontsize = 10
+style = UCSC
 fontsize = 10
 
 [spacer]
@@ -115,11 +116,10 @@ height = 1
 [genes 2]
 file = dm3_genes.bed.gz
 height = 7
-title = genes (bed12) style=flybase;fontsize=10;max_labels = 600
-style=UCSC
+title = genes (bed12) style = flybase; fontsize = 10; max_labels = 600
+style = UCSC
 fontsize = 10
 max_labels = 600
-
 
 """
 with open(ROOT + "bed_maxLab_tracks.ini", 'w') as fh:
@@ -131,9 +131,11 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 def test_plot_tracks_bed_and_gtf():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/bed_and_gtf_tracks.ini --region X:3000000-3300000 --trackLabelFraction 0.2 --width 38 " \
-           "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0}/bed_and_gtf_tracks.ini --region X:3000000-3300000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(ROOT + '/master_bed_and_gtf.png', outfile.name, tolerance)
     assert res is None, res
@@ -143,9 +145,11 @@ def test_plot_tracks_bed_and_gtf():
 
 def test_plot_tracks_bed_with_maxLab():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/bed_maxLab_tracks.ini --region X:2000000-3500000 --trackLabelFraction 0.2 --width 38 " \
-           "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0}/bed_maxLab_tracks.ini --region X:2000000-3500000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--outFileName  {1}".format(ROOT, outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(ROOT + '/master_maxLab.png', outfile.name, tolerance)
     assert res is None, res

@@ -15,6 +15,7 @@ import matplotlib.cm
 import mpl_toolkits.axisartist as axisartist
 import textwrap
 from . utilities import file_to_intervaltree
+from pygenometracks.tracks.GenomeTrack import GenomeTrack
 
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -148,9 +149,9 @@ class PlotTracks(object):
         """
         track_height = []
         for track_dict in self.track_list:
-            # if overlay previous is set to a value other than no
+            # if overlay_previous is set to a value other than no
             # then, skip this track height
-            if track_dict['overlay previous'] != 'no':
+            if track_dict['overlay_previous'] != 'no':
                 continue
             elif 'x-axis' in track_dict and track_dict['x-axis'] is True:
                 height = track_dict['fontsize'] / 8
@@ -226,22 +227,22 @@ class PlotTracks(object):
                                              width_ratios=self.width_ratios, wspace=0.01)
         axis_list = []
         # skipped_tracks is the count of tracks that have the
-        # 'overlay previous' parameter and should be skipped
+        # 'overlay_previous' parameter and should be skipped
         skipped_tracks = 0
         plot_axis = None
         for idx, track in enumerate(self.track_obj_list):
             log.info("plotting {}".format(track.properties['section_name']))
-            if idx == 0 and track.properties['overlay previous'] != 'no':
-                log.warning("First track can not have the `overlay previous` option")
-                track.properties['overlay previous'] = 'no'
+            if idx == 0 and track.properties['overlay_previous'] != 'no':
+                log.warning("First track can not have the `overlay_previous` option")
+                track.properties['overlay_previous'] = 'no'
 
-            if track.properties['overlay previous'] in ['yes', 'share-y']:
+            if track.properties['overlay_previous'] in ['yes', 'share-y']:
                 overlay = True
                 skipped_tracks += 1
             else:
                 overlay = False
 
-            if track.properties['overlay previous'] == 'share-y':
+            if track.properties['overlay_previous'] == 'share-y':
                 ylim = plot_axis.get_ylim()
             else:
                 idx -= skipped_tracks
@@ -251,19 +252,19 @@ class PlotTracks(object):
                 plot_axis.axis[:].set_visible(False)
                 # to make the background transparent
                 plot_axis.patch.set_visible(False)
+                if not overlay:
+                    y_axis = plt.subplot(grids[idx, 0])
+                    y_axis.set_axis_off()
 
-                y_axis = plt.subplot(grids[idx, 0])
-                y_axis.set_axis_off()
-
-                label_axis = plt.subplot(grids[idx, 2])
-                label_axis.set_axis_off()
+                    label_axis = plt.subplot(grids[idx, 2])
+                    label_axis.set_axis_off()
 
             plot_axis.set_xlim(start, end)
             track.plot(plot_axis, chrom, start, end)
             track.plot_y_axis(y_axis, plot_axis)
             track.plot_label(label_axis)
 
-            if track.properties['overlay previous'] == 'share-y':
+            if track.properties['overlay_previous'] == 'share-y':
                 plot_axis.set_ylim(ylim)
 
             if not overlay:
@@ -288,13 +289,23 @@ class PlotTracks(object):
         :return: None
         """
         vlines_list = []
-        if 'line width' in self.vlines_properties:
-            line_width = self.vlines_properties['line width']
+        if 'line_width' in self.vlines_properties:
+            line_width = self.vlines_properties['line_width']
         else:
             line_width = 0.5
 
         if chrom_region not in list(self.vlines_intval_tree):
+            chrom_region_before = chrom_region
             chrom_region = GenomeTrack.change_chrom_names(chrom_region)
+            if chrom_region not in list(self.vlines_intval_tree):
+                log.warning("*Warning*\nNeither "
+                            + chrom_region_before + " nor "
+                            + chrom_region + " exits as a "
+                            "chromosome name inside the "
+                            "file with vertical lines. "
+                            "No vertical lines will be "
+                            "plotted!!\n")
+                return
         chrom_region = GenomeTrack.check_chrom_str_bytes(self.vlines_intval_tree, chrom_region)
 
         for region in sorted(self.vlines_intval_tree[chrom_region][start_region - 10000:end_region + 10000]):
@@ -329,8 +340,8 @@ class PlotTracks(object):
                 track_options['x-axis'] = True
             for name, value in parser.items(section_name):
                 if name in ['max_value', 'min_value', 'depth', 'height',
-                            'line width', 'fontsize', 'scale factor',
-                            'number of bins', 'interval_height', 'alpha',
+                            'line_width', 'fontsize', 'scale_factor',
+                            'number_of_bins', 'interval_height', 'alpha',
                             'max_labels'] and value != 'auto':
                     track_options[name] = literal_eval(value)
                 elif name in ['labels', 'show data range',
@@ -366,12 +377,12 @@ class PlotTracks(object):
                 if 'file_type' not in track_dict:
                     track_dict['file_type'] = self.guess_filetype(track_dict, self.available_tracks)
 
-            if 'overlay previous' not in track_dict:
-                track_dict['overlay previous'] = 'no'
+            if 'overlay_previous' not in track_dict:
+                track_dict['overlay_previous'] = 'no'
             #  set some default values
             if 'title' not in track_dict:
                 track_dict['title'] = ''
-                if track_dict['overlay previous'] != 'no' or track_dict['section_name'].endswith('[x-axis]') \
+                if track_dict['overlay_previous'] != 'no' or track_dict['section_name'].endswith('[x-axis]') \
                         or track_dict['section_name'].endswith('[spacer]'):
                     pass
                 else:
@@ -405,7 +416,7 @@ class PlotTracks(object):
                 if file_field_name == 'boundaries_file':
                     log.warn("The boundaries_file is not used anymore"
                              " please use another track with the"
-                             " `overlay previous` option")
+                             " `overlay_previous` option")
                 # # END
                 file_names = [x for x in track_dict[file_field_name].split(" ") if x != '']
                 full_path_file_names = []
