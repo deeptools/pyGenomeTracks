@@ -70,7 +70,7 @@ fontsize = 10
 # style to plot the genes when they have exon information
 #style = UCSC
 #style = flybase
-# maximum number of gene_rows to be plotted. This
+# maximum number of gene rows to be plotted. This
 # field is useful to limit large number of close genes
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
