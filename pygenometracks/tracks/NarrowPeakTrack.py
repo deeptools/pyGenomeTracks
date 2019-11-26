@@ -36,10 +36,10 @@ file_type = {}
     DEFAULTS_PROPERTIES = {'orientation': None,
                            'color': DEFAULT_NARROWPEAK_COLOR,
                            'max_value': None,
-                           'show data range': True,
-                           'show labels': True,
-                           'use summit': True,
-                           'width adjust': 1.5,
+                           'show_data_range': True,
+                           'show_labels': True,
+                           'use_summit': True,
+                           'width_adjust': 1.5,
                            'type': 'peak'}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'type': ['peak', 'box']}
