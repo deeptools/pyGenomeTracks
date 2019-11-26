@@ -116,18 +116,17 @@ height = 2
         self.plot_type = 'fill'
         self.size = None
 
-        if 'type' in self.properties:
-            if self.properties['type'].find(":") > 0:
-                self.plot_type, size = self.properties['type'].split(":")
-                try:
-                    self.size = float(size)
-                except ValueError:
-                    exit("Invalid value: 'type = {}' in section: {}\n"
-                         "A number was expected and found '{}'".format(self.properties['type'],
-                                                                       self.properties['section_name'],
-                                                                       size))
-            else:
-                self.plot_type = self.properties['type']
+        if self.properties['type'].find(":") > 0:
+            self.plot_type, size = self.properties['type'].split(":")
+            try:
+                self.size = float(size)
+            except ValueError:
+                exit("Invalid value: 'type = {}' in section: {}\n"
+                     "A number was expected and found '{}'".format(self.properties['type'],
+                                                                   self.properties['section_name'],
+                                                                   size))
+        else:
+            self.plot_type = self.properties['type']
 
         if self.plot_type not in ['line', 'points', 'fill']:
             exit("Invalid: 'type = {}' in section: {}\n".format(self.properties['type'],

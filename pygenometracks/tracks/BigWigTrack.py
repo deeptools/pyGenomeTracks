@@ -48,7 +48,8 @@ file_type = {}
                            'alpha': 1,
                            'nans_to_zeros': False,
                            'summary_method': 'mean',
-                           'number_of_bins': 700}
+                           'number_of_bins': 700,
+                           'type': 'fill'}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',

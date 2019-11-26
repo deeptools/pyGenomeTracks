@@ -25,7 +25,7 @@ show_data_range |  |  |  |  |  | yes | yes | yes | yes |
 show_labels |  |  |  |  |  | yes |  |  |  | 
 use_summit |  |  |  |  |  | yes |  |  |  | 
 width_adjust |  |  |  |  |  | 1.5 |  |  |  | 
-type |  |  |  |  |  | peak |  |  | matrix | 
+type |  |  |  |  |  | peak | fill | fill | matrix | 
 negative_color |  |  |  |  |  |  | not set | not set |  | 
 nans_to_zeros |  |  |  |  |  |  | False | False |  | 
 summary_method |  |  |  |  |  |  | mean | not set |  | 
