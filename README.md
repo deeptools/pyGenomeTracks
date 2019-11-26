@@ -411,92 +411,96 @@ Here is a table to summarize which are the parameters that can be use for each o
 Empty means this parameter is not used.
 not set means that by default the parameter is commented.
 
-parameter | bedgraph | links | bed | hic_matrix | bigwig | domains | bedgraph_matrix | narrow_peak | epilogos | 
--- | - | - | - | - | - | - | - | - | - | 
-max_value | not set | not set | not set | not set | not set | not set | not set | not set |  | 
-min_value | not set | not set | not set | not set | not set | not set | not set |  |  | 
-show data range | yes |  |  |  | yes |  | yes | yes |  | 
-orientation | not set | not set | not set | not set | not set | not set | not set | not set | not set | 
-color | #a6cee3 | blue | #1f78b4 |  | #33a02c | #1f78b4 |  | #FF000080 |  | 
-alpha | 1 | 0.8 |  |  | 1 |  |  |  |  | 
-nans to zeros | False |  |  |  | False |  |  |  |  | 
-use middle | no |  |  |  |  |  |  |  |  | 
-summary method | not set |  |  |  | mean |  |  |  |  | 
-rasterize | no |  |  | yes |  |  | yes |  |  | 
-number of bins | 700 |  |  |  | 700 |  |  |  |  | 
-links type |  | arcs |  |  |  |  |  |  |  | 
-line width |  | not set | 0.5 |  |  | 0.5 |  |  |  | 
-line style |  | solid |  |  |  |  |  |  |  | 
-fontsize |  |  | 12 |  |  | 12 |  |  |  | 
-border color |  |  | black |  |  | black |  |  |  | 
-labels |  |  | on |  |  |  |  |  |  | 
-style |  |  | flybase |  |  |  |  |  |  | 
-display |  |  | stacked |  |  |  |  |  |  | 
-interval_height |  |  | 100 |  |  | 100 |  |  |  | 
-max_labels |  |  | 60 |  |  |  |  |  |  | 
-prefered name |  |  | transcript_name |  |  | transcript_name |  |  |  | 
-merge transcripts |  |  | off |  |  | off |  |  |  | 
-global max row |  |  | no |  |  |  |  |  |  | 
-gene rows |  |  | not set |  |  |  |  |  |  | 
-region |  |  |  | not set |  |  |  |  |  | 
-depth |  |  |  | 100000 |  |  |  |  |  | 
-show_masked_bins |  |  |  | no |  |  |  |  |  | 
-scale factor |  |  |  | 1 |  |  |  |  |  | 
-transform |  |  |  | no |  |  |  |  |  | 
-colormap |  |  |  | RdYlBu_r |  |  |  |  |  | 
-type |  |  |  |  |  |  | matrix | peak |  | 
-pos score in bin |  |  |  |  |  |  | center |  |  | 
-plot horizontal lines |  |  |  |  |  |  | no |  |  | 
-show labels |  |  |  |  |  |  |  | yes |  | 
-use summit |  |  |  |  |  |  |  | yes |  | 
-width adjust |  |  |  |  |  |  |  | 1.5 |  | 
-categories_file |  |  |  |  |  |  |  |  | not set | 
+parameter | x-axis | epilogos | links | domains | bed | narrow_peak | bigwig | bedgraph | bedgraph_matrix | hic_matrix
+-- | - | - | - | - | - | - | - | - | - | -
+where | bottom |  |  |  |  |  |  |  |  | 
+fontsize | 15 |  |  | 12 | 12 |  |  |  |  | 
+categories_file |  | not set |  |  |  |  |  |  |  | 
+orientation |  | not set | not set | not set | not set | not set | not set | not set | not set | not set
+links_type |  |  | arcs |  |  |  |  |  |  | 
+line_width |  |  | not set | 0.5 | 0.5 |  |  |  |  | 
+line_style |  |  | solid |  |  |  |  |  |  | 
+color |  |  | blue | #1f78b4 | #1f78b4 | #FF000080 | #33a02c | #a6cee3 |  | 
+alpha |  |  | 0.8 |  |  |  | 1 | 1 |  | 
+max_value |  |  | not set | not set | not set | not set | not set | not set | not set | not set
+min_value |  |  | not set | not set | not set |  | not set | not set | not set | not set
+border_color |  |  |  | black | black |  |  |  |  | 
+interval_height |  |  |  | 100 | 100 |  |  |  |  | 
+prefered_name |  |  |  | transcript_name | transcript_name |  |  |  |  | 
+merge_transcripts |  |  |  | off | off |  |  |  |  | 
+labels |  |  |  |  | on |  |  |  |  | 
+style |  |  |  |  | flybase |  |  |  |  | 
+display |  |  |  |  | stacked |  |  |  |  | 
+max_labels |  |  |  |  | 60 |  |  |  |  | 
+global_max_row |  |  |  |  | no |  |  |  |  | 
+gene_rows |  |  |  |  | not set |  |  |  |  | 
+show_data_range |  |  |  |  |  | yes | yes | yes | yes | 
+show_labels |  |  |  |  |  | yes |  |  |  | 
+use_summit |  |  |  |  |  | yes |  |  |  | 
+width_adjust |  |  |  |  |  | 1.5 |  |  |  | 
+type |  |  |  |  |  | peak |  |  | matrix | 
+negative_color |  |  |  |  |  |  | not set | not set |  | 
+nans_to_zeros |  |  |  |  |  |  | False | False |  | 
+summary_method |  |  |  |  |  |  | mean | not set |  | 
+number_of_bins |  |  |  |  |  |  | 700 | 700 |  | 
+use_middle |  |  |  |  |  |  |  | no |  | 
+rasterize |  |  |  |  |  |  |  | no | yes | yes
+pos_score_in_bin |  |  |  |  |  |  |  |  | center | 
+plot_horizontal_lines |  |  |  |  |  |  |  |  | no | 
+region |  |  |  |  |  |  |  |  |  | not set
+depth |  |  |  |  |  |  |  |  |  | 100000
+show_masked_bins |  |  |  |  |  |  |  |  |  | no
+scale_factor |  |  |  |  |  |  |  |  |  | 1
+transform |  |  |  |  |  |  |  |  |  | no
+colormap |  |  |  |  |  |  |  |  |  | RdYlBu_r
 
 
 Some parameters can take only discrete values.
 
 They are summarized here:
 
+- **where**:
+  - for *x-axis*: top, bottom
 - **orientation**:
-  - for *bedgraph,links,bed,hic_matrix,bigwig,domains,bedgraph_matrix,narrow_peak,epilogos*: inverted, not set
-- **summary method**:
-  - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
-  - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
-- **links type**:
+  - for *epilogos,links,domains,bed,narrow_peak,bigwig,bedgraph,bedgraph_matrix,hic_matrix*: inverted, not set
+- **links_type**:
   - for *links*: arcs, triangles, loops
-- **line style**:
+- **line_style**:
   - for *links*: solid, dashed, dotted, dashdot
 - **style**:
   - for *bed*: flybase, UCSC
 - **display**:
   - for *bed*: collapsed, triangles, interleaved, stacked
+- **type**:
+  - for *narrow_peak*: peak, box
+  - for *bedgraph_matrix*: matrix, lines
+- **summary_method**:
+  - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
+  - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
+- **pos_score_in_bin**:
+  - for *bedgraph_matrix*: center, block
 - **transform**:
   - for *hic_matrix*: no, log, log1p, -log
-- **type**:
-  - for *bedgraph_matrix*: matrix, lines
-  - for *narrow_peak*: peak, box
-- **pos score in bin**:
-  - for *bedgraph_matrix*: center, block
 - **labels**:
   - for *bed*: on, off
-- **show data range**:
-  - for *bedgraph, bigwig, bedgraph_matrix, narrow_peak*: yes, no
-- **plot horizontal lines**:
+- **show_data_range**:
+  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix*: yes, no
+- **plot_horizontal_lines**:
   - for *bedgraph_matrix*: yes, no
-- **use middle**:
+- **use_middle**:
   - for *bedgraph*: yes, no
 - **rasterize**:
-  - for *bedgraph, hic_matrix, bedgraph_matrix*: yes, no
-- **global max row**:
+  - for *bedgraph, bedgraph_matrix, hic_matrix*: yes, no
+- **global_max_row**:
   - for *bed*: yes, no
 - **show_masked_bins**:
   - for *hic_matrix*: yes, no
-- **show labels**:
+- **show_labels**:
   - for *narrow_peak*: yes, no
-- **use summit**:
+- **use_summit**:
   - for *narrow_peak*: yes, no
-- **merge transcripts**:
-  - for *bed, domains*: on, off
+- **merge_transcripts**:
+  - for *domains, bed*: on, off
 
 Adding new tracks
 -----------------
