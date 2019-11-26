@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This test file will check each part of the 
+This test file will check each part of the
 configuration file checker
 which can raise an InputError
 """
@@ -106,7 +106,7 @@ class TestCheckerMethods(unittest.TestCase):
 
     def test_vline_without_file(self):
         """
-        This test check that if you provide a section with 
+        This test check that if you provide a section with
         type = vlines but you do not provide any file
         you will have an error with a message containing
         there is no file
@@ -121,7 +121,7 @@ class TestCheckerMethods(unittest.TestCase):
 
     def test_missing_file_type(self):
         """
-        This test check that if you provide a section with 
+        This test check that if you provide a section with
         a file_type which is not part of the tracks class
         you will have an error with a message containing
         file_type ... does not exists
@@ -137,10 +137,10 @@ class TestCheckerMethods(unittest.TestCase):
 
     def test_unguessable_file_type_no_file(self):
         """
-        This test check that if you provide a section with 
+        This test check that if you provide a section with
         no file_type and no file which is not a x-axis nor a spacer
         you will have an error with a message containing
-         there is no file_type nor file 
+         there is no file_type nor file
         """
         outfile_name = "test.png"
         args = "--tracks {0}/test_tracks_3.ini --region X:3000000-3300000 " \
@@ -153,9 +153,9 @@ class TestCheckerMethods(unittest.TestCase):
 
     def test_missing_necessary_option(self):
         """
-        This test check that if you provide a section with 
-        a track which has a necessary option 
-        (for example a bed track needs a file) but 
+        This test check that if you provide a section with
+        a track which has a necessary option
+        (for example a bed track needs a file) but
         this necessary option is missing
         you will have an error with a message containing
         the necessary property
