@@ -16,16 +16,16 @@ track_separator = ','
 # for boolean values
 # The first one is True, the second is False
 GOOD_PRACTICES = {'labels': {True: 'on', False: 'off'},
-                  'show data range': {True: 'yes', False: 'no'},
-                  'plot horizontal lines': {True: 'yes', False: 'no'},
-                  'use middle': {True: 'yes', False: 'no'},
+                  'show_data_range': {True: 'yes', False: 'no'},
+                  'plot_horizontal_lines': {True: 'yes', False: 'no'},
+                  'use_middle': {True: 'yes', False: 'no'},
                   'rasterize': {True: 'yes', False: 'no'},
-                  'global max row': {True: 'yes', False: 'no'},
+                  'global_max_row': {True: 'yes', False: 'no'},
                   'show_masked_bins': {True: 'yes', False: 'no'},
-                  'show labels': {True: 'yes', False: 'no'},
-                  'use summit': {True: 'yes', False: 'no'},
+                  'show_labels': {True: 'yes', False: 'no'},
+                  'use_summit': {True: 'yes', False: 'no'},
                   # 'skip': {True: 'yes', False: 'no'},
-                  'merge transcripts': {True: 'on', False: 'off'}}
+                  'merge_transcripts': {True: 'on', False: 'off'}}
 
 
 def main():

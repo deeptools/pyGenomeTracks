@@ -116,7 +116,7 @@ height = 7
 title = genes
 fontsize = 10
 file_type = bed
-gene rows = 10
+gene_rows = 10
 
 [x-axis]
 fontsize=10
@@ -148,7 +148,7 @@ height = 7
 title = genes
 fontsize = 10
 file_type = bed
-gene rows = 10
+gene_rows = 10
 
 [x-axis]
 fontsize=10
@@ -173,23 +173,23 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 7
 title = (bigwig color=blue 2000 bins) overlayed with (bigwig mean color=red alpha = 0.5 max over 300 bins) overlayed with (bigwig mean color=red alpha=0.5 200 bins)
-number of bins = 2000
+number_of_bins = 2000
 
 [test bigwig max]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
 alpha = 0.5
-summary method = max
-number of bins = 300
-overlay previous = share-y
+summary_method = max
+number_of_bins = 300
+overlay_previous = share-y
 
 [test bigwig mean]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = green
 alpha = 0.5
 type = fill
-number of bins = 200
-overlay previous = share-y
+number_of_bins = 200
+overlay_previous = share-y
 
 [spacer]
 
@@ -199,21 +199,21 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 7
 title = (bigwig color=blue 2000 bins) overlayed with (bigwig mean color=redmax over 300 bins) overlayed with (bigwig mean color=red 200 bins)
-number of bins = 2000
+number_of_bins = 2000
 
 [test bigwig max]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
-summary method = max
-number of bins = 300
-overlay previous = share-y
+summary_method = max
+number_of_bins = 300
+overlay_previous = share-y
 
 [test bigwig mean]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = green
 type = fill
-number of bins = 200
-overlay previous = share-y
+number_of_bins = 200
+overlay_previous = share-y
 
 
 [x-axis]
@@ -243,20 +243,20 @@ title = max_value=40
 [narrow 2]
 file = test.narrowPeak
 height = 2
-show labels = no
-show data range =  no
+show_labels = no
+show_data_range =  no
 color = #00FF0080
-use summit = no
+use_summit = no
 title = show labels=no; show data range=no; use summit=no;color=#00FF0080
 [spacer]
 
 [narrow 3]
 file = test.narrowPeak
 height = 2
-show labels = no
+show_labels = no
 color = #0000FF80
-use summit = no
-width adjust = 4
+use_summit = no
+width_adjust = 4
 title = show labels=no;width adjust=3
 
 [spacer]
@@ -294,12 +294,12 @@ file_type = hic_matrix
 [tads]
 file = domains.bed
 display = triangles
-border color = black
+border_color = black
 color = none
 # the tads are overlay over the hic-matrix
 # the share-y options sets the y-axis to be shared
 # between the Hi-C matrix and the TADs.
-overlay previous = share-y
+overlay_previous = share-y
 
 [spacer]
 
@@ -417,43 +417,43 @@ fontsize | 15 |  |  | 12 | 12 |  |  |  |  |
 where | bottom |  |  |  |  |  |  |  |  | 
 categories_file |  | not set |  |  |  |  |  |  |  | 
 orientation |  | not set | not set | not set | not set | not set | not set | not set | not set | not set
-links type |  |  | arcs |  |  |  |  |  |  | 
-line width |  |  | not set | 0.5 | 0.5 |  |  |  |  | 
-line style |  |  | solid |  |  |  |  |  |  | 
+links_type |  |  | arcs |  |  |  |  |  |  | 
+line_width |  |  | not set | 0.5 | 0.5 |  |  |  |  | 
+line_style |  |  | solid |  |  |  |  |  |  | 
 color |  |  | blue | #1f78b4 | #1f78b4 | #FF000080 | #33a02c | #a6cee3 |  | 
 alpha |  |  | 0.8 |  |  |  | 1 | 1 |  | 
 max_value |  |  | not set | not set | not set | not set | not set | not set | not set | not set
 min_value |  |  | not set | not set | not set |  | not set | not set | not set | not set
-border color |  |  |  | black | black |  |  |  |  | 
+border_color |  |  |  | black | black |  |  |  |  | 
 interval_height |  |  |  | 100 | 100 |  |  |  |  | 
-prefered name |  |  |  | transcript_name | transcript_name |  |  |  |  | 
-merge transcripts |  |  |  | off | off |  |  |  |  | 
+prefered_name |  |  |  | transcript_name | transcript_name |  |  |  |  | 
+merge transcripts |  |  |  | False |  |  |  |  |  | 
 labels |  |  |  |  | on |  |  |  |  | 
 style |  |  |  |  | flybase |  |  |  |  | 
 display |  |  |  |  | stacked |  |  |  |  | 
 max_labels |  |  |  |  | 60 |  |  |  |  | 
-global max row |  |  |  |  | no |  |  |  |  | 
-gene rows |  |  |  |  | not set |  |  |  |  | 
-show data range |  |  |  |  |  | yes | yes | yes | yes | 
-show labels |  |  |  |  |  | yes |  |  |  | 
-use summit |  |  |  |  |  | yes |  |  |  | 
-width adjust |  |  |  |  |  | 1.5 |  |  |  | 
+merge_transcripts |  |  |  |  | off |  |  |  |  | 
+global_max_row |  |  |  |  | no |  |  |  |  | 
+gene_rows |  |  |  |  | not set |  |  |  |  | 
+show_data_range |  |  |  |  |  | yes | yes | yes | yes | 
+show_labels |  |  |  |  |  | yes |  |  |  | 
+use_summit |  |  |  |  |  | yes |  |  |  | 
+width_adjust |  |  |  |  |  | 1.5 |  |  |  | 
 type |  |  |  |  |  | peak | fill | fill | matrix | 
-negative color |  |  |  |  |  |  | not set | not set |  | 
-nans to zeros |  |  |  |  |  |  | False | False |  | 
-summary method |  |  |  |  |  |  | mean | not set |  | 
-number of bins |  |  |  |  |  |  | 700 | 700 |  | 
-use middle |  |  |  |  |  |  |  | no |  | 
+negative_color |  |  |  |  |  |  | not set | not set |  | 
+nans_to_zeros |  |  |  |  |  |  | False | False |  | 
+summary_method |  |  |  |  |  |  | mean | not set |  | 
+number_of_bins |  |  |  |  |  |  | 700 | 700 |  | 
+use_middle |  |  |  |  |  |  |  | no |  | 
 rasterize |  |  |  |  |  |  |  | no | yes | yes
-pos score in bin |  |  |  |  |  |  |  |  | center | 
-plot horizontal lines |  |  |  |  |  |  |  |  | no | 
+pos_score_in_bin |  |  |  |  |  |  |  |  | center | 
+plot_horizontal_lines |  |  |  |  |  |  |  |  | no | 
 region |  |  |  |  |  |  |  |  |  | not set
 depth |  |  |  |  |  |  |  |  |  | 100000
 show_masked_bins |  |  |  |  |  |  |  |  |  | no
-scale factor |  |  |  |  |  |  |  |  |  | 1
+scale_factor |  |  |  |  |  |  |  |  |  | 1
 transform |  |  |  |  |  |  |  |  |  | no
 colormap |  |  |  |  |  |  |  |  |  | RdYlBu_r
-
 
 
 Some parameters can take only discrete values.
@@ -464,9 +464,9 @@ They are summarized here:
   - for *x-axis*: top, bottom
 - **orientation**:
   - for *epilogos,links,domains,bed,narrow_peak,bigwig,bedgraph,bedgraph_matrix,hic_matrix*: inverted, not set
-- **links type**:
+- **links_type**:
   - for *links*: arcs, triangles, loops
-- **line style**:
+- **line_style**:
   - for *links*: solid, dashed, dotted, dashdot
 - **style**:
   - for *bed*: flybase, UCSC
@@ -475,33 +475,33 @@ They are summarized here:
 - **type**:
   - for *narrow_peak*: peak, box
   - for *bedgraph_matrix*: matrix, lines
-- **summary method**:
+- **summary_method**:
   - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
   - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
-- **pos score in bin**:
+- **pos_score_in_bin**:
   - for *bedgraph_matrix*: center, block
 - **transform**:
   - for *hic_matrix*: no, log, log1p, -log
 - **labels**:
   - for *bed*: on, off
-- **show data range**:
+- **show_data_range**:
   - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix*: yes, no
-- **plot horizontal lines**:
+- **plot_horizontal_lines**:
   - for *bedgraph_matrix*: yes, no
-- **use middle**:
+- **use_middle**:
   - for *bedgraph*: yes, no
 - **rasterize**:
   - for *bedgraph, bedgraph_matrix, hic_matrix*: yes, no
-- **global max row**:
+- **global_max_row**:
   - for *bed*: yes, no
 - **show_masked_bins**:
   - for *hic_matrix*: yes, no
-- **show labels**:
+- **show_labels**:
   - for *narrow_peak*: yes, no
-- **use summit**:
+- **use_summit**:
   - for *narrow_peak*: yes, no
-- **merge transcripts**:
-  - for *domains, bed*: on, off
+- **merge_transcripts**:
+  - for *bed*: on, off
 
 Adding new tracks
 -----------------
