@@ -36,13 +36,13 @@ file_type = {}
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
                            'type': 'matrix',
-                           'pos score in bin': 'center',
-                           'show data range': True,
-                           'plot horizontal lines': False,
+                           'pos_score_in_bin': 'center',
+                           'show_data_range': True,
+                           'plot_horizontal_lines': False,
                            'orientation': None,
                            'rasterize': True}
     POSSIBLE_PROPERTIES = {'type': ['matrix', 'lines'],
-                           'pos score in bin': ['center', 'block'],
+                           'pos_score_in_bin': ['center', 'block'],
                            'orientation': [None, 'inverted']}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}

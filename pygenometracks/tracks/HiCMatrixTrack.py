@@ -57,7 +57,7 @@ file_type = {}
                            'depth': 100000,
                            'orientation': None,
                            'show_masked_bins': False,
-                           'scale factor': 1,
+                           'scale_factor': 1,
                            'transform': 'no',
                            'max_value': None,
                            'min_value': None,
@@ -215,7 +215,7 @@ file_type = {}
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         matrix = np.asarray(matrix.todense().astype(float))
 
-        matrix = matrix * self.properties['scale factor']
+        matrix = matrix * self.properties['scale_factor']
 
         if self.properties['transform'] == 'log1p':
             matrix += 1

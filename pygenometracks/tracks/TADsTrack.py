@@ -10,11 +10,11 @@ class TADsTrack(BedTrack):
     DEFAULTS_PROPERTIES = {'fontsize': 12,
                            'orientation': None,
                            'color': DEFAULT_BED_COLOR,
-                           'border color': 'black',
+                           'border_color': 'black',
                            'interval_height': 100,  # This one is not defined in the documentation
-                           'line width': 0.5,
-                           'prefered name': 'transcript_name',
-                           'merge transcripts': False,
+                           'line_width': 0.5,
+                           'prefered_name': 'transcript_name',
+                           'merge_transcripts': False,
                            'max_value': None,
                            'min_value': None}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}

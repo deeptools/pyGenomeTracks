@@ -41,16 +41,16 @@ file_type = {}
 
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
-                           'show data range': True,
+                           'show_data_range': True,
                            'orientation': None,
                            'color': DEFAULT_BIGWIG_COLOR,
-                           'negative color': None,
+                           'negative_color': None,
                            'alpha': 1,
-                           'nans to zeros': False,
-                           'summary method': 'mean',
-                           'number of bins': 700}
+                           'nans_to_zeros': False,
+                           'summary_method': 'mean',
+                           'number_of_bins': 700}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'summary method': ['mean', 'average', 'max', 'min',
+                           'summar_ method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum']}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
@@ -73,7 +73,7 @@ file_type = {}
             self.log.warning("'number of bins' value: {} "
                              "for bedgraph file {} "
                              "is not valid. Using default value ({}})"
-                             "".format(self.properties['number of bins'],
+                             "".format(self.properties['number_of_bins'],
                                        self.properties['file'],
                                        default_value))
             self.properties['number_of_bins'] = default_value
@@ -109,7 +109,7 @@ file_type = {}
                 scores_per_bin = np.array(self.bw.stats(chrom_region, start_region,
                                                         end_region, nBins=self.properties['number_of_bins'],
                                                         type=self.properties['summary_method'])).astype(float)
-                if self.properties['nans to zeros'] and np.any(np.isnan(scores_per_bin)):
+                if self.properties['nans_to_zeros'] and np.any(np.isnan(scores_per_bin)):
                     scores_per_bin[np.isnan(scores_per_bin)] = 0
             except Exception as e:
                 self.bw = pyBigWig.open(self.properties['file'])
@@ -122,7 +122,7 @@ file_type = {}
                     self.log.warning("After {} the scores could be computed".format(num_tries))
                 break
 
-        x_values = np.linspace(start_region, end_region, self.properties['number of bins'])
+        x_values = np.linspace(start_region, end_region, self.properties['number_of_bins'])
 
         plot_coverage(ax, x_values, scores_per_bin, self.plot_type, self.size,
                       self.properties['color'],

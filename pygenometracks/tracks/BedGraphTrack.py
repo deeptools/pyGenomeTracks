@@ -52,18 +52,18 @@ file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
-                           'show data range': True,
+                           'show_data_range': True,
                            'orientation': None,
                            'color': DEFAULT_BEDGRAPH_COLOR,
-                           'negative color': None,
+                           'negative_color': None,
                            'alpha': 1,
-                           'nans to zeros': False,
-                           'use middle': False,
-                           'summary method': None,
+                           'nans_to_zeros': False,
+                           'use_middle': False,
+                           'summary_method': None,
                            'rasterize': False,
-                           'number of bins': 700}
+                           'number_of_bins': 700}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'summary method': ['mean', 'average', 'max', 'min',
+                           'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum', None]}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
@@ -101,7 +101,7 @@ file_type = {}
                 self.log.warning("'number_of_bins' value: {} "
                                  "for bedgraph file {} "
                                  "is not valid. Using default value ({}})"
-                                 "".format(self.properties['number of bins'],
+                                 "".format(self.properties['number_of_bins'],
                                            self.properties['file'],
                                            default_value))
                 self.properties['number_of_bins'] = default_value
