@@ -18,7 +18,7 @@ min_value = -5
 type = fill
 
 [spacer]
-width = 0.01
+height = 0.01
 
 [test bedgraph tabix without tbi]
 file = bedgraph_chrx_2e6_5e6_2.bg.bgz
@@ -32,7 +32,7 @@ type = line:0.5
 orientation = inverted
 
 [spacer]
-width = 0.01
+height = 0.01
 
 [test bedgraph]
 file = bedgraph_chrx_2e6_5e6.bg
@@ -87,7 +87,7 @@ type = lines
 pos_score_in_bin = block
 
 [spacer]
-width = 0.01
+height = 0.01
 
 [test bedgraph matrix lines]
 file = tad_separation_score_with_gap.bm.bgz
