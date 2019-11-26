@@ -50,7 +50,7 @@ file_type = {}
                            'summary_method': 'mean',
                            'number_of_bins': 700}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'summar_ method': ['mean', 'average', 'max', 'min',
+                           'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum']}
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
