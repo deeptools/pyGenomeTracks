@@ -344,11 +344,11 @@ class PlotTracks(object):
                             'number_of_bins', 'interval_height', 'alpha',
                             'max_labels'] and value != 'auto':
                     track_options[name] = literal_eval(value)
-                elif name in ['labels', 'show data range',
-                              'plot horizontal lines', 'use middle',
-                              'rasterize', 'global max row',
-                              'show_masked_bins', 'show labels',
-                              'use summit', 'skip', 'merge transcripts']:
+                elif name in ['labels', 'show_data_range',
+                              'plot_horizontal_lines', 'use_middle',
+                              'rasterize', 'global_max_row',
+                              'show_masked_bins', 'show_labels',
+                              'use_summit', 'skip', 'merge_transcripts']:
                     try:
                         track_options[name] = parser.getboolean(section_name,
                                                                 name)
