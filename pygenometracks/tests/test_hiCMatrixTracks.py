@@ -246,7 +246,7 @@ height = 0.5
 
 [hic matrix 3]
 file = Li_et_al_2015.h5
-title = same rasterize = off
+title = same rasterize = no
 depth = 200000
 min_value = 5
 transform = log1p
