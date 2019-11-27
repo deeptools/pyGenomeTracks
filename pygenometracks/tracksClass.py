@@ -348,7 +348,8 @@ class PlotTracks(object):
                               'plot_horizontal_lines', 'use_middle',
                               'rasterize', 'global_max_row',
                               'show_masked_bins', 'show_labels',
-                              'use_summit', 'skip', 'merge_transcripts']:
+                              'use_summit', 'skip', 'merge_transcripts',
+                              'nans_to_zeros']:
                     try:
                         track_options[name] = parser.getboolean(section_name,
                                                                 name)
