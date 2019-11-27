@@ -76,15 +76,15 @@ height = 2
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 1.5
-title = bigwig number of bins = 2000
-number of bins = 2000
+title = bigwig number_of_bins = 2000
+number_of_bins = 2000
 
 [spacer]
 
 [test bigwig overlay]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
-title = color:red; max_value = 50; number of bins = 100 (next track: overlay_previous = yes;
+title = color:red; max_value = 50; number_of_bins = 100 (next track: overlay_previous = yes;
         max_value = 50; show_data_range = false; color = #0000FF80 (blue, with alpha 0.5))
 min_value = 0
 max_value = 50
@@ -124,7 +124,7 @@ overlay_previous = share-y
 file = test.arcs
 line_width = 3
 color = RdYlGn
-title = links line width = 3 color RdYlGn
+title = links line_width = 3 color RdYlGn
 height = 3
 
 [spacer]
@@ -168,7 +168,7 @@ gene_rows = 10
 file = dm3_genes.bed6.gz
 height = 10
 title = bed6 fontsize = 10; line_width = 1.5; global_max_row = true
-        (global max row sets the number of genes per row as the maximum found
+        (global_max_row sets the number of genes per row as the maximum found
         anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed

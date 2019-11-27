@@ -247,7 +247,7 @@ show_labels = false
 show_data_range =  false
 color = #00FF0080
 use_summit = false
-title = show labels=false; show data range=false; use summit=false;color=#00FF0080
+title = show_labels=false; show_data_range=false; use_summit=false;color=#00FF0080
 [spacer]
 
 [narrow 3]
@@ -257,7 +257,7 @@ show_labels = false
 color = #0000FF80
 use_summit = false
 width_adjust = 4
-title = show labels=false;width adjust=3
+title = show_labels=false;width_adjust=3
 
 [spacer]
 

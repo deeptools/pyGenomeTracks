@@ -72,7 +72,7 @@ file_type = {}
                                               'cov', 'sum', None]}
     BOOLEAN_PROPERTIES = ['show_data_range', 'nans_to_zeros',
                           'use_middle', 'rasterize']
-    STRING_PROPERTIES = ['file', 'file_type', 'overlay previous',
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
                          'type']

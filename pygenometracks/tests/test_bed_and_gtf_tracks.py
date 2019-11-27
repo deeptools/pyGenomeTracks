@@ -45,7 +45,7 @@ height = 1
 file = dm3_genes.bed4.gz
 height = 10
 title = bed4 fontsize = 10; line_width = 1.5; global_max_row = true
-        (global max row sets the number of genes per row as the maximum found
+        (global_max_row sets the number of genes per row as the maximum found
         anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed

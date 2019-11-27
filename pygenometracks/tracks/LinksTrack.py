@@ -18,7 +18,7 @@ class LinksTrack(GenomeTrack):
 # The fields after the score field will be ignored
 # for example:
 #   chr1 100 200 chr1 250 300 0.5
-# depending on the links type either 'arcs' or 'triangles' or 'loops' can be plotted.
+# depending on the value of links_type either 'arcs' or 'triangles' or 'loops' can be plotted.
 # If arcs, a line will be drawn from the center of the first region (chr1: 150),
 # to the center of the other region (chr1: 275).
 # if triangles, the vertix of the triangle will be drawn at the center between the two points (also the center of
@@ -26,7 +26,7 @@ class LinksTrack(GenomeTrack):
 # if loops, a rectangle highlighting the intersection between the 2 regions will be shown
 # the triangles, and loops options are convenient to overlay over a
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
-# For these tracks do not hesitate to put large line width like 5 or 10.
+# For these tracks do not hesitate to put large line_width like 5 or 10.
 links_type = arcs
 # color of the lines
 # if color is a valid colormap name (like RdYlGn),
@@ -35,10 +35,10 @@ color = red
 # To use transparency, you can use alpha
 # default is 0.8
 # alpha = 0.5
-# if line width is not given, the score is used to set the line width
+# if line_width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
 # line_width = 0.5
-# options for line style are 'solid', 'dashed', 'dotted', and 'dashdot'
+# options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
 line_style = solid
 file_type = {}
     """.format(TRACK_TYPE)

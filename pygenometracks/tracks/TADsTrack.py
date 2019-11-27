@@ -22,7 +22,7 @@ class TADsTrack(BedTrack):
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
-    BOOLEAN_PROPERTIES = ['merge transcripts']
+    BOOLEAN_PROPERTIES = ['merge_transcripts']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'color', 'border_color']
