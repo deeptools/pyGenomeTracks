@@ -80,7 +80,7 @@ file_type = {}
         if len(self.hic_ma.matrix.data) == 0:
             self.log.error("Matrix {} is empty".format(self.properties['file']))
             exit(1)
-        if 'show_masked_bins' in self.properties and self.properties['show_masked_bins'] == 'yes':
+        if self.properties.get('show_masked_bins', False):
             pass
         else:
             self.hic_ma.maskBins(self.hic_ma.nan_bins)
@@ -255,7 +255,7 @@ file_type = {}
         self.log.info("setting min, max values for track {} to: {}, {}\n".
                       format(self.properties['section_name'], vmin, vmax))
         self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
-        if self.properties.get('rasterize', False) != 'no':
+        if self.properties.get('rasterize', True):
             self.img.set_rasterized(True)
         if self.plot_inverted:
             ax.set_ylim(depth, 0)

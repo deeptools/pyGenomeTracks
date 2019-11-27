@@ -116,7 +116,7 @@ height = 7
 title = genes
 fontsize = 10
 file_type = bed
-gene rows = 10
+gene_rows = 10
 
 [x-axis]
 fontsize=10
@@ -148,7 +148,7 @@ height = 7
 title = genes
 fontsize = 10
 file_type = bed
-gene rows = 10
+gene_rows = 10
 
 [x-axis]
 fontsize=10
@@ -173,23 +173,23 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 7
 title = (bigwig color=blue 2000 bins) overlayed with (bigwig mean color=red alpha = 0.5 max over 300 bins) overlayed with (bigwig mean color=red alpha=0.5 200 bins)
-number of bins = 2000
+number_of_bins = 2000
 
 [test bigwig max]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
 alpha = 0.5
-summary method = max
-number of bins = 300
-overlay previous = share-y
+summary_method = max
+number_of_bins = 300
+overlay_previous = share-y
 
 [test bigwig mean]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = green
 alpha = 0.5
 type = fill
-number of bins = 200
-overlay previous = share-y
+number_of_bins = 200
+overlay_previous = share-y
 
 [spacer]
 
@@ -199,21 +199,21 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 7
 title = (bigwig color=blue 2000 bins) overlayed with (bigwig mean color=redmax over 300 bins) overlayed with (bigwig mean color=red 200 bins)
-number of bins = 2000
+number_of_bins = 2000
 
 [test bigwig max]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
-summary method = max
-number of bins = 300
-overlay previous = share-y
+summary_method = max
+number_of_bins = 300
+overlay_previous = share-y
 
 [test bigwig mean]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = green
 type = fill
-number of bins = 200
-overlay previous = share-y
+number_of_bins = 200
+overlay_previous = share-y
 
 
 [x-axis]
@@ -243,20 +243,20 @@ title = max_value=40
 [narrow 2]
 file = test.narrowPeak
 height = 2
-show labels = no
-show data range =  no
+show_labels = no
+show_data_range =  no
 color = #00FF0080
-use summit = no
+use_summit = no
 title = show labels=no; show data range=no; use summit=no;color=#00FF0080
 [spacer]
 
 [narrow 3]
 file = test.narrowPeak
 height = 2
-show labels = no
+show_labels = no
 color = #0000FF80
-use summit = no
-width adjust = 4
+use_summit = no
+width_adjust = 4
 title = show labels=no;width adjust=3
 
 [spacer]
@@ -294,12 +294,12 @@ file_type = hic_matrix
 [tads]
 file = domains.bed
 display = triangles
-border color = black
+border_color = black
 color = none
 # the tads are overlay over the hic-matrix
 # the share-y options sets the y-axis to be shared
 # between the Hi-C matrix and the TADs.
-overlay previous = share-y
+overlay_previous = share-y
 
 [spacer]
 
@@ -423,7 +423,7 @@ height = 3
 title =
 text =
 # x position of text in the plot (in bp)
-x position =
+x_position =
 """
     def plot(self, ax, chrom, region_start, region_end):
         """
@@ -437,7 +437,7 @@ x position =
             end_region: end coordinate
         """
         # print text at position x = self.properties['x position'] and y = 0.5 (center of the plot)
-        ax.text(float(self.properties['x position']), 0.5, self.properties['text'])
+        ax.text(float(self.properties['x_position']), 0.5, self.properties['text'])
 
 ```
 
@@ -458,7 +458,7 @@ height = 4
 title = new pyGenomeTrack
 file_type = text
 text = hello world
-x position = 3100000
+x_position = 3100000
 ```
 
 ```bash

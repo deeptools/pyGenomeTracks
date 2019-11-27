@@ -344,12 +344,28 @@ class PlotTracks(object):
                             'number_of_bins', 'interval_height', 'alpha',
                             'max_labels'] and value != 'auto':
                     track_options[name] = literal_eval(value)
+                elif name in ['labels', 'show_data_range',
+                              'plot_horizontal_lines', 'use_middle',
+                              'rasterize', 'global_max_row',
+                              'show_masked_bins', 'show_labels',
+                              'use_summit', 'skip', 'merge_transcripts',
+                              'nans_to_zeros']:
+                    try:
+                        track_options[name] = parser.getboolean(section_name,
+                                                                name)
+                    except ValueError:
+                        log.error("In section {}, {} was set to {}"
+                                  " whereas we should have a boolean value."
+                                  "Please, use "
+                                  "{}".format(section_name, name, value,
+                                              str([k for k in parser.BOOLEAN_STATES])))
+                        exit()
                 else:
                     track_options[name] = value
 
             if 'type' in track_options and track_options['type'] == 'vlines':
                 self.vlines_properties = self.check_file_exists(track_options, tracks_file_path)
-            elif 'skip' in track_options and track_options['skip'] != 'no':
+            elif track_options.get('skip', False):
                 pass
             else:
                 track_list.append(track_options)

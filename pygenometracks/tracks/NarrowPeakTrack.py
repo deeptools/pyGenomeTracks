@@ -35,11 +35,11 @@ file_type = {}
         if 'color' not in self.properties:
             self.properties['color'] = '#FF000080'  # red, alpha=0.55
         if 'show_data_range' not in self.properties:
-            self.properties['show_data_range'] = 'yes'
+            self.properties['show_data_range'] = True
         if 'show_labels' not in self.properties:
-            self.properties['show_labels'] = 'yes'
+            self.properties['show_labels'] = True
         if 'use_summit' not in self.properties:
-            self.properties['use_summit'] = 'yes'
+            self.properties['use_summit'] = True
         if 'width_adjust' not in self.properties:
             self.properties['width_adjust'] = 1.5
         else:
@@ -97,7 +97,7 @@ file_type = {}
             q_value = float(q_value)
             summit = int(summit)
             start, end = pos_list[idx]
-            if summit > 0 and self.properties['use_summit'] == 'yes':
+            if summit > 0 and self.properties['use_summit']:
                 summit = start + summit
             else:
                 summit = None
@@ -116,7 +116,7 @@ file_type = {}
 
             x_pos = start + float(end - start) / 2
             y_pos = 0 - max_signal * 0.05
-            if self.properties['show_labels'] != 'no':
+            if self.properties['show_labels']:
                 ax.text(x_pos, y_pos, "{}\np-val:{:.1f}\nq-val:{:.1f}".format(name, p_value, q_value),
                         horizontalalignment='center', size='smaller', verticalalignment='top')
 
@@ -127,7 +127,7 @@ file_type = {}
             self.properties['max_value'] = max_signal
 
         ymax = self.properties['max_value']
-        if self.properties['show_labels'] != 'no':
+        if self.properties['show_labels']:
             if self.properties['type'] == 'box':
                 ymin = ymax * -3
             else:
@@ -150,7 +150,7 @@ file_type = {}
         Returns:
 
         """
-        if 'show_data_range' in self.properties and self.properties['show_data_range'] == 'no':
+        if not self.properties.get('show_data_range', True):
             return
 
         if self.properties['type'] == 'box':

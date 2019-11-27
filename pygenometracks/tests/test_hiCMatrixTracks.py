@@ -45,9 +45,9 @@ file_type = hic_matrix
 
 [tads]
 file = tad_classification.bed
-#title = TADs color = bed_rgb; border color = black
+#title = TADs color = bed_rgb; border_color = black
 file_type = domains
-border color = black
+border_color = black
 color = none
 height = 5
 line_width = 1.5
@@ -152,9 +152,9 @@ file_type = hic_matrix
 
 [tads]
 file = tad_classification.bed
-#title = TADs color = bed_rgb; border color = black
+#title = TADs color = bed_rgb; border_color = black
 file_type = domains
-border color = black
+border_color = black
 color = none
 height = 5
 line_width = 1.5

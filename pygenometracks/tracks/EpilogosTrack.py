@@ -61,10 +61,10 @@ categories_file = <path to json categories file>
             self.properties['pos_score_in_bin'] = 'center'
 
         if 'show_data_range' not in self.properties:
-            self.properties['show_data_range'] = 'yes'
+            self.properties['show_data_range'] = True
 
         if 'plot_horizontal_lines' not in self.properties:
-            self.properties['plot_horizontal_lines'] = 'no'
+            self.properties['plot_horizontal_lines'] = False
 
     def plot(self, ax, chrom_region, start_region, end_region):
         """
