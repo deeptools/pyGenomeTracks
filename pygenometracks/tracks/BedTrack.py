@@ -34,7 +34,7 @@ class BedTrack(GenomeTrack):
 # prefered_name = gene_name
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
-# merge_transcripts = on
+# merge_transcripts = true
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 # color = bed_rgb
@@ -49,10 +49,10 @@ class BedTrack(GenomeTrack):
 color = darkblue
 # height of track in cm
 height = 5
-# to turn off/on printing of labels
-labels = off
+# whether printing the labels
+labels = false
 # optional:
-# by default the labels are turned off if you have more than 60 features.
+# by default the labels are not printed if you have more than 60 features.
 # to change it, just increase the value:
 #max_labels = 60
 # optional: font size can be given to override the default size
@@ -83,7 +83,7 @@ fontsize = 10
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
-#global_max_row = yes
+#global_max_row = true
 # optional. If not given is guessed from the file ending.
 file_type = {}
     """.format(TRACK_TYPE)
@@ -324,7 +324,7 @@ file_type = {}
             if self.properties['global_max_row']:
                 self.get_max_num_row(self.len_w, self.small_relative)
 
-            # turn labels off when too many intervals are visible.
+            # do not print labels when too many intervals are visible.
             if self.properties['labels'] and \
                len(genes_overlap) > self.properties['max_labels']:
                 self.properties['labels'] = False

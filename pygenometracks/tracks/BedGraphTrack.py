@@ -25,7 +25,7 @@ color = green
 min_value = 0
 #max_value = auto
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
-nans_to_zeros = True
+nans_to_zeros = true
 # for type, the options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -35,14 +35,14 @@ nans_to_zeros = True
 # If you want to plot a 4C track where you want to link
 # the non-missing data (NaNs) together and only use the
 # middle of the region instead of the region itself:
-# Default is no.
-# use_middle = yes
+# Default is false.
+# use_middle = true
 # By default the bedgraph is plotted at the base pair
 # Resolution. This can lead to very large pdf/svg files
 # If plotting a large regions.
 # If you want to decrase the size of your file.
 # You can either rasterize the bedgraph profile by using:
-# rasterize = yes
+# rasterize = true
 # Or use a summary method on a given number of bin:
 # The possible summary methods are given by pyBigWig:
 # mean/average/stdev/dev/max/min/cov/coverage/sum

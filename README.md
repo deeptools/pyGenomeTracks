@@ -243,21 +243,21 @@ title = max_value=40
 [narrow 2]
 file = test.narrowPeak
 height = 2
-show_labels = no
-show_data_range =  no
+show_labels = false
+show_data_range =  false
 color = #00FF0080
-use_summit = no
-title = show labels=no; show data range=no; use summit=no;color=#00FF0080
+use_summit = false
+title = show labels=false; show data range=false; use summit=false;color=#00FF0080
 [spacer]
 
 [narrow 3]
 file = test.narrowPeak
 height = 2
-show_labels = no
+show_labels = false
 color = #0000FF80
-use_summit = no
+use_summit = false
 width_adjust = 4
-title = show labels=no;width adjust=3
+title = show labels=false;width adjust=3
 
 [spacer]
 
@@ -378,7 +378,7 @@ Examples with multiple options
 ------------------------------
 
 A comprehensive example of pyGenomeTracks can be found as part of our automatic testing.
-Note, that pyGenome tracks also allows the combination of multiple tracks into one using the parameter: `overlay previous=yes` or `overlay previous=share-y`.
+Note, that pyGenome tracks also allows the combination of multiple tracks into one using the parameter: `overlay_previous=yes` or `overlay_previous=share-y`.
 In the second option the y-axis of the tracks that overlays is the same as the track being overlay. Multiple tracks can be overlay together.
 
 ![pyGenomeTracks example](./pygenometracks/tests/test_data/master_plot.png)
@@ -398,7 +398,7 @@ Examples with Hi-C data
 -----------------------
 
 In these examples is where the overlay tracks are more useful. Notice that any track can be overlay over a Hi-C matrix. Most useful is to overlay TADs or to overlay links using the `triangles` option
-that will point in the Hi-C matrix the pixel with the link contact. When overlaying links and TADs is useful to set `overlay previous=share-y` such that the two tracks match the positions. This is not
+that will point in the Hi-C matrix the pixel with the link contact. When overlaying links and TADs is useful to set `overlay_previous=share-y` such that the two tracks match the positions. This is not
 required when overlying other type of data like a bigwig file that has a different y-scale.
 
 ![pyGenomeTracks example](./pygenometracks/tests/test_data/master_plot_hic.png)
@@ -413,8 +413,8 @@ not set means that by default the parameter is commented.
 
 parameter | x-axis | epilogos | links | domains | bed | narrow_peak | bigwig | bedgraph | bedgraph_matrix | hic_matrix
 -- | - | - | - | - | - | - | - | - | - | -
-fontsize | 15 |  |  | 12 | 12 |  |  |  |  | 
 where | bottom |  |  |  |  |  |  |  |  | 
+fontsize | 15 |  |  | 12 | 12 |  |  |  |  | 
 categories_file |  | not set |  |  |  |  |  |  |  | 
 orientation |  | not set | not set | not set | not set | not set | not set | not set | not set | not set
 links_type |  |  | arcs |  |  |  |  |  |  | 
@@ -427,29 +427,29 @@ min_value |  |  | not set | not set | not set |  | not set | not set | not set |
 border_color |  |  |  | black | black |  |  |  |  | 
 interval_height |  |  |  | 100 | 100 |  |  |  |  | 
 prefered_name |  |  |  | transcript_name | transcript_name |  |  |  |  | 
-merge_transcripts |  |  |  | off | off |  |  |  |  | 
-labels |  |  |  |  | on |  |  |  |  | 
+merge_transcripts |  |  |  | false | false |  |  |  |  | 
+labels |  |  |  |  | true |  |  |  |  | 
 style |  |  |  |  | flybase |  |  |  |  | 
 display |  |  |  |  | stacked |  |  |  |  | 
 max_labels |  |  |  |  | 60 |  |  |  |  | 
-global_max_row |  |  |  |  | no |  |  |  |  | 
+global_max_row |  |  |  |  | false |  |  |  |  | 
 gene_rows |  |  |  |  | not set |  |  |  |  | 
-show_data_range |  |  |  |  |  | yes | yes | yes | yes | 
-show_labels |  |  |  |  |  | yes |  |  |  | 
-use_summit |  |  |  |  |  | yes |  |  |  | 
+show_data_range |  |  |  |  |  | true | true | true | true | 
+show_labels |  |  |  |  |  | true |  |  |  | 
+use_summit |  |  |  |  |  | true |  |  |  | 
 width_adjust |  |  |  |  |  | 1.5 |  |  |  | 
 type |  |  |  |  |  | peak | fill | fill | matrix | 
 negative_color |  |  |  |  |  |  | not set | not set |  | 
-nans_to_zeros |  |  |  |  |  |  | False | False |  | 
+nans_to_zeros |  |  |  |  |  |  | false | false |  | 
 summary_method |  |  |  |  |  |  | mean | not set |  | 
 number_of_bins |  |  |  |  |  |  | 700 | 700 |  | 
-use_middle |  |  |  |  |  |  |  | no |  | 
-rasterize |  |  |  |  |  |  |  | no | yes | yes
+use_middle |  |  |  |  |  |  |  | false |  | 
+rasterize |  |  |  |  |  |  |  | false | true | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center | 
-plot_horizontal_lines |  |  |  |  |  |  |  |  | no | 
+plot_horizontal_lines |  |  |  |  |  |  |  |  | false | 
 region |  |  |  |  |  |  |  |  |  | not set
 depth |  |  |  |  |  |  |  |  |  | 100000
-show_masked_bins |  |  |  |  |  |  |  |  |  | no
+show_masked_bins |  |  |  |  |  |  |  |  |  | false
 scale_factor |  |  |  |  |  |  |  |  |  | 1
 transform |  |  |  |  |  |  |  |  |  | no
 colormap |  |  |  |  |  |  |  |  |  | RdYlBu_r
@@ -482,25 +482,27 @@ They are summarized here:
 - **transform**:
   - for *hic_matrix*: no, log, log1p, -log
 - **labels**:
-  - for *bed*: on, off
+  - for *bed*: true, false
 - **show_data_range**:
-  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix*: yes, no
+  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix*: true, false
 - **plot_horizontal_lines**:
-  - for *bedgraph_matrix*: yes, no
+  - for *bedgraph_matrix*: true, false
 - **use_middle**:
-  - for *bedgraph*: yes, no
+  - for *bedgraph*: true, false
 - **rasterize**:
-  - for *bedgraph, bedgraph_matrix, hic_matrix*: yes, no
+  - for *bedgraph, bedgraph_matrix, hic_matrix*: true, false
 - **global_max_row**:
-  - for *bed*: yes, no
+  - for *bed*: true, false
 - **show_masked_bins**:
-  - for *hic_matrix*: yes, no
+  - for *hic_matrix*: true, false
 - **show_labels**:
-  - for *narrow_peak*: yes, no
+  - for *narrow_peak*: true, false
 - **use_summit**:
-  - for *narrow_peak*: yes, no
+  - for *narrow_peak*: true, false
 - **merge_transcripts**:
-  - for *domains, bed*: on, off
+  - for *domains, bed*: true, false
+- **nans_to_zeros**:
+  - for *bigwig, bedgraph*: true, false
 
 Adding new tracks
 -----------------

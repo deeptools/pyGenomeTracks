@@ -14,9 +14,9 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = gray
 height = 2
 type = line
-title = orientation = inverted; show_data_range = no
+title = orientation = inverted; show_data_range = false
 orientation = inverted
-show_data_range = no
+show_data_range = false
 max_value = 50
 
 [test bigwig lines:0.2]
@@ -43,8 +43,8 @@ title = type = point:0.5; min_value = 0; max_value = 100
 file = bigwig_chrx_2e6_5e6.bw
 color = red
 height = 2
-nans_to_zeros = True
-title = nans_to_zeros = True
+nans_to_zeros = true
+title = nans_to_zeros = true
 
 [spacer]
 
@@ -58,7 +58,7 @@ type = line
 summary_method = mean
 max_value = 150
 min_value = -5
-show_data_range = no
+show_data_range = false
 number_of_bins = 300
 
 [test bigwig max]
@@ -69,7 +69,7 @@ type = line
 summary_method = max
 max_value = 150
 min_value = -15
-show_data_range = no
+show_data_range = false
 overlay_previous = share-y
 number_of_bins = 300
 

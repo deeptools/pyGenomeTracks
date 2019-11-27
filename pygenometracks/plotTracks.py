@@ -13,7 +13,7 @@ min_value = 0
 #max_value = auto
 height = 1.5
 number_of_bins = 500
-nans_to_zeros = True
+nans_to_zeros = true
 # options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -32,7 +32,7 @@ orientation = inverted
 file = file.bed
 title = peaks
 color = red
-# optional border color. Set to none for no border color
+# optional border_color. Set to none for no border_color
 border_color = black
 height = 0.5
 # optional. If not given it is guessed from the file ending (file has to end in .bed)
@@ -60,8 +60,8 @@ color = darkblue
 # to the colormap
 #color = RdBlGn
 height = 5
-# to turn off/on printing of labels
-labels = off
+# whether printing the labels
+labels = false
 # optional. If not given is guessed from the file ending
 file_type = bed
 # optional: font size can be given if default are not good
@@ -85,7 +85,7 @@ fontsize = 10
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
-#global_max_row = yes
+#global_max_row = true
 
 
 [chrom states]
@@ -97,7 +97,7 @@ title = chromatin states
 # color is replaced by the color in the bed file
 # in this case
 color = black
-# optional boder color. Set to none for no border color
+# optional border_color. Set to none for no border_color
 border_color = black
 # default behaviour when plotting intervals from a
 # bed file is to 'expand' them such that they

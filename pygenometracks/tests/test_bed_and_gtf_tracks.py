@@ -29,7 +29,7 @@ height = 1
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 7
-title = bed6 border color = black; gene_rows=10; fontsize=8; color=Reds
+title = bed6 border_color = black; gene_rows=10; fontsize=8; color=Reds
         (when a color map is used for the color (e.g. coolwarm, Reds) the bed
         score column mapped to a color)
 fontsize = 7
@@ -44,12 +44,12 @@ height = 1
 [test bed4]
 file = dm3_genes.bed4.gz
 height = 10
-title = bed4 fontsize = 10; line_width = 1.5; global_max_row = yes
+title = bed4 fontsize = 10; line_width = 1.5; global_max_row = true
         (global max row sets the number of genes per row as the maximum found
         anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed
-global_max_row = yes
+global_max_row = true
 interval_height = 200
 line_width = 1.5
 
@@ -80,7 +80,7 @@ height = 1
 file = dm3_subset_BDGP5.78.gtf.gz
 height = 10
 title = gtf from ensembl one entry per gene
-merge_transcripts = on
+merge_transcripts = true
 prefered_name = gene_name
 fontsize = 12
 file_type = bed

@@ -39,9 +39,9 @@ height = 0.5
 [tad state]
 file = chromatinStates_kc.bed.gz
 height = 1.2
-title = bed display = interleaved; labels = off
+title = bed display = interleaved; labels = false
 display = interleaved
-labels = off
+labels = false
 
 [spacer]
 height = 0.5
@@ -51,7 +51,7 @@ file = chromatinStates_kc.bed.gz
 height = 0.5
 title = bed display = collapsed; color = bed_rgb
 display = color from bed rgb
-labels = off
+labels = false
 color = bed_rgb
 display = collapsed
 
@@ -85,7 +85,7 @@ number of bins = 2000
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
 title = color:red; max_value = 50; number of bins = 100 (next track: overlay_previous = yes;
-        max_value = 50; show_data_range = no; color = #0000FF80 (blue, with alpha 0.5))
+        max_value = 50; show_data_range = false; color = #0000FF80 (blue, with alpha 0.5))
 min_value = 0
 max_value = 50
 height = 2
@@ -97,7 +97,7 @@ color = #0000FF80
 title =
 min_value = 0
 max_value = 50
-show_data_range = no
+show_data_range = false
 overlay_previous = yes
 number_of_bins = 100
 
@@ -106,7 +106,7 @@ height = 1
 
 [tads 3]
 file = tad_classification.bed
-title = TADs color = #cccccc; border color = red (next track: overlay
+title = TADs color = #cccccc; border_color = red (next track: overlay
         previous = share-y links; type = loops)
 file_type = domains
 border_color = red
@@ -167,12 +167,12 @@ gene_rows = 10
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 10
-title = bed6 fontsize = 10; line_width = 1.5; global_max_row = yes
+title = bed6 fontsize = 10; line_width = 1.5; global_max_row = true
         (global max row sets the number of genes per row as the maximum found
         anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed
-global_max_row = yes
+global_max_row = true
 interval_height = 200
 line_width = 1.5
 

@@ -452,12 +452,18 @@ class PlotTracks(object):
                         track_options[name] = parser.getboolean(section_name,
                                                                 name)
                     except ValueError:
-                        possibleValues = [k for k in parser.BOOLEAN_STATES]
                         raise InputError("In section {}, {} was set to {}"
                                          " whereas we should have a boolean "
-                                         "value. Please, use "
-                                         "{}".format(section_name, name, value,
-                                                     str(possibleValues)))
+                                         "value. Please, use true or false."
+                                         "{}".format(section_name, name,
+                                                     value))
+                    if value not in ['true', 'false']:
+                        log.warning("Deprecation Warning: "
+                                    "In section {}, {} was set to {}"
+                                    " whereas in the future only"
+                                    " true and false value will be"
+                                    " accepted".format(section_name, name,
+                                                       value))
                 elif name in track_class.FLOAT_PROPERTIES:
                     try:
                         track_options[name] = float(value)
@@ -631,8 +637,8 @@ class XAxisTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
     NECESSARY_PROPERTIES = []
-    DEFAULTS_PROPERTIES = {'fontsize': 15,
-                           'where': 'bottom'}
+    DEFAULTS_PROPERTIES = {'where': 'bottom',
+                           'fontsize': 15}
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {'where': ['top', 'bottom']}
     BOOLEAN_PROPERTIES = []

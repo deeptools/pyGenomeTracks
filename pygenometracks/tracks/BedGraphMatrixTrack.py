@@ -21,16 +21,16 @@ class BedGraphMatrixTrack(BedGraphTrack):
 type = lines
 # If the type is not lines, you can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
-# rasterize = no
+# rasterize = false
 # pos_score_in_bin means 'position of score with respect to bin start and end'
 # if the lines option is used, the y values can be put at the
 # center of the bin (default) or they can be plot as 'block',
 # which mean to plot the values as a line between the start and end of bin
 pos_score_in_bin = center
-show_data_range = yes
+show_data_range = true
 
 # only when type lines is used. Adds horizontal lines
-plot_horizontal_lines = no
+plot_horizontal_lines = false
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,

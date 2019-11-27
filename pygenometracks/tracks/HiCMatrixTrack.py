@@ -42,7 +42,7 @@ transform = log1p
 # those bins that were not used during the correction
 # the default is to extend neighboring bins to
 # obtain an aesthetically pleasant output
-show_masked_bins = no
+show_masked_bins = false
 # if you want to plot the track upside-down:
 # orientation = inverted
 # optional if the values in the matrix need to be scaled the
@@ -50,7 +50,7 @@ show_masked_bins = no
 # scale_factor = 1
 # You can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
-# rasterize = no
+# rasterize = false
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'region': None,

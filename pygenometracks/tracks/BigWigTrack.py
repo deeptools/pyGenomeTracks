@@ -23,7 +23,7 @@ min_value = 0
 # A lower number of bins produces a coarser tracks
 number_of_bins = 700
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
-nans_to_zeros = True
+nans_to_zeros = true
 # The possible summary methods are given by pyBigWig:
 # mean/average/stdev/dev/max/min/cov/coverage/sum
 # default is mean
@@ -34,8 +34,8 @@ summary_method = mean
 # similarly points:ms sets the point size (markersize (ms) to the given float
 # type = line:0.5
 # type = points:0.5
-# set show_data_range to no to hide the text on the upper-left showing the data range
-show_data_range = yes
+# set show data range to false to hide the text on the upper-left showing the data range
+show_data_range = true
 file_type = {}
     """.format(TRACK_TYPE)
 
