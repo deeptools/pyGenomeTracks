@@ -356,10 +356,16 @@ class PlotTracks(object):
                     except ValueError:
                         log.error("In section {}, {} was set to {}"
                                   " whereas we should have a boolean value."
-                                  "Please, use "
-                                  "{}".format(section_name, name, value,
-                                              str([k for k in parser.BOOLEAN_STATES])))
-                        exit()
+                                  "Please, use true or false."
+                                  "".format(section_name, name, value))
+                        exit(1)
+                    if value not in ['true', 'false']:
+                        log.warning("Deprecation Warning: "
+                                    "In section {}, {} was set to {}"
+                                    " whereas in the future only"
+                                    " true and false value will be"
+                                    " accepted".format(section_name, name,
+                                                       value))
                 else:
                     track_options[name] = value
 
