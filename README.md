@@ -501,6 +501,8 @@ They are summarized here:
   - for *narrow_peak*: yes, no
 - **merge_transcripts**:
   - for *domains, bed*: on, off
+- **nans_to_zeros**:
+  - for *bigwig, bedgraph*: True, False
 
 Adding new tracks
 -----------------
