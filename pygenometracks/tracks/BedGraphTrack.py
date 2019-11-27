@@ -25,7 +25,7 @@ color = green
 min_value = 0
 #max_value = auto
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
-nans_to_zeros = True
+nans_to_zeros = true
 # for type, the options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float

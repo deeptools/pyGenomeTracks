@@ -13,7 +13,7 @@ min_value = 0
 #max_value = auto
 height = 1.5
 number_of_bins = 500
-nans_to_zeros = True
+nans_to_zeros = true
 # options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float

@@ -23,7 +23,7 @@ min_value = 0
 # A lower number of bins produces a coarser tracks
 number_of_bins = 700
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
-nans_to_zeros = True
+nans_to_zeros = true
 # The possible summary methods are given by pyBigWig:
 # mean/average/stdev/dev/max/min/cov/coverage/sum
 # default is mean
