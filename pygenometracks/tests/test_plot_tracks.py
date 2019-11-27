@@ -167,12 +167,12 @@ gene_rows = 10
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 10
-title = bed6 fontsize = 10; line_width = 1.5; global_max_row = yes
+title = bed6 fontsize = 10; line_width = 1.5; global_max_row = true
         (global max row sets the number of genes per row as the maximum found
         anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed
-global_max_row = yes
+global_max_row = true
 interval_height = 200
 line_width = 1.5
 

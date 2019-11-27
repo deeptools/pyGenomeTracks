@@ -100,11 +100,11 @@ show_data_range = no
 
 [test bedgraph matrix lines tabix]
 file = tad_separation_score.bm.gz
-title = type = lines; plot_horizontal_lines = yes
+title = type = lines; plot_horizontal_lines = true
 height = 6
 file_type = bedgraph_matrix
 type = lines
-plot_horizontal_lines = yes
+plot_horizontal_lines = true
 
 [spacer]
 

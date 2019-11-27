@@ -35,7 +35,7 @@ summary_method = mean
 # type = line:0.5
 # type = points:0.5
 # set show data range to no to hide the text on the upper-left showing the data range
-show_data_range = yes
+show_data_range = true
 file_type = {}
     """.format(TRACK_TYPE)
 

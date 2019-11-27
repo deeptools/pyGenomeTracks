@@ -85,7 +85,7 @@ fontsize = 10
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
-#global_max_row = yes
+#global_max_row = true
 
 
 [chrom states]
