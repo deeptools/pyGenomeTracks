@@ -41,6 +41,7 @@ GOOD_PRACTICES = {'labels': {True: 'true', False: 'false'},
                   'merge_transcripts': {True: 'true', False: 'false'},
                   'nans_to_zeros': {True: 'true', False: 'false'}}
 
+
 def main():
     all_tracks = PlotTracks.get_available_tracks()
     my_prefered_order_tracks_names = [None, 'epilogos', 'links',
