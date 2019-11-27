@@ -500,7 +500,7 @@ They are summarized here:
 - **use_summit**:
   - for *narrow_peak*: true, false
 - **merge_transcripts**:
-  - for *domains, bed*: on, off
+  - for *domains, bed*: true, false
 - **nans_to_zeros**:
   - for *bigwig, bedgraph*: true, false
 
