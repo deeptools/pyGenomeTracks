@@ -378,7 +378,7 @@ Examples with multiple options
 ------------------------------
 
 A comprehensive example of pyGenomeTracks can be found as part of our automatic testing.
-Note, that pyGenome tracks also allows the combination of multiple tracks into one using the parameter: `overlay previous=yes` or `overlay previous=share-y`.
+Note, that pyGenome tracks also allows the combination of multiple tracks into one using the parameter: `overlay_previous=yes` or `overlay_previous=share-y`.
 In the second option the y-axis of the tracks that overlays is the same as the track being overlay. Multiple tracks can be overlay together.
 
 ![pyGenomeTracks example](./pygenometracks/tests/test_data/master_plot.png)
@@ -398,7 +398,7 @@ Examples with Hi-C data
 -----------------------
 
 In these examples is where the overlay tracks are more useful. Notice that any track can be overlay over a Hi-C matrix. Most useful is to overlay TADs or to overlay links using the `triangles` option
-that will point in the Hi-C matrix the pixel with the link contact. When overlaying links and TADs is useful to set `overlay previous=share-y` such that the two tracks match the positions. This is not
+that will point in the Hi-C matrix the pixel with the link contact. When overlaying links and TADs is useful to set `overlay_previous=share-y` such that the two tracks match the positions. This is not
 required when overlying other type of data like a bigwig file that has a different y-scale.
 
 ![pyGenomeTracks example](./pygenometracks/tests/test_data/master_plot_hic.png)
