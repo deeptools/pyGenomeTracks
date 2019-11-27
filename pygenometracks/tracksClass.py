@@ -455,7 +455,7 @@ class PlotTracks(object):
                         raise InputError("In section {}, {} was set to {}"
                                          " whereas we should have a boolean "
                                          "value. Please, use true or false."
-                                         "{}".format(section_name, name,
+                                         "".format(section_name, name,
                                                      value))
                     if value not in ['true', 'false']:
                         log.warning("Deprecation Warning: "
