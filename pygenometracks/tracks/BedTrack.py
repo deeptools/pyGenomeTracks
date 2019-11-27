@@ -299,7 +299,6 @@ file_type = {}
         if chrom_region not in self.interval_tree.keys():
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
-            print(self.interval_tree.keys())
             if chrom_region not in self.interval_tree.keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
                                  + " nor " + chrom_region + " exits as a "
