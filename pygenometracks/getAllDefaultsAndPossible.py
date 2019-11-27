@@ -12,22 +12,34 @@ not_used_string = ''
 not_set_string = 'not set'
 track_separator = ','
 
-# Here is the keyword we want people to use
+# Here is the keyword that was used in version 3.1.2
 # for boolean values
-# The first one is True, the second is False
-GOOD_PRACTICES = {'labels': {True: 'on', False: 'off'},
-                  'show_data_range': {True: 'yes', False: 'no'},
-                  'plot_horizontal_lines': {True: 'yes', False: 'no'},
-                  'use_middle': {True: 'yes', False: 'no'},
-                  'rasterize': {True: 'yes', False: 'no'},
-                  'global_max_row': {True: 'yes', False: 'no'},
-                  'show_masked_bins': {True: 'yes', False: 'no'},
-                  'show_labels': {True: 'yes', False: 'no'},
-                  'use_summit': {True: 'yes', False: 'no'},
-                  # 'skip': {True: 'yes', False: 'no'},
-                  'merge_transcripts': {True: 'on', False: 'off'},
-                  'nans_to_zeros': {True: 'True', False: 'False'}}
+# GOOD_PRACTICES = {'labels': {True: 'on', False: 'off'},
+#                   'show_data_range': {True: 'yes', False: 'no'},
+#                   'plot_horizontal_lines': {True: 'yes', False: 'no'},
+#                   'use_middle': {True: 'yes', False: 'no'},
+#                   'rasterize': {True: 'yes', False: 'no'},
+#                   'global_max_row': {True: 'yes', False: 'no'},
+#                   'show_masked_bins': {True: 'yes', False: 'no'},
+#                   'show_labels': {True: 'yes', False: 'no'},
+#                   'use_summit': {True: 'yes', False: 'no'},
+#                   # 'skip': {True: 'yes', False: 'no'},
+#                   'merge_transcripts': {True: 'on', False: 'off'},
+#                   'nans_to_zeros': {True: 'True', False: 'False'}}
 
+# We know want people to use true/false:
+GOOD_PRACTICES = {'labels': {True: 'true', False: 'false'},
+                  'show_data_range': {True: 'true', False: 'false'},
+                  'plot_horizontal_lines': {True: 'true', False: 'false'},
+                  'use_middle': {True: 'true', False: 'false'},
+                  'rasterize': {True: 'true', False: 'false'},
+                  'global_max_row': {True: 'true', False: 'false'},
+                  'show_masked_bins': {True: 'true', False: 'false'},
+                  'show_labels': {True: 'true', False: 'false'},
+                  'use_summit': {True: 'true', False: 'false'},
+                  # 'skip': {True: 'true', False: 'false'},
+                  'merge_transcripts': {True: 'true', False: 'false'},
+                  'nans_to_zeros': {True: 'true', False: 'false'}}
 
 def main():
     all_tracks = PlotTracks.get_available_tracks()

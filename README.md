@@ -427,29 +427,29 @@ min_value |  |  | not set | not set | not set |  | not set | not set | not set |
 border_color |  |  |  | black | black |  |  |  |  | 
 interval_height |  |  |  | 100 | 100 |  |  |  |  | 
 prefered_name |  |  |  | transcript_name | transcript_name |  |  |  |  | 
-merge_transcripts |  |  |  | off | off |  |  |  |  | 
-labels |  |  |  |  | on |  |  |  |  | 
+merge_transcripts |  |  |  | false | false |  |  |  |  | 
+labels |  |  |  |  | true |  |  |  |  | 
 style |  |  |  |  | flybase |  |  |  |  | 
 display |  |  |  |  | stacked |  |  |  |  | 
 max_labels |  |  |  |  | 60 |  |  |  |  | 
-global_max_row |  |  |  |  | no |  |  |  |  | 
+global_max_row |  |  |  |  | false |  |  |  |  | 
 gene_rows |  |  |  |  | not set |  |  |  |  | 
-show_data_range |  |  |  |  |  | yes | yes | yes | yes | 
-show_labels |  |  |  |  |  | yes |  |  |  | 
-use_summit |  |  |  |  |  | yes |  |  |  | 
+show_data_range |  |  |  |  |  | true | true | true | true | 
+show_labels |  |  |  |  |  | true |  |  |  | 
+use_summit |  |  |  |  |  | true |  |  |  | 
 width_adjust |  |  |  |  |  | 1.5 |  |  |  | 
 type |  |  |  |  |  | peak | fill | fill | matrix | 
 negative_color |  |  |  |  |  |  | not set | not set |  | 
-nans_to_zeros |  |  |  |  |  |  | False | False |  | 
+nans_to_zeros |  |  |  |  |  |  | false | false |  | 
 summary_method |  |  |  |  |  |  | mean | not set |  | 
 number_of_bins |  |  |  |  |  |  | 700 | 700 |  | 
-use_middle |  |  |  |  |  |  |  | no |  | 
-rasterize |  |  |  |  |  |  |  | no | yes | yes
+use_middle |  |  |  |  |  |  |  | false |  | 
+rasterize |  |  |  |  |  |  |  | false | true | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center | 
-plot_horizontal_lines |  |  |  |  |  |  |  |  | no | 
+plot_horizontal_lines |  |  |  |  |  |  |  |  | false | 
 region |  |  |  |  |  |  |  |  |  | not set
 depth |  |  |  |  |  |  |  |  |  | 100000
-show_masked_bins |  |  |  |  |  |  |  |  |  | no
+show_masked_bins |  |  |  |  |  |  |  |  |  | false
 scale_factor |  |  |  |  |  |  |  |  |  | 1
 transform |  |  |  |  |  |  |  |  |  | no
 colormap |  |  |  |  |  |  |  |  |  | RdYlBu_r
@@ -482,27 +482,27 @@ They are summarized here:
 - **transform**:
   - for *hic_matrix*: no, log, log1p, -log
 - **labels**:
-  - for *bed*: on, off
+  - for *bed*: true, false
 - **show_data_range**:
-  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix*: yes, no
+  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix*: true, false
 - **plot_horizontal_lines**:
-  - for *bedgraph_matrix*: yes, no
+  - for *bedgraph_matrix*: true, false
 - **use_middle**:
-  - for *bedgraph*: yes, no
+  - for *bedgraph*: true, false
 - **rasterize**:
-  - for *bedgraph, bedgraph_matrix, hic_matrix*: yes, no
+  - for *bedgraph, bedgraph_matrix, hic_matrix*: true, false
 - **global_max_row**:
-  - for *bed*: yes, no
+  - for *bed*: true, false
 - **show_masked_bins**:
-  - for *hic_matrix*: yes, no
+  - for *hic_matrix*: true, false
 - **show_labels**:
-  - for *narrow_peak*: yes, no
+  - for *narrow_peak*: true, false
 - **use_summit**:
-  - for *narrow_peak*: yes, no
+  - for *narrow_peak*: true, false
 - **merge_transcripts**:
-  - for *domains, bed*: on, off
+  - for *domains, bed*: true, false
 - **nans_to_zeros**:
-  - for *bigwig, bedgraph*: True, False
+  - for *bigwig, bedgraph*: true, false
 
 Adding new tracks
 -----------------
