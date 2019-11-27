@@ -413,8 +413,8 @@ not set means that by default the parameter is commented.
 
 parameter | x-axis | epilogos | links | domains | bed | narrow_peak | bigwig | bedgraph | bedgraph_matrix | hic_matrix
 -- | - | - | - | - | - | - | - | - | - | -
-fontsize | 15 |  |  | 12 | 12 |  |  |  |  | 
 where | bottom |  |  |  |  |  |  |  |  | 
+fontsize | 15 |  |  | 12 | 12 |  |  |  |  | 
 categories_file |  | not set |  |  |  |  |  |  |  | 
 orientation |  | not set | not set | not set | not set | not set | not set | not set | not set | not set
 links_type |  |  | arcs |  |  |  |  |  |  | 
@@ -501,6 +501,8 @@ They are summarized here:
   - for *narrow_peak*: yes, no
 - **merge_transcripts**:
   - for *domains, bed*: on, off
+- **nans_to_zeros**:
+  - for *bigwig, bedgraph*: True, False
 
 Adding new tracks
 -----------------

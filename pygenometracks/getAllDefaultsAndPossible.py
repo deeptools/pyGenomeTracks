@@ -25,7 +25,8 @@ GOOD_PRACTICES = {'labels': {True: 'on', False: 'off'},
                   'show_labels': {True: 'yes', False: 'no'},
                   'use_summit': {True: 'yes', False: 'no'},
                   # 'skip': {True: 'yes', False: 'no'},
-                  'merge_transcripts': {True: 'on', False: 'off'}}
+                  'merge_transcripts': {True: 'on', False: 'off'},
+                  'nans_to_zeros': {True: 'True', False: 'False'}}
 
 
 def main():

@@ -430,24 +430,16 @@ class PlotTracks(object):
             unused_keys = []
             # Now we can proceed with the keywords:
             for name, value in parser.items(section_name):
-                # To be remove in the next 1.0 version
-                if ' ' in name:
-                    old_name = name
-                    name = '_'.join(name.split(' '))
-                    log.warn("Deprecated Warning: The section {} uses"
-                             " parameter {} but there is no more parameter"
-                             " with space in name. Will be substituted by {}."
-                             "".format(section_name, old_name, name))
-                # end
-                SYNONYMOUS_PROPERTIES = track_class.SYNONYMOUS_PROPERTIES
-                # If the name is part of the synonymous we substitute by
-                # the synonymous value
-                if name in SYNONYMOUS_PROPERTIES and \
-                   value in SYNONYMOUS_PROPERTIES[name]:
-                    track_options[name] = SYNONYMOUS_PROPERTIES[name][value]
-                elif name in track_class.STRING_PROPERTIES:
-                    track_options[name] = value
-                elif name in track_class.BOOLEAN_PROPERTIES:
+                if name in ['max_value', 'min_value', 'depth', 'height',
+                            'line_width', 'fontsize', 'scale_factor',
+                            'number_of_bins', 'interval_height', 'alpha',
+                            'max_labels'] and value != 'auto':
+                    track_options[name] = literal_eval(value)
+                elif name in ['labels', 'show_data_range',
+                              'plot_horizontal_lines', 'use_middle',
+                              'rasterize', 'global_max_row',
+                              'show_masked_bins', 'show_labels',
+                              'use_summit', 'skip', 'merge_transcripts']:
                     try:
                         track_options[name] = parser.getboolean(section_name,
                                                                 name)
@@ -631,8 +623,8 @@ class XAxisTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = None
     NECESSARY_PROPERTIES = []
-    DEFAULTS_PROPERTIES = {'fontsize': 15,
-                           'where': 'bottom'}
+    DEFAULTS_PROPERTIES = {'where': 'bottom',
+                           'fontsize': 15}
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {'where': ['top', 'bottom']}
     BOOLEAN_PROPERTIES = []
