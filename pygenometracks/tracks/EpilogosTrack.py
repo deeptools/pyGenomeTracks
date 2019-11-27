@@ -57,14 +57,14 @@ categories_file = <path to json categories file>
         if 'type' not in self.properties:
             self.properties['type'] = 'matrix'
 
-        if 'pos score in bin' not in self.properties:
-            self.properties['pos score in bin'] = 'center'
+        if 'pos_score_in_bin' not in self.properties:
+            self.properties['pos_score_in_bin'] = 'center'
 
-        if 'show data range' not in self.properties:
-            self.properties['show data range'] = 'yes'
+        if 'show_data_range' not in self.properties:
+            self.properties['show_data_range'] = True
 
-        if 'plot horizontal lines' not in self.properties:
-            self.properties['plot horizontal lines'] = 'no'
+        if 'plot_horizontal_lines' not in self.properties:
+            self.properties['plot_horizontal_lines'] = False
 
     def plot(self, ax, chrom_region, start_region, end_region):
         """
@@ -73,9 +73,9 @@ categories_file = <path to json categories file>
         """
         from matplotlib import cm
         cmap = cm.get_cmap('tab20b')
-        try:
-            values_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
-        except TypeError:
+
+        values_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
+        if pos_list == []:
             return
 
         ymin = float('Inf')

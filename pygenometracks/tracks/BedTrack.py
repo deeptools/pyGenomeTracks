@@ -29,10 +29,10 @@ class BedTrack(GenomeTrack):
 # type = gtf
 # In the case of a gtf file, by default the transcript_name is used.
 # If you want to use the gene_name:
-# prefered name = gene_name
+# prefered_name = gene_name
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
-# merge transcripts = on
+# merge_transcripts = on
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 # color = bed_rgb
@@ -55,8 +55,8 @@ labels = off
 #max_labels = 60
 # optional: font size can be given to override the default size
 fontsize = 10
-# optional: line width
-#line width = 0.5
+# optional: line_width
+#line_width = 0.5
 # the display parameter defines how the bed file is plotted.
 # The options are ['collapsed', 'interleaved', 'triangles'] This options asume that the regions do not overlap.
 # `collapsed`: The bed regions are plotted one after the other in one line.
@@ -64,7 +64,7 @@ fontsize = 10
 # if display is not given, then each region is plotted using the gene style
 #optional, default is black. To remove the background color, simply set 'color' and 'background color' to the
 # same value
-#border color = black
+#border_color = black
 # style to plot the genes when they have exon information
 #style = UCSC
 #style = flybase
@@ -72,16 +72,16 @@ fontsize = 10
 # field is useful to limit large number of close genes
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
-#gene rows = 10
+#gene_rows = 10
 # if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
 # option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
-#overlay previous = yes
+#overlay_previous = yes
 # by default the ymax is the number of
 # rows occupied by the genes in the region plotted. However,
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
-#global max row = yes
+#global_max_row = yes
 # optional. If not given is guessed from the file ending.
 file_type = {}
     """.format(TRACK_TYPE)
@@ -103,18 +103,18 @@ file_type = {}
 
         if 'color' not in self.properties:
             self.properties['color'] = DEFAULT_BED_COLOR
-        if 'border color' not in self.properties:
-            self.properties['border color'] = 'black'
+        if 'border_color' not in self.properties:
+            self.properties['border_color'] = 'black'
         if 'labels' not in self.properties:
-            self.properties['labels'] = 'on'
+            self.properties['labels'] = True
         if 'style' not in self.properties:
             self.properties['style'] = 'flybase'
         if 'display' not in self.properties:
             self.properties['display'] = DEFAULT_DISPLAY_BED
         if 'interval_height' not in self.properties:
             self.properties['interval_height'] = 100
-        if 'line width' not in self.properties:
-            self.properties['line width'] = 0.5
+        if 'line_width' not in self.properties:
+            self.properties['line_width'] = 0.5
         if 'max_labels' not in self.properties:
             self.properties['max_labels'] = 60
 
@@ -172,7 +172,7 @@ file_type = {}
         length. In the following code I try to get the
         length of a 'W' in base pairs.
         """
-        if self.properties['labels'] == 'on':
+        if self.properties['labels']:
             # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
             inches_per_pt = 1.0 / 72.27
             font_in_inches = self.properties['fontsize'] * inches_per_pt
@@ -191,8 +191,8 @@ file_type = {}
            self.properties['file'].endswith('gtf.gz') or \
            ('type' in self.properties and self.properties['type'] == 'gtf'):
             bed_file_h = ReadGtf(self.properties['file'],
-                                 self.properties.get('prefered name', 'transcript_name'),
-                                 self.properties.get('merge transcripts', 'off'))
+                                 self.properties.get('prefered_name', 'transcript_name'),
+                                 self.properties.get('merge_transcripts', False))
         else:
             bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
@@ -242,7 +242,7 @@ file_type = {}
             self.max_num_row[chrom] = 0
             for region in sorted(self.interval_tree[chrom][0:500000000]):
                 bed = region.data
-                if self.properties['labels'] == 'on':
+                if self.properties['labels']:
                     bed_extended_end = int(bed.end + (len(bed.name) * len_w))
                 else:
                     bed_extended_end = (bed.end + 2 * small_relative)
@@ -319,16 +319,15 @@ file_type = {}
             self.small_relative = 0.004 * (end_region - start_region)
             self.get_length_w(ax.get_figure().get_figwidth(), start_region,
                               end_region)
-            if 'global max row' in self.properties and \
-               self.properties['global max row'] == 'yes':
+            if self.properties.get('global_max_row', False):
                 self.get_max_num_row(self.len_w, self.small_relative)
 
             # turn labels off when too many intervals are visible.
-            if self.properties['labels'] != 'off' and \
+            if self.properties['labels'] and \
                len(genes_overlap) > self.properties['max_labels']:
-                self.properties['labels'] = 'off'
+                self.properties['labels'] = False
 
-            linewidth = self.properties['line width']
+            linewidth = self.properties['line_width']
             max_num_row_local = 1
             max_ypos = 0
             # check for the number of other intervals that overlap
@@ -371,7 +370,7 @@ file_type = {}
                 self.counter += 1
                 bed = region.data
 
-                if self.properties['labels'] == 'on':
+                if self.properties['labels']:
                     num_name_characters = len(bed.name) + 2
                     # +2 to account for a space before and after the name
                     bed_extended_end = int(bed.end + (num_name_characters * self.len_w))
@@ -398,8 +397,8 @@ file_type = {}
                 ypos = self.get_y_pos(free_row)
 
                 # do not plot if the maximum interval rows to plot is reached
-                if 'gene rows' in self.properties and \
-                   free_row >= int(self.properties['gene rows']):
+                if 'gene_rows' in self.properties and \
+                   free_row >= int(self.properties['gene_rows']):
                     continue
 
                 if free_row > max_num_row_local:
@@ -418,7 +417,7 @@ file_type = {}
                 else:
                     self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
 
-                if self.properties['labels'] == 'off':
+                if not self.properties['labels']:
                     pass
                 elif bed.end > start_region and bed.end < end_region:
                     ax.text(bed.end + self.small_relative,
@@ -435,12 +434,11 @@ file_type = {}
                                         chrom_region, start_region, end_region))
             ymax = 0
 
-            if 'global max row' in self.properties and \
-               self.properties['global max row'] == 'yes':
+            if self.properties.get('global_max_row', False):
                 ymin = self.max_num_row[chrom_region] * self.row_scale
 
-            elif 'gene rows' in self.properties:
-                ymin = int(self.properties['gene rows']) * self.row_scale
+            elif 'gene_rows' in self.properties:
+                ymin = int(self.properties['gene_rows']) * self.row_scale
             else:
                 ymin = max_ypos + self.properties['interval_height']
 
@@ -485,7 +483,7 @@ file_type = {}
 
     def get_rgb_and_edge_color(self, bed):
         rgb = self.properties['color']
-        edgecolor = self.properties['border color']
+        edgecolor = self.properties['border_color']
 
         if self.colormap:
             # translate value field (in the example above is 0 or 0.2686...)
@@ -498,8 +496,8 @@ file_type = {}
             if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
                 try:
                     rgb = [float(x) / 255 for x in bed.rgb]
-                    if 'border color' in self.properties:
-                        edgecolor = self.properties['border color']
+                    if 'border_color' in self.properties:
+                        edgecolor = self.properties['border_color']
                     else:
                         edgecolor = self.properties['color']
                 except IndexError:
@@ -732,7 +730,7 @@ file_type = {}
             rgb, edgecolor = self.get_rgb_and_edge_color(region.data)
 
             triangle = Polygon([[x1, y1], [x2, y2], [x3, y1]], closed=True,
-                               facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line width'])
+                               facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line_width'])
             ax.add_artist(triangle)
             valid_regions += 1
 

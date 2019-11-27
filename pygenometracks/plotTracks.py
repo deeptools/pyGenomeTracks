@@ -12,8 +12,8 @@ color = black
 min_value = 0
 #max_value = auto
 height = 1.5
-number of bins = 500
-nans to zeros = True
+number_of_bins = 500
+nans_to_zeros = True
 # options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -32,7 +32,7 @@ orientation = inverted
 file = file.bed
 title = peaks
 color = red
-# optional border color. Set to none for no border color
+# optional border_color. Set to none for no border_color
 border_color = black
 height = 0.5
 # optional. If not given it is guessed from the file ending (file has to end in .bed)
@@ -79,13 +79,13 @@ fontsize = 10
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size
 # genes in all images
-#gene rows = 10
+#gene_rows = 10
 # by default the ymax is the number of
 # rows occupied by the genes in the region plotted. However,
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
-#global max row = yes
+#global_max_row = yes
 
 
 [chrom states]
@@ -97,7 +97,7 @@ title = chromatin states
 # color is replaced by the color in the bed file
 # in this case
 color = black
-# optional boder color. Set to none for no border color
+# optional border_color. Set to none for no border_color
 border_color = black
 # default behaviour when plotting intervals from a
 # bed file is to 'expand' them such that they
@@ -123,8 +123,8 @@ file_type = bedgraph
 title =  arcs
 color = red
 # orientation = inverted
-# if line width is not given, the score is used to set the line width
-#line width = 0.5
+# if line_width is not given, the score is used to set the line width
+#line_width = 0.5
 file = arcs.txt
 
 [vlines]
@@ -300,7 +300,7 @@ def main(args=None):
                 # start = max(0, start)
                 # end += 100000
             sys.stderr.write("saving {}\n".format(file_name))
-            print("{} {} {}".format(chrom, start, end))
+            # print("{} {} {}".format(chrom, start, end))
             trp.plot(file_name, chrom, start, end, title=args.title)
     else:
         region = get_region(args.region)

@@ -17,12 +17,12 @@ min_value = 0
 # The number of bins takes the region to be plotted and divides it into the number of bins specified
 # Then, at each bin the bigwig mean value is computed and plotted.
 # A lower number of bins produces a coarser tracks
-number of bins = 500
+number_of_bins = 500
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
-nans to zeros = True
+nans_to_zeros = True
 # the summary method by default is mean. Other
 # methods are min and max
-summary method = mean
+summary_method = mean
 # for type, the options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -30,7 +30,7 @@ summary method = mean
 # type = line:0.5
 # type = points:0.5
 # set show data range to no to hide the text on the upper-left showing the data range
-show data range = yes
+show_data_range = yes
 file_type = {}
     """.format(TRACK_TYPE)
 
@@ -44,14 +44,14 @@ file_type = {}
         if 'alpha' not in self.properties:
             self.properties['alpha'] = 1
 
-        if 'negative color' not in self.properties:
-            self.properties['negative color'] = self.properties['color']
+        if 'negative_color' not in self.properties:
+            self.properties['negative_color'] = self.properties['color']
 
-        if 'summary method' not in self.properties:
-            self.properties['summary method'] = 'mean'
+        if 'summary_method' not in self.properties:
+            self.properties['summary_method'] = 'mean'
 
-        if 'nans to zeros' not in self.properties:
-            self.properties['nans to zeros'] = False
+        if 'nans_to_zeros' not in self.properties:
+            self.properties['nans_to_zeros'] = False
 
         self.plot_type = 'fill'
         self.size = None
@@ -77,13 +77,13 @@ file_type = {}
         formated_region = "{}:{}-{}".format(chrom_region, start_region, end_region)
 
         num_bins = 700
-        if 'number of bins' in self.properties:
+        if 'number_of_bins' in self.properties:
             try:
-                num_bins = int(self.properties['number of bins'])
+                num_bins = int(self.properties['number_of_bins'])
             except TypeError:
                 num_bins = 700
                 self.log.warning("'number of bins' value: {} for bigwig file {} "
-                                 "is not valid. Using default value (700)".format(self.properties['number of bins'],
+                                 "is not valid. Using default value (700)".format(self.properties['number_of_bins'],
                                                                                   self.properties['file']))
 
         if chrom_region not in self.bw.chroms().keys():
@@ -113,8 +113,8 @@ file_type = {}
             try:
                 scores_per_bin = np.array(self.bw.stats(chrom_region, start_region,
                                                         end_region, nBins=num_bins,
-                                                        type=self.properties['summary method'])).astype(float)
-                if self.properties['nans to zeros'] and np.any(np.isnan(scores_per_bin)):
+                                                        type=self.properties['summary_method'])).astype(float)
+                if self.properties['nans_to_zeros'] and np.any(np.isnan(scores_per_bin)):
                     scores_per_bin[np.isnan(scores_per_bin)] = 0
             except Exception as e:
                 import pyBigWig
@@ -132,7 +132,7 @@ file_type = {}
 
         plot_coverage(ax, x_values, scores_per_bin, self.plot_type, self.size,
                       self.properties['color'],
-                      self.properties['negative color'],
+                      self.properties['negative_color'],
                       self.properties['alpha'])
 
         ymin, ymax = ax.get_ylim()

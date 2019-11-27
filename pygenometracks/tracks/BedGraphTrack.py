@@ -2,7 +2,6 @@ from . GenomeTrack import GenomeTrack
 from .. utilities import file_to_intervaltree, plot_coverage
 import numpy as np
 import pyBigWig
-import sys
 
 DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
 
@@ -16,7 +15,7 @@ class BedGraphTrack(GenomeTrack):
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 color = green
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
-nans to zeros = True
+nans_to_zeros = True
 # for type, the options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -27,7 +26,7 @@ nans to zeros = True
 # the non-missing data (NaNs) together and only use the
 # middle of the region instead of the region itself:
 # Default is no.
-# use middle = yes
+# use_middle = yes
 # By default the bedgraph is plotted at the base pair
 # Resolution. This can lead to very large pdf/svg files
 # If plotting a large regions.
@@ -37,13 +36,13 @@ nans to zeros = True
 # Or use a summary method on a given number of bin:
 # The possible summary methods are given by pyBigWig:
 # mean/average/stdev/dev/max/min/cov/coverage/sum
-# summary method = mean
-# number of bins = 700
+# summary_method = mean
+# number_of_bins = 700
 file_type = {}
     """.format(TRACK_TYPE)
 
     def __init__(self, properties_dict):
-        self.properties = properties_dict
+        super(BedGraphTrack, self).__init__(properties_dict)
 
         self.tbx = None
         # try to load a tabix file is available
@@ -70,11 +69,11 @@ file_type = {}
         if 'alpha' not in self.properties:
             self.properties['alpha'] = 1
 
-        if 'negative color' not in self.properties:
-            self.properties['negative color'] = self.properties['color']
+        if 'negative_color' not in self.properties:
+            self.properties['negative_color'] = self.properties['color']
 
-        if 'nans to zeros' not in self.properties:
-            self.properties['nans to zeros'] = False
+        if 'nans_to_zeros' not in self.properties:
+            self.properties['nans_to_zeros'] = False
 
         self.plot_type = 'fill'
         self.size = None
@@ -137,6 +136,7 @@ file_type = {}
         """
         Retrieves the score (or scores or whatever fields are in a bedgraph like file) and the positions
         for a given region.
+        In case there is no item in the region. It returns [], []
         Args:
             chrom_region:
             start_region:
@@ -152,12 +152,13 @@ file_type = {}
                 chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
                 if chrom_region not in self.tbx.contigs:
-                    sys.stderr.write("*Error*\nNeither"
-                                     " " + chrom_region_before + " nor"
-                                     " " + chrom_region + " exits as a "
-                                     "chromosome name inside the provided "
-                                     "file.\n")
-                    return
+                    self.log.warning("*Warning*\nNeither "
+                                     + chrom_region_before + " nor "
+                                     + chrom_region + " exits as a "
+                                     "chromosome name inside the bedgraph "
+                                     "file. This will generate an empty "
+                                     "track!!\n")
+                    return score_list, pos_list
 
             chrom_region = self.check_chrom_str_bytes(self.tbx.contigs,
                                                       chrom_region)
@@ -174,7 +175,7 @@ file_type = {}
                                      "chromosome name inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")
-                    return
+                    return score_list, pos_list
             chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
             iterator = iter(sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]))
 
@@ -190,25 +191,22 @@ file_type = {}
             score_list.append(values)
             pos_list.append((start, end))
 
-        # default values in case the selected region is empty
-        if len(score_list) == 0:
-            score_list = [np.nan]
-            pos_list = (start_region, end_region)
-
         return score_list, pos_list
 
     def plot(self, ax, chrom_region, start_region, end_region):
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
+        if pos_list == []:
+            return
         score_list = [float(x[0]) for x in score_list]
 
-        if self.properties.get('use middle', False) == 'yes':
+        if self.properties.get('use_middle', False):
             x_values = np.asarray([(t[0] + t[1]) / 2
                                    for i, t in enumerate(pos_list)
                                    if not np.isnan(score_list[i])],
                                   dtype=np.float)
             score_list = np.asarray([x for x in score_list if not np.isnan(x)],
                                     dtype=np.float)
-        elif 'summary method' in self.properties:
+        elif 'summary_method' in self.properties:
             score_list, x_values = self.get_values_as_bigwig(score_list,
                                                              pos_list,
                                                              chrom_region,
@@ -228,7 +226,7 @@ file_type = {}
         else:
             plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
                           self.properties['color'],
-                          self.properties['negative color'],
+                          self.properties['negative_color'],
                           self.properties['alpha'])
 
         ymax = self.properties['max_value']
@@ -244,26 +242,26 @@ file_type = {}
         else:
             ax.set_ylim(ymin, ymax)
 
-        if self.properties.get('rasterize', False) == 'yes':
+        if self.properties.get('rasterize', False):
             ax.set_rasterized(True)
 
     def get_values_as_bigwig(self, score_list, pos_list, chrom_region,
                              start_region, end_region):
-        if self.properties['summary method'] not in \
+        if self.properties['summary_method'] not in \
            ['mean', 'average', 'max', 'min', 'stdev',
            'dev', 'coverage', 'cov', 'sum']:
-            self.log.warning("'summary method' value: {}"
+            self.log.warning("'summary_method' value: {}"
                              " for bedgraph file {} is not valid"
                              "Using default bedgraph plot.")
             return self.get_values_as_bdg(score_list, pos_list)
         num_bins = 700
-        if 'number of bins' in self.properties:
+        if 'number_of_bins' in self.properties:
             try:
-                num_bins = int(self.properties['number of bins'])
+                num_bins = int(self.properties['number_of_bins'])
             except TypeError:
                 num_bins = 700
-                self.log.warning("'number of bins' value: {} for bedgraph file {} "
-                                 "is not valid. Using default value (700)".format(self.properties['number of bins'],
+                self.log.warning("'number_of_bins' value: {} for bedgraph file {} "
+                                 "is not valid. Using default value (700)".format(self.properties['number_of_bins'],
                                                                                   self.properties['file']))
         import tempfile
         import os
@@ -278,9 +276,9 @@ file_type = {}
         bw = pyBigWig.open(temp_bigwig_file)
         scores_per_bin = np.array(bw.stats(chrom_region, start_region,
                                            end_region, nBins=num_bins,
-                                           type=self.properties['summary method'])).astype(float)
+                                           type=self.properties['summary_method'])).astype(float)
         os.remove(temp_bigwig_file)
-        if self.properties['nans to zeros'] and np.any(np.isnan(scores_per_bin)):
+        if self.properties['nans_to_zeros'] and np.any(np.isnan(scores_per_bin)):
             scores_per_bin[np.isnan(scores_per_bin)] = 0
         x_values = np.linspace(start_region, end_region, num_bins)
 
@@ -298,7 +296,7 @@ file_type = {}
         # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
         x_values = np.asarray(sum(pos_list, tuple()), dtype=np.float)
 
-        if self.properties['nans to zeros']:
+        if self.properties['nans_to_zeros']:
             score_list[np.isnan(score_list)] = 0
 
         return score_list, x_values

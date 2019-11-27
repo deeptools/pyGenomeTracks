@@ -11,12 +11,12 @@ class NarrowPeakTrack(BedGraphTrack):
     TRACK_TYPE = 'narrow_peak'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 #max_value = 0.70
-show data range = yes
-show labels = yes
+show_data_range = yes
+show_labels = yes
 # the narrowPeak format provides the information of the
 # peak summit. By default this information is used
 # although some peaks may look crooked.
-use summit = yes
+use_summit = yes
 # type of plot: either box or peak
 # box will plot a rectangle of the peak width
 # peak will plot the shape of the peak, whose height is the
@@ -34,16 +34,16 @@ file_type = {}
     def set_properties_defaults(self):
         if 'color' not in self.properties:
             self.properties['color'] = '#FF000080'  # red, alpha=0.55
-        if 'show data range' not in self.properties:
-            self.properties['show data range'] = 'yes'
-        if 'show labels' not in self.properties:
-            self.properties['show labels'] = 'yes'
-        if 'use summit' not in self.properties:
-            self.properties['use summit'] = 'yes'
-        if 'width adjust' not in self.properties:
-            self.properties['width adjust'] = 1.5
+        if 'show_data_range' not in self.properties:
+            self.properties['show_data_range'] = True
+        if 'show_labels' not in self.properties:
+            self.properties['show_labels'] = True
+        if 'use_summit' not in self.properties:
+            self.properties['use_summit'] = True
+        if 'width_adjust' not in self.properties:
+            self.properties['width_adjust'] = 1.5
         else:
-            self.properties['width adjust'] = float(self.properties['width adjust'])
+            self.properties['width_adjust'] = float(self.properties['width_adjust'])
         if 'type' not in self.properties:
             self.properties['type'] = 'peak'
 
@@ -74,7 +74,7 @@ file_type = {}
         return patches.PathPatch(path)
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        '''
+        """
 
         Args:
             chrom_region:
@@ -83,21 +83,21 @@ file_type = {}
 
         Returns:
 
-        '''
+        """
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region, return_nans=False)
-
+        if pos_list == []:
+            return
         self.patches = []
 
         max_signal = -1
         for idx, peak in enumerate(score_list):
             name, score, strand, signal_value, p_value, q_value, summit = peak
-
             signal_value = float(signal_value)
             p_value = float(p_value)
             q_value = float(q_value)
             summit = int(summit)
             start, end = pos_list[idx]
-            if summit > 0 and self.properties['use summit'] == 'yes':
+            if summit > 0 and self.properties['use_summit']:
                 summit = start + summit
             else:
                 summit = None
@@ -110,13 +110,13 @@ file_type = {}
                 if signal_value > max_signal:
                     max_signal = signal_value
                 p = self.peak_plot(start, end, signal_value, center=summit,
-                                   width_adjust=self.properties['width adjust'])
+                                   width_adjust=self.properties['width_adjust'])
                 p.set_edgecolor(self.properties['color'])
                 self.patches.append(p)
 
             x_pos = start + float(end - start) / 2
             y_pos = 0 - max_signal * 0.05
-            if self.properties['show labels'] != 'no':
+            if self.properties['show_labels']:
                 ax.text(x_pos, y_pos, "{}\np-val:{:.1f}\nq-val:{:.1f}".format(name, p_value, q_value),
                         horizontalalignment='center', size='smaller', verticalalignment='top')
 
@@ -127,7 +127,7 @@ file_type = {}
             self.properties['max_value'] = max_signal
 
         ymax = self.properties['max_value']
-        if self.properties['show labels'] != 'no':
+        if self.properties['show_labels']:
             if self.properties['type'] == 'box':
                 ymin = ymax * -3
             else:
@@ -150,7 +150,7 @@ file_type = {}
         Returns:
 
         """
-        if 'show data range' in self.properties and self.properties['show data range'] == 'no':
+        if not self.properties.get('show_data_range', True):
             return
 
         if self.properties['type'] == 'box':

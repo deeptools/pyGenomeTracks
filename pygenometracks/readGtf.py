@@ -16,7 +16,7 @@ class ReadGtf(object):
     """
 
     def __init__(self, file_path, prefered_name="transcript_name",
-                 merge_transcripts="on"):
+                 merge_transcripts=True):
         """
         :param file_path: the path of the gtf file
         :return:
@@ -40,10 +40,7 @@ class ReadGtf(object):
         # should be the transcript_name
         # But we can change it to gene_name
         self.prefered_name = prefered_name
-        if merge_transcripts == 'on':
-            self.merge_transcripts = True
-        else:
-            self.merge_transcripts = False
+        self.merge_transcripts = merge_transcripts
 
         if self.merge_transcripts:
             self.all_transcripts = self.db.features_of_type("gene",
@@ -72,9 +69,9 @@ class ReadGtf(object):
         return bed
 
     def get_bed_interval(self):
-        r"""
-        Processes a transcript from the database,
-        retrieve all the values and returns
+        """
+        Process a transcript from the database,
+        retrieve all the values and return
         a namedtuple object
         """
         tr = next(self.all_transcripts)
