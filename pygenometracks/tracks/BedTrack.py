@@ -34,7 +34,7 @@ class BedTrack(GenomeTrack):
 # prefered_name = gene_name
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
-# merge_transcripts = on
+# merge_transcripts = true
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 # color = bed_rgb
