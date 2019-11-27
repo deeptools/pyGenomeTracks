@@ -35,7 +35,7 @@ nans_to_zeros = True
 # If you want to plot a 4C track where you want to link
 # the non-missing data (NaNs) together and only use the
 # middle of the region instead of the region itself:
-# Default is no.
+# Default is false.
 # use_middle = true
 # By default the bedgraph is plotted at the base pair
 # Resolution. This can lead to very large pdf/svg files

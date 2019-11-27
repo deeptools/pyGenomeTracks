@@ -15,7 +15,7 @@ depth = 200000
 min_value = 5
 transform = log1p
 file_type = hic_matrix
-show_masked_bins = no
+show_masked_bins = false
 
 [hic matrix]
 file = Li_et_al_2015.h5
@@ -26,7 +26,7 @@ max_value = 70
 depth = 250000
 colormap = PuRd
 file_type = hic_matrix
-show_masked_bins = no
+show_masked_bins = false
 orientation = inverted
 
 [spacer]
@@ -52,7 +52,7 @@ color = none
 height = 5
 line_width = 1.5
 overlay_previous = share-y
-show_data_range = no
+show_data_range = false
 
 [spacer]
 height = 0.5
@@ -67,7 +67,7 @@ max_value = 200
 depth = 250000
 transform = log1p
 file_type = hic_matrix
-show_masked_bins = no
+show_masked_bins = false
 
 [test arcs]
 file = links2.links
@@ -77,7 +77,7 @@ line_style = dashed
 overlay_previous = share-y
 line_width = 0.8
 color = darkred
-show_data_range = no
+show_data_range = false
 
 
 [test bigwig]
@@ -88,7 +88,7 @@ title =
 overlay_previous = yes
 min_value = 0
 max_value = 50
-show_data_range = no
+show_data_range = false
 
 [spacer]
 height = 0.5
@@ -122,7 +122,7 @@ depth = 200000
 min_value = 5
 transform = log1p
 file_type = hic_matrix
-show_masked_bins = no
+show_masked_bins = false
 
 [hic matrix]
 file = Li_et_al_2015.cool
@@ -133,7 +133,7 @@ max_value = 70
 depth = 250000
 colormap = PuRd
 file_type = hic_matrix
-show_masked_bins = no
+show_masked_bins = false
 orientation = inverted
 
 [spacer]
@@ -159,7 +159,7 @@ color = none
 height = 5
 line_width = 1.5
 overlay_previous = share-y
-show_data_range = no
+show_data_range = false
 
 [spacer]
 height = 0.5
@@ -174,7 +174,7 @@ max_value = 200
 depth = 250000
 transform = log1p
 file_type = hic_matrix
-show_masked_bins = no
+show_masked_bins = false
 
 [test arcs]
 file = links2.links
@@ -184,7 +184,7 @@ line_style = dashed
 overlay_previous = share-y
 line_width = 0.8
 color = darkred
-show_data_range = no
+show_data_range = false
 
 
 [test bigwig]
@@ -195,7 +195,7 @@ title =
 overlay_previous = yes
 min_value = 0
 max_value = 50
-show_data_range = no
+show_data_range = false
 
 [spacer]
 height = 0.5
@@ -228,7 +228,7 @@ depth = 200000
 min_value = 5
 transform = log1p
 file_type = hic_matrix
-show_masked_bins = no
+show_masked_bins = false
 height = 5
 
 [hic matrix 2]
@@ -238,7 +238,7 @@ depth = 200000
 min_value = 5
 transform = log1p
 file_type = hic_matrix
-show_masked_bins = no
+show_masked_bins = false
 orientation = inverted
 
 [spacer]
@@ -251,8 +251,8 @@ depth = 200000
 min_value = 5
 transform = log1p
 file_type = hic_matrix
-rasterize = no
-show_masked_bins = no
+rasterize = false
+show_masked_bins = false
 
 [x-axis]
 
