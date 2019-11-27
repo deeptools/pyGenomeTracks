@@ -39,9 +39,9 @@ height = 0.5
 [tad state]
 file = chromatinStates_kc.bed.gz
 height = 1.2
-title = bed display = interleaved; labels = off
+title = bed display = interleaved; labels = false
 display = interleaved
-labels = off
+labels = false
 
 [spacer]
 height = 0.5
@@ -51,7 +51,7 @@ file = chromatinStates_kc.bed.gz
 height = 0.5
 title = bed display = collapsed; color = bed_rgb
 display = color from bed rgb
-labels = off
+labels = false
 color = bed_rgb
 display = collapsed
 

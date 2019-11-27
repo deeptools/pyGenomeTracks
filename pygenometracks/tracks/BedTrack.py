@@ -49,10 +49,10 @@ class BedTrack(GenomeTrack):
 color = darkblue
 # height of track in cm
 height = 5
-# to turn off/on printing of labels
-labels = off
+# whether printing the labels
+labels = false
 # optional:
-# by default the labels are turned off if you have more than 60 features.
+# by default the labels are not printed if you have more than 60 features.
 # to change it, just increase the value:
 #max_labels = 60
 # optional: font size can be given to override the default size
@@ -319,7 +319,7 @@ file_type = {}
             if self.properties['global_max_row']:
                 self.get_max_num_row(self.len_w, self.small_relative)
 
-            # turn labels off when too many intervals are visible.
+            # do not print labels when too many intervals are visible.
             if self.properties['labels'] and \
                len(genes_overlap) > self.properties['max_labels']:
                 self.properties['labels'] = False

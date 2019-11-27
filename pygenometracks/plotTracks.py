@@ -60,8 +60,8 @@ color = darkblue
 # to the colormap
 #color = RdBlGn
 height = 5
-# to turn off/on printing of labels
-labels = off
+# whether printing the labels
+labels = false
 # optional. If not given is guessed from the file ending
 file_type = bed
 # optional: font size can be given if default are not good
