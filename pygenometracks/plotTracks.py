@@ -207,13 +207,6 @@ def parse_arguments(args=None):
                              'are stored',
                         required=True)
 
-    parser.add_argument('--vlines',
-                        help='Genomic cooordindates separated by space. E.g. '
-                        '--vlines 150000 3000000 124838433 ',
-                        type=int,
-                        nargs='+'
-                        )
-
     parser.add_argument('--fontSize',
                         help='Font size for the labels of the plot',
                         type=float,
