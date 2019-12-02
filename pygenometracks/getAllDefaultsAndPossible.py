@@ -1,5 +1,5 @@
 """
-This python script will generate two files: 
+This python script will generate two files:
 - all_default_properties.txt
 This file is a markdown table with all the defaults values for each parameter
 for each track class. This table can be copy pasted in the README.md
