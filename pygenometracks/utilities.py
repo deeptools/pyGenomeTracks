@@ -2,7 +2,11 @@ import sys
 import gzip
 import numpy as np
 from intervaltree import IntervalTree, Interval
-from pygenometracks.tracksClass import InputError
+
+
+class InputError(Exception):
+    """Exception raised for errors in the input."""
+    pass
 
 
 def to_string(s):

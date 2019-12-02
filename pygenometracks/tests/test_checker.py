@@ -7,7 +7,7 @@ which can raise an InputError
 import unittest
 import pygenometracks.plotTracks
 import os
-from pygenometracks.tracksClass import InputError
+from pygenometracks.utilities import InputError
 
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),

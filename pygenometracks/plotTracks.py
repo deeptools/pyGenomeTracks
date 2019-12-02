@@ -146,8 +146,9 @@ import argparse
 import matplotlib
 matplotlib.use('Agg')
 
-from pygenometracks.tracksClass import PlotTracks, InputError
+from pygenometracks.tracksClass import PlotTracks
 from pygenometracks._version import __version__
+from .utilities import InputError
 
 DEFAULT_BED_COLOR = '#1f78b4'
 DEFAULT_BIGWIG_COLOR = '#33a02c'

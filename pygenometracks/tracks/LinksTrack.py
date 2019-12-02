@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from pygenometracks.tracksClass import InputError
+from pygenometracks.utilities import InputError
 from intervaltree import IntervalTree, Interval
 import matplotlib
 import numpy as np

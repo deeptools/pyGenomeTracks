@@ -17,6 +17,7 @@ from . utilities import file_to_intervaltree
 from collections import OrderedDict
 from pygenometracks.tracks.GenomeTrack import GenomeTrack
 from pygenometracks.tracks import *
+from pygenometracks.utilities import InputError
 
 import warnings
 
@@ -43,11 +44,6 @@ DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 # proportion of width dedicated to (figure, legends)
 DEFAULT_WIDTH_RATIOS = (0.01, 0.90, 0.1)
 DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
-
-
-class InputError(Exception):
-    """Exception raised for errors in the input."""
-    pass
 
 
 class MultiDict(OrderedDict):
