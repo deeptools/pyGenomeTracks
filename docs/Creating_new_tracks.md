@@ -82,7 +82,7 @@ Notice that the resulting track already includes a y-axis (to the left) and
 a label to the right. Those are the defaults that can be changed by
 adding a `plot_y_axis` and `plot_label` methods.
 
-Another more complex example is the plotting of multiple bedgraph data as matrices. The output of `HiCExplorer hicFindTADs` produces a data format that
+Another more complex example is the plotting of multiple bedgraph data as matrices. The output of `HiCExplorer hicFindTADs` produces a file whose data format
 is similar to a bedgraph but with more value columns. We call this a bedgraph matrix. The following track plot this bedgraph matrix:
 
  ```python
