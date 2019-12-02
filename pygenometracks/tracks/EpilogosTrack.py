@@ -35,7 +35,7 @@ class EpilogosTrack(BedGraphTrack):
 # 	}}
 #}}
 categories_file = <path to json categories file>
-# optional. If not given is guessed from the file ending.
+# optional. If not given, it is guessed from the file ending.
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'categories_file': None,
