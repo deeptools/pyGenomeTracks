@@ -430,7 +430,7 @@ class PlotTracks(object):
             unused_keys = []
             # Now we can proceed with the keywords:
             for name, value in parser.items(section_name):
-                # To be remove in the next 1.0 version
+                # To be removed in the next 1.0 version
                 if ' ' in name:
                     old_name = name
                     name = '_'.join(name.split(' '))
