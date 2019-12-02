@@ -27,7 +27,7 @@ track_separator = ','
 #                   'merge_transcripts': {True: 'on', False: 'off'},
 #                   'nans_to_zeros': {True: 'True', False: 'False'}}
 
-# We know want people to use true/false:
+# We now want people to use true/false:
 GOOD_PRACTICES = {'labels': {True: 'true', False: 'false'},
                   'show_data_range': {True: 'true', False: 'false'},
                   'plot_horizontal_lines': {True: 'true', False: 'false'},
