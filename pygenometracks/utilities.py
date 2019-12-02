@@ -2,6 +2,7 @@ import sys
 import gzip
 import numpy as np
 from intervaltree import IntervalTree, Interval
+from pygenometracks.tracksClass import InputError
 
 
 def to_string(s):
@@ -79,21 +80,21 @@ def file_to_intervaltree(file_name):
             chrom, start, end = fields[0:3]
         except Exception as detail:
             msg = "Error reading line: {}\nError message: {}".format(line_number, detail)
-            sys.exit(msg)
+            raise InputError(msg)
 
         try:
             start = int(start)
         except ValueError as detail:
             msg = "Error reading line: {}. The start field is not " \
                   "an integer.\nError message: {}".format(line_number, detail)
-            sys.exit(msg)
+            raise InputError(msg)
 
         try:
             end = int(end)
         except ValueError as detail:
             msg = "Error reading line: {}. The end field is not " \
                   "an integer.\nError message: {}".format(line_number, detail)
-            sys.exit(msg)
+            raise InputError(msg)
 
         if prev_chrom == chrom:
             assert prev_start <= start, \

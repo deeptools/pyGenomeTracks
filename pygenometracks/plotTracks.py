@@ -146,7 +146,7 @@ import argparse
 import matplotlib
 matplotlib.use('Agg')
 
-import pygenometracks.tracksClass
+from pygenometracks.tracksClass import PlotTracks, InputError
 from pygenometracks._version import __version__
 
 DEFAULT_BED_COLOR = '#1f78b4'
@@ -264,8 +264,10 @@ def get_region(region_string):
         if region_start < 0:
             region_start = 0
         if region_end <= region_start:
-            exit("Please check that the region end is larger than the region start.\n"
-                 "Values given:\nstart: {}\nend: {}\n".format(region_start, region_end))
+            raise InputError("Please check that the region end is larger "
+                             "than the region start.\n"
+                             "Values given:\nstart: {}\nend: {}"
+                             "\n".format(region_start, region_end))
 
         return chrom, region_start, region_end
 
@@ -273,7 +275,7 @@ def get_region(region_string):
 def main(args=None):
 
     args = parse_arguments().parse_args(args)
-    trp = pygenometracks.tracksClass.PlotTracks(args.tracks.name, args.width, fig_height=args.height, fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
+    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height, fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
 
     if args.BED:
         count = 0

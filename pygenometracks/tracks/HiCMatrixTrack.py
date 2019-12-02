@@ -105,8 +105,7 @@ file_type = {}
             self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
 
         if len(self.hic_ma.matrix.data) == 0:
-            self.log.error("Matrix {} is empty".format(self.properties['file']))
-            exit(1)
+            raise Exception("Matrix {} is empty".format(self.properties['file']))
         if self.properties['show_masked_bins']:
             pass
         else:
@@ -116,24 +115,21 @@ file_type = {}
         if self.properties['transform'] != 'no':
             if self.properties['transform'] == 'log1p':
                 if self.hic_ma.matrix.data.min() + 1 < 0:
-                    self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
-                                   "log1p transformation can not be applied to \n"
-                                   "values in matrix: {}".format(self.properties['file']))
-                    exit(1)
+                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                                    "log1p transformation can not be applied to \n"
+                                    "values in matrix: {}".format(self.properties['file']))
 
             elif self.properties['transform'] == '-log':
                 if self.hic_ma.matrix.data.min() < 0:
-                    self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
-                                   "log(-1 * <values>) transformation can not be applied to \n"
-                                   "values in matrix: {}".format(self.properties['file']))
-                    exit(1)
+                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                                    "log(-1 * <values>) transformation can not be applied to \n"
+                                    "values in matrix: {}".format(self.properties['file']))
 
             elif self.properties['transform'] == 'log':
                 if self.hic_ma.matrix.data.min() < 0:
-                    self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
-                                   "log transformation can not be applied to \n"
-                                   "values in matrix: {}".format(self.properties['file']))
-                    exit(1)
+                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                                    "log transformation can not be applied to \n"
+                                    "values in matrix: {}".format(self.properties['file']))
 
         new_intervals = hicmatrix.utilities.enlarge_bins(self.hic_ma.cut_intervals)
         self.hic_ma.interval_trees, self.hic_ma.chrBinBoundaries = \
@@ -187,10 +183,9 @@ file_type = {}
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
         if region_end > chrom_sizes[chrom_region]:
-            self.log.error("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n")
-            self.log.error("{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
+            raise Exception("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n" \
+                            "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
                                                                         region_start, region_end))
-            exit(1)
 
         # if self.properties['file'].endswith('.cool'):
         #     # load now the region to be plotted

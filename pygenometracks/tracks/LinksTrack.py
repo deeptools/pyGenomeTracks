@@ -1,4 +1,5 @@
 from . GenomeTrack import GenomeTrack
+from pygenometracks.tracksClass import InputError
 from intervaltree import IntervalTree, Interval
 import matplotlib
 import numpy as np
@@ -289,9 +290,8 @@ file_type = {}
                 try:
                     chrom1, start1, end1, chrom2, start2, end2 = line.strip().split('\t')[:6]
                 except Exception as detail:
-                    self.log.error('File not valid. The format is chrom1 start1, end1, '
-                                   'chrom2, start2, end2\nError: {}\n in line\n {}'.format(detail, line))
-                    exit(1)
+                    raise InputError('File not valid. The format is chrom1 start1, end1, '
+                                     'chrom2, start2, end2\nError: {}\n in line\n {}'.format(detail, line))
                 try:
                     score = line.strip().split('\t')[6]
                 except IndexError:
@@ -304,9 +304,8 @@ file_type = {}
                     start2 = int(start2)
                     end2 = int(end2)
                 except ValueError as detail:
-                    self.log.error("Error reading line: {}. One of the fields is not "
-                                   "an integer.\nError message: {}".format(line_number, detail))
-                    exit(1)
+                    raise InputError("Error reading line: {}. One of the fields is not "
+                                     "an integer.\nError message: {}".format(line_number, detail))
 
                 assert start1 <= end1, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
                 assert start2 <= end2, "Error in line #{}, end2 larger than start2 in {}".format(line_number, line)

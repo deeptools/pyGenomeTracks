@@ -119,7 +119,8 @@ height = 2
                       size='large', verticalalignment='center', transform=label_ax.transAxes)
 
     def process_type_for_coverage_track(self):
-        self.plot_type = 'fill'
+        default_plot_type = 'fill'
+        self.plot_type = default_plot_type
         self.size = None
 
         if self.properties['type'].find(":") > 0:
@@ -127,16 +128,21 @@ height = 2
             try:
                 self.size = float(size)
             except ValueError:
-                exit("Invalid value: 'type = {}' in section: {}\n"
-                     "A number was expected and found '{}'".format(self.properties['type'],
-                                                                   self.properties['section_name'],
-                                                                   size))
+                self.log.warning("Invalid value: 'type = {}' in section: {}\n"
+                                 "A number was expected after ':' and found "
+                                 "'{}'. Will use default."
+                                 "".format(self.properties['type'],
+                                           self.properties['section_name'],
+                                           size))
         else:
             self.plot_type = self.properties['type']
 
         if self.plot_type not in ['line', 'points', 'fill']:
-            exit("Invalid: 'type = {}' in section: {}\n".format(self.properties['type'],
-                                                                self.properties['section_name']))
+            self.log.warning("Invalid: 'type = {}' in section: {}\n"
+                             "Will use default."
+                             "".format(self.properties['type'],
+                                       self.properties['section_name']))
+            self.plot_type = default_plot_type
 
     @staticmethod
     def change_chrom_names(chrom):
