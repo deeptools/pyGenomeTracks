@@ -77,8 +77,7 @@ def main():
                    dtype='U25')
     mat[0, 0] = 'parameter'
     mat[1, 0] = '--'
-    j = 1
-    for track_type in all_tracks_with_default:
+    for j, track_type in enumerate(all_tracks_with_default, start=1):
         mat[0, j] = track_type
         mat[1, j] = '-'
         for i, p in enumerate(all_default_parameters):
@@ -95,7 +94,6 @@ def main():
                 default = not_set_string
 
             mat[i + 2, j] = default
-        j += 1
     # The matrix is written in a file to be able to use it in the README.md
     np.savetxt("all_default_properties.txt", mat, fmt='%s', delimiter=" | ")
 
