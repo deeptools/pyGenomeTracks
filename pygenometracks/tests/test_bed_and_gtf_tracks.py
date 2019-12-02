@@ -6,7 +6,8 @@ from tempfile import NamedTemporaryFile
 import os.path
 import pygenometracks.plotTracks
 
-ROOT = os.path.dirname(os.path.abspath(__file__)) + "/test_data/"
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                    "test_data")
 
 browser_tracks = """
 [x-axis]
@@ -93,7 +94,7 @@ fontsize = 30
 title = fontsize = 30
 
 """
-with open(ROOT + "bed_and_gtf_tracks.ini", 'w') as fh:
+with open(os.path.join(ROOT, "bed_and_gtf_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 browser_tracks = """
@@ -122,7 +123,7 @@ fontsize = 10
 max_labels = 600
 
 """
-with open(ROOT + "bed_maxLab_tracks.ini", 'w') as fh:
+with open(os.path.join(ROOT, "bed_maxLab_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 
@@ -133,11 +134,14 @@ def test_plot_tracks_bed_and_gtf():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0}/bed_and_gtf_tracks.ini --region X:3000000-3300000 "\
+    args = "--tracks {0} --region X:3000000-3300000 "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName  {1}".format(ROOT, outfile.name).split()
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_and_gtf_tracks.ini'),
+                     outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(ROOT + '/master_bed_and_gtf.png', outfile.name, tolerance)
+    res = compare_images(os.path.join(ROOT, 'master_bed_and_gtf.png'),
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
@@ -147,11 +151,14 @@ def test_plot_tracks_bed_with_maxLab():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0}/bed_maxLab_tracks.ini --region X:2000000-3500000 "\
+    args = "--tracks {0} --region X:2000000-3500000 "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName  {1}".format(ROOT, outfile.name).split()
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_maxLab_tracks.ini'),
+                     outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(ROOT + '/master_maxLab.png', outfile.name, tolerance)
+    res = compare_images(os.path.join(ROOT, 'master_maxLab.png'),
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)

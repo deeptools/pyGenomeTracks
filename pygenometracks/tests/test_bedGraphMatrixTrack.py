@@ -6,7 +6,8 @@ from tempfile import NamedTemporaryFile
 import os.path
 import pygenometracks.plotTracks
 
-ROOT = os.path.dirname(os.path.abspath(__file__)) + "/test_data/"
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                    "test_data")
 
 tracks = """
 [test bedgraph tabix]
@@ -111,7 +112,7 @@ plot_horizontal_lines = true
 [x-axis]
 """
 
-with open(ROOT + "bedgraph.ini", 'w') as fh:
+with open(os.path.join(ROOT, "bedgraph.ini"), 'w') as fh:
     fh.write(tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
@@ -120,11 +121,14 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 def test_bedgraphmatrix_track():
     region = "X:2850000-3150000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_', delete=False)
-    args = "--tracks {root}/bedgraph.ini --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName  {outfile}".format(root=ROOT, outfile=outfile.name, region=region).split()
+    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName {outfile}" \
+           "".format(ini=os.path.join(ROOT, "bedgraph.ini"),
+                     outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
-    res = compare_images(ROOT + '/master_bedgraph.png', outfile.name, tolerance)
+    res = compare_images(os.path.join(ROOT, 'master_bedgraph.png'),
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
