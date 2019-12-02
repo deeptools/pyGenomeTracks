@@ -320,7 +320,7 @@ class PlotTracks(object):
             if chrom_region not in list(self.vlines_intval_tree):
                 log.warning("*Warning*\nNeither "
                             + chrom_region_before + " nor "
-                            + chrom_region + " exits as a "
+                            + chrom_region + " existss as a "
                             "chromosome name inside the "
                             "file with vertical lines. "
                             "No vertical lines will be "
