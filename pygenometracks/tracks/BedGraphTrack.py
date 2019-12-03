@@ -222,19 +222,10 @@ file_type = {}
             score_list, x_values = self.get_values_as_bdg(score_list,
                                                           pos_list)
 
-        # I do not see how this part of the code can be executed:
-        if 'extra' in self.properties and self.properties['extra'][0] == '4C':
-            # draw a vertical line for each fragment region center
-            ax.fill_between(pos_list, score_list, linewidth=0.1,
-                            facecolor=self.properties['color'],
-                            edgecolor='none', alpha=self.properties['alpha'])
-            ax.vlines(pos_list, [0], score_list, color='olive', linewidth=0.5)
-            ax.plot(pos_list, score_list, '-', color='slateblue', linewidth=0.7)
-        else:
-            plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
-                          self.properties['color'],
-                          self.properties['negative_color'],
-                          self.properties['alpha'])
+        plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
+                      self.properties['color'],
+                      self.properties['negative_color'],
+                      self.properties['alpha'])
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
