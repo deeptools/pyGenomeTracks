@@ -453,7 +453,7 @@ class PlotTracks(object):
                                          "value. Please, use true or false."
                                          "".format(section_name, name,
                                                    value))
-                    if value not in ['true', 'false']:
+                    if value.lower() not in ['true', 'false']:
                         log.warning("Deprecation Warning: "
                                     "In section {}, {} was set to {}"
                                     " whereas in the future only"
