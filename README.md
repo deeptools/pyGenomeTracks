@@ -434,6 +434,7 @@ display |  |  |  |  | stacked |  |  |  |  |
 max_labels |  |  |  |  | 60 |  |  |  |  | 
 global_max_row |  |  |  |  | false |  |  |  |  | 
 gene_rows |  |  |  |  | not set |  |  |  |  | 
+arrow_interval |  |  |  |  | 2 |  |  |  |  | 
 show_data_range |  |  |  |  |  | true | true | true | true | 
 show_labels |  |  |  |  |  | true |  |  |  | 
 use_summit |  |  |  |  |  | true |  |  |  | 
