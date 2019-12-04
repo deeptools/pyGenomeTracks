@@ -42,3 +42,5 @@
   - for *domains, bed*: true, false
 - **nans_to_zeros**:
   - for *bigwig, bedgraph*: true, false
+- **arrowhead_included**:
+  - for *bed*: true, false
