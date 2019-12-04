@@ -6,7 +6,8 @@ from tempfile import NamedTemporaryFile
 import os.path
 import pygenometracks.plotTracks
 
-ROOT = os.path.dirname(os.path.abspath(__file__)) + "/test_data/"
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                    "test_data")
 
 browser_tracks = """
 [x-axis]
@@ -34,7 +35,7 @@ max_value = 10
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = blue
 height = 5
-title = bedgraph with use middle = true
+title = bedgraph with use_middle = true
 max_value = 10
 use_middle = true
 
@@ -44,7 +45,7 @@ height = 3
 title = "HoxD genes and regulatory regions"
 
 """
-with open(ROOT + "bedgraph_useMid.ini", 'w') as fh:
+with open(os.path.join(ROOT, "bedgraph_useMid.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 
@@ -54,12 +55,15 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 def test_plot_bedgraph_tracks():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 "\
+    args = "--tracks {0} --region chr2:73,800,000-75,744,000 "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName  {1}".format(ROOT, outfile.name).split()
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, "bedgraph_useMid.ini"),
+                     outfile.name).split()
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
-    res = compare_images(ROOT + '/master_bedgraph_useMid.png', outfile.name, tolerance)
+    res = compare_images(os.path.join(ROOT, 'master_bedgraph_useMid.png'),
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
@@ -68,12 +72,15 @@ def test_plot_bedgraph_tracks():
 def test_plot_bedgraph_tracks_rasterize():
 
     outfile = NamedTemporaryFile(suffix='.pdf', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 "\
+    args = "--tracks {0} --region chr2:73,800,000-75,744,000 "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName  {1}".format(ROOT, outfile.name).split()
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bedgraph_useMid.ini'),
+                     outfile.name).split()
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
-    res = compare_images(ROOT + '/master_bedgraph_useMid.pdf', outfile.name, tolerance)
+    res = compare_images(os.path.join(ROOT, 'master_bedgraph_useMid.pdf'),
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)

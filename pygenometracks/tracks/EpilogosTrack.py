@@ -6,6 +6,7 @@ import json
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 from matplotlib import cm
+import numpy as np
 
 
 class EpilogosTrack(BedGraphTrack):
@@ -34,13 +35,20 @@ class EpilogosTrack(BedGraphTrack):
 # 	}}
 #}}
 categories_file = <path to json categories file>
-# optional. If not given is guessed from the file ending.
+# optional. If not given, it is guessed from the file ending.
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'categories_file': None,
                            'orientation': None}
-    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
+    NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = ['categories_file', 'file', 'file_type',
+                         'overlay_previous', 'orientation',
+                         'title']
+    FLOAT_PROPERTIES = {'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
 
     def __init__(self, *args, **kwarg):
         super(EpilogosTrack, self).__init__(*args, **kwarg)

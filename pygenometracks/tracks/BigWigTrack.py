@@ -34,7 +34,7 @@ summary_method = mean
 # similarly points:ms sets the point size (markersize (ms) to the given float
 # type = line:0.5
 # type = points:0.5
-# set show data range to false to hide the text on the upper-left showing the data range
+# set show_data_range to false to hide the text on the upper-left showing the data range
 show_data_range = true
 file_type = {}
     """.format(TRACK_TYPE)
@@ -50,12 +50,25 @@ file_type = {}
                            'summary_method': 'mean',
                            'number_of_bins': 700,
                            'type': 'fill'}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum']}
-    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
-                             'min_value': {'auto': None}}
+    BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'orientation', 'summary_method',
+                         'title', 'color', 'negative_color',
+                         'type']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'alpha': [0, 1],
+                        'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {'number_of_bins': [1, np.inf]}
+    # The color can only be a color
+    # negative_color can only be a color or None
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -66,18 +79,6 @@ file_type = {}
         super(BigWigTrack, self).process_type_for_coverage_track()
         if self.properties['negative_color'] is None:
             self.properties['negative_color'] = self.properties['color']
-        try:
-            self.properties['number_of_bins'] = \
-                int(self.properties['number_of_bins'])
-        except TypeError:
-            default_value = self.DEFAULTS_PROPERTIES['number_of_bins']
-            self.log.warning("'number of bins' value: {} "
-                             "for bedgraph file {} "
-                             "is not valid. Using default value ({}})"
-                             "".format(self.properties['number_of_bins'],
-                                       self.properties['file'],
-                                       default_value))
-            self.properties['number_of_bins'] = default_value
 
     def plot(self, ax, chrom_region, start_region, end_region):
         formated_region = "{}:{}-{}".format(chrom_region, start_region, end_region)
@@ -87,7 +88,7 @@ file_type = {}
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in self.bw.chroms().keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " exits as a "
+                                 + " nor " + chrom_region + " existss as a "
                                  "chromosome name inside the bigwig file. "
                                  "This will generate an empty track!!\n")
                 return

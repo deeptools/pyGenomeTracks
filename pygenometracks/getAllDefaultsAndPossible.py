@@ -1,8 +1,10 @@
 """
-This python script will generate one file: all_default_properties.txt
+This python script will generate two files:
+- all_default_properties.txt
 This file is a markdown table with all the defaults values for each parameter
 for each track class. This table can be copy pasted in the README.md
-It will output in the standard output the possible values.
+- all_possible_properties.txt
+This file is a markdown list with possible values.
 This can also be copy pasted in the README.md
 """
 from pygenometracks.tracksClass import PlotTracks, XAxisTrack
@@ -27,7 +29,7 @@ track_separator = ','
 #                   'merge_transcripts': {True: 'on', False: 'off'},
 #                   'nans_to_zeros': {True: 'True', False: 'False'}}
 
-# We know want people to use true/false:
+# We now want people to use true/false:
 GOOD_PRACTICES = {'labels': {True: 'true', False: 'false'},
                   'show_data_range': {True: 'true', False: 'false'},
                   'plot_horizontal_lines': {True: 'true', False: 'false'},
@@ -77,8 +79,7 @@ def main():
                    dtype='U25')
     mat[0, 0] = 'parameter'
     mat[1, 0] = '--'
-    j = 1
-    for track_type in all_tracks_with_default:
+    for j, track_type in enumerate(all_tracks_with_default, start=1):
         mat[0, j] = track_type
         mat[1, j] = '-'
         for i, p in enumerate(all_default_parameters):
@@ -95,42 +96,42 @@ def main():
                 default = not_set_string
 
             mat[i + 2, j] = default
-        j += 1
     # The matrix is written in a file to be able to use it in the README.md
     np.savetxt("all_default_properties.txt", mat, fmt='%s', delimiter=" | ")
 
     # For the possible:
-    for p, possible_dic in all_possible_parameters.items():
-        possible_values = {}
-        for track_type, pv in possible_dic.items():
-            if len(possible_values) == 0:
-                possible_values[track_type] = pv
-            else:
-                added = False
-                for k in possible_values:
-                    if possible_values[k] == pv:
-                        possible_values[k + track_separator + track_type] = pv
-                        del possible_values[k]
-                        added = True
-                        break
-                if not added:
+    with open("all_possible_properties.txt", 'w') as fo:
+        for p, possible_dic in all_possible_parameters.items():
+            possible_values = {}
+            for track_type, pv in possible_dic.items():
+                if len(possible_values) == 0:
                     possible_values[track_type] = pv
-        print("- **" + p + "**:")
-        for name in [k for k in possible_values]:
-            reformated_possible = ", ".join([v for v in possible_values[name]
-                                             if v is not None])
-            if None in possible_values[name]:
-                reformated_possible += ", " + not_set_string
-            print("  - for *" + name + "*: " + reformated_possible)
-    for p, pv in GOOD_PRACTICES.items():
-        names = []
-        for track_type in all_tracks_with_default:
-            if track_type in all_default_parameters[p]:
-                names += [track_type]
-        print("- **" + p + "**:")
-        name = ", ".join(names)
-        reformated_possible = ", ".join([v for k, v in pv.items()])
-        print("  - for *" + name + "*: " + reformated_possible)
+                else:
+                    added = False
+                    for k in possible_values:
+                        if possible_values[k] == pv:
+                            possible_values[k + track_separator + track_type] = pv
+                            del possible_values[k]
+                            added = True
+                            break
+                    if not added:
+                        possible_values[track_type] = pv
+            fo.write("- **" + p + "**:\n")
+            for name in [k for k in possible_values]:
+                reformated_possible = ", ".join([v for v in possible_values[name]
+                                                if v is not None])
+                if None in possible_values[name]:
+                    reformated_possible += ", " + not_set_string
+                fo.write("  - for *" + name + "*: " + reformated_possible + "\n")
+        for p, pv in GOOD_PRACTICES.items():
+            names = []
+            for track_type in all_tracks_with_default:
+                if track_type in all_default_parameters[p]:
+                    names += [track_type]
+            fo.write("- **" + p + "**:\n")
+            name = ", ".join(names)
+            reformated_possible = ", ".join([v for k, v in pv.items()])
+            fo.write("  - for *" + name + "*: " + reformated_possible + "\n")
 
 
 if __name__ == "__main__":

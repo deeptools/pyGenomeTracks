@@ -104,12 +104,28 @@ file_type = {}
                            'gene_rows': None,
                            'max_value': None,
                            'min_value': None}
-    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'style': ['flybase', 'UCSC'],
-                           'display': DISPLAY_BED_VALID}
+    NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
                              'display': DISPLAY_BED_SYNONYMOUS}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
+                           'style': ['flybase', 'UCSC'],
+                           'display': DISPLAY_BED_VALID}
+    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row']
+    STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
+                         'overlay_previous', 'orientation',
+                         'title', 'style', 'color', 'border_color',
+                         'display']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'fontsize': [0, np.inf],
+                        'interval_height': [0, np.inf],
+                        'line_width': [0, np.inf],
+                        'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {'gene_rows': [0, np.inf],
+                          'max_labels': [0, np.inf]}
+    # The color can be a color or a colormap or 'bed_rgb'
+    # border_color can only be a color
 
     def __init__(self, *args, **kwarg):
         super(BedTrack, self).__init__(*args, **kwarg)
@@ -132,17 +148,6 @@ file_type = {}
 
     def set_properties_defaults(self):
         super(BedTrack, self).set_properties_defaults()
-        try:
-            self.properties['fontsize'] = float(self.properties['fontsize'])
-        except TypeError:
-            default_value = self.DEFAULTS_PROPERTIES['fontsize']
-            self.log.warning("'fontsize' value: {} "
-                             "for bed file {} "
-                             "is not valid. Using default value ({}})"
-                             "".format(self.properties['fontsize'],
-                                       self.properties['file'],
-                                       default_value))
-            self.properties['fontsize'] = default_value
         self.fp = font_manager.FontProperties(size=self.properties['fontsize'])
         self.colormap = None
 
@@ -299,7 +304,7 @@ file_type = {}
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " exits as a "
+                                 + " nor " + chrom_region + " existss as a "
                                  "chromosome name inside the bed file. "
                                  "This will generate an empty track!!\n")
                 return
@@ -395,7 +400,7 @@ file_type = {}
 
                 # do not plot if the maximum interval rows to plot is reached
                 if self.properties['gene_rows'] is not None and \
-                   free_row >= int(self.properties['gene_rows']):
+                   free_row >= self.properties['gene_rows']:
                     continue
 
                 if free_row > max_num_row_local:
@@ -418,7 +423,7 @@ file_type = {}
                     pass
                 elif bed.end > start_region and bed.end < end_region:
                     ax.text(bed.end + self.small_relative,
-                            ypos + (float(self.properties['interval_height']) / 2),
+                            ypos + (self.properties['interval_height'] / 2),
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
 
@@ -435,7 +440,7 @@ file_type = {}
                 ymin = self.max_num_row[chrom_region] * self.row_scale
 
             elif self.properties['gene_rows'] is not None:
-                ymin = int(self.properties['gene_rows']) * self.row_scale
+                ymin = self.properties['gene_rows'] * self.row_scale
             else:
                 ymin = max_ypos + self.properties['interval_height']
 
@@ -525,7 +530,7 @@ file_type = {}
            bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor)
             return
-        half_height = float(self.properties['interval_height']) / 2
+        half_height = self.properties['interval_height'] / 2
         # draw 'backbone', a line from the start until the end of the gene
         ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height],
                 'black', linewidth=linewidth, zorder=-1)
@@ -594,7 +599,7 @@ file_type = {}
         :param ypos:
         :return: None
         """
-        half_height = float(self.properties['interval_height']) / 2
+        half_height = self.properties['interval_height'] / 2
         if strand == '+':
             x0 = start
             x1 = end  # - self.small_relative
@@ -634,8 +639,8 @@ file_type = {}
         if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
-        half_height = float(self.properties['interval_height']) / 2
-        quarter_height = float(self.properties['interval_height']) / 4
+        half_height = self.properties['interval_height'] / 2
+        quarter_height = self.properties['interval_height'] / 4
         three_quarter_height = quarter_height * 3
 
         # draw 'backbone', a line from the start until the end of the gene

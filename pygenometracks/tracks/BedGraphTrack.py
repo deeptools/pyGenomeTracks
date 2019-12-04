@@ -63,12 +63,26 @@ file_type = {}
                            'rasterize': False,
                            'number_of_bins': 700,
                            'type': 'fill'}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum', None]}
-    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
-                             'min_value': {'auto': None}}
+    BOOLEAN_PROPERTIES = ['show_data_range', 'nans_to_zeros',
+                          'use_middle', 'rasterize']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'orientation', 'summary_method',
+                         'title', 'color', 'negative_color',
+                         'type']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'alpha': [0, 1],
+                        'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {'number_of_bins': [1, np.inf]}
+    # The color can only be a color
+    # negative_color can only be a color or None
 
     def __init__(self, properties_dict):
         super(BedGraphTrack, self).__init__(properties_dict)
@@ -93,19 +107,6 @@ file_type = {}
         super(BedGraphTrack, self).process_type_for_coverage_track()
         if self.properties['negative_color'] is None:
             self.properties['negative_color'] = self.properties['color']
-        if self.properties['summary_method'] is not None:
-            try:
-                self.properties['number_of_bins'] = \
-                    int(self.properties['number_of_bins'])
-            except TypeError:
-                default_value = self.DEFAULTS_PROPERTIES['number_of_bins']
-                self.log.warning("'number_of_bins' value: {} "
-                                 "for bedgraph file {} "
-                                 "is not valid. Using default value ({}})"
-                                 "".format(self.properties['number_of_bins'],
-                                           self.properties['file'],
-                                           default_value))
-                self.properties['number_of_bins'] = default_value
 
     def _get_row_data(self, row):
         """
@@ -160,7 +161,7 @@ file_type = {}
                 if chrom_region not in self.tbx.contigs:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
-                                     + chrom_region + " exits as a "
+                                     + chrom_region + " existss as a "
                                      "chromosome name inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")
@@ -177,7 +178,7 @@ file_type = {}
                 if chrom_region not in list(self.interval_tree):
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
-                                     + chrom_region + " exits as a "
+                                     + chrom_region + " existss as a "
                                      "chromosome name inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")
@@ -221,19 +222,10 @@ file_type = {}
             score_list, x_values = self.get_values_as_bdg(score_list,
                                                           pos_list)
 
-        # I do not see how this part of the code can be executed:
-        if 'extra' in self.properties and self.properties['extra'][0] == '4C':
-            # draw a vertical line for each fragment region center
-            ax.fill_between(pos_list, score_list, linewidth=0.1,
-                            facecolor=self.properties['color'],
-                            edgecolor='none', alpha=self.properties['alpha'])
-            ax.vlines(pos_list, [0], score_list, color='olive', linewidth=0.5)
-            ax.plot(pos_list, score_list, '-', color='slateblue', linewidth=0.7)
-        else:
-            plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
-                          self.properties['color'],
-                          self.properties['negative_color'],
-                          self.properties['alpha'])
+        plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
+                      self.properties['color'],
+                      self.properties['negative_color'],
+                      self.properties['alpha'])
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']

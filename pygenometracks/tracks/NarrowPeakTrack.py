@@ -8,6 +8,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.path import Path
 import matplotlib.patches as patches
 from .. utilities import file_to_intervaltree
+import numpy as np
 
 DEFAULT_NARROWPEAK_COLOR = '#FF000080'  # red, alpha=0.55
 
@@ -30,7 +31,7 @@ use_summit = true
 # narrowPeak file signal value (usually peak coverage)
 type = peak
 # if the peaks look too thin, the can be adjusted
-width adjust = 1.5
+width_adjust = 1.5
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'orientation': None,
@@ -41,14 +42,24 @@ file_type = {}
                            'use_summit': True,
                            'width_adjust': 1.5,
                            'type': 'peak'}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'type': ['peak', 'box']}
-    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None}}
+    BOOLEAN_PROPERTIES = ['show_data_range', 'show_labels',
+                          'use_summit']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'orientation', 'type', 'title',
+                         'color']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'width_adjust': [0, np.inf],
+                        'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
+    # color can only be a color
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
         self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
-        self.properties['width_adjust'] = float(self.properties['width_adjust'])
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
         # uses bezier curves to plot a shape that

@@ -63,10 +63,21 @@ file_type = {}
                            'min_value': None,
                            'rasterize': True,
                            'colormap': DEFAULT_MATRIX_COLORMAP}
-    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'transform': ['no', 'log', 'log1p', '-log']}
+    NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
+                           'transform': ['no', 'log', 'log1p', '-log']}
+    BOOLEAN_PROPERTIES = ['show_masked_bins', 'rasterize']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'orientation', 'transform',
+                         'title', 'colormap']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'scale_factor': [- np.inf, np.inf],
+                        'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {'depth': [1, np.inf]}
+    # The colormap can only be a colormap
 
     def __init__(self, *args, **kwargs):
         super(HiCMatrixTrack, self).__init__(*args, **kwargs)
@@ -79,10 +90,10 @@ file_type = {}
             if self.properties['region'][2] == 1e15:
                 region = [str(self.properties['region'][0])]
             elif len(self.properties['region']) == 3:
-                start = int(self.properties['region'][1]) - int(self.properties['depth'])
+                start = int(self.properties['region'][1]) - self.properties['depth']
                 if start < 0:
                     start = 0
-                end = int(self.properties['region'][2]) + int(self.properties['depth'])
+                end = int(self.properties['region'][2]) + self.properties['depth']
 
                 region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(end)]
         # try to open with end region + depth to avoid triangle effect in the plot
@@ -94,8 +105,7 @@ file_type = {}
             self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
 
         if len(self.hic_ma.matrix.data) == 0:
-            self.log.error("Matrix {} is empty".format(self.properties['file']))
-            exit(1)
+            raise Exception("Matrix {} is empty".format(self.properties['file']))
         if self.properties['show_masked_bins']:
             pass
         else:
@@ -105,24 +115,21 @@ file_type = {}
         if self.properties['transform'] != 'no':
             if self.properties['transform'] == 'log1p':
                 if self.hic_ma.matrix.data.min() + 1 < 0:
-                    self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
-                                   "log1p transformation can not be applied to \n"
-                                   "values in matrix: {}".format(self.properties['file']))
-                    exit(1)
+                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                                    "log1p transformation can not be applied to \n"
+                                    "values in matrix: {}".format(self.properties['file']))
 
             elif self.properties['transform'] == '-log':
                 if self.hic_ma.matrix.data.min() < 0:
-                    self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
-                                   "log(-1 * <values>) transformation can not be applied to \n"
-                                   "values in matrix: {}".format(self.properties['file']))
-                    exit(1)
+                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                                    "log(-1 * <values>) transformation can not be applied to \n"
+                                    "values in matrix: {}".format(self.properties['file']))
 
             elif self.properties['transform'] == 'log':
                 if self.hic_ma.matrix.data.min() < 0:
-                    self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
-                                   "log transformation can not be applied to \n"
-                                   "values in matrix: {}".format(self.properties['file']))
-                    exit(1)
+                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                                    "log transformation can not be applied to \n"
+                                    "values in matrix: {}".format(self.properties['file']))
 
         new_intervals = hicmatrix.utilities.enlarge_bins(self.hic_ma.cut_intervals)
         self.hic_ma.interval_trees, self.hic_ma.chrBinBoundaries = \
@@ -169,16 +176,16 @@ file_type = {}
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in chrom_sizes:
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " exits as a "
+                                 + " nor " + chrom_region + " existss as a "
                                  "chromosome name on the matrix. "
                                  "This will generate an empty track!!\n")
                 return
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
         if region_end > chrom_sizes[chrom_region]:
-            self.log.error("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n")
-            self.log.error("{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
-                                                                        region_start, region_end))
+            raise Exception("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n"
+                            "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
+                                                                         region_start, region_end))
 
         # if self.properties['file'].endswith('.cool'):
         #     # load now the region to be plotted
