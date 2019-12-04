@@ -149,6 +149,8 @@ height = 3
 title = bed6 border_color = black; fontsize=8; color=red; arrowhead_included = true
 fontsize = 8
 file_type = bed
+color = red
+border_color = black
 arrowhead_included = true
 
 [spacer]
