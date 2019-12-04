@@ -1,4 +1,5 @@
 from . GenomeTrack import GenomeTrack
+from pygenometracks.utilities import InputError
 from intervaltree import IntervalTree, Interval
 import matplotlib
 import numpy as np
@@ -18,112 +19,61 @@ class LinksTrack(GenomeTrack):
 # The fields after the score field will be ignored
 # for example:
 #   chr1 100 200 chr1 250 300 0.5
-# depending on the links type either an 'arc' or a 'triangle' or a 'loop' can be plotted.
-# If an arc, a line will be drawn from the center of the first region (chr1: 150),
+# depending on the value of links_type either 'arcs' or 'triangles' or 'loops' can be plotted.
+# If arcs, a line will be drawn from the center of the first region (chr1: 150),
 # to the center of the other region (chr1: 275).
-# if a triangle, the vertix of the triangle will be drawn at the center between the two points (also the center of
+# if triangles, the vertix of the triangle will be drawn at the center between the two points (also the center of
 # each position is used)
-# if a loop, a rectangle highlighting the intersection between the 2 regions will be shown
+# if loops, a rectangle highlighting the intersection between the 2 regions will be shown
 # the triangles, and loops options are convenient to overlay over a
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
-# For these tracks do not hesitate to put large line width like 5 or 10.
+# For these tracks do not hesitate to put large line_width like 5 or 10.
 links_type = arcs
 # color of the lines
 # if color is a valid colormap name (like RdYlGn),
 # then the score is mapped to the colormap.
 color = red
+# To use transparency, you can use alpha
+# default is 0.8
+# alpha = 0.5
 # if line_width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
 # line_width = 0.5
-# options for line style are 'solid', 'dashed', 'dotted' etc. The full list of
-# styles can be found here: https://matplotlib.org/gallery/lines_bars_and_markers/linestyles.html
+# options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
 line_style = solid
 file_type = {}
     """.format(TRACK_TYPE)
+    DEFAULTS_PROPERTIES = {'links_type': 'arcs',
+                           'line_width': None,
+                           'line_style': 'solid',
+                           'orientation': None,
+                           'color': DEFAULT_LINKS_COLOR,
+                           'alpha': 0.8,
+                           'max_value': None,
+                           'min_value': None}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
+                           'links_type': ['arcs', 'triangles', 'loops'],
+                           'line_style': ['solid', 'dashed',
+                                          'dotted', 'dashdot']}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'orientation', 'links_type', 'line_style',
+                         'title', 'color']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'line_width': [0, np.inf],
+                        'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
+    # The color can be a color or a colormap (if there is a score)
 
-    def __init__(self, *args, **kwarg):
-        super(LinksTrack, self).__init__(*args, **kwarg)
-        # the file format expected is similar to file format of links in
-        # circos:
-        # chr1 100 200 chr1 250 300 0.5
-        # where the last value is a score.
-        if 'line_style' not in self.properties:
-            self.properties['line_style'] = 'solid'
-        if 'links_type' not in self.properties:
-            self.properties['links_type'] = 'arcs'
+    def set_properties_defaults(self):
+        super(LinksTrack, self).set_properties_defaults()
         self.max_height = None
-        valid_intervals = 0
-        interval_tree = {}
-        line_number = 0
-        has_score = True
-        max_score = float('-inf')
-        min_score = float('inf')
-        with open(self.properties['file'], 'r') as file_h:
-            for line in file_h.readlines():
-                line_number += 1
-                if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
-                    continue
-                try:
-                    chrom1, start1, end1, chrom2, start2, end2 = line.strip().split('\t')[:6]
-                except Exception as detail:
-                    self.log.error('File not valid. The format is chrom1 start1, end1, '
-                                   'chrom2, start2, end2\nError: {}\n in line\n {}'.format(detail, line))
-                    exit(1)
-                try:
-                    score = line.strip().split('\t')[6]
-                except IndexError:
-                    has_score = False
-                    score = np.nan
-
-                try:
-                    start1 = int(start1)
-                    end1 = int(end1)
-                    start2 = int(start2)
-                    end2 = int(end2)
-                except ValueError as detail:
-                    self.log.error("Error reading line: {}. One of the fields is not "
-                                   "an integer.\nError message: {}".format(line_number, detail))
-                    exit(1)
-
-                assert start1 <= end1, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
-                assert start2 <= end2, "Error in line #{}, end2 larger than start2 in {}".format(line_number, line)
-
-                if has_score:
-                    try:
-                        score = float(score)
-                    except ValueError as detail:
-                        self.log.warning("Warning: reading line: {}. The score is not valid {} will not be used. "
-                                         "\nError message: {}".format(line_number, score, detail))
-                        score = np.nan
-                        has_score = False
-                    else:
-                        if score < min_score:
-                            min_score = score
-                        if score > max_score:
-                            max_score = score
-
-                if chrom1 != chrom2:
-                    self.log.warning("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
-                    continue
-
-                if chrom1 not in interval_tree:
-                    interval_tree[chrom1] = IntervalTree()
-
-                if start2 < start1:
-                    start1, start2 = start2, start1
-                    end1, end2 = end2, end1
-
-                # each interval spans from the smallest start to the largest end
-                interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
-                valid_intervals += 1
-
-        if valid_intervals == 0:
-            self.log.warning("No valid intervals were found in file {}".format(self.properties['file']))
-
-        file_h.close()
-        self.interval_tree = interval_tree
-
-        if 'line_width' not in self.properties and not has_score:
+        self.interval_tree, min_score, max_score, has_score = self.process_link_file()
+        if self.properties['line_width'] is None and not has_score:
             self.log.warning("*WARNING* for section {}"
                              " no line_width has been set but some "
                              "lines do not have scores."
@@ -131,11 +81,6 @@ file_type = {}
                              "0.5".format(self.properties['section_name']))
             self.properties['line_width'] = 0.5
 
-        if 'alpha' not in self.properties:
-            self.properties['alpha'] = 0.8
-
-        if 'color' not in self.properties:
-            self.properties['color'] = DEFAULT_LINKS_COLOR
         self.colormap = None
         # check if the color given is a color map
         if not matplotlib.colors.is_color_like(self.properties['color']):
@@ -161,9 +106,9 @@ file_type = {}
                     self.colormap = self.properties['color']
 
         if self.colormap is not None:
-            if 'min_value' in self.properties:
+            if self.properties['min_value'] is not None:
                 min_score = self.properties['min_value']
-            if 'max_value' in self.properties:
+            if self.properties['max_value'] is not None:
                 max_score = self.properties['max_value']
 
             norm = matplotlib.colors.Normalize(vmin=min_score,
@@ -187,7 +132,7 @@ file_type = {}
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in list(self.interval_tree):
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " exits as a "
+                                 + " nor " + chrom_region + " existss as a "
                                  "chromosome name inside the link file. "
                                  "This will generate an empty track!!\n")
                 return
@@ -201,7 +146,7 @@ file_type = {}
             if interval.begin < region_start and interval.end > region_end:
                 continue
 
-            if 'line_width' in self.properties:
+            if self.properties['line_width'] is not None:
                 self.line_width = float(self.properties['line_width'])
             else:
                 self.line_width = 0.5 * np.sqrt(interval.data[4])
@@ -219,7 +164,7 @@ file_type = {}
         # radius plotted plus an small increase to avoid cropping of the arcs
         self.max_height += self.max_height * 0.1
         self.log.debug("{} were links plotted".format(count))
-        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+        if self.properties['orientation'] == 'inverted':
             ax.set_ylim(self.max_height, -1)
         else:
             ax.set_ylim(-1, self.max_height)
@@ -325,3 +270,77 @@ file_type = {}
         ax.add_artist(rectangle)
         if y2 > self.max_height:
             self.max_height = y2
+
+    def process_link_file(self):
+        # the file format expected is similar to file format of links in
+        # circos:
+        # chr1 100 200 chr1 250 300 0.5
+        # where the last value is a score.
+        valid_intervals = 0
+        interval_tree = {}
+        line_number = 0
+        has_score = True
+        max_score = float('-inf')
+        min_score = float('inf')
+        with open(self.properties['file'], 'r') as file_h:
+            for line in file_h.readlines():
+                line_number += 1
+                if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
+                    continue
+                try:
+                    chrom1, start1, end1, chrom2, start2, end2 = line.strip().split('\t')[:6]
+                except Exception as detail:
+                    raise InputError('File not valid. The format is chrom1 start1, end1, '
+                                     'chrom2, start2, end2\nError: {}\n in line\n {}'.format(detail, line))
+                try:
+                    score = line.strip().split('\t')[6]
+                except IndexError:
+                    has_score = False
+                    score = np.nan
+
+                try:
+                    start1 = int(start1)
+                    end1 = int(end1)
+                    start2 = int(start2)
+                    end2 = int(end2)
+                except ValueError as detail:
+                    raise InputError("Error reading line: {}. One of the fields is not "
+                                     "an integer.\nError message: {}".format(line_number, detail))
+
+                assert start1 <= end1, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
+                assert start2 <= end2, "Error in line #{}, end2 larger than start2 in {}".format(line_number, line)
+
+                if has_score:
+                    try:
+                        score = float(score)
+                    except ValueError as detail:
+                        self.log.warning("Warning: reading line: {}. The score is not valid {} will not be used. "
+                                         "\nError message: {}".format(line_number, score, detail))
+                        score = np.nan
+                        has_score = False
+                    else:
+                        if score < min_score:
+                            min_score = score
+                        if score > max_score:
+                            max_score = score
+
+                if chrom1 != chrom2:
+                    self.log.warning("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
+                    continue
+
+                if chrom1 not in interval_tree:
+                    interval_tree[chrom1] = IntervalTree()
+
+                if start2 < start1:
+                    start1, start2 = start2, start1
+                    end1, end2 = end2, end1
+
+                # each interval spans from the smallest start to the largest end
+                interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
+                valid_intervals += 1
+
+        if valid_intervals == 0:
+            self.log.warning("No valid intervals were found in file {}".format(self.properties['file']))
+
+        file_h.close()
+        return(interval_tree, min_score, max_score, has_score)

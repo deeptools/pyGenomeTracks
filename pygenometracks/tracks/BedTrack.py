@@ -1,9 +1,11 @@
 from . GenomeTrack import GenomeTrack
 from .. readBed import ReadBed
 from .. readGtf import ReadGtf
-from matplotlib.patches import Rectangle
-import matplotlib
 from .. utilities import opener
+import matplotlib
+from matplotlib import font_manager
+from matplotlib.patches import Rectangle, Polygon
+import matplotlib.pyplot as plt
 from intervaltree import IntervalTree, Interval
 import numpy as np
 
@@ -32,7 +34,7 @@ class BedTrack(GenomeTrack):
 # prefered_name = gene_name
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
-# merge_transcripts = on
+# merge_transcripts = true
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 # color = bed_rgb
@@ -47,10 +49,10 @@ class BedTrack(GenomeTrack):
 color = darkblue
 # height of track in cm
 height = 5
-# to turn off/on printing of labels
-labels = off
+# whether printing the labels
+labels = false
 # optional:
-# by default the labels are turned off if you have more than 60 features.
+# by default the labels are not printed if you have more than 60 features.
 # to change it, just increase the value:
 #max_labels = 60
 # optional: font size can be given to override the default size
@@ -81,10 +83,49 @@ fontsize = 10
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
-#global_max_row = yes
+#global_max_row = true
 # optional. If not given is guessed from the file ending.
 file_type = {}
     """.format(TRACK_TYPE)
+
+    DEFAULTS_PROPERTIES = {'fontsize': 12,
+                           'orientation': None,
+                           'color': DEFAULT_BED_COLOR,
+                           'border_color': 'black',
+                           'labels': True,
+                           'style': 'flybase',
+                           'display': DEFAULT_DISPLAY_BED,
+                           'interval_height': 100,  # This one is not defined in the documentation
+                           'line_width': 0.5,
+                           'max_labels': 60,
+                           'prefered_name': 'transcript_name',
+                           'merge_transcripts': False,
+                           'global_max_row': False,
+                           'gene_rows': None,
+                           'max_value': None,
+                           'min_value': None}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None},
+                             'display': DISPLAY_BED_SYNONYMOUS}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
+                           'style': ['flybase', 'UCSC'],
+                           'display': DISPLAY_BED_VALID}
+    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row']
+    STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
+                         'overlay_previous', 'orientation',
+                         'title', 'style', 'color', 'border_color',
+                         'display']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'fontsize': [0, np.inf],
+                        'interval_height': [0, np.inf],
+                        'line_width': [0, np.inf],
+                        'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {'gene_rows': [0, np.inf],
+                          'max_labels': [0, np.inf]}
+    # The color can be a color or a colormap or 'bed_rgb'
+    # border_color can only be a color
 
     def __init__(self, *args, **kwarg):
         super(BedTrack, self).__init__(*args, **kwarg)
@@ -92,32 +133,22 @@ file_type = {}
         # this is bed3, bed4, bed5, bed6, bed8, bed9 or bed12
         self.len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions
+        self.interval_tree, min_score, max_score = self.process_bed()
+        if self.colormap is not None:
+            if self.properties['min_value'] is not None:
+                min_score = self.properties['min_value']
+            if self.properties['max_value'] is not None:
+                max_score = self.properties['max_value']
 
-        from matplotlib import font_manager
-        if 'fontsize' not in self.properties:
-            self.properties['fontsize'] = 12
-        else:
-            self.properties['fontsize'] = float(self.properties['fontsize'])
+            norm = matplotlib.colors.Normalize(vmin=min_score,
+                                               vmax=max_score)
 
+            cmap = matplotlib.cm.get_cmap(self.properties['color'])
+            self.colormap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
+
+    def set_properties_defaults(self):
+        super(BedTrack, self).set_properties_defaults()
         self.fp = font_manager.FontProperties(size=self.properties['fontsize'])
-
-        if 'color' not in self.properties:
-            self.properties['color'] = DEFAULT_BED_COLOR
-        if 'border_color' not in self.properties:
-            self.properties['border_color'] = 'black'
-        if 'labels' not in self.properties:
-            self.properties['labels'] = True
-        if 'style' not in self.properties:
-            self.properties['style'] = 'flybase'
-        if 'display' not in self.properties:
-            self.properties['display'] = DEFAULT_DISPLAY_BED
-        if 'interval_height' not in self.properties:
-            self.properties['interval_height'] = 100
-        if 'line_width' not in self.properties:
-            self.properties['line_width'] = 0.5
-        if 'max_labels' not in self.properties:
-            self.properties['max_labels'] = 60
-
         self.colormap = None
 
         # check if the color given is a color map
@@ -135,35 +166,8 @@ file_type = {}
             else:
                 self.colormap = self.properties['color']
 
-        # check the display is valid:
-        if self.properties['display'] in DISPLAY_BED_SYNONYMOUS:
-            self.properties['display'] = \
-                DISPLAY_BED_SYNONYMOUS[self.properties['display']]
-
-        if not self.properties['display'] in DISPLAY_BED_VALID:
-            self.log.warning("*WARNING* display: '{}' for section {}"
-                             " is not valid. Display has "
-                             "been set to {}."
-                             ".".format(self.properties['display'],
-                                        self.properties['section_name'],
-                                        DEFAULT_DISPLAY_BED))
-            self.properties['display'] = DEFAULT_DISPLAY_BED
-
         # to set the distance between rows
         self.row_scale = self.properties['interval_height'] * 2.3
-
-        self.interval_tree, min_score, max_score = self.process_bed()
-        if self.colormap is not None:
-            if 'min_value' in self.properties:
-                min_score = self.properties['min_value']
-            if 'max_value' in self.properties:
-                max_score = self.properties['max_value']
-
-            norm = matplotlib.colors.Normalize(vmin=min_score,
-                                               vmax=max_score)
-
-            cmap = matplotlib.cm.get_cmap(self.properties['color'])
-            self.colormap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
     def get_length_w(self, fig_width, region_start, region_end):
         """
@@ -188,17 +192,15 @@ file_type = {}
     def process_bed(self):
 
         if self.properties['file'].endswith('gtf') or \
-           self.properties['file'].endswith('gtf.gz') or \
-           ('type' in self.properties and self.properties['type'] == 'gtf'):
+           self.properties['file'].endswith('gtf.gz'):
             bed_file_h = ReadGtf(self.properties['file'],
-                                 self.properties.get('prefered_name', 'transcript_name'),
-                                 self.properties.get('merge_transcripts', False))
+                                 self.properties['prefered_name'],
+                                 self.properties['merge_transcripts'])
         else:
             bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
 
-        if 'color' in self.properties and \
-           self.properties['color'] == 'bed_rgb' and \
+        if self.properties['color'] == 'bed_rgb' and \
            self.bed_type not in ['bed12', 'bed9']:
             self.log.warning("*WARNING* Color set to 'bed_rgb', "
                              "but bed file does not have the rgb field. "
@@ -290,7 +292,8 @@ file_type = {}
         # ypos is always 0
         elif self.properties['display'] == 'collapsed':
             ypos = 0
-
+        # if it is stacked
+        # it will got the the free_row
         else:
             ypos = free_row * self.row_scale
         return ypos
@@ -301,7 +304,7 @@ file_type = {}
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " exits as a "
+                                 + " nor " + chrom_region + " existss as a "
                                  "chromosome name inside the bed file. "
                                  "This will generate an empty track!!\n")
                 return
@@ -318,10 +321,10 @@ file_type = {}
             self.small_relative = 0.004 * (end_region - start_region)
             self.get_length_w(ax.get_figure().get_figwidth(), start_region,
                               end_region)
-            if self.properties.get('global_max_row', False):
+            if self.properties['global_max_row']:
                 self.get_max_num_row(self.len_w, self.small_relative)
 
-            # turn labels off when too many intervals are visible.
+            # do not print labels when too many intervals are visible.
             if self.properties['labels'] and \
                len(genes_overlap) > self.properties['max_labels']:
                 self.properties['labels'] = False
@@ -396,8 +399,8 @@ file_type = {}
                 ypos = self.get_y_pos(free_row)
 
                 # do not plot if the maximum interval rows to plot is reached
-                if 'gene_rows' in self.properties and \
-                   free_row >= int(self.properties['gene_rows']):
+                if self.properties['gene_rows'] is not None and \
+                   free_row >= self.properties['gene_rows']:
                     continue
 
                 if free_row > max_num_row_local:
@@ -420,7 +423,7 @@ file_type = {}
                     pass
                 elif bed.end > start_region and bed.end < end_region:
                     ax.text(bed.end + self.small_relative,
-                            ypos + (float(self.properties['interval_height']) / 2),
+                            ypos + (self.properties['interval_height'] / 2),
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
 
@@ -433,11 +436,11 @@ file_type = {}
                                         chrom_region, start_region, end_region))
             ymax = 0
 
-            if self.properties.get('global_max_row', False):
+            if self.properties['global_max_row']:
                 ymin = self.max_num_row[chrom_region] * self.row_scale
 
-            elif 'gene_rows' in self.properties:
-                ymin = int(self.properties['gene_rows']) * self.row_scale
+            elif self.properties['gene_rows'] is not None:
+                ymin = self.properties['gene_rows'] * self.row_scale
             else:
                 ymin = max_ypos + self.properties['interval_height']
 
@@ -457,7 +460,6 @@ file_type = {}
 
     def plot_y_axis(self, ax, plot_axis):
         if self.colormap is not None:
-            import matplotlib.pyplot as plt
             self.colormap.set_array([])
 
             cobar = plt.colorbar(self.colormap, ax=ax, fraction=1,
@@ -495,10 +497,6 @@ file_type = {}
             if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
                 try:
                     rgb = [float(x) / 255 for x in bed.rgb]
-                    if 'border_color' in self.properties:
-                        edgecolor = self.properties['border_color']
-                    else:
-                        edgecolor = self.properties['color']
                 except IndexError:
                     rgb = DEFAULT_BED_COLOR
             else:
@@ -509,7 +507,6 @@ file_type = {}
         """
         draws an interval with direction (if given)
         """
-        from matplotlib.patches import Polygon
 
         if bed.strand not in ['+', '-']:
             ax.add_patch(Rectangle((bed.start, ypos),
@@ -529,12 +526,11 @@ file_type = {}
         """
         draws a gene using different styles
         """
-        from matplotlib.patches import Polygon
         if bed.block_count == 0 and bed.thick_start == bed.start and \
            bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor)
             return
-        half_height = float(self.properties['interval_height']) / 2
+        half_height = self.properties['interval_height'] / 2
         # draw 'backbone', a line from the start until the end of the gene
         ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height],
                 'black', linewidth=linewidth, zorder=-1)
@@ -603,7 +599,7 @@ file_type = {}
         :param ypos:
         :return: None
         """
-        half_height = float(self.properties['interval_height']) / 2
+        half_height = self.properties['interval_height'] / 2
         if strand == '+':
             x0 = start
             x1 = end  # - self.small_relative
@@ -639,13 +635,12 @@ file_type = {}
         """
         draws a gene like in flybase gbrowse.
         """
-        from matplotlib.patches import Polygon
 
         if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
-        half_height = float(self.properties['interval_height']) / 2
-        quarter_height = float(self.properties['interval_height']) / 4
+        half_height = self.properties['interval_height'] / 2
+        quarter_height = self.properties['interval_height'] / 4
         three_quarter_height = quarter_height * 3
 
         # draw 'backbone', a line from the start until the end of the gene
@@ -706,7 +701,6 @@ file_type = {}
         """
         Plots the boundaries as triangles in the given ax.
         """
-        from matplotlib.patches import Polygon
         ymax = 0.001
         valid_regions = 0
         for region in genes_overlap:
@@ -739,7 +733,7 @@ file_type = {}
         if valid_regions == 0:
             self.log.warning("No regions found for section {}.".format(self.properties['section_name']))
 
-        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+        if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, 0)
         else:
             ax.set_ylim(0, ymax)

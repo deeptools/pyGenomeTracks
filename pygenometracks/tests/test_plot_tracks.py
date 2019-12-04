@@ -6,7 +6,8 @@ from tempfile import NamedTemporaryFile
 import os.path
 import pygenometracks.plotTracks
 
-ROOT = os.path.dirname(os.path.abspath(__file__)) + "/test_data/"
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                    "test_data")
 
 browser_tracks = """
 [x-axis]
@@ -39,9 +40,9 @@ height = 0.5
 [tad state]
 file = chromatinStates_kc.bed.gz
 height = 1.2
-title = bed display = interleaved; labels = off
+title = bed display = interleaved; labels = false
 display = interleaved
-labels = off
+labels = false
 
 [spacer]
 height = 0.5
@@ -51,7 +52,7 @@ file = chromatinStates_kc.bed.gz
 height = 0.5
 title = bed display = collapsed; color = bed_rgb
 display = color from bed rgb
-labels = off
+labels = false
 color = bed_rgb
 display = collapsed
 
@@ -76,16 +77,16 @@ height = 2
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 1.5
-title = bigwig number of bins = 2000
-number of bins = 2000
+title = bigwig number_of_bins = 2000
+number_of_bins = 2000
 
 [spacer]
 
 [test bigwig overlay]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
-title = color:red; max_value = 50; number of bins = 100 (next track: overlay_previous = yes;
-        max_value = 50; show_data_range = no; color = #0000FF80 (blue, with alpha 0.5))
+title = color:red; max_value = 50; number_of_bins = 100 (next track: overlay_previous = yes;
+        max_value = 50; show_data_range = false; color = #0000FF80 (blue, with alpha 0.5))
 min_value = 0
 max_value = 50
 height = 2
@@ -97,7 +98,7 @@ color = #0000FF80
 title =
 min_value = 0
 max_value = 50
-show_data_range = no
+show_data_range = false
 overlay_previous = yes
 number_of_bins = 100
 
@@ -124,7 +125,7 @@ overlay_previous = share-y
 file = test.arcs
 line_width = 3
 color = RdYlGn
-title = links line width = 3 color RdYlGn
+title = links line_width = 3 color RdYlGn
 height = 3
 
 [spacer]
@@ -167,12 +168,12 @@ gene_rows = 10
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 10
-title = bed6 fontsize = 10; line_width = 1.5; global_max_row = yes
-        (global max row sets the number of genes per row as the maximum found
+title = bed6 fontsize = 10; line_width = 1.5; global_max_row = true
+        (global_max_row sets the number of genes per row as the maximum found
         anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed
-global_max_row = yes
+global_max_row = true
 interval_height = 200
 line_width = 1.5
 
@@ -185,7 +186,7 @@ file = tad_classification.bed
 type = vlines
 
 """
-with open(ROOT + "browser_tracks.ini", 'w') as fh:
+with open(os.path.join(ROOT, "browser_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 
@@ -195,11 +196,14 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 def test_plot_tracks():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/browser_tracks.ini --region X:3000000-3500000 --trackLabelFraction 0.2 --width 38 " \
-           "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
+    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.2" \
+           " --width 38 --dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT, "browser_tracks.ini"),
+                     outfile.name).split()
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
-    res = compare_images(ROOT + 'master_plot.png', outfile.name, tolerance)
+    res = compare_images(os.path.join(ROOT, 'master_plot.png'),
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
@@ -208,11 +212,14 @@ def test_plot_tracks():
 def test_plot_tracks_existing_chr_empty_tracks():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/browser_tracks.ini --region X:0-1000000 --trackLabelFraction 0.2 --width 38 " \
-           "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
+    args = "--tracks {0} --region X:0-1000000 --trackLabelFraction 0.2" \
+           " --width 38 --dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT, "browser_tracks.ini"),
+                     outfile.name).split()
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
-    res = compare_images(ROOT + '/master_plot_2.png', outfile.name, tolerance)
+    res = compare_images(os.path.join(ROOT, 'master_plot_2.png'),
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
@@ -221,11 +228,14 @@ def test_plot_tracks_existing_chr_empty_tracks():
 def test_plot_tracks_missing_chr():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0}/browser_tracks.ini --region Y:0-1000000 --trackLabelFraction 0.2 --width 38 " \
-           "--dpi 130 --outFileName  {1}".format(ROOT, outfile.name).split()
+    args = "--tracks {0} --region Y:0-1000000 --trackLabelFraction 0.2" \
+           " --width 38 --dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT, "browser_tracks.ini"),
+                     outfile.name).split()
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
-    res = compare_images(ROOT + '/master_plot_3.png', outfile.name, tolerance)
+    res = compare_images(os.path.join(ROOT, 'master_plot_3.png'),
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)

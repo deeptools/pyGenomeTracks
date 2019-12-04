@@ -13,7 +13,7 @@ min_value = 0
 #max_value = auto
 height = 1.5
 number_of_bins = 500
-nans_to_zeros = True
+nans_to_zeros = true
 # options are: line, points, fill. Default is fill
 # to add the preferred line width or point size use:
 # type = line:lw where lw (linewidth) is float
@@ -60,8 +60,8 @@ color = darkblue
 # to the colormap
 #color = RdBlGn
 height = 5
-# to turn off/on printing of labels
-labels = off
+# whether printing the labels
+labels = false
 # optional. If not given is guessed from the file ending
 file_type = bed
 # optional: font size can be given if default are not good
@@ -85,7 +85,7 @@ fontsize = 10
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
-#global_max_row = yes
+#global_max_row = true
 
 
 [chrom states]
@@ -146,8 +146,9 @@ import argparse
 import matplotlib
 matplotlib.use('Agg')
 
-import pygenometracks.tracksClass
+from pygenometracks.tracksClass import PlotTracks
 from pygenometracks._version import __version__
+from .utilities import InputError
 
 DEFAULT_BED_COLOR = '#1f78b4'
 DEFAULT_BIGWIG_COLOR = '#33a02c'
@@ -257,8 +258,10 @@ def get_region(region_string):
         if region_start < 0:
             region_start = 0
         if region_end <= region_start:
-            exit("Please check that the region end is larger than the region start.\n"
-                 "Values given:\nstart: {}\nend: {}\n".format(region_start, region_end))
+            raise InputError("Please check that the region end is larger "
+                             "than the region start.\n"
+                             "Values given:\nstart: {}\nend: {}"
+                             "\n".format(region_start, region_end))
 
         return chrom, region_start, region_end
 
@@ -266,7 +269,7 @@ def get_region(region_string):
 def main(args=None):
 
     args = parse_arguments().parse_args(args)
-    trp = pygenometracks.tracksClass.PlotTracks(args.tracks.name, args.width, fig_height=args.height, fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
+    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height, fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
 
     if args.BED:
         count = 0

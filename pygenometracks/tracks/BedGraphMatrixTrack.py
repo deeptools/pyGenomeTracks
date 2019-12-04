@@ -21,37 +21,45 @@ class BedGraphMatrixTrack(BedGraphTrack):
 type = lines
 # If the type is not lines, you can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
-# rasterize = no
+# rasterize = false
 # pos_score_in_bin means 'position of score with respect to bin start and end'
 # if the lines option is used, the y values can be put at the
 # center of the bin (default) or they can be plot as 'block',
 # which mean to plot the values as a line between the start and end of bin
 pos_score_in_bin = center
-show_data_range = yes
+show_data_range = true
 
 # only when type lines is used. Adds horizontal lines
-plot_horizontal_lines = no
+plot_horizontal_lines = false
 file_type = {}
     """.format(TRACK_TYPE)
+    DEFAULTS_PROPERTIES = {'max_value': None,
+                           'min_value': None,
+                           'type': 'matrix',
+                           'pos_score_in_bin': 'center',
+                           'show_data_range': True,
+                           'plot_horizontal_lines': False,
+                           'orientation': None,
+                           'rasterize': True}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
+    POSSIBLE_PROPERTIES = {'type': ['matrix', 'lines'],
+                           'pos_score_in_bin': ['center', 'block'],
+                           'orientation': [None, 'inverted']}
+    BOOLEAN_PROPERTIES = ['show_data_range', 'plot_horizontal_lines',
+                          'rasterize']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'type', 'pos_score_in_bin', 'orientation',
+                         'title']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
+    # The color cannot be set for the moment
 
     def set_properties_defaults(self):
-        if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
-            self.properties['max_value'] = None
-
-        if 'min_value' not in self.properties or self.properties['min_value'] == 'auto':
-            self.properties['min_value'] = None
-
-        if 'type' not in self.properties:
-            self.properties['type'] = 'matrix'
-
-        if 'pos_score_in_bin' not in self.properties:
-            self.properties['pos_score_in_bin'] = 'center'
-
-        if 'show_data_range' not in self.properties:
-            self.properties['show_data_range'] = True
-
-        if 'plot_horizontal_lines' not in self.properties:
-            self.properties['plot_horizontal_lines'] = False
+        GenomeTrack.set_properties_defaults(self)
 
     def plot(self, ax, chrom_region, start_region, end_region):
         """
@@ -67,7 +75,7 @@ file_type = {}
             matrix_rows.append(values)
 
         matrix = np.vstack(matrix_rows).T
-        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+        if self.properties['orientation'] == 'inverted':
             matrix = np.flipud(matrix)
 
         if self.properties['type'] == 'lines':
@@ -106,7 +114,7 @@ file_type = {}
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
             self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
-            if self.properties.get('rasterize', True):
+            if self.properties['rasterize']:
                 self.img.set_rasterized(True)
 
     def plot_y_axis(self, ax, plot_axis):
