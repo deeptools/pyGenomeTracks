@@ -747,8 +747,7 @@ file_type = {}
     def _plot_small_arrow(self, ax, xpos, ypos, strand):
         """
         Draws a broken line with 2 parts:
-        For strand = +:  \ For strand = -: /
-                         /                 \
+        For strand = +:  > For strand = -: <
         :param xpos:
         :param ypos:
         :param strand:
