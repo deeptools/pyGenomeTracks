@@ -85,6 +85,11 @@ fontsize = 10
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
+# By default, for oriented intervals the arrowhead is added
+# outside of the interval.
+# If you want that the tip of the arrow correspond to
+# the extremity of the interval use:
+# arrowhead_included = true
 # if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
 # option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
 #overlay_previous = yes
@@ -108,7 +113,8 @@ file_type = {}
                            'gene_rows': None,
                            'max_value': None,
                            'min_value': None,
-                           'arrow_interval': 2}
+                           'arrow_interval': 2,
+                           'arrowhead_included': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -116,7 +122,8 @@ file_type = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'style': ['flybase', 'UCSC'],
                            'display': DISPLAY_BED_VALID}
-    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row']
+    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
+                          'arrowhead_included']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
@@ -608,9 +615,14 @@ file_type = {}
         half_height = self.properties['interval_height'] / 2
         if strand == '+':
             x0 = start
-            x1 = end  # - self.small_relative
             y0 = ypos
             y1 = ypos + self.properties['interval_height']
+            if self.properties['arrowhead_included']:
+                x1 = max(start, end - self.small_relative)
+                x2 = end
+            else:
+                x1 = end
+                x2 = end + self.small_relative
             """
             The vertices correspond to 5 points along the path of a form like the following,
             starting in the lower left corner and progressing in a clock wise manner.
@@ -619,10 +631,15 @@ file_type = {}
 
             """
 
-            vertices = [(x0, y0), (x0, y1), (x1, y1), (x1 + self.small_relative, y0 + half_height), (x1, y0)]
+            vertices = [(x0, y0), (x0, y1), (x1, y1), (x2, y0 + half_height), (x1, y0)]
 
         else:
-            x0 = start  # + self.small_relative
+            if self.properties['arrowhead_included']:
+                x0 = min(end, start + self.small_relative)
+                xb = start
+            else:
+                x0 = start
+                xb = start - self.small_relative
             x1 = end
             y0 = ypos
             y1 = ypos + self.properties['interval_height']
@@ -633,7 +650,7 @@ file_type = {}
             <-----------------
 
             """
-            vertices = [(x0, y0), (x0 - self.small_relative, y0 + half_height), (x0, y1), (x1, y1), (x1, y0)]
+            vertices = [(x0, y0), (xb, y0 + half_height), (x0, y1), (x1, y1), (x1, y0)]
 
         return vertices
 
