@@ -5,6 +5,7 @@ from .. utilities import opener
 import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from intervaltree import IntervalTree, Interval
 import numpy as np
@@ -75,15 +76,18 @@ fontsize = 10
 # to be printed over many rows. When several images want
 # to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
 #gene_rows = 10
-# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
-# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
-#overlay_previous = yes
 # by default the ymax is the number of
 # rows occupied by the genes in the region plotted. However,
 # by setting this option, the global maximum is used instead.
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
 #global_max_row = true
+# if you use UCSC style, you can set the relative distance between 2 arrows on introns
+# default is 2
+#arrow_interval = 2
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay_previous = yes
 # optional. If not given is guessed from the file ending.
 file_type = {}
     """.format(TRACK_TYPE)
@@ -103,7 +107,8 @@ file_type = {}
                            'global_max_row': False,
                            'gene_rows': None,
                            'max_value': None,
-                           'min_value': None}
+                           'min_value': None,
+                           'arrow_interval': 2}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -123,7 +128,8 @@ file_type = {}
                         'line_width': [0, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {'gene_rows': [0, np.inf],
-                          'max_labels': [0, np.inf]}
+                          'max_labels': [0, np.inf],
+                          'arrow_interval': [1, np.inf]}
     # The color can be a color or a colormap or 'bed_rgb'
     # border_color can only be a color
 
@@ -683,19 +689,19 @@ file_type = {}
                                  facecolor=rgb))
 
             if idx < bed.block_count - 1:
-                # plot small arrows using the character '<' or '>' over the back bone
+                # plot small arrows over the back bone
                 intron_length = bed.block_starts[idx + 1] - (bed.block_starts[idx] + bed.block_sizes[idx])
-                marker = 5 if bed.strand == '+' else 4
-                if intron_length > 3 * self.small_relative:
-                    pos = np.arange(x1 + 1 * self.small_relative,
-                                    x1 + intron_length + self.small_relative, int(2 * self.small_relative))
-                    ax.plot(pos, np.zeros(len(pos)) + ypos + half_height, '.', marker=marker,
-                            fillstyle='none', color='blue', markersize=3)
-
-                elif intron_length > self.small_relative:
+                arrow_interval = self.properties['arrow_interval']
+                if intron_length > self.small_relative:
                     intron_center = x1 + int(intron_length) / 2
-                    ax.plot([intron_center], [ypos + half_height], '.', marker=5,
-                            fillstyle='none', color='blue', markersize=3)
+                    pos = np.arange(x1 + 1 * self.small_relative,
+                                    x1 + intron_length + self.small_relative,
+                                    int(arrow_interval * self.small_relative))
+                    # center them
+                    pos = pos + intron_center - pos.mean()
+                    # plot them
+                    for xpos in pos:
+                        self._plot_small_arrow(ax, xpos, ypos, bed.strand)
 
     def plot_triangles(self, ax, genes_overlap):
         """
@@ -737,3 +743,26 @@ file_type = {}
             ax.set_ylim(ymax, 0)
         else:
             ax.set_ylim(0, ymax)
+
+    def _plot_small_arrow(self, ax, xpos, ypos, strand):
+        """
+        Draws a broken line with 2 parts:
+        For strand = +:  > For strand = -: <
+        :param xpos:
+        :param ypos:
+        :param strand:
+        :
+        :return: None
+        """
+        if strand == '+':
+            xdata = [xpos - self.small_relative / 4,
+                     xpos + self.small_relative / 4,
+                     xpos - self.small_relative / 4]
+        else:
+            xdata = [xpos + self.small_relative / 4,
+                     xpos - self.small_relative / 4,
+                     xpos + self.small_relative / 4]
+        ydata = [ypos + self.properties['interval_height'] / 4,
+                 ypos + self.properties['interval_height'] / 2,
+                 ypos + self.properties['interval_height'] * 3 / 4]
+        ax.add_line(Line2D(xdata, ydata, color='black', linewidth=self.properties['line_width']))
