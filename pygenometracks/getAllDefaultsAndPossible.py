@@ -41,7 +41,8 @@ GOOD_PRACTICES = {'labels': {True: 'true', False: 'false'},
                   'use_summit': {True: 'true', False: 'false'},
                   # 'skip': {True: 'true', False: 'false'},
                   'merge_transcripts': {True: 'true', False: 'false'},
-                  'nans_to_zeros': {True: 'true', False: 'false'}}
+                  'nans_to_zeros': {True: 'true', False: 'false'},
+                  'arrowhead_included': {True: 'true', False: 'false'}}
 
 
 def main():

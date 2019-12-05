@@ -435,6 +435,7 @@ max_labels |  |  |  |  | 60 |  |  |  |  |
 global_max_row |  |  |  |  | false |  |  |  |  | 
 gene_rows |  |  |  |  | not set |  |  |  |  | 
 arrow_interval |  |  |  |  | 2 |  |  |  |  | 
+arrowhead_included |  |  |  |  | false |  |  |  |  | 
 show_data_range |  |  |  |  |  | true | true | true | true | 
 show_labels |  |  |  |  |  | true |  |  |  | 
 use_summit |  |  |  |  |  | true |  |  |  | 
@@ -504,6 +505,8 @@ They are summarized here:
   - for *domains, bed*: true, false
 - **nans_to_zeros**:
   - for *bigwig, bedgraph*: true, false
+- **arrowhead_included**:
+  - for *bed*: true, false
 
 Adding new tracks
 -----------------
