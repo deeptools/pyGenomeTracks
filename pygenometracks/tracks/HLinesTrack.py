@@ -64,7 +64,7 @@ file_type = {}
         self.log.debug("y_values: {}".format(self.y_values))
         for y_value in self.y_values:
             self.log.debug("y_value: {}".format(y_value))
-            ax.axhline(y=y_value, 
+            ax.axhline(y=y_value,
                        linewidth=self.properties['line_width'],
                        color=self.properties['color'],
                        alpha=self.properties['alpha'],
@@ -81,4 +81,3 @@ file_type = {}
             ax.set_ylim(ymin, ymax)
 
         return ax
-
