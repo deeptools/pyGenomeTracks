@@ -51,7 +51,6 @@ height = 0.5
 file = chromatinStates_kc.bed.gz
 height = 0.5
 title = bed display = collapsed; color = bed_rgb
-display = color from bed rgb
 labels = false
 color = bed_rgb
 display = collapsed
@@ -107,8 +106,8 @@ height = 1
 
 [tads 3]
 file = tad_classification.bed
-title = TADs color = #cccccc; border_color = red (next track: overlay
-        previous = share-y links; type = loops)
+title = TADs color = #cccccc; border_color = red (next track:
+        overlay_previous = share-y links_type = loops)
 file_type = domains
 border_color = red
 color = #cccccc
@@ -145,7 +144,7 @@ height = 1
 [test gene rows]
 file = dm3_genes.bed.gz
 height = 3
-title = max_num_rows = 3; style = UCSC
+title = gene_rows = 3 (maximum 3 rows); style = UCSC
 fontsize = 8
 style = UCSC
 gene_rows = 3
@@ -156,7 +155,7 @@ height = 1
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 7
-title = bed6 border_color = black; gene_rows = 10; fontsize = 8; color = Reds
+title = bed6 border_color = black; gene_rows = 10; fontsize = 7; color = Reds
         (when a color map is used for the color (e.g. coolwarm, Reds) the bed
         score column mapped to a color)
 fontsize = 7
