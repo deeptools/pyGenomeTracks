@@ -18,3 +18,6 @@ pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_rasterize_heigh
 pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.pdf
 pgt --tracks ./pygenometracks/tests/test_data/browser_tracks.ini --region Y:0-1000000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_plot_3.png
 pgt --tracks ./pygenometracks/tests/test_data/browser_tracks.ini --region X:0-1000000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_plot_2.png
+pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.2.png
+pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.5.png
+pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.5_fs20.png --fontSize 20
