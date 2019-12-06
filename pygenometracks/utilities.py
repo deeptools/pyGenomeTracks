@@ -203,7 +203,7 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                 msg = ("\n*ERROR*\ncoverage contains negative values.\n"
                        "log(<values>) transformation can not be applied to \n"
                        "values in file: {}".format(file))
-                sys.exit(msg)
+                raise Exception(msg)
             else:
                 return(np.log(score_list))
         elif transform == 'log1p':
@@ -211,7 +211,7 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                 msg = ("\n*ERROR*\ncoverage contains values below 1.\n"
                        "log1p(<values>) transformation can not be applied to \n"
                        "values in file: {}".format(file))
-                sys.exit(msg)
+                raise Exception(msg)
             else:
                 return(np.log(score_list + 1))
         elif transform == '-log':
@@ -219,7 +219,7 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                 msg = ("\n*ERROR*\ncoverage contains positive values.\n"
                        "-log(<values>) transformation can not be applied to \n"
                        "values in file: {}".format(file))
-                sys.exit(msg)
+                raise Exception(msg)
             else:
                 return(np.log(- score_list))
         else:
