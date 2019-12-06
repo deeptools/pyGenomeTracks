@@ -66,6 +66,39 @@ $ pyGenomeTracks --tracks tracks.ini --region chr2:10,000,000-11,000,000 --outFi
 
 The ending `--outFileName` defines the image format. If `.pdf` is used, then the resulting image is a pdf. The options are pdf, png and svg.
 
+Description of other possible arguments:
+
+``` text
+optional arguments:
+  -h, --help            show this help message and exit
+  --tracks TRACKS       File containing the instructions to plot the tracks.
+                        The tracks.ini file can be genarated using the
+                        `make_tracks_file` program.
+  --region REGION       Region to plot, the format is chr:start-end
+  --BED BED             Instead of a region, a file containing the regions to
+                        plot, in BED format, can be given. If this is the
+                        case, multiple files will be created using a prefix
+                        the value of --outFileName
+  --width WIDTH         figure width in centimeters
+  --height HEIGHT       Figure height in centimeters. If not given, the figure
+                        height is computed based on the heights of the tracks.
+                        If given, the track height are proportionally scaled
+                        to match the desired figure height.
+  --title TITLE, -t TITLE
+                        Plot title
+  --outFileName OUTFILENAME, -out OUTFILENAME
+                        File name to save the image, file prefix in case
+                        multiple images are stored
+  --fontSize FONTSIZE   Font size for the labels of the plot
+  --dpi DPI             Resolution for the image in case the ouput is a raster
+                        graphics image (e.g png, jpg)
+  --trackLabelFraction TRACKLABELFRACTION
+                        By default the space dedicated to the track labels is
+                        0.05 of the plot width. This fraction can be changed
+                        with this parameter if needed.
+  --version             show program's version number and exit
+```
+
 Citation
 ---------
 If you use pyGenomeTracks in your analysis, you can cite the following paper :
