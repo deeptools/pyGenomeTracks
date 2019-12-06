@@ -495,8 +495,8 @@ class PlotTracks(object):
                 if track_options['overlay_previous'] == 'no' and \
                    track_options['track_class'] not in [SpacerTrack,
                                                         XAxisTrack]:
-                    log.warn = ("title not set for section {}"
-                                "\n").format(track_options['section_name'])
+                    log.warn("title not set for section {}"
+                             "\n".format(track_options['section_name']))
             # The track_options are added to the track_list
             track_list.append(track_options)
         # Now that they were all checked
