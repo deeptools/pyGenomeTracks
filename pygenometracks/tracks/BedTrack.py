@@ -653,10 +653,11 @@ file_type = {}
         """
         if half_height is None:
             half_height = self.properties['interval_height'] / 2
+        # The y values are common to both strands:
+        y0 = ypos
+        y1 = ypos + 2 * half_height
         if strand == '+':
             x0 = start
-            y0 = ypos
-            y1 = ypos + 2 * half_height
             if self.properties['arrowhead_included']:
                 x1 = max(start, end - self.small_relative)
                 x2 = end
@@ -668,6 +669,7 @@ file_type = {}
             starting in the lower left corner and progressing in a clock wise manner.
 
             =================>
+            x0             x1 x2
 
             """
 
@@ -682,14 +684,12 @@ file_type = {}
                 x0 = start
                 xb = start - self.small_relative
             x1 = end
-            y0 = ypos
-            y1 = ypos + self.properties['interval_height']
             """
             The vertices correspond to 5 points along the path of a form like the following,
             starting in the lower left corner and progressing in a clock wise manner.
 
-            <=================
-
+              <=================
+            xb x0              x1
             """
             vertices = [(x0, y0), (xb, y0 + half_height), (x0, y1),
                         (x1, y1), (x1, y0)]
