@@ -12,7 +12,7 @@ import numpy as np
 
 not_used_string = ''
 not_set_string = 'not set'
-track_separator = ','
+track_separator = ', '
 
 # Here is the keyword that was used in version 3.1.2
 # for boolean values
@@ -50,7 +50,7 @@ def main():
     my_prefered_order_tracks_names = [None, 'epilogos', 'links',
                                       'domains', 'bed', 'narrow_peak',
                                       'bigwig', 'bedgraph', 'bedgraph_matrix',
-                                      'hic_matrix']
+                                      'hlines', 'hic_matrix']
     my_prefered_order_tracks_names = [k for k in my_prefered_order_tracks_names
                                       if k in all_tracks]
     other_tracks = list(set(all_tracks.keys())
@@ -130,7 +130,7 @@ def main():
                 if track_type in all_default_parameters[p]:
                     names += [track_type]
             fo.write("- **" + p + "**:\n")
-            name = ", ".join(names)
+            name = track_separator.join(names)
             reformated_possible = ", ".join([v for k, v in pv.items()])
             fo.write("  - for *" + name + "*: " + reformated_possible + "\n")
 
