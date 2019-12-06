@@ -188,7 +188,10 @@ file_type = {}
                 self.colormap = self.properties['color']
 
         # check if border_color and color_utr are colors
-        for param in ['border_color', 'color_utr']:
+        # if they are part of self.properties
+        # (for example, TADsTracks do not have color_utr)
+        for param in [p for p in ['border_color', 'color_utr']
+                      if p in self.properties]:
             if not matplotlib.colors.is_color_like(self.properties[param]):
                 self.log.warning("*WARNING* {}: '{}' for section {}"
                                  " is not valid. Color has "
