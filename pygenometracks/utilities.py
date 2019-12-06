@@ -2,6 +2,7 @@ import sys
 import gzip
 import numpy as np
 from intervaltree import IntervalTree, Interval
+import warnings
 
 
 class InputError(Exception):
@@ -141,7 +142,6 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
             ax.plot(x_values, score_list, '-', linewidth=size, color=color,
                     alpha=alpha)
         else:
-            import warnings
             warnings.warn('Line plots with a different negative color might not look pretty')
             pos_x_values = x_values.copy()
             pos_x_values[score_list < 0] = np.nan
@@ -173,7 +173,6 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                     alpha=alpha)
     else:
         if plot_type != 'fill':
-            import warnings
             warnings.warn('The plot type was not part of known types '
                           '(fill, line, points) will be fill.')
         if color == negative_color:
@@ -223,7 +222,6 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
             else:
                 return(np.log(- score_list))
         else:
-            import warnings
             warnings.warn('The transform: {} for file {} is not valid.'
                           'will not use any transformation'.format(transform,
                                                                    file))
