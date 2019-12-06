@@ -469,7 +469,9 @@ file_type = {}
     def plot_label(self, label_ax):
         label_ax.text(0.05, 1, self.properties['title'],
                       horizontalalignment='left', size='large',
-                      verticalalignment='top', transform=label_ax.transAxes)
+                      verticalalignment='top',
+                      transform=label_ax.transAxes,
+                      wrap=True)
 
     def plot_y_axis(self, ax, plot_axis):
         if self.colormap is not None:
