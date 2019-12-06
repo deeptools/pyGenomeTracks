@@ -66,4 +66,3 @@ def test_large_width_label_big_font():
     assert res is None, res
 
     os.remove(outfile.name)
-
