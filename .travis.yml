@@ -13,9 +13,11 @@ deploy:
   python:
     - 3.6
     - 3.7
+    - 3.8
 env:
 - TRAVIS_PYTHON_VERSION=3.6
 - TRAVIS_PYTHON_VERSION=3.7
+- TRAVIS_PYTHON_VERSION=3.8
 
 os:
 - linux
@@ -25,7 +27,6 @@ jobs:
   - stage: lint
     env:
     - LINT=1
-    - TRAVIS_PYTHON_VERSION=3.6
     - TRAVIS_OS_NAME=linux
     before_install:
     - curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o
