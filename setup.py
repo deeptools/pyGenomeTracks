@@ -94,7 +94,7 @@ class install(_install):
 
 
 install_requires_py = ["numpy >=1.16",
-                       "matplotlib >=3.0",
+                       "matplotlib >=3.1.1",
                        "intervaltree >=2.1.0",
                        "pyBigWig >=0.3.4",
                        "future >=0.17.0",
