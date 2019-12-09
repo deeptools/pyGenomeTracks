@@ -19,7 +19,7 @@ class BedGraphMatrixExampleTrack(BedGraphTrack):
         # if type is set as lines, then the TAD score lines are drawn instead
         # of the matrix otherwise a heatmap is plotted
         type = lines
-        #plot horizontal lines=False
+        #plot_horizontal_lines=False
         file_type = {}
             """.format(TRACK_TYPE)
 

@@ -25,18 +25,52 @@ height = 2
 # orientation = inverted
 # if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
 # option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
-#overlay previous = yes
+#overlay_previous = yes
 """
+    DEFAULTS_PROPERTIES = {}
+    NECESSARY_PROPERTIES = []
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = ['file_type', 'orientation',  # For XAxisTrack and SpacerTrack these 2 are not used
+                         'overlay_previous', 'title']
+    FLOAT_PROPERTIES = {'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
 
     def __init__(self, properties_dict):
-        self.properties = properties_dict
-        self.file_type = 'test'
-
         FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
         logging.basicConfig(format=FORMAT)
         log = logging.getLogger(__name__)
         log.setLevel(logging.DEBUG)
         self.log = log
+        self.properties = properties_dict
+        self.set_properties_defaults()
+        self.file_type = 'test'
+
+    def set_properties_defaults(self):
+        # put to default all properties which are not set:
+        for prop in self.DEFAULTS_PROPERTIES:
+            if prop not in self.properties:
+                self.properties[prop] = self.DEFAULTS_PROPERTIES[prop]
+        # use synonymous:
+        for prop in self.SYNONYMOUS_PROPERTIES:
+            synonymous = self.SYNONYMOUS_PROPERTIES[prop]
+            if prop in self.properties and \
+               self.properties[prop] in synonymous:
+                self.properties[prop] = synonymous[self.properties[prop]]
+        # check if properties are possible:
+        for prop in self.POSSIBLE_PROPERTIES:
+            possibles = self.POSSIBLE_PROPERTIES[prop]
+            if self.properties[prop] not in possibles:
+                default_value = self.DEFAULTS_PROPERTIES[prop]
+                self.log.warning("*WARNING* {0}: '{1}' for section {2}"
+                                 " is not valid. {0} has "
+                                 "been set to "
+                                 "{3}".format(prop,
+                                              self.properties[prop],
+                                              self.properties['section_name'],
+                                              default_value))
+                self.properties[prop] = default_value
 
     def plot_y_axis(self, ax, plot_axis):
         """
@@ -48,7 +82,7 @@ height = 2
         Returns:
 
         """
-        if 'show data range' in self.properties and self.properties['show data range'] == 'no':
+        if not self.properties.get('show_data_range', True):
             return
 
         def value_to_str(value):
@@ -81,8 +115,36 @@ height = 2
         ax.patch.set_visible(False)
 
     def plot_label(self, label_ax):
-        label_ax.text(0.05, 0.5, self.properties['title'], horizontalalignment='left',
-                      size='large', verticalalignment='center', transform=label_ax.transAxes)
+        label_ax.text(0.05, 0.5, self.properties['title'],
+                      horizontalalignment='left',
+                      size='large', verticalalignment='center',
+                      transform=label_ax.transAxes, wrap=True)
+
+    def process_type_for_coverage_track(self):
+        default_plot_type = 'fill'
+        self.plot_type = default_plot_type
+        self.size = None
+
+        if self.properties['type'].find(":") > 0:
+            self.plot_type, size = self.properties['type'].split(":")
+            try:
+                self.size = float(size)
+            except ValueError:
+                self.log.warning("Invalid value: 'type = {}' in section: {}\n"
+                                 "A number was expected after ':' and found "
+                                 "'{}'. Will use default."
+                                 "".format(self.properties['type'],
+                                           self.properties['section_name'],
+                                           size))
+        else:
+            self.plot_type = self.properties['type']
+
+        if self.plot_type not in ['line', 'points', 'fill']:
+            self.log.warning("Invalid: 'type = {}' in section: {}\n"
+                             "Will use default."
+                             "".format(self.properties['type'],
+                                       self.properties['section_name']))
+            self.plot_type = default_plot_type
 
     @staticmethod
     def change_chrom_names(chrom):

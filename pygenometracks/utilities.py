@@ -1,6 +1,12 @@
 import sys
 import gzip
+import numpy as np
 from intervaltree import IntervalTree, Interval
+
+
+class InputError(Exception):
+    """Exception raised for errors in the input."""
+    pass
 
 
 def to_string(s):
@@ -78,21 +84,21 @@ def file_to_intervaltree(file_name):
             chrom, start, end = fields[0:3]
         except Exception as detail:
             msg = "Error reading line: {}\nError message: {}".format(line_number, detail)
-            sys.exit(msg)
+            raise InputError(msg)
 
         try:
             start = int(start)
         except ValueError as detail:
             msg = "Error reading line: {}. The start field is not " \
                   "an integer.\nError message: {}".format(line_number, detail)
-            sys.exit(msg)
+            raise InputError(msg)
 
         try:
             end = int(end)
         except ValueError as detail:
             msg = "Error reading line: {}. The end field is not " \
                   "an integer.\nError message: {}".format(line_number, detail)
-            sys.exit(msg)
+            raise InputError(msg)
 
         if prev_chrom == chrom:
             assert prev_start <= start, \
@@ -126,3 +132,65 @@ def file_to_intervaltree(file_name):
     file_h.close()
 
     return interval_tree, min_value, max_value
+
+
+def plot_coverage(ax, x_values, score_list, plot_type, size, color,
+                  negative_color, alpha):
+    if plot_type == 'line':
+        if color == negative_color:
+            ax.plot(x_values, score_list, '-', linewidth=size, color=color,
+                    alpha=alpha)
+        else:
+            import warnings
+            warnings.warn('Line plots with a different negative color might not look pretty')
+            pos_x_values = x_values.copy()
+            pos_x_values[score_list < 0] = np.nan
+            ax.plot(pos_x_values, score_list, '-', linewidth=size, color=color,
+                    alpha=alpha)
+
+            neg_x_values = x_values.copy()
+            neg_x_values[score_list >= 0] = np.nan
+            ax.plot(neg_x_values, score_list, '-', linewidth=size,
+                    color=negative_color, alpha=alpha)
+
+    elif plot_type == 'points':
+        if color == negative_color:
+            ax.plot(x_values, score_list, '.', markersize=size,
+                    color=color,
+                    alpha=alpha)
+        else:
+            pos_x_values = x_values.copy()
+            pos_x_values[score_list < 0] = np.nan
+            ax.plot(pos_x_values, score_list, '.',
+                    markersize=size,
+                    color=color,
+                    alpha=alpha)
+            neg_x_values = x_values.copy()
+            neg_x_values[score_list >= 0] = np.nan
+            ax.plot(neg_x_values, score_list, '.',
+                    markersize=size,
+                    color=negative_color,
+                    alpha=alpha)
+    else:
+        if plot_type != 'fill':
+            import warnings
+            warnings.warn('The plot type was not part of known types '
+                          '(fill, line, points) will be fill.')
+        if color == negative_color:
+            ax.fill_between(x_values, score_list, linewidth=0.1,
+                            color=color,
+                            facecolor=color,
+                            alpha=alpha)
+        else:
+            pos_x_values = x_values.copy()
+            pos_x_values[score_list < 0] = np.nan
+            ax.fill_between(pos_x_values, score_list, linewidth=0.1,
+                            color=color,
+                            facecolor=color,
+                            alpha=alpha)
+            neg_x_values = x_values.copy()
+            neg_x_values[score_list >= 0] = np.nan
+            ax.fill_between(neg_x_values, score_list, linewidth=0.1,
+                            color=negative_color,
+                            facecolor=negative_color,
+                            alpha=alpha)

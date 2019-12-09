@@ -13,9 +13,11 @@ deploy:
   python:
     - 3.6
     - 3.7
+    #- 3.8
 env:
 - TRAVIS_PYTHON_VERSION=3.6
 - TRAVIS_PYTHON_VERSION=3.7
+#- TRAVIS_PYTHON_VERSION=3.8
 
 os:
 - linux
@@ -25,7 +27,6 @@ jobs:
   - stage: lint
     env:
     - LINT=1
-    - TRAVIS_PYTHON_VERSION=3.6
     - TRAVIS_OS_NAME=linux
     before_install:
     - curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o
@@ -39,7 +40,7 @@ jobs:
     install:
     - conda install --yes python=$TRAVIS_PYTHON_VERSION flake8
     script:
-    - if [[ "$LINT" == "1" ]]; then flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712
+    - if [[ "$LINT" == "1" ]]; then flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503
       ; fi
 before_install:
 - export TEST_DATA_DIR="`pwd`/pygenometracks/test/test_data/"
@@ -59,6 +60,10 @@ before_install:
 - conda info -a
 install:
 - conda install --yes -c bioconda -c conda-forge python=$TRAVIS_PYTHON_VERSION --file requirements.txt
+- conda install --yes -c conda-forge -c bioconda pytest
+- conda install --yes -c conda-forge -c bioconda nose
+- conda install --yes -c conda-forge -c bioconda ghostscript
+- conda install --yes pathlib
 - python setup.py install
 script:
 - py.test pygenometracks --doctest-modules

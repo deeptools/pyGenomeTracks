@@ -1,0 +1,46 @@
+- **where**:
+  - for *x-axis*: top, bottom
+- **orientation**:
+  - for *epilogos, links, domains, bed, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix*: inverted, not set
+- **links_type**:
+  - for *links*: arcs, triangles, loops
+- **line_style**:
+  - for *links, hlines*: solid, dashed, dotted, dashdot
+- **style**:
+  - for *bed*: flybase, UCSC
+- **display**:
+  - for *bed*: collapsed, triangles, interleaved, stacked
+- **type**:
+  - for *narrow_peak*: peak, box
+  - for *bedgraph_matrix*: matrix, lines
+- **summary_method**:
+  - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
+  - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
+- **pos_score_in_bin**:
+  - for *bedgraph_matrix*: center, block
+- **transform**:
+  - for *hic_matrix*: no, log, log1p, -log
+- **labels**:
+  - for *bed*: true, false
+- **show_data_range**:
+  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines*: true, false
+- **plot_horizontal_lines**:
+  - for *bedgraph_matrix*: true, false
+- **use_middle**:
+  - for *bedgraph*: true, false
+- **rasterize**:
+  - for *bedgraph, bedgraph_matrix, hic_matrix*: true, false
+- **global_max_row**:
+  - for *bed*: true, false
+- **show_masked_bins**:
+  - for *hic_matrix*: true, false
+- **show_labels**:
+  - for *narrow_peak*: true, false
+- **use_summit**:
+  - for *narrow_peak*: true, false
+- **merge_transcripts**:
+  - for *domains, bed*: true, false
+- **nans_to_zeros**:
+  - for *bigwig, bedgraph*: true, false
+- **arrowhead_included**:
+  - for *bed*: true, false

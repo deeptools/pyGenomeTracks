@@ -33,7 +33,7 @@ def update_version_py():
         print("unable to run git, leaving pygenometracks/_version.py alone")
         return
     ver = stdout.strip()
-    f = open("pygenometracks/_version.py", "w")
+    f = open(os.path.join("pygenometracks", "_version.py"), "w")
     f.write(VERSION_PY % ver)
     f.close()
     print("set pygenometracks/_version.py to '%s'" % ver)
@@ -41,7 +41,7 @@ def update_version_py():
 
 def get_version():
     try:
-        f = open("pygenometracks/_version.py")
+        f = open(os.path.join("pygenometracks", "_version.py"))
     except EnvironmentError:
         return None
     for line in f.readlines():
@@ -94,7 +94,7 @@ class install(_install):
 
 
 install_requires_py = ["numpy >=1.16",
-                       "matplotlib >=3.0",
+                       "matplotlib ==3.1.1",
                        "intervaltree >=2.1.0",
                        "pyBigWig >=0.3.4",
                        "future >=0.17.0",

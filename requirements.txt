@@ -1,9 +1,8 @@
 numpy >=1.16
-matplotlib >=3.0
+matplotlib =3.1.1
 intervaltree >=2.1.0
-pybigwig >=0.3.4
+pybigwig >=0.3.16
 future >=0.17.0
 hicmatrix >=9
 pysam >=0.14
-pytest
 gffutils >=0.9

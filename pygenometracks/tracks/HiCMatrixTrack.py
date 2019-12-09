@@ -5,11 +5,12 @@ from matplotlib import cm
 from matplotlib import colors
 import matplotlib.pyplot as plt
 import numpy as np
-
+from matplotlib.ticker import LogFormatter
 from . GenomeTrack import GenomeTrack
+import logging
+import itertools
 
 DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
-import logging
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
@@ -21,8 +22,13 @@ class HiCMatrixTrack(GenomeTrack):
 title =
 # The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
 # the default color map is RdYlBu_r (_r) stands for reverse
+# If you want your own colormap you can put the values of the color you want
+# For example, colormap = ['blue', 'yellow', 'red']
+# or colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
 #colormap = RdYlBu_r
 # depth is the maximum distance that should be plotted.
+# If it is more than 125% of the plotted region, it will
+# be adjsted to this maximum value.
 depth = 100000
 # height of track (in cm) can be given. Otherwise, the height is computed such that the proportions of the
 # hic matrix are kept (e.g. the image does not appear shrink or extended)
@@ -30,35 +36,64 @@ depth = 100000
 # min_value and max_value refer to the contacts in the matrix.
 #min_value =2.8
 #max_value = 3.0
-# the matrix can be transformed using the log1 (or log, but zeros could be problematic)
+# the matrix can be transformed using the log1p (or log or -log, but zeros could be problematic)
 transform = log1p
 # show masked bins plots as white lines
 # those bins that were not used during the correction
 # the default is to extend neighboring bins to
 # obtain an aesthetically pleasant output
-show_masked_bins = no
+show_masked_bins = false
 # if you want to plot the track upside-down:
 # orientation = inverted
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
-# scale factor = 1
+# scale_factor = 1
+# You can choose to keep the matrix as not rasterized
+# (only used if you use pdf or svg output format) by using:
+# rasterize = false
 file_type = {}
     """.format(TRACK_TYPE)
+    DEFAULTS_PROPERTIES = {'region': None,
+                           'depth': 100000,
+                           'orientation': None,
+                           'show_masked_bins': False,
+                           'scale_factor': 1,
+                           'transform': 'no',
+                           'max_value': None,
+                           'min_value': None,
+                           'rasterize': True,
+                           'colormap': DEFAULT_MATRIX_COLORMAP}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
+                             'min_value': {'auto': None}}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
+                           'transform': ['no', 'log', 'log1p', '-log']}
+    BOOLEAN_PROPERTIES = ['show_masked_bins', 'rasterize']
+    STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
+                         'orientation', 'transform',
+                         'title', 'colormap']
+    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
+                        'min_value': [- np.inf, np.inf],
+                        'scale_factor': [- np.inf, np.inf],
+                        'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {'depth': [1, np.inf]}
+    # The colormap can only be a colormap
 
     def __init__(self, *args, **kwargs):
         super(HiCMatrixTrack, self).__init__(*args, **kwargs)
-
         log.debug('FILE {}'.format(self.properties))
-        # log.debug('pRegion {}'.format(pRegion))
+
+    def set_properties_defaults(self):
+        super(HiCMatrixTrack, self).set_properties_defaults()
         region = None
         if self.properties['region'] is not None:
             if self.properties['region'][2] == 1e15:
                 region = [str(self.properties['region'][0])]
             elif len(self.properties['region']) == 3:
-                start = int(self.properties['region'][1]) - int(self.properties['depth'])
+                start = int(self.properties['region'][1]) - self.properties['depth']
                 if start < 0:
                     start = 0
-                end = int(self.properties['region'][2]) + int(self.properties['depth'])
+                end = int(self.properties['region'][2]) + self.properties['depth']
 
                 region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(end)]
         # try to open with end region + depth to avoid triangle effect in the plot
@@ -70,35 +105,31 @@ file_type = {}
             self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
 
         if len(self.hic_ma.matrix.data) == 0:
-            self.log.error("Matrix {} is empty".format(self.properties['file']))
-            exit(1)
-        if 'show_masked_bins' in self.properties and self.properties['show_masked_bins'] == 'yes':
+            raise Exception("Matrix {} is empty".format(self.properties['file']))
+        if self.properties['show_masked_bins']:
             pass
         else:
             self.hic_ma.maskBins(self.hic_ma.nan_bins)
 
         # check that the matrix can be log transformed
-        if 'transform' in self.properties:
+        if self.properties['transform'] != 'no':
             if self.properties['transform'] == 'log1p':
                 if self.hic_ma.matrix.data.min() + 1 < 0:
-                    self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
-                                   "log1p transformation can not be applied to \n"
-                                   "values in matrix: {}".format(self.properties['file']))
-                    exit(1)
+                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                                    "log1p transformation can not be applied to \n"
+                                    "values in matrix: {}".format(self.properties['file']))
 
             elif self.properties['transform'] == '-log':
                 if self.hic_ma.matrix.data.min() < 0:
-                    self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
-                                   "log(-1 * <values>) transformation can not be applied to \n"
-                                   "values in matrix: {}".format(self.properties['file']))
-                    exit(1)
+                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                                    "log(-1 * <values>) transformation can not be applied to \n"
+                                    "values in matrix: {}".format(self.properties['file']))
 
             elif self.properties['transform'] == 'log':
                 if self.hic_ma.matrix.data.min() < 0:
-                    self.log.error("\n*ERROR*\nMatrix contains negative values.\n"
-                                   "log transformation can not be applied to \n"
-                                   "values in matrix: {}".format(self.properties['file']))
-                    exit(1)
+                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                                    "log transformation can not be applied to \n"
+                                    "values in matrix: {}".format(self.properties['file']))
 
         new_intervals = hicmatrix.utilities.enlarge_bins(self.hic_ma.cut_intervals)
         self.hic_ma.interval_trees, self.hic_ma.chrBinBoundaries = \
@@ -129,17 +160,11 @@ file_type = {}
                                                     shape=self.hic_ma.matrix.shape)
             self.hic_ma.matrix = self.hic_ma.matrix + main_diagonal
 
-        self.plot_inverted = False
-        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
-            self.plot_inverted = True
-
         self.norm = None
 
-        if 'colormap' not in self.properties:
-            self.properties['colormap'] = DEFAULT_MATRIX_COLORMAP
-        self.cmap = cm.get_cmap(self.properties['colormap'])
-        self.cmap.set_bad('white')
+        self.properties['colormap'] = self.process_colormap()
 
+        self.cmap = cm.get_cmap(self.properties['colormap'])
         self.cmap.set_bad('black')
 
     def plot(self, ax, chrom_region, region_start, region_end):
@@ -150,16 +175,17 @@ file_type = {}
             chrom_region_before = chrom_region
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in chrom_sizes:
-                self.log.error("*Error*\nNeither " + chrom_region_before + " "
-                               "nor " + chrom_region + " exits as a chromosome"
-                               " name on the matrix.\n")
+                self.log.warning("*Warning*\nNeither " + chrom_region_before
+                                 + " nor " + chrom_region + " existss as a "
+                                 "chromosome name on the matrix. "
+                                 "This will generate an empty track!!\n")
                 return
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
         if region_end > chrom_sizes[chrom_region]:
-            self.log.error("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n")
-            self.log.error("{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
-                                                                        region_start, region_end))
+            raise Exception("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n"
+                            "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
+                                                                         region_start, region_end))
 
         # if self.properties['file'].endswith('.cool'):
         #     # load now the region to be plotted
@@ -189,41 +215,43 @@ file_type = {}
         depth_in_bins = int(1.5 * region_len / self.hic_ma.getBinSize())
 
         if depth < self.properties['depth']:
+            log.warning("The depth was set to {} which is more than 125%"
+                        " of the region plotted. The depth will be set "
+                        "to {}".format(self.properties['depth'], depth))
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         matrix = np.asarray(matrix.todense().astype(float))
-        if 'scale factor' in self.properties:
-            matrix = matrix * self.properties['scale factor']
 
-        if 'transform' in self.properties:
-            if self.properties['transform'] == 'log1p':
-                matrix += 1
-                self.norm = colors.LogNorm()
+        matrix = matrix * self.properties['scale_factor']
 
-            elif self.properties['transform'] == '-log':
-                mask = matrix == 0
-                try:
-                    matrix[mask] = matrix[mask == False].min()
-                    matrix = -1 * np.log(matrix)
-                except ValueError:
-                    self.log.info('All values are 0, no log applied.')
+        if self.properties['transform'] == 'log1p':
+            matrix += 1
+            self.norm = colors.LogNorm()
 
-            elif self.properties['transform'] == 'log':
-                mask = matrix == 0
-                try:
-                    matrix[mask] = matrix[mask == False].min()
-                    matrix = np.log(matrix)
-                except ValueError:
-                    self.log.info('All values are 0, no log applied.')
+        elif self.properties['transform'] == '-log':
+            mask = matrix == 0
+            try:
+                matrix[mask] = matrix[mask == False].min()
+                matrix = -1 * np.log(matrix)
+            except ValueError:
+                self.log.info('All values are 0, no log applied.')
 
-        if 'max_value' in self.properties and self.properties['max_value'] != 'auto':
+        elif self.properties['transform'] == 'log':
+            mask = matrix == 0
+            try:
+                matrix[mask] = matrix[mask == False].min()
+                matrix = np.log(matrix)
+            except ValueError:
+                self.log.info('All values are 0, no log applied.')
+
+        if self.properties['max_value'] is not None:
             vmax = self.properties['max_value']
 
         else:
             # try to use a 'aesthetically pleasant' max value
             vmax = np.percentile(matrix.diagonal(1), 80)
 
-        if 'min_value' in self.properties and self.properties['min_value'] != 'auto':
+        if self.properties['min_value'] is not None:
             vmin = self.properties['min_value']
         else:
             if depth_in_bins > matrix.shape[0]:
@@ -243,22 +271,19 @@ file_type = {}
         self.log.info("setting min, max values for track {} to: {}, {}\n".
                       format(self.properties['section_name'], vmin, vmax))
         self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
-        self.img.set_rasterized(True)
-        if self.plot_inverted:
+        if self.properties['rasterize']:
+            self.img.set_rasterized(True)
+        if self.properties['orientation'] == 'inverted':
             ax.set_ylim(depth, 0)
         else:
             ax.set_ylim(0, depth)
 
     def plot_y_axis(self, cbar_ax, plot_ax):
 
-        if 'transform' in self.properties and \
-                self.properties['transform'] in ['log', 'log1p']:
+        if self.properties['transform'] in ['log', 'log1p']:
             # get a useful log scale
             # that looks like [1, 2, 5, 10, 20, 50, 100, ... etc]
 
-            # The following code is problematic with some versions of matplotlib.
-            # Should be uncommented once the problem is clarified
-            from matplotlib.ticker import LogFormatter
             formatter = LogFormatter(10, labelOnlyBase=False)
             aa = np.array([1, 2, 5])
             tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
@@ -295,7 +320,6 @@ file_type = {}
         Turns the matrix 45 degrees and adjusts the
         bins to match the actual start end positions.
         """
-        import itertools
         # code for rotating the image 45 degrees
         n = matrix_c.shape[0]
         # create rotation/scaling matrix
@@ -311,3 +335,42 @@ file_type = {}
         im = ax.pcolormesh(x, y, np.flipud(matrix_c),
                            vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
         return im
+
+    def process_colormap(self):
+        # If someone what to use its own colormap,
+        # he can specify the rgb values or color values:
+        # For example:
+        # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+        if self.properties['colormap'][0] == '[':
+            try:
+                custom_colors = eval(self.properties['colormap'])
+            except SyntaxError as err:
+                self.log.warning("*WARNING* the list specified for colormap"
+                                 " ({}) is not valid: "
+                                 "{}.\nColormap has been set to "
+                                 "{}".format(self.properties['colormap'],
+                                             err,
+                                             DEFAULT_MATRIX_COLORMAP))
+                return(DEFAULT_MATRIX_COLORMAP)
+            else:
+                try:
+                    return(colors.LinearSegmentedColormap.from_list(
+                           'custom', custom_colors, N=100))
+                except ValueError:
+                    self.log.warning("*WARNING* the list specified for "
+                                     "colormap ({}) cannot be evaluated."
+                                     "\nColormap has been set to "
+                                     "{}".format(self.properties['colormap'],
+                                                 DEFAULT_MATRIX_COLORMAP))
+                    return(DEFAULT_MATRIX_COLORMAP)
+        else:
+            if self.properties['colormap'] not in cm.datad:
+                self.log.warning("*WARNING* colormap: '{}' for section {}"
+                                 " is not valid. Colormap has "
+                                 "been set to "
+                                 "{}".format(self.properties['colormap'],
+                                             self.properties['section_name'],
+                                             DEFAULT_MATRIX_COLORMAP))
+                return(DEFAULT_MATRIX_COLORMAP)
+            else:
+                return(self.properties['colormap'])

@@ -5,6 +5,8 @@ from . GenomeTrack import GenomeTrack
 import json
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
+from matplotlib import cm
+import numpy as np
 
 
 class EpilogosTrack(BedGraphTrack):
@@ -33,10 +35,26 @@ class EpilogosTrack(BedGraphTrack):
 # 	}}
 #}}
 categories_file = <path to json categories file>
+# optional. If not given, it is guessed from the file ending.
+file_type = {}
     """.format(TRACK_TYPE)
+    DEFAULTS_PROPERTIES = {'categories_file': None,
+                           'orientation': None}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = ['categories_file', 'file', 'file_type',
+                         'overlay_previous', 'orientation',
+                         'title']
+    FLOAT_PROPERTIES = {'height': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
 
     def __init__(self, *args, **kwarg):
         super(EpilogosTrack, self).__init__(*args, **kwarg)
+
+    def set_properties_defaults(self):
+        GenomeTrack.set_properties_defaults(self)
         # load categories file
         if self.properties['categories_file'] is not None:
             with open(self.properties['categories_file']) as f:
@@ -44,38 +62,15 @@ categories_file = <path to json categories file>
         else:
             self.categories = None
 
-    def set_properties_defaults(self):
-        if 'categories_file' not in self.properties:
-            self.properties['categories_file'] = None
-
-        if 'max_value' not in self.properties or self.properties['max_value'] == 'auto':
-            self.properties['max_value'] = None
-
-        if 'min_value' not in self.properties or self.properties['min_value'] == 'auto':
-            self.properties['min_value'] = None
-
-        if 'type' not in self.properties:
-            self.properties['type'] = 'matrix'
-
-        if 'pos score in bin' not in self.properties:
-            self.properties['pos score in bin'] = 'center'
-
-        if 'show data range' not in self.properties:
-            self.properties['show data range'] = 'yes'
-
-        if 'plot horizontal lines' not in self.properties:
-            self.properties['plot horizontal lines'] = 'no'
-
     def plot(self, ax, chrom_region, start_region, end_region):
         """
         Plots a bedgraph matrix file, that instead of having
         a single value per bin, it has several values.
         """
-        from matplotlib import cm
         cmap = cm.get_cmap('tab20b')
-        try:
-            values_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
-        except TypeError:
+
+        values_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
+        if pos_list == []:
             return
 
         ymin = float('Inf')
@@ -131,6 +126,6 @@ categories_file = <path to json categories file>
         ax.add_collection(collection)
         ax.set_ylim(ymin - ymin * 0.01, ymax + ymax * 0.01)
 
-        if 'orientation' in self.properties and self.properties['orientation'] == 'inverted':
+        if self.properties['orientation'] == 'inverted':
             ymin, ymax = ax.get_ylim()
             ax.set_ylim(ymax, ymin)
