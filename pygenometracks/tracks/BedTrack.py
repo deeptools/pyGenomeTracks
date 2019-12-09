@@ -61,7 +61,7 @@ fontsize = 10
 # optional: line_width
 #line_width = 0.5
 # the display parameter defines how the bed file is plotted.
-# The options are ['collapsed', 'interleaved', 'triangles'] This options asume that the regions do not overlap.
+# The options are ['collapsed', 'interleaved', 'triangles'] These options asume that the regions do not overlap.
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
 # if display is not given, then each region is plotted using the gene style
