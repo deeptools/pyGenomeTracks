@@ -543,6 +543,6 @@ They are summarized here:
 
 Adding new tracks
 -----------------
-If you are interested in adding new tracks, please see [README_newTRACKS.md](./README_newTRACKS.md).
+If you are interested in adding new tracks, please see [Creating_new_tracks.md](./docs/Creating_new_tracks.md).
 
 pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser) (See e.g. [Chorogenome navigator](http://chorogenome.ie-freiburg.mpg.de/) which is made with HiCBrowser)
