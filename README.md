@@ -469,6 +469,8 @@ global_max_row |  |  |  |  | false |  |  |  |  |  |
 gene_rows |  |  |  |  | not set |  |  |  |  |  | 
 arrow_interval |  |  |  |  | 2 |  |  |  |  |  | 
 arrowhead_included |  |  |  |  | false |  |  |  |  |  | 
+color_utr |  |  |  |  | grey |  |  |  |  |  | 
+height_utr |  |  |  |  | 1 |  |  |  |  |  | 
 show_data_range |  |  |  |  |  | true | true | true | true | true | 
 show_labels |  |  |  |  |  | true |  |  |  |  | 
 use_summit |  |  |  |  |  | true |  |  |  |  | 
