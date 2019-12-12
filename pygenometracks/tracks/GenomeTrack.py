@@ -122,9 +122,9 @@ height = 2
             if transform == 'log':
                 ymin, ymid, ymax = np.exp([ymin, ymid, ymax])
             elif transform == 'log1p':
-                ymin, ymid, ymax = np.exp([ymin, ymid, ymax]) - 1
-            elif transform == 'log':
-                ymin, ymid, ymax = np.exp([ymin, ymid, ymax])
+                ymin, ymid, ymax = np.expm1([ymin, ymid, ymax])
+            elif transform == '-log':
+                ymin, ymid, ymax = - np.exp([ymin, ymid, ymax])
             ymid_str = value_to_str(ymid)
             # plot something that looks like this:
             # ymax ┐
