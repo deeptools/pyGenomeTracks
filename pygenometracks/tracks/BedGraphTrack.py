@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree, plot_coverage
+from .. utilities import file_to_intervaltree, plot_coverage, transform
 import numpy as np
 import pyBigWig
 import tempfile
@@ -62,20 +62,22 @@ file_type = {}
                            'summary_method': None,
                            'rasterize': False,
                            'number_of_bins': 700,
-                           'type': 'fill'}
+                           'type': 'fill',
+                           'transform': 'no'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
-                                              'cov', 'sum', None]}
+                                              'cov', 'sum', None],
+                           'transform': ['no', 'log', 'log1p', '-log']}
     BOOLEAN_PROPERTIES = ['show_data_range', 'nans_to_zeros',
                           'use_middle', 'rasterize']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
-                         'type']
+                         'type', 'transform']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'alpha': [0, 1],
@@ -222,7 +224,10 @@ file_type = {}
             score_list, x_values = self.get_values_as_bdg(score_list,
                                                           pos_list)
 
-        plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
+        new_scores = transform(score_list, self.properties['transform'],
+                               self.properties['file'])
+
+        plot_coverage(ax, x_values, new_scores, self.plot_type, self.size,
                       self.properties['color'],
                       self.properties['negative_color'],
                       self.properties['alpha'])
@@ -290,3 +295,6 @@ file_type = {}
             score_list[np.isnan(score_list)] = 0
 
         return score_list, x_values
+
+    def plot_y_axis(self, ax, plot_axis):
+        super(BedGraphTrack, self).plot_y_axis(ax, plot_axis, self.properties['transform'])

@@ -72,7 +72,7 @@ height = 2
                                               default_value))
                 self.properties[prop] = default_value
 
-    def plot_y_axis(self, ax, plot_axis):
+    def plot_y_axis(self, ax, plot_axis, transform='no'):
         """
         Plot the scale of the y axis with respect to the plot_axis
         Args:
@@ -96,22 +96,52 @@ height = 2
 
         ymin, ymax = plot_axis.get_ylim()
 
+        if transform == 'no':
+            # This is a linear scale
+            # plot something that looks like this:
+            # ymax ┐
+            #      │
+            #      │
+            # ymin ┘
+
+            # the coordinate system used is the ax.transAxes (lower left corner (0,0), upper right corner (1,1)
+            # this way is easier to adjust the positions such that the lines are plotted complete
+            # and not only half of the width of the line.
+            x_pos = [0, 0.5, 0.5, 0]
+            y_pos = [0.01, 0.01, 0.99, 0.99]
+        else:
+            # ymid is the middle between ymin and ymax
+            # if 0 is between ymin and ymax then ymid is 0
+            if ymin * ymax < 0:
+                ymid = 0
+                ymid_pos = - ymin / (ymax - ymin)
+            else:
+                ymid = (ymin + ymax) / 2
+                ymid_pos = 0.5
+
+            if transform == 'log':
+                ymin, ymid, ymax = np.exp([ymin, ymid, ymax])
+            elif transform == 'log1p':
+                ymin, ymid, ymax = np.exp([ymin, ymid, ymax]) - 1
+            elif transform == 'log':
+                ymin, ymid, ymax = np.exp([ymin, ymid, ymax])
+            ymid_str = value_to_str(ymid)
+            # plot something that looks like this:
+            # ymax ┐
+            #      │
+            # ymid-|
+            #      │
+            # ymin ┘
+            x_pos = [0, 0.5, 0.5, 0, 0.5, 0.5, 0]
+            y_pos = [0.01, 0.01, ymid_pos, ymid_pos, ymid_pos, 0.99, 0.99]
         ymax_str = value_to_str(ymax)
         ymin_str = value_to_str(ymin)
-        # plot something that looks like this:
-        # ymax ┐
-        #      │
-        #      │
-        # ymin ┘
-
-        # the coordinate system used is the ax.transAxes (lower left corner (0,0), upper right corner (1,1)
-        # this way is easier to adjust the positions such that the lines are plotted complete
-        # and not only half of the width of the line.
-        x_pos = [0, 0.5, 0.5, 0]
-        y_pos = [0.01, 0.01, 0.99, 0.99]
         ax.plot(x_pos, y_pos, color='black', linewidth=1, transform=ax.transAxes)
         ax.text(-0.2, -0.01, ymin_str, verticalalignment='bottom', horizontalalignment='right', transform=ax.transAxes)
         ax.text(-0.2, 1, ymax_str, verticalalignment='top', horizontalalignment='right', transform=ax.transAxes)
+        if transform != 'no':
+            ax.text(-0.2, ymid_pos, ymid_str, verticalalignment='center', horizontalalignment='right', transform=ax.transAxes)
+
         ax.patch.set_visible(False)
 
     def plot_label(self, label_ax):

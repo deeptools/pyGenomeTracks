@@ -1,6 +1,6 @@
 from . GenomeTrack import GenomeTrack
 import numpy as np
-from .. utilities import plot_coverage
+from .. utilities import plot_coverage, transform
 import pyBigWig
 
 DEFAULT_BIGWIG_COLOR = '#33a02c'
@@ -49,19 +49,21 @@ file_type = {}
                            'nans_to_zeros': False,
                            'summary_method': 'mean',
                            'number_of_bins': 700,
-                           'type': 'fill'}
+                           'type': 'fill',
+                           'transform': 'no'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
-                                              'cov', 'sum']}
+                                              'cov', 'sum'],
+                           'transform': ['no', 'log', 'log1p', '-log']}
     BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
-                         'type']
+                         'type', 'transform']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'alpha': [0, 1],
@@ -126,7 +128,10 @@ file_type = {}
 
         x_values = np.linspace(start_region, end_region, self.properties['number_of_bins'])
 
-        plot_coverage(ax, x_values, scores_per_bin, self.plot_type, self.size,
+        new_scores = transform(scores_per_bin, self.properties['transform'],
+                               self.properties['file'])
+
+        plot_coverage(ax, x_values, new_scores, self.plot_type, self.size,
                       self.properties['color'],
                       self.properties['negative_color'],
                       self.properties['alpha'])
@@ -143,3 +148,6 @@ file_type = {}
             ax.set_ylim(ymin, ymax)
 
         return ax
+
+    def plot_y_axis(self, ax, plot_axis):
+        super(BigWigTrack, self).plot_y_axis(ax, plot_axis, self.properties['transform'])
