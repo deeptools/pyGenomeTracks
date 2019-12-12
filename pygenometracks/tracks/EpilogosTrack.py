@@ -129,3 +129,6 @@ file_type = {}
         if self.properties['orientation'] == 'inverted':
             ymin, ymax = ax.get_ylim()
             ax.set_ylim(ymax, ymin)
+
+    def plot_y_axis(self, ax, plot_axis):
+        GenomeTrack.plot_y_axis(self, ax, plot_axis)

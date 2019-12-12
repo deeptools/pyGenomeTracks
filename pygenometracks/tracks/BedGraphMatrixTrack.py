@@ -119,7 +119,7 @@ file_type = {}
 
     def plot_y_axis(self, ax, plot_axis):
         if self.properties['type'] == 'lines':
-            super(BedGraphMatrixTrack, self).plot_y_axis(ax, plot_axis)
+            GenomeTrack.plot_y_axis(self, ax, plot_axis)
         else:
             try:
                 cobar = plt.colorbar(self.img, ax=ax, fraction=0.95)
