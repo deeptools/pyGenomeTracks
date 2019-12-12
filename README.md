@@ -480,6 +480,7 @@ negative_color |  |  |  |  |  |  | not set | not set |  |  |
 nans_to_zeros |  |  |  |  |  |  | false | false |  |  | 
 summary_method |  |  |  |  |  |  | mean | not set |  |  | 
 number_of_bins |  |  |  |  |  |  | 700 | 700 |  |  | 
+transform |  |  |  |  |  |  | no | no |  |  | no
 use_middle |  |  |  |  |  |  |  | false |  |  | 
 rasterize |  |  |  |  |  |  |  | false | true |  | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center |  | 
@@ -488,7 +489,6 @@ region |  |  |  |  |  |  |  |  |  |  | not set
 depth |  |  |  |  |  |  |  |  |  |  | 100000
 show_masked_bins |  |  |  |  |  |  |  |  |  |  | false
 scale_factor |  |  |  |  |  |  |  |  |  |  | 1
-transform |  |  |  |  |  |  |  |  |  |  | no
 colormap |  |  |  |  |  |  |  |  |  |  | RdYlBu_r
 
 
@@ -514,10 +514,10 @@ They are summarized here:
 - **summary_method**:
   - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
   - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
+- **transform**:
+  - for *bigwig, bedgraph, hic_matrix*: no, log, log1p, -log
 - **pos_score_in_bin**:
   - for *bedgraph_matrix*: center, block
-- **transform**:
-  - for *hic_matrix*: no, log, log1p, -log
 - **labels**:
   - for *bed*: true, false
 - **show_data_range**:

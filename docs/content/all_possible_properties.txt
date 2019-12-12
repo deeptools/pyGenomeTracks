@@ -16,10 +16,10 @@
 - **summary_method**:
   - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
   - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
+- **transform**:
+  - for *bigwig, bedgraph, hic_matrix*: no, log, log1p, -log
 - **pos_score_in_bin**:
   - for *bedgraph_matrix*: center, block
-- **transform**:
-  - for *hic_matrix*: no, log, log1p, -log
 - **labels**:
   - for *bed*: true, false
 - **show_data_range**:
