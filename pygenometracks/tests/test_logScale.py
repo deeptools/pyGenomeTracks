@@ -73,6 +73,7 @@ def test_log1p_track():
 
     os.remove(outfile.name)
 
+
 def test_log_tracks():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_log_', delete=False)

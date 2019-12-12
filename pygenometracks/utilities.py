@@ -201,29 +201,29 @@ def transform(score_list, transform, file):
     elif transform == 'log':
         if np.nanmin(score_list) <= 0:
             msg = ("\n*ERROR*\ncoverage contains negative or zero values.\n"
-                    "log(<values>) transformation can not be applied to \n"
-                    "values in file: {}".format(file))
+                   "log(<values>) transformation can not be applied to \n"
+                   "values in file: {}".format(file))
             raise Exception(msg)
         else:
             return(np.log(score_list))
     elif transform == 'log1p':
         if np.nanmin(score_list) <= - 1:
             msg = ("\n*ERROR*\ncoverage contains values below or equal to 1.\n"
-                    "log1p(<values>) transformation can not be applied to \n"
-                    "values in file: {}".format(file))
+                   "log1p(<values>) transformation can not be applied to \n"
+                   "values in file: {}".format(file))
             raise Exception(msg)
         else:
             return(np.log(score_list + 1))
     elif transform == '-log':
         if np.nanmax(score_list.max) >= 0:
             msg = ("\n*ERROR*\ncoverage contains positive or zero values.\n"
-                    "-log(<values>) transformation can not be applied to \n"
-                    "values in file: {}".format(file))
+                   "-log(<values>) transformation can not be applied to \n"
+                   "values in file: {}".format(file))
             raise Exception(msg)
         else:
             return(np.log(- score_list))
     else:
         warnings.warn('The transform: {} for file {} is not valid.'
-                        'will not use any transformation'.format(transform,
-                                                                file))
+                      'will not use any transformation'.format(transform,
+                                                               file))
         return(score_list)
