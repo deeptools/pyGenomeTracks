@@ -419,6 +419,8 @@ class PlotTracks(object):
                              " parameter {} but there is no more parameter"
                              " with space in name. Will be substituted by {}."
                              "".format(section_name, old_name, name))
+                else:
+                    old_name = name
                 # end
                 SYNONYMOUS_PROPERTIES = track_class.SYNONYMOUS_PROPERTIES
                 # If the name is part of the synonymous we substitute by
@@ -430,14 +432,20 @@ class PlotTracks(object):
                     track_options[name] = value
                 elif name in track_class.BOOLEAN_PROPERTIES:
                     try:
+                        # I need to use old_name here else I get a KeyError:
                         track_options[name] = parser.getboolean(section_name,
-                                                                name)
+                                                                old_name)
+                        # In the next 1.0 should be:
+                        # track_options[name] = parser.getboolean(section_name,
+                        #                                         name)
                     except ValueError:
                         raise InputError("In section {}, {} was set to {}"
                                          " whereas we should have a boolean "
                                          "value. Please, use true or false."
-                                         "".format(section_name, name,
+                                         "".format(section_name, old_name,
                                                    value))
+                        # In the next 1.0 should be:
+                        #                "".format(section_name, name,
                     if value.lower() not in ['true', 'false']:
                         log.warning("Deprecation Warning: "
                                     "In section {}, {} was set to {}"
