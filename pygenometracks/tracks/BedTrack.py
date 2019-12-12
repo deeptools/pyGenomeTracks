@@ -109,7 +109,6 @@ file_type = {}
                            'labels': True,
                            'style': 'flybase',
                            'display': DEFAULT_DISPLAY_BED,
-                           'interval_height': 100,  # This one is not defined in the documentation
                            'line_width': 0.5,
                            'max_labels': 60,
                            'prefered_name': 'transcript_name',
@@ -138,7 +137,6 @@ file_type = {}
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
-                        'interval_height': [0, np.inf],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf],
                         'height_utr': [0, 1]}
@@ -203,7 +201,7 @@ file_type = {}
                 self.properties[param] = self.DEFAULTS_PROPERTIES[param]
 
         # to set the distance between rows
-        self.row_scale = self.properties['interval_height'] * 2.3
+        self.row_scale = 2.3
 
     def get_length_w(self, fig_width, region_start, region_end):
         """
@@ -319,11 +317,11 @@ file_type = {}
         """
 
         # if the interleaved directive is given,
-        # ypos simply oscilates between 0 and 100
+        # ypos simply oscilates between 0 and 1
         if self.properties['display'] == 'interleaved':
-            ypos = self.properties['interval_height'] \
+            ypos = 1 \
                 if self.counter % 2 == 0 \
-                else 1
+                else 0
         # if the collapsed directive is given
         # ypos is always 0
         elif self.properties['display'] == 'collapsed':
@@ -459,7 +457,7 @@ file_type = {}
                     pass
                 elif bed.end > start_region and bed.end < end_region:
                     ax.text(bed.end + self.small_relative,
-                            ypos + (self.properties['interval_height'] / 2),
+                            ypos + 0.5,
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
 
@@ -478,7 +476,7 @@ file_type = {}
             elif self.properties['gene_rows'] is not None:
                 ymin = self.properties['gene_rows'] * self.row_scale
             else:
-                ymin = max_ypos + self.properties['interval_height']
+                ymin = max_ypos + 1
 
             self.log.debug("ylim {},{}".format(ymin, ymax))
             # the axis is inverted (thus, ymax < ymin)
@@ -548,8 +546,7 @@ file_type = {}
 
         if bed.strand not in ['+', '-']:
             ax.add_patch(Rectangle((bed.start, ypos),
-                         bed.end - bed.start,
-                         self.properties['interval_height'],
+                         bed.end - bed.start, 1,
                          edgecolor=edgecolor, facecolor=rgb,
                          linewidth=linewidth))
         else:
@@ -568,7 +565,7 @@ file_type = {}
            bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor)
             return
-        half_height = self.properties['interval_height'] / 2
+        half_height = 1 / 2
         # draw 'backbone', a line from the start until the end of the gene
         ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height],
                 'black', linewidth=linewidth, zorder=-1)
@@ -606,17 +603,15 @@ file_type = {}
         if first_pos[2] == 'UTR':
             _rgb = self.properties['color_utr']
             # The arrow will be centered on
-            # ypos + self.properties['interval_height'] /2
+            # ypos + 1 / 2
             # The total height will be
-            # self.properties['interval_height'] * self.properties['height_utr']
-            y0 = ypos + self.properties['interval_height'] * \
-                (1 - self.properties['height_utr']) / 2
-            half_height = self.properties['interval_height'] * \
-                self.properties['height_utr'] / 2
+            # self.properties['height_utr']
+            y0 = ypos + (1 - self.properties['height_utr']) / 2
+            half_height = self.properties['height_utr'] / 2
         else:
             _rgb = rgb
             y0 = ypos
-            half_height = self.properties['interval_height'] / 2
+            half_height = 1 / 2
 
         vertices = self._draw_arrow(first_pos[0], first_pos[1], bed.strand,
                                     y0, half_height)
@@ -629,14 +624,12 @@ file_type = {}
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
                 _rgb = self.properties['color_utr']
-                y0 = ypos + self.properties['interval_height'] * \
-                    (1 - self.properties['height_utr']) / 2
-                height = self.properties['interval_height'] * \
-                    self.properties['height_utr']
+                y0 = ypos + (1 - self.properties['height_utr']) / 2
+                height = self.properties['height_utr']
             else:
                 _rgb = rgb
                 y0 = ypos
-                height = self.properties['interval_height']
+                height = 1
 
             vertices = [(start_pos, y0), (start_pos, y0 + height),
                         (end_pos, y0 + height), (end_pos, y0)]
@@ -657,7 +650,7 @@ file_type = {}
         :return: None
         """
         if half_height is None:
-            half_height = self.properties['interval_height'] / 2
+            half_height = 1 / 2
         # The y values are common to both strands:
         y0 = ypos
         y1 = ypos + 2 * half_height
@@ -709,40 +702,38 @@ file_type = {}
         if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
-        half_height = self.properties['interval_height'] / 2
-        quarter_height = self.properties['interval_height'] / 4
-        three_quarter_height = quarter_height * 3
 
         # draw 'backbone', a line from the start until the end of the gene
-        ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height], 'black', linewidth=linewidth, zorder=-1)
+        ax.plot([bed.start, bed.end], [ypos + 1 / 2, ypos + 1 / 2], 'black', linewidth=linewidth, zorder=-1)
 
         for idx in range(0, bed.block_count):
             x0 = bed.start + bed.block_starts[idx]
             x1 = x0 + bed.block_sizes[idx]
             if x1 < bed.thick_start or x0 > bed.thick_end or \
                bed.thick_start == bed.thick_end:
-                y0 = ypos + quarter_height
-                y1 = ypos + three_quarter_height
+                y0 = ypos + 1 / 4
+                y1 = ypos + 3 / 4
             else:
                 y0 = ypos
-                y1 = ypos + self.properties['interval_height']
+                y1 = ypos + 1
 
             if x0 < bed.thick_start < x1:
-                vertices = ([(x0, ypos + quarter_height), (x0, ypos + three_quarter_height),
-                             (bed.thick_start, ypos + three_quarter_height),
-                             (bed.thick_start, ypos + self.properties['interval_height']),
-                             (bed.thick_start, ypos + self.properties['interval_height']),
-                             (x1, ypos + self.properties['interval_height']), (x1, ypos),
-                             (bed.thick_start, ypos), (bed.thick_start, ypos + quarter_height)])
+                vertices = ([(x0, ypos + 1 / 4), (x0, ypos + 3 / 4),
+                             (bed.thick_start, ypos + 3 / 4),
+                             (bed.thick_start, ypos + 1),
+                             (bed.thick_start, ypos + 1),
+                             (x1, ypos + 1), (x1, ypos),
+                             (bed.thick_start, ypos),
+                             (bed.thick_start, ypos + 1 / 4)])
 
             elif x0 < bed.thick_end < x1:
                 vertices = ([(x0, ypos),
-                             (x0, ypos + self.properties['interval_height']),
-                             (bed.thick_end, ypos + self.properties['interval_height']),
-                             (bed.thick_end, ypos + three_quarter_height),
-                             (x1, ypos + three_quarter_height),
-                             (x1, ypos + quarter_height),
-                             (bed.thick_end, ypos + quarter_height),
+                             (x0, ypos + 1),
+                             (bed.thick_end, ypos + 1),
+                             (bed.thick_end, ypos + 3 / 4),
+                             (x1, ypos + 3 / 4),
+                             (x1, ypos + 1 / 4),
+                             (bed.thick_end, ypos + 1 / 4),
                              (bed.thick_end, ypos)])
             else:
                 vertices = ([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])
@@ -826,7 +817,7 @@ file_type = {}
             xdata = [xpos + self.small_relative / 4,
                      xpos - self.small_relative / 4,
                      xpos + self.small_relative / 4]
-        ydata = [ypos + self.properties['interval_height'] / 4,
-                 ypos + self.properties['interval_height'] / 2,
-                 ypos + self.properties['interval_height'] * 3 / 4]
+        ydata = [ypos + 1 / 4,
+                 ypos + 1 / 2,
+                 ypos + 3 / 4]
         ax.add_line(Line2D(xdata, ydata, color='black', linewidth=self.properties['line_width']))
