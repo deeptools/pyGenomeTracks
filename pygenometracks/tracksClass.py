@@ -12,11 +12,9 @@ import matplotlib.colors
 import matplotlib.gridspec
 import matplotlib.cm
 import mpl_toolkits.axisartist as axisartist
-import textwrap
 from . utilities import file_to_intervaltree
 from collections import OrderedDict
 from pygenometracks.tracks.GenomeTrack import GenomeTrack
-from pygenometracks.tracks import *
 from pygenometracks.utilities import InputError
 
 import warnings
@@ -99,10 +97,8 @@ class PlotTracks(object):
         for idx, properties in enumerate(self.track_list):
             if 'spacer' in properties:
                 self.track_obj_list.append(SpacerTrack(properties))
-                continue
             elif 'x-axis' in properties:
                 self.track_obj_list.append(XAxisTrack(properties))
-                continue
             else:
                 # for all other tracks that are not axis or spacer
                 # the track_class is obtained from the available tracks
@@ -112,17 +108,6 @@ class PlotTracks(object):
                     self.track_obj_list.append(track_class(properties))
                 else:
                     self.track_obj_list.append(track_class(properties))
-
-            if 'title' in properties:
-                # adjust titles that are too long
-                # if the track label space is small
-                assert(sys.version_info[0] != 2)
-                if track_label_width < 0.1:
-                    properties['title'] = textwrap.fill(properties['title'],
-                                                        12)
-                else:
-                    properties['title'] = textwrap.fill(properties['title'],
-                                                        30)
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
@@ -510,8 +495,8 @@ class PlotTracks(object):
                 if track_options['overlay_previous'] == 'no' and \
                    track_options['track_class'] not in [SpacerTrack,
                                                         XAxisTrack]:
-                    log.warn = ("title not set for section {}"
-                                "\n").format(track_options['section_name'])
+                    log.warn("title not set for section {}"
+                             "\n".format(track_options['section_name']))
             # The track_options are added to the track_list
             track_list.append(track_options)
         # Now that they were all checked

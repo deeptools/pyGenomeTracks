@@ -145,8 +145,10 @@ height = 2
         ax.patch.set_visible(False)
 
     def plot_label(self, label_ax):
-        label_ax.text(0.05, 0.5, self.properties['title'], horizontalalignment='left',
-                      size='large', verticalalignment='center', transform=label_ax.transAxes)
+        label_ax.text(0.05, 0.5, self.properties['title'],
+                      horizontalalignment='left',
+                      size='large', verticalalignment='center',
+                      transform=label_ax.transAxes, wrap=True)
 
     def process_type_for_coverage_track(self):
         default_plot_type = 'fill'

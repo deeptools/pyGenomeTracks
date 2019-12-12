@@ -61,7 +61,7 @@ fontsize = 10
 # optional: line_width
 #line_width = 0.5
 # the display parameter defines how the bed file is plotted.
-# The options are ['collapsed', 'interleaved', 'triangles'] This options asume that the regions do not overlap.
+# The options are ['collapsed', 'interleaved', 'triangles'] These options asume that the regions do not overlap.
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
 # if display is not given, then each region is plotted using the gene style
@@ -85,6 +85,11 @@ fontsize = 10
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
+# if you use flybase style, you can choose the color of non-coding intervals:
+#color_utr = grey
+# as well as the proportion between their height and the one of coding
+# (by default they are the same height):
+#height_utr = 1
 # By default, for oriented intervals the arrowhead is added
 # outside of the interval.
 # If you want that the tip of the arrow correspond to
@@ -114,7 +119,9 @@ file_type = {}
                            'max_value': None,
                            'min_value': None,
                            'arrow_interval': 2,
-                           'arrowhead_included': False}
+                           'arrowhead_included': False,
+                           'color_utr': 'grey',
+                           'height_utr': 1}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -127,18 +134,19 @@ file_type = {}
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
-                         'display']
+                         'color_utr', 'display']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
                         'interval_height': [0, np.inf],
                         'line_width': [0, np.inf],
-                        'height': [0, np.inf]}
+                        'height': [0, np.inf],
+                        'height_utr': [0, 1]}
     INTEGER_PROPERTIES = {'gene_rows': [0, np.inf],
                           'max_labels': [0, np.inf],
                           'arrow_interval': [1, np.inf]}
     # The color can be a color or a colormap or 'bed_rgb'
-    # border_color can only be a color
+    # border_color, color_utr can only be a color
 
     def __init__(self, *args, **kwarg):
         super(BedTrack, self).__init__(*args, **kwarg)
@@ -178,6 +186,21 @@ file_type = {}
                 self.properties['color'] = DEFAULT_BED_COLOR
             else:
                 self.colormap = self.properties['color']
+
+        # check if border_color and color_utr are colors
+        # if they are part of self.properties
+        # (for example, TADsTracks do not have color_utr)
+        for param in [p for p in ['border_color', 'color_utr']
+                      if p in self.properties]:
+            if not matplotlib.colors.is_color_like(self.properties[param]):
+                self.log.warning("*WARNING* {}: '{}' for section {}"
+                                 " is not valid. Color has "
+                                 "been set to "
+                                 "{}".format(param,
+                                             self.properties[param],
+                                             self.properties['section_name'],
+                                             self.DEFAULTS_PROPERTIES[param]))
+                self.properties[param] = self.DEFAULTS_PROPERTIES[param]
 
         # to set the distance between rows
         self.row_scale = self.properties['interval_height'] * 2.3
@@ -469,7 +492,9 @@ file_type = {}
     def plot_label(self, label_ax):
         label_ax.text(0.05, 1, self.properties['title'],
                       horizontalalignment='left', size='large',
-                      verticalalignment='top', transform=label_ax.transAxes)
+                      verticalalignment='top',
+                      transform=label_ax.transAxes,
+                      wrap=True)
 
     def plot_y_axis(self, ax, plot_axis):
         if self.colormap is not None:
@@ -579,11 +604,22 @@ file_type = {}
 
         first_pos = positions.pop()
         if first_pos[2] == 'UTR':
-            _rgb = 'grey'
+            _rgb = self.properties['color_utr']
+            # The arrow will be centered on
+            # ypos + self.properties['interval_height'] /2
+            # The total height will be
+            # self.properties['interval_height'] * self.properties['height_utr']
+            y0 = ypos + self.properties['interval_height'] * \
+                (1 - self.properties['height_utr']) / 2
+            half_height = self.properties['interval_height'] * \
+                self.properties['height_utr'] / 2
         else:
             _rgb = rgb
+            y0 = ypos
+            half_height = self.properties['interval_height'] / 2
 
-        vertices = self._draw_arrow(first_pos[0], first_pos[1], bed.strand, ypos)
+        vertices = self._draw_arrow(first_pos[0], first_pos[1], bed.strand,
+                                    y0, half_height)
 
         ax.add_patch(Polygon(vertices, closed=True, fill=True,
                              edgecolor=edgecolor,
@@ -592,31 +628,41 @@ file_type = {}
 
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
-                _rgb = 'grey'
+                _rgb = self.properties['color_utr']
+                y0 = ypos + self.properties['interval_height'] * \
+                    (1 - self.properties['height_utr']) / 2
+                height = self.properties['interval_height'] * \
+                    self.properties['height_utr']
             else:
                 _rgb = rgb
-            vertices = [(start_pos, ypos), (start_pos, ypos + self.properties['interval_height']),
-                        (end_pos, ypos + self.properties['interval_height']), (end_pos, ypos)]
+                y0 = ypos
+                height = self.properties['interval_height']
+
+            vertices = [(start_pos, y0), (start_pos, y0 + height),
+                        (end_pos, y0 + height), (end_pos, y0)]
 
             ax.add_patch(Polygon(vertices, closed=True, fill=True,
                                  edgecolor=edgecolor,
                                  facecolor=_rgb,
                                  linewidth=linewidth))
 
-    def _draw_arrow(self, start, end, strand, ypos):
+    def _draw_arrow(self, start, end, strand, ypos, half_height=None):
         """
-        Draws a filled arrow
+        Draws a filled arrow.
         :param start:
         :param end:
         :param strand:
         :param ypos:
+        :param half_height:
         :return: None
         """
-        half_height = self.properties['interval_height'] / 2
+        if half_height is None:
+            half_height = self.properties['interval_height'] / 2
+        # The y values are common to both strands:
+        y0 = ypos
+        y1 = ypos + 2 * half_height
         if strand == '+':
             x0 = start
-            y0 = ypos
-            y1 = ypos + self.properties['interval_height']
             if self.properties['arrowhead_included']:
                 x1 = max(start, end - self.small_relative)
                 x2 = end
@@ -627,11 +673,13 @@ file_type = {}
             The vertices correspond to 5 points along the path of a form like the following,
             starting in the lower left corner and progressing in a clock wise manner.
 
-            ----------------->
+            =================>
+            x0             x1 x2
 
             """
 
-            vertices = [(x0, y0), (x0, y1), (x1, y1), (x2, y0 + half_height), (x1, y0)]
+            vertices = [(x0, y0), (x0, y1), (x1, y1),
+                        (x2, y0 + half_height), (x1, y0)]
 
         else:
             if self.properties['arrowhead_included']:
@@ -641,16 +689,15 @@ file_type = {}
                 x0 = start
                 xb = start - self.small_relative
             x1 = end
-            y0 = ypos
-            y1 = ypos + self.properties['interval_height']
             """
             The vertices correspond to 5 points along the path of a form like the following,
             starting in the lower left corner and progressing in a clock wise manner.
 
-            <-----------------
-
+              <=================
+            xb x0              x1
             """
-            vertices = [(x0, y0), (xb, y0 + half_height), (x0, y1), (x1, y1), (x1, y0)]
+            vertices = [(x0, y0), (xb, y0 + half_height), (x0, y1),
+                        (x1, y1), (x1, y0)]
 
         return vertices
 

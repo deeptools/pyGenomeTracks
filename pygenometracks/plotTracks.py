@@ -215,14 +215,14 @@ def parse_arguments(args=None):
 
     parser.add_argument('--dpi',
                         help='Resolution for the image in case the'
-                             'ouput is a raster graphics image (e.g png, jpg)',
+                             ' ouput is a raster graphics image (e.g png, jpg)',
                         type=int,
                         default=72
                         )
 
     parser.add_argument('--trackLabelFraction',
                         help='By default the space dedicated to the track labels is 0.05 of the'
-                             'plot width. This fraction can be changed with this parameter if needed.',
+                             ' plot width. This fraction can be changed with this parameter if needed.',
                         default=0.05,
                         type=float)
 

@@ -92,6 +92,44 @@ number_of_bins = 300
 with open(os.path.join(ROOT, "bigwig.ini"), 'w') as fh:
     fh.write(tracks)
 
+tracks = """
+[test hlines]
+color = red
+line_width = 2
+line_style = dashed
+y_values = 10, 200
+min_value = 0
+show_data_range = true
+height = 5
+title = hlines: color = red; line_width = 2; line_style = dashed; y_values = 10, 200
+file_type = hlines
+
+[spacer]
+
+[test bigwig fill]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = gray
+height = 2
+type = fill
+title = bigwig: gray fill overlayed with hlines at 10 and 200 blue dotted
+max_value = 50
+
+[test hlines ovelayed]
+color = blue
+line_style = dotted
+y_values = 10, 200
+overlay_previous = share-y
+file_type = hlines
+
+[spacer]
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "hlines.ini"), 'w') as fh:
+    fh.write(tracks)
+
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -121,6 +159,22 @@ def test_alpha():
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
     res = compare_images(os.path.join(ROOT, 'master_alpha.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_hlines():
+    region = "X:2700000-3100000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_hlines_test_', delete=False)
+    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName {outfile}" \
+           "".format(ini=os.path.join(ROOT, "hlines.ini"),
+                     outfile=outfile.name, region=region).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_hlines.png'),
                          outfile.name, tolerance)
     assert res is None, res
 

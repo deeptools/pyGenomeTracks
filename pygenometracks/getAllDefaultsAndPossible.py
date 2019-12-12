@@ -1,18 +1,19 @@
 """
 This python script will generate two files:
-- all_default_properties.txt
+- docs/content/all_default_properties.txt
 This file is a markdown table with all the defaults values for each parameter
 for each track class. This table can be copy pasted in the README.md
-- all_possible_properties.txt
+- docs/content/all_possible_properties.txt
 This file is a markdown list with possible values.
 This can also be copy pasted in the README.md
 """
 from pygenometracks.tracksClass import PlotTracks, XAxisTrack
 import numpy as np
+import os.path
 
 not_used_string = ''
 not_set_string = 'not set'
-track_separator = ','
+track_separator = ', '
 
 # Here is the keyword that was used in version 3.1.2
 # for boolean values
@@ -50,7 +51,7 @@ def main():
     my_prefered_order_tracks_names = [None, 'epilogos', 'links',
                                       'domains', 'bed', 'narrow_peak',
                                       'bigwig', 'bedgraph', 'bedgraph_matrix',
-                                      'hic_matrix']
+                                      'hlines', 'hic_matrix']
     my_prefered_order_tracks_names = [k for k in my_prefered_order_tracks_names
                                       if k in all_tracks]
     other_tracks = list(set(all_tracks.keys())
@@ -98,10 +99,12 @@ def main():
 
             mat[i + 2, j] = default
     # The matrix is written in a file to be able to use it in the README.md
-    np.savetxt("all_default_properties.txt", mat, fmt='%s', delimiter=" | ")
+    np.savetxt(os.path.join("docs", "content", "all_default_properties.txt"),
+               mat, fmt='%s', delimiter=" | ")
 
     # For the possible:
-    with open("all_possible_properties.txt", 'w') as fo:
+    with open(os.path.join("docs", "content", "all_possible_properties.txt"),
+              'w') as fo:
         for p, possible_dic in all_possible_parameters.items():
             possible_values = {}
             for track_type, pv in possible_dic.items():
@@ -130,7 +133,7 @@ def main():
                 if track_type in all_default_parameters[p]:
                     names += [track_type]
             fo.write("- **" + p + "**:\n")
-            name = ", ".join(names)
+            name = track_separator.join(names)
             reformated_possible = ", ".join([v for k, v in pv.items()])
             fo.write("  - for *" + name + "*: " + reformated_possible + "\n")
 

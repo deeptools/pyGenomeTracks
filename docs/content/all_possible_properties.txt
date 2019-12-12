@@ -1,11 +1,11 @@
 - **where**:
   - for *x-axis*: top, bottom
 - **orientation**:
-  - for *epilogos,links,domains,bed,narrow_peak,bigwig,bedgraph,bedgraph_matrix,hic_matrix*: inverted, not set
+  - for *epilogos, links, domains, bed, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix*: inverted, not set
 - **links_type**:
   - for *links*: arcs, triangles, loops
 - **line_style**:
-  - for *links*: solid, dashed, dotted, dashdot
+  - for *links, hlines*: solid, dashed, dotted, dashdot
 - **style**:
   - for *bed*: flybase, UCSC
 - **display**:
@@ -23,7 +23,7 @@
 - **labels**:
   - for *bed*: true, false
 - **show_data_range**:
-  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix*: true, false
+  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines*: true, false
 - **plot_horizontal_lines**:
   - for *bedgraph_matrix*: true, false
 - **use_middle**:

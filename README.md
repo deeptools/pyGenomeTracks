@@ -66,6 +66,39 @@ $ pyGenomeTracks --tracks tracks.ini --region chr2:10,000,000-11,000,000 --outFi
 
 The ending `--outFileName` defines the image format. If `.pdf` is used, then the resulting image is a pdf. The options are pdf, png and svg.
 
+Description of other possible arguments:
+
+``` text
+optional arguments:
+  -h, --help            show this help message and exit
+  --tracks TRACKS       File containing the instructions to plot the tracks.
+                        The tracks.ini file can be genarated using the
+                        `make_tracks_file` program.
+  --region REGION       Region to plot, the format is chr:start-end
+  --BED BED             Instead of a region, a file containing the regions to
+                        plot, in BED format, can be given. If this is the
+                        case, multiple files will be created using a prefix
+                        the value of --outFileName
+  --width WIDTH         figure width in centimeters
+  --height HEIGHT       Figure height in centimeters. If not given, the figure
+                        height is computed based on the heights of the tracks.
+                        If given, the track height are proportionally scaled
+                        to match the desired figure height.
+  --title TITLE, -t TITLE
+                        Plot title
+  --outFileName OUTFILENAME, -out OUTFILENAME
+                        File name to save the image, file prefix in case
+                        multiple images are stored
+  --fontSize FONTSIZE   Font size for the labels of the plot
+  --dpi DPI             Resolution for the image in case the ouput is a raster
+                        graphics image (e.g png, jpg)
+  --trackLabelFraction TRACKLABELFRACTION
+                        By default the space dedicated to the track labels is
+                        0.05 of the plot width. This fraction can be changed
+                        with this parameter if needed.
+  --version             show program's version number and exit
+```
+
 Citation
 ---------
 If you use pyGenomeTracks in your analysis, you can cite the following paper :
@@ -411,50 +444,52 @@ Here is a table to summarize which are the parameters that can be use for each o
 Empty means this parameter is not used.
 not set means that by default the parameter is commented.
 
-parameter | x-axis | epilogos | links | domains | bed | narrow_peak | bigwig | bedgraph | bedgraph_matrix | hic_matrix
--- | - | - | - | - | - | - | - | - | - | -
-where | bottom |  |  |  |  |  |  |  |  | 
-fontsize | 15 |  |  | 12 | 12 |  |  |  |  | 
-categories_file |  | not set |  |  |  |  |  |  |  | 
-orientation |  | not set | not set | not set | not set | not set | not set | not set | not set | not set
-links_type |  |  | arcs |  |  |  |  |  |  | 
-line_width |  |  | not set | 0.5 | 0.5 |  |  |  |  | 
-line_style |  |  | solid |  |  |  |  |  |  | 
-color |  |  | blue | #1f78b4 | #1f78b4 | #FF000080 | #33a02c | #a6cee3 |  | 
-alpha |  |  | 0.8 |  |  |  | 1 | 1 |  | 
-max_value |  |  | not set | not set | not set | not set | not set | not set | not set | not set
-min_value |  |  | not set | not set | not set |  | not set | not set | not set | not set
-border_color |  |  |  | black | black |  |  |  |  | 
-interval_height |  |  |  | 100 | 100 |  |  |  |  | 
-prefered_name |  |  |  | transcript_name | transcript_name |  |  |  |  | 
-merge_transcripts |  |  |  | false | false |  |  |  |  | 
-labels |  |  |  |  | true |  |  |  |  | 
-style |  |  |  |  | flybase |  |  |  |  | 
-display |  |  |  |  | stacked |  |  |  |  | 
-max_labels |  |  |  |  | 60 |  |  |  |  | 
-global_max_row |  |  |  |  | false |  |  |  |  | 
-gene_rows |  |  |  |  | not set |  |  |  |  | 
-arrow_interval |  |  |  |  | 2 |  |  |  |  | 
-arrowhead_included |  |  |  |  | false |  |  |  |  | 
-show_data_range |  |  |  |  |  | true | true | true | true | 
-show_labels |  |  |  |  |  | true |  |  |  | 
-use_summit |  |  |  |  |  | true |  |  |  | 
-width_adjust |  |  |  |  |  | 1.5 |  |  |  | 
-type |  |  |  |  |  | peak | fill | fill | matrix | 
-negative_color |  |  |  |  |  |  | not set | not set |  | 
-nans_to_zeros |  |  |  |  |  |  | false | false |  | 
-summary_method |  |  |  |  |  |  | mean | not set |  | 
-number_of_bins |  |  |  |  |  |  | 700 | 700 |  | 
-use_middle |  |  |  |  |  |  |  | false |  | 
-rasterize |  |  |  |  |  |  |  | false | true | true
-pos_score_in_bin |  |  |  |  |  |  |  |  | center | 
-plot_horizontal_lines |  |  |  |  |  |  |  |  | false | 
-region |  |  |  |  |  |  |  |  |  | not set
-depth |  |  |  |  |  |  |  |  |  | 100000
-show_masked_bins |  |  |  |  |  |  |  |  |  | false
-scale_factor |  |  |  |  |  |  |  |  |  | 1
-transform |  |  |  |  |  |  |  |  |  | no
-colormap |  |  |  |  |  |  |  |  |  | RdYlBu_r
+parameter | x-axis | epilogos | links | domains | bed | narrow_peak | bigwig | bedgraph | bedgraph_matrix | hlines | hic_matrix
+-- | - | - | - | - | - | - | - | - | - | - | -
+where | bottom |  |  |  |  |  |  |  |  |  | 
+fontsize | 15 |  |  | 12 | 12 |  |  |  |  |  | 
+categories_file |  | not set |  |  |  |  |  |  |  |  | 
+orientation |  | not set | not set | not set | not set | not set | not set | not set | not set | not set | not set
+links_type |  |  | arcs |  |  |  |  |  |  |  | 
+line_width |  |  | not set | 0.5 | 0.5 |  |  |  |  | 0.5 | 
+line_style |  |  | solid |  |  |  |  |  |  | solid | 
+color |  |  | blue | #1f78b4 | #1f78b4 | #FF000080 | #33a02c | #a6cee3 |  | black | 
+alpha |  |  | 0.8 |  |  |  | 1 | 1 |  | 1 | 
+max_value |  |  | not set | not set | not set | not set | not set | not set | not set | not set | not set
+min_value |  |  | not set | not set | not set |  | not set | not set | not set | not set | not set
+border_color |  |  |  | black | black |  |  |  |  |  | 
+interval_height |  |  |  | 100 | 100 |  |  |  |  |  | 
+prefered_name |  |  |  | transcript_name | transcript_name |  |  |  |  |  | 
+merge_transcripts |  |  |  | false | false |  |  |  |  |  | 
+labels |  |  |  |  | true |  |  |  |  |  | 
+style |  |  |  |  | flybase |  |  |  |  |  | 
+display |  |  |  |  | stacked |  |  |  |  |  | 
+max_labels |  |  |  |  | 60 |  |  |  |  |  | 
+global_max_row |  |  |  |  | false |  |  |  |  |  | 
+gene_rows |  |  |  |  | not set |  |  |  |  |  | 
+arrow_interval |  |  |  |  | 2 |  |  |  |  |  | 
+arrowhead_included |  |  |  |  | false |  |  |  |  |  | 
+color_utr |  |  |  |  | grey |  |  |  |  |  | 
+height_utr |  |  |  |  | 1 |  |  |  |  |  | 
+show_data_range |  |  |  |  |  | true | true | true | true | true | 
+show_labels |  |  |  |  |  | true |  |  |  |  | 
+use_summit |  |  |  |  |  | true |  |  |  |  | 
+width_adjust |  |  |  |  |  | 1.5 |  |  |  |  | 
+type |  |  |  |  |  | peak | fill | fill | matrix |  | 
+negative_color |  |  |  |  |  |  | not set | not set |  |  | 
+nans_to_zeros |  |  |  |  |  |  | false | false |  |  | 
+summary_method |  |  |  |  |  |  | mean | not set |  |  | 
+number_of_bins |  |  |  |  |  |  | 700 | 700 |  |  | 
+use_middle |  |  |  |  |  |  |  | false |  |  | 
+rasterize |  |  |  |  |  |  |  | false | true |  | true
+pos_score_in_bin |  |  |  |  |  |  |  |  | center |  | 
+plot_horizontal_lines |  |  |  |  |  |  |  |  | false |  | 
+region |  |  |  |  |  |  |  |  |  |  | not set
+depth |  |  |  |  |  |  |  |  |  |  | 100000
+show_masked_bins |  |  |  |  |  |  |  |  |  |  | false
+scale_factor |  |  |  |  |  |  |  |  |  |  | 1
+transform |  |  |  |  |  |  |  |  |  |  | no
+colormap |  |  |  |  |  |  |  |  |  |  | RdYlBu_r
 
 
 Some parameters can take only discrete values.
@@ -464,11 +499,11 @@ They are summarized here:
 - **where**:
   - for *x-axis*: top, bottom
 - **orientation**:
-  - for *epilogos,links,domains,bed,narrow_peak,bigwig,bedgraph,bedgraph_matrix,hic_matrix*: inverted, not set
+  - for *epilogos, links, domains, bed, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix*: inverted, not set
 - **links_type**:
   - for *links*: arcs, triangles, loops
 - **line_style**:
-  - for *links*: solid, dashed, dotted, dashdot
+  - for *links, hlines*: solid, dashed, dotted, dashdot
 - **style**:
   - for *bed*: flybase, UCSC
 - **display**:
@@ -486,7 +521,7 @@ They are summarized here:
 - **labels**:
   - for *bed*: true, false
 - **show_data_range**:
-  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix*: true, false
+  - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines*: true, false
 - **plot_horizontal_lines**:
   - for *bedgraph_matrix*: true, false
 - **use_middle**:
@@ -510,6 +545,6 @@ They are summarized here:
 
 Adding new tracks
 -----------------
-If you are interested in adding new tracks, please see [README_newTRACKS.md](./README_newTRACKS.md).
+If you are interested in adding new tracks, please see [Creating_new_tracks.md](./docs/Creating_new_tracks.md).
 
 pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser) (See e.g. [Chorogenome navigator](http://chorogenome.ie-freiburg.mpg.de/) which is made with HiCBrowser)

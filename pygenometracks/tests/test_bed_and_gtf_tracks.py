@@ -38,7 +38,7 @@ height = 1
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 7
-title = bed6 border_color = black; gene_rows=10; fontsize=8; color=Reds
+title = bed6 border_color = black; gene_rows=10; fontsize=7; color=Reds
         (when a color map is used for the color (e.g. coolwarm, Reds) the bed
         score column mapped to a color)
 fontsize = 7
@@ -231,6 +231,45 @@ max_labels = 600
 with open(os.path.join(ROOT, "bed_maxLab_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[x-axis]
+where = top
+
+[spacer]
+height = 0.05
+
+[genes 0]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = flybase; fontsize = 10
+style = flybase
+fontsize = 10
+
+[spacer]
+height = 1
+
+[genes 1]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = flybase; fontsize = 10; color_utr = red
+style = flybase
+fontsize = 10
+color_utr = red
+
+[spacer]
+height = 1
+
+[genes 2]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = flybase; fontsize = 10; height_utr = 0.7
+style = flybase
+fontsize = 10
+height_utr = 0.7
+
+"""
+with open(os.path.join(ROOT, "bed_flybase_tracks.ini"), 'w') as fh:
+    fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -280,6 +319,23 @@ def test_plot_tracks_bed_arrow_zoom():
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_bed_arrow_zoom.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_flybase():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3000000-3300000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_flybase_tracks.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_flybase.png'),
                          outfile.name, tolerance)
     assert res is None, res
 
