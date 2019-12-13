@@ -72,7 +72,7 @@ height = 2
                                               default_value))
                 self.properties[prop] = default_value
 
-    def plot_y_axis(self, ax, plot_axis, transform='no'):
+    def plot_y_axis(self, ax, plot_axis, transform='no', log_pseudocount=0):
         """
         Plot the scale of the y axis with respect to the plot_axis
         Args:
@@ -120,11 +120,12 @@ height = 2
                 ymid_pos = 0.5
 
             if transform == 'log':
-                ymin, ymid, ymax = np.exp([ymin, ymid, ymax])
+                ymin, ymid, ymax = np.exp([ymin, ymid, ymax]) - log_pseudocount
             elif transform == 'log1p':
                 ymin, ymid, ymax = np.expm1([ymin, ymid, ymax])
             elif transform == '-log':
-                ymin, ymid, ymax = - np.exp([ymin, ymid, ymax])
+                ymin, ymid, ymax = - (np.exp([ymin, ymid, ymax])
+                                      - log_pseudocount)
             ymid_str = value_to_str(ymid)
             # plot something that looks like this:
             # ymax ┐

@@ -36,6 +36,14 @@ summary_method = mean
 # type = points:0.5
 # set show_data_range to false to hide the text on the upper-left showing the data range
 show_data_range = true
+# To log transform your data you can use transform and log_pseudocount:
+# For the transform values:
+# 'log1p': transformed_values = log(1 + initial_values)
+# 'log': transformed_values = log(log_pseudocount + initial_values)
+# '-log': transformed_values = log(-(log_pseudocount + initial_values))
+# For example:
+#tranform = log
+#log_pseudocount = 2
 file_type = {}
     """.format(TRACK_TYPE)
 
@@ -50,7 +58,8 @@ file_type = {}
                            'summary_method': 'mean',
                            'number_of_bins': 700,
                            'type': 'fill',
-                           'transform': 'no'}
+                           'transform': 'no',
+                           'log_pseudocount': 0}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -66,6 +75,7 @@ file_type = {}
                          'type', 'transform']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
+                        'log_pseudocount': [- np.inf, np.inf],
                         'alpha': [0, 1],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {'number_of_bins': [1, np.inf]}
@@ -130,6 +140,7 @@ file_type = {}
 
         transformed_scores = transform(scores_per_bin,
                                        self.properties['transform'],
+                                       self.properties['log_pseudocount'],
                                        self.properties['file'])
 
         plot_coverage(ax, x_values, transformed_scores, self.plot_type,
@@ -152,4 +163,6 @@ file_type = {}
         return ax
 
     def plot_y_axis(self, ax, plot_axis):
-        super(BigWigTrack, self).plot_y_axis(ax, plot_axis, self.properties['transform'])
+        super(BigWigTrack, self).plot_y_axis(ax, plot_axis,
+                                               self.properties['transform'],
+                                               self.properties['log_pseudocount'])
