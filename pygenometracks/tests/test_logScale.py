@@ -10,6 +10,15 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                     "test_data")
 
 tracks = """
+[test bigwig]
+file = bigwig_chrx_2e6_5e6.bw
+color = red
+height = 5
+transform = no
+title = bigwig transform = no
+
+[spacer]
+
 [test bigwig log]
 file = bigwig_chrx_2e6_5e6.bw
 color = red
@@ -34,18 +43,26 @@ with open(os.path.join(ROOT, "log1p.ini"), 'w') as fh:
     fh.write(tracks)
 
 tracks = """
+
 [test bedgraph]
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = blue
 height = 5
-title = bedgraph color = blue
+title = bedgraph color = blue transform = no
+transform = no
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = blue
+height = 5
+title = bedgraph color = blue transform = log
 transform = log
 
 [test bedgraph]
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = red
 height = 5
-title = bedgraph color = red orientation = inverted
+title = bedgraph color = red transform = log orientation = inverted
 transform = log
 orientation = inverted
 
