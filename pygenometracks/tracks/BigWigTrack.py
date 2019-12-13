@@ -149,11 +149,21 @@ file_type = {}
                       self.properties['negative_color'],
                       self.properties['alpha'])
 
-        ymin, ymax = ax.get_ylim()
-        if self.properties['max_value'] is not None:
-            ymax = self.properties['max_value']
-        if self.properties['min_value'] is not None:
-            ymin = self.properties['min_value']
+        ymax = self.properties['max_value']
+        ymin = self.properties['min_value']
+        plot_ymin, plot_ymax = ax.get_ylim()
+        if ymax is None:
+            ymax = plot_ymax
+        else:
+            ymax = transform(np.array([ymax]), self.properties['transform'],
+                             self.properties['log_pseudocount'],
+                             'ymax')
+        if ymin is None:
+            ymin = plot_ymin
+        else:
+            ymin = transform(np.array([ymin]), self.properties['transform'],
+                             self.properties['log_pseudocount'],
+                             'ymin')
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, ymin)
