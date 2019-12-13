@@ -164,5 +164,5 @@ file_type = {}
 
     def plot_y_axis(self, ax, plot_axis):
         super(BigWigTrack, self).plot_y_axis(ax, plot_axis,
-                                               self.properties['transform'],
-                                               self.properties['log_pseudocount'])
+                                             self.properties['transform'],
+                                             self.properties['log_pseudocount'])
