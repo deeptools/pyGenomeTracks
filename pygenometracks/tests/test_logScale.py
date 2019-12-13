@@ -62,9 +62,19 @@ transform = log
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = red
 height = 5
-title = bedgraph color = red transform = log orientation = inverted
+title = bedgraph color = red transform = log orientation = inverted min_value = 1
+min_value = 1
 transform = log
 orientation = inverted
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = green
+height = 5
+title = bedgraph color = green transform = log log_pseudocount = 2 min_value = 0
+transform = log
+log_pseudocount = 2
+min_value = 0
 
 [x-axis]
 """
