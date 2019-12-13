@@ -128,10 +128,12 @@ file_type = {}
 
         x_values = np.linspace(start_region, end_region, self.properties['number_of_bins'])
 
-        new_scores = transform(scores_per_bin, self.properties['transform'],
-                               self.properties['file'])
+        transformed_scores = transform(scores_per_bin,
+                                       self.properties['transform'],
+                                       self.properties['file'])
 
-        plot_coverage(ax, x_values, new_scores, self.plot_type, self.size,
+        plot_coverage(ax, x_values, transformed_scores, self.plot_type,
+                      self.size,
                       self.properties['color'],
                       self.properties['negative_color'],
                       self.properties['alpha'])

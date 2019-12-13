@@ -224,10 +224,12 @@ file_type = {}
             score_list, x_values = self.get_values_as_bdg(score_list,
                                                           pos_list)
 
-        new_scores = transform(score_list, self.properties['transform'],
-                               self.properties['file'])
+        transformed_scores = transform(score_list,
+                                       self.properties['transform'],
+                                       self.properties['file'])
 
-        plot_coverage(ax, x_values, new_scores, self.plot_type, self.size,
+        plot_coverage(ax, x_values, transformed_scores, self.plot_type,
+                      self.size,
                       self.properties['color'],
                       self.properties['negative_color'],
                       self.properties['alpha'])
