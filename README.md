@@ -444,6 +444,7 @@ Here is a table to summarize which are the parameters that can be use for each o
 Empty means this parameter is not used.
 not set means that by default the parameter is commented.
 
+<!--- Start of default table -->
 parameter | x-axis | epilogos | links | domains | bed | narrow_peak | bigwig | bedgraph | bedgraph_matrix | hlines | hic_matrix
 -- | - | - | - | - | - | - | - | - | - | - | -
 where | bottom |  |  |  |  |  |  |  |  |  | 
@@ -490,12 +491,12 @@ depth |  |  |  |  |  |  |  |  |  |  | 100000
 show_masked_bins |  |  |  |  |  |  |  |  |  |  | false
 scale_factor |  |  |  |  |  |  |  |  |  |  | 1
 colormap |  |  |  |  |  |  |  |  |  |  | RdYlBu_r
-
+<!--- End of default table -->
 
 Some parameters can take only discrete values.
 
 They are summarized here:
-
+<!--- Start of possible table -->
 - **where**:
   - for *x-axis*: top, bottom
 - **orientation**:
@@ -542,6 +543,7 @@ They are summarized here:
   - for *bigwig, bedgraph*: true, false
 - **arrowhead_included**:
   - for *bed*: true, false
+<!--- End of possible table -->
 
 Adding new tracks
 -----------------
