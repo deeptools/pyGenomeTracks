@@ -34,7 +34,8 @@ color = red
 min_value = 0
 height = 5
 transform = log1p
-title = bigwig transform = log1p min_value = 0
+title = bigwig transform = log1p min_value = 0 y_axis_values = original
+y_axis_values = original
 
 [x-axis]
 """
@@ -62,10 +63,9 @@ transform = log
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = red
 height = 5
-title = bedgraph color = red transform = log orientation = inverted min_value = 1
+title = bedgraph color = red transform = log min_value = 1
 min_value = 1
 transform = log
-orientation = inverted
 
 [test bedgraph]
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
@@ -75,6 +75,25 @@ title = bedgraph color = green transform = log log_pseudocount = 2 min_value = 0
 transform = log
 log_pseudocount = 2
 min_value = 0
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = black
+height = 5
+title = bedgraph color = green transform = log2 log_pseudocount = 1 min_value = 0
+transform = log2
+log_pseudocount = 1
+min_value = 0
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = black
+height = 5
+title = bedgraph color = green transform = log2 log_pseudocount = 1 min_value = 0 y_axis_values = original
+transform = log2
+log_pseudocount = 1
+min_value = 0
+y_axis_values = original
 
 [x-axis]
 """

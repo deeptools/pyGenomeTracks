@@ -46,6 +46,10 @@ show_data_range = true
 # For example:
 #tranform = log
 #log_pseudocount = 2
+# When a transformation is applied, by default the y axis
+# gives the transformed values, if you prefer to see 
+# the original values:
+#y_axis_values = original
 file_type = {}
     """.format(TRACK_TYPE)
 
@@ -61,7 +65,8 @@ file_type = {}
                            'number_of_bins': 700,
                            'type': 'fill',
                            'transform': 'no',
-                           'log_pseudocount': 0}
+                           'log_pseudocount': 0,
+                           'y_axis_values': 'transformed'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -70,12 +75,13 @@ file_type = {}
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum'],
                            'transform': ['no', 'log', 'log1p', '-log', 'log2',
-                                         'log10']}
+                                         'log10'],
+                           'y_axis_values': ['original', 'transformed']}
     BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
-                         'type', 'transform']
+                         'type', 'transform', 'y_axis_values']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'log_pseudocount': [- np.inf, np.inf],
@@ -178,4 +184,5 @@ file_type = {}
     def plot_y_axis(self, ax, plot_axis):
         super(BigWigTrack, self).plot_y_axis(ax, plot_axis,
                                              self.properties['transform'],
-                                             self.properties['log_pseudocount'])
+                                             self.properties['log_pseudocount'],
+                                             self.properties['y_axis_values'])

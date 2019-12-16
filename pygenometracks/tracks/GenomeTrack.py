@@ -72,12 +72,16 @@ height = 2
                                               default_value))
                 self.properties[prop] = default_value
 
-    def plot_y_axis(self, ax, plot_axis, transform='no', log_pseudocount=0):
+    def plot_y_axis(self, ax, plot_axis, transform='no', log_pseudocount=0,
+                    y_axis='tranformed'):
         """
         Plot the scale of the y axis with respect to the plot_axis
         Args:
             ax: axis to use to plot the scale
             plot_axis: the reference axis to get the max and min.
+            transform: what was the transformation of the data
+            log_pseudocount:
+            y_axis: 'tranformed' or 'original'
 
         Returns:
 
@@ -96,7 +100,7 @@ height = 2
 
         ymin, ymax = plot_axis.get_ylim()
 
-        if transform == 'no':
+        if transform == 'no' or y_axis == 'transformed':
             # This is a linear scale
             # plot something that looks like this:
             # ymax ┐
@@ -147,7 +151,27 @@ height = 2
         ax.text(-0.2, -0.01, ymin_str, verticalalignment='bottom', horizontalalignment='right', transform=ax.transAxes)
         ax.text(-0.2, 1, ymax_str, verticalalignment='top', horizontalalignment='right', transform=ax.transAxes)
         if transform != 'no':
-            ax.text(-0.2, ymid_pos, ymid_str, verticalalignment='center', horizontalalignment='right', transform=ax.transAxes)
+            if y_axis == 'original':
+                ax.text(-0.2, ymid_pos, ymid_str, verticalalignment='center',
+                        horizontalalignment='right', transform=ax.transAxes)
+            else:
+                if transform == 'log1p':
+                    ymid_str = "log(1 + x)"
+                elif transform == '-log':
+                    if log_pseudocount == 0:
+                        ymid_str = "log(-x)".format(log_pseudocount)
+                    else:
+                        ymid_str = "log(-({} + x))".format(log_pseudocount)
+                else:
+                    if log_pseudocount == 0:
+                        ymid_str = "{}(x)".format(transform)
+                    else:
+                        ymid_str = "{}({} + x)".format(transform,
+                                                       log_pseudocount)
+
+                ax.text(0, 0.5, ymid_str, verticalalignment='center',
+                        horizontalalignment='right', transform=ax.transAxes,
+                        wrap = True)
 
         ax.patch.set_visible(False)
 
