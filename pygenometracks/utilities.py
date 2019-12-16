@@ -207,6 +207,24 @@ def transform(score_list, transform, log_pseudocount, file):
             raise Exception(msg)
         else:
             return(np.log(log_pseudocount + score_list))
+    elif transform == 'log2':
+        if np.nanmin(score_list) <= - log_pseudocount:
+            msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
+                   " - {0}.\n"
+                   "log2({0} + <values>) transformation can not be applied to "
+                   "values in file: {1}".format(log_pseudocount, file))
+            raise Exception(msg)
+        else:
+            return(np.log2(log_pseudocount + score_list))
+    elif transform == 'log10':
+        if np.nanmin(score_list) <= - log_pseudocount:
+            msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
+                   " - {0}.\n"
+                   "log10({0} + <values>) transformation can not be applied to "
+                   "values in file: {1}".format(log_pseudocount, file))
+            raise Exception(msg)
+        else:
+            return(np.log10(log_pseudocount + score_list))
     elif transform == 'log1p':
         if np.nanmin(score_list) <= - 1:
             msg = ("\n*ERROR*\ncoverage contains values below or equal to 1.\n"

@@ -40,6 +40,8 @@ show_data_range = true
 # For the transform values:
 # 'log1p': transformed_values = log(1 + initial_values)
 # 'log': transformed_values = log(log_pseudocount + initial_values)
+# 'log2': transformed_values = log2(log_pseudocount + initial_values)
+# 'log10': transformed_values = log10(log_pseudocount + initial_values)
 # '-log': transformed_values = log(-(log_pseudocount + initial_values))
 # For example:
 #tranform = log
@@ -67,7 +69,8 @@ file_type = {}
                            'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum'],
-                           'transform': ['no', 'log', 'log1p', '-log']}
+                           'transform': ['no', 'log', 'log1p', '-log', 'log2',
+                                         'log10']}
     BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',

@@ -121,6 +121,12 @@ height = 2
 
             if transform == 'log':
                 ymin, ymid, ymax = np.exp([ymin, ymid, ymax]) - log_pseudocount
+            elif transform == 'log2':
+                ymin, ymid, ymax = np.exp2([ymin, ymid, ymax]) - \
+                                   log_pseudocount
+            elif transform == 'log10':
+                ymin, ymid, ymax = np.power(10, [ymin, ymid, ymax]) - \
+                                   log_pseudocount
             elif transform == 'log1p':
                 ymin, ymid, ymax = np.expm1([ymin, ymid, ymax])
             elif transform == '-log':
