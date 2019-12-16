@@ -127,10 +127,10 @@ height = 2
                 ymin, ymid, ymax = np.exp([ymin, ymid, ymax]) - log_pseudocount
             elif transform == 'log2':
                 ymin, ymid, ymax = np.exp2([ymin, ymid, ymax]) - \
-                                   log_pseudocount
+                    log_pseudocount
             elif transform == 'log10':
                 ymin, ymid, ymax = np.power(10, [ymin, ymid, ymax]) - \
-                                   log_pseudocount
+                    log_pseudocount
             elif transform == 'log1p':
                 ymin, ymid, ymax = np.expm1([ymin, ymid, ymax])
             elif transform == '-log':
@@ -171,7 +171,7 @@ height = 2
 
                 ax.text(0, 0.5, ymid_str, verticalalignment='center',
                         horizontalalignment='right', transform=ax.transAxes,
-                        wrap = True)
+                        wrap=True)
 
         ax.patch.set_visible(False)
 

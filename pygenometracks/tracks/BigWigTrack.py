@@ -47,7 +47,7 @@ show_data_range = true
 #tranform = log
 #log_pseudocount = 2
 # When a transformation is applied, by default the y axis
-# gives the transformed values, if you prefer to see 
+# gives the transformed values, if you prefer to see
 # the original values:
 #y_axis_values = original
 file_type = {}
