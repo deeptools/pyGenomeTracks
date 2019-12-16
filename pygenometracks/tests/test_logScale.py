@@ -80,7 +80,7 @@ min_value = 0
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = black
 height = 5
-title = bedgraph color = green transform = log2 log_pseudocount = 1 min_value = 0
+title = bedgraph color = black transform = log2 log_pseudocount = 1 min_value = 0
 transform = log2
 log_pseudocount = 1
 min_value = 0
@@ -89,7 +89,7 @@ min_value = 0
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = black
 height = 5
-title = bedgraph color = green transform = log2 log_pseudocount = 1 min_value = 0 y_axis_values = original
+title = bedgraph color = black transform = log2 log_pseudocount = 1 min_value = 0 y_axis_values = original
 transform = log2
 log_pseudocount = 1
 min_value = 0
