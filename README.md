@@ -482,6 +482,8 @@ nans_to_zeros |  |  |  |  |  |  | false | false |  |  |
 summary_method |  |  |  |  |  |  | mean | not set |  |  | 
 number_of_bins |  |  |  |  |  |  | 700 | 700 |  |  | 
 transform |  |  |  |  |  |  | no | no |  |  | no
+log_pseudocount |  |  |  |  |  |  | 0 | 0 |  |  | 
+y_axis_values |  |  |  |  |  |  | transformed | transformed |  |  | 
 use_middle |  |  |  |  |  |  |  | false |  |  | 
 rasterize |  |  |  |  |  |  |  | false | true |  | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center |  | 
@@ -516,7 +518,10 @@ They are summarized here:
   - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
   - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
 - **transform**:
-  - for *bigwig, bedgraph, hic_matrix*: no, log, log1p, -log
+  - for *bigwig, bedgraph*: no, log, log1p, -log, log2, log10
+  - for *hic_matrix*: no, log, log1p, -log
+- **y_axis_values**:
+  - for *bigwig, bedgraph*: original, transformed
 - **pos_score_in_bin**:
   - for *bedgraph_matrix*: center, block
 - **labels**:

@@ -35,6 +35,8 @@ nans_to_zeros |  |  |  |  |  |  | false | false |  |  |
 summary_method |  |  |  |  |  |  | mean | not set |  |  | 
 number_of_bins |  |  |  |  |  |  | 700 | 700 |  |  | 
 transform |  |  |  |  |  |  | no | no |  |  | no
+log_pseudocount |  |  |  |  |  |  | 0 | 0 |  |  | 
+y_axis_values |  |  |  |  |  |  | transformed | transformed |  |  | 
 use_middle |  |  |  |  |  |  |  | false |  |  | 
 rasterize |  |  |  |  |  |  |  | false | true |  | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center |  | 
