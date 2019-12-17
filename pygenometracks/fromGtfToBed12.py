@@ -4,6 +4,8 @@ import sys
 import gffutils
 import warnings
 
+from pygenometracks._version import __version__
+
 warnings.filterwarnings("ignore", message="It appears you have a gene feature"
                         " in your GTF file. You may want to use the "
                         "`disable_infer_genes` option to speed up database "
@@ -12,7 +14,6 @@ warnings.filterwarnings("ignore", message="It appears you have a transcript "
                         "feature in your GTF file. You may want to use the "
                         "`disable_infer_transcripts` option to speed up "
                         "database creation")
-
 
 
 def convert_gtf_to_bed(fn, fo, useGene, mergeTranscripts, ucsc):
@@ -86,7 +87,7 @@ def parse_arguments(args=None):
                      " per transcript/gene"))
     parser.add_argument('input', default=None,
                         help="Input gtf file (can be gzip).")
-    parser.add_argument('--output', default=sys.stdout,
+    parser.add_argument('--out', '-o', default=sys.stdout,
                         type=argparse.FileType('w'),
                         help="Output bed12 file.")
     parser.add_argument('--useGene', action="store_true",
@@ -98,6 +99,8 @@ def parse_arguments(args=None):
     parser.add_argument('--ucscformat', action="store_true",
                         help="If you want that all chromosome names "
                         "begin with 'chr'.")
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {}'.format(__version__))
     return parser
 
 
