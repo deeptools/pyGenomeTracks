@@ -2,6 +2,17 @@ import argparse
 import sys
 
 import gffutils
+import warnings
+
+warnings.filterwarnings("ignore", message="It appears you have a gene feature"
+                        " in your GTF file. You may want to use the "
+                        "`disable_infer_genes` option to speed up database "
+                        "creation")
+warnings.filterwarnings("ignore", message="It appears you have a transcript "
+                        "feature in your GTF file. You may want to use the "
+                        "`disable_infer_transcripts` option to speed up "
+                        "database creation")
+
 
 
 def convert_gtf_to_bed(fn, fo, useGene, mergeTranscripts, ucsc):
