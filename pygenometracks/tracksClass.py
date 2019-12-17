@@ -516,8 +516,9 @@ class PlotTracks(object):
                     log.warning("The gtf file of section {} is quite big."
                                 "it will probably take long to get all "
                                 "transcripts.\nYou should consider converting"
-                                " it to bed first or filtering it for a "
-                                "given region.".format(section_name))
+                                " it to bed first using convert_gtf_file or "
+                                "filtering it for a given region."
+                                "".format(section_name))
             # The 'overlay_previous' is initialized:
             if 'overlay_previous' not in track_options:
                 track_options['overlay_previous'] = 'no'
