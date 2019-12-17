@@ -43,9 +43,12 @@ class ReadGtf(object):
         self.merge_transcripts = merge_transcripts
 
         if self.merge_transcripts:
+            self.length = len([i for i in self.db.features_of_type("gene")])
             self.all_transcripts = self.db.features_of_type("gene",
                                                             order_by='start')
         else:
+            self.length = len([i for
+                               i in self.db.features_of_type("transcript")])
             self.all_transcripts = self.db.features_of_type("transcript",
                                                             order_by='start')
 
