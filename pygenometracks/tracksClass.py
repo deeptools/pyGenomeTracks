@@ -15,6 +15,7 @@ import mpl_toolkits.axisartist as axisartist
 from . utilities import file_to_intervaltree
 from collections import OrderedDict
 from pygenometracks.tracks.GenomeTrack import GenomeTrack
+from pygenometracks.tracks.BedGraphTrack import BedGraphTrack
 from pygenometracks.utilities import InputError
 
 import warnings
@@ -494,6 +495,29 @@ class PlotTracks(object):
             # The track_options will be checked for the file paths:
             track_options = self.check_file_exists(track_options,
                                                    tracks_file_path)
+
+            # If a big bedgraph is used a warning is printed:
+            if track_class == BedGraphTrack:
+                file_size = os.path.getsize(track_options['file'])
+                if file_size > 1e7:
+                    log.warning("The bedgraph file of section {} is quite big."
+                                "it will probably take around {:.1f} min if it"
+                                " is gzipped and {:.1f} min if it is not.\nYou"
+                                " should consider converting it to bigwig "
+                                "first or filtering it for a given region."
+                                "".format(section_name, file_size / 6e6,
+                                          file_size / 30e6))
+            # If a big gtf is used a warning is printed:
+            if 'file' in track_options and \
+               (track_options['file'].endswith('gtf')
+                    or track_options['file'].endswith('gtf.gz')):
+                file_size = os.path.getsize(track_options['file'])
+                if file_size > 1e7:
+                    log.warning("The gtf file of section {} is quite big."
+                                "it will probably take long to get all "
+                                "transcripts.\nYou should consider converting"
+                                " it to bed first or filtering it for a "
+                                "given region.".format(section_name))
             # The 'overlay_previous' is initialized:
             if 'overlay_previous' not in track_options:
                 track_options['overlay_previous'] = 'no'
