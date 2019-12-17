@@ -106,5 +106,5 @@ def parse_arguments(args=None):
 
 def main(args=None):
     args = parse_arguments().parse_args(args)
-    convert_gtf_to_bed(args.input, args.output, args.useGene,
+    convert_gtf_to_bed(args.input, args.out, args.useGene,
                        args.mergeTranscripts, args.ucscformat)
