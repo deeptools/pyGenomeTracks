@@ -36,7 +36,8 @@ summary_method = mean
 # type = points:0.5
 # to compute operations on the fly between 2 bigwig files
 #second_file = path for the second file
-# operation will be evaluated, it should contains file and second_file:
+# operation will be evaluated, it should contains file and second_file,
+# we advice to use nans_to_zeros = true to avoid unexpected nan values
 #operation = file - second_file
 #operation = log2((1 + file) / (1 + second_file))
 #operation = max(file, second_file)
@@ -179,11 +180,11 @@ file_type = {}
                     break
             # compute the operation
             operation = self.properties['operation']
-            operation = operation.replace('second_file', 'scores_per_bin2')
-            operation = operation.replace('file', 'scores_per_bin')
+            # Substitute log by np.log to make it evaluable:
             operation = operation.replace('log', 'np.log')
             try:
-                new_scores_per_bin = eval(operation)
+                new_scores_per_bin = eval('[' + operation + ' for file,second_file in zip(scores_per_bin, scores_per_bin2)]')
+                new_scores_per_bin = np.array(new_scores_per_bin)
             except Exception as e:
                 raise Exception("The operation in section {} could not be"
                                 " computed: {}".
