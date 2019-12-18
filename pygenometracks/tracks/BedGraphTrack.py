@@ -187,7 +187,6 @@ file_type = {}
         pos_list = []
         tbx = eval(tbx_var)
         if tbx is not None:
-            print("Using tbx")
             if chrom_region not in tbx.contigs:
                 chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
@@ -205,7 +204,6 @@ file_type = {}
             iterator = tbx.fetch(chrom_region, start_region, end_region)
 
         else:
-            print("Using interval tree")
             inttree = eval(inttree_var)
             if chrom_region not in list(inttree):
                 chrom_region_before = chrom_region
@@ -259,7 +257,6 @@ file_type = {}
 
         if (self.tbx2 is not None or self.interval_tree2 is not None) and \
                 'second_file' in self.properties['operation']:
-            print(self.tbx2)
             score_list2, pos_list2 = self.get_scores(chrom_region, start_region, end_region,
                                                      tbx_var='self.tbx2', inttree_var='self.interval_tree2')
             if pos_list2 == []:
