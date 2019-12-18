@@ -53,7 +53,7 @@ file_type = {}
     INTEGER_PROPERTIES = {}
 
     def __init__(self, properties_dict):
-        GenomeTrack.__init__(properties_dict)
+        GenomeTrack.__init__(self, properties_dict)
 
         self.tbx = None
         # try to load a tabix file is available
