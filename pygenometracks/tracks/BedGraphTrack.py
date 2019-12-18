@@ -48,6 +48,13 @@ nans_to_zeros = true
 # mean/average/stdev/dev/max/min/cov/coverage/sum
 # summary_method = mean
 # number_of_bins = 700
+# to compute operations on the fly between 2 bedgraph files
+#second_file = path for the second file
+# operation will be evaluated, it should contains file and second_file,
+# we advice to use nans_to_zeros = true to avoid unexpected nan values
+#operation = file - second_file
+#operation = log2((1 + file) / (1 + second_file))
+#operation = max(file, second_file)
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
@@ -62,7 +69,9 @@ file_type = {}
                            'summary_method': None,
                            'rasterize': False,
                            'number_of_bins': 700,
-                           'type': 'fill'}
+                           'type': 'fill',
+                           'second_file': None,
+                           'operation': 'file'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -75,7 +84,7 @@ file_type = {}
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
-                         'type']
+                         'type', 'second_file', 'operation']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'alpha': [0, 1],
@@ -100,6 +109,20 @@ file_type = {}
         else:
             self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
 
+        self.tbx2 = None
+        self.interval_tree2 = None
+        if self.properties['second_file'] is not None:
+            if self.properties['second_file'].endswith(".bgz"):
+                # from the tabix file is not possible to know the
+                # global min and max
+                try:
+                    self.tbx2 = pysam.TabixFile(self.properties['second_file'])
+                except IOError:
+                    self.interval_tree2, ymin, ymax = file_to_intervaltree(self.properties['second_file'])
+            # load the file as an interval tree
+            else:
+                self.interval_tree2, ymin, ymax = file_to_intervaltree(self.properties['second_file'])
+
         self.num_fields = None
 
     def set_properties_defaults(self):
@@ -107,8 +130,14 @@ file_type = {}
         super(BedGraphTrack, self).process_type_for_coverage_track()
         if self.properties['negative_color'] is None:
             self.properties['negative_color'] = self.properties['color']
+        if self.properties['second_file'] is not None and \
+           self.properties['summary_method'] is None:
+            self.log.warning("When an operation is computed"
+                             " a summary_method needs to be"
+                             " used. Will use mean.")
+            self.properties['summary_method'] = 'mean'
 
-    def _get_row_data(self, row):
+    def _get_row_data(self, row, tbx_var='self.tbx'):
         """
         Returns the chrom, start, end and fields from either a tabix or a
         interval tree.
@@ -120,7 +149,8 @@ file_type = {}
             start, end, fields where values is a list
 
         """
-        if self.tbx is not None:
+        tbx = eval(tbx_var)
+        if tbx is not None:
             fields = row.split("\t")
             values = fields[3:]
             start = int(fields[1])
@@ -139,7 +169,8 @@ file_type = {}
             self.num_fields = len(values)
         return start, end, values
 
-    def get_scores(self, chrom_region, start_region, end_region, return_nans=True):
+    def get_scores(self, chrom_region, start_region, end_region,
+                   return_nans=True, tbx_var='self.tbx', inttree_var='self.interval_tree'):
         """
         Retrieves the score (or scores or whatever fields are in a bedgraph like file) and the positions
         for a given region.
@@ -154,11 +185,13 @@ file_type = {}
         """
         score_list = []
         pos_list = []
-        if self.tbx is not None:
-            if chrom_region not in self.tbx.contigs:
+        tbx = eval(tbx_var)
+        if tbx is not None:
+            print("Using tbx")
+            if chrom_region not in tbx.contigs:
                 chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
-                if chrom_region not in self.tbx.contigs:
+                if chrom_region not in tbx.contigs:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
                                      + chrom_region + " existss as a "
@@ -167,15 +200,17 @@ file_type = {}
                                      "track!!\n")
                     return score_list, pos_list
 
-            chrom_region = self.check_chrom_str_bytes(self.tbx.contigs,
+            chrom_region = self.check_chrom_str_bytes(tbx.contigs,
                                                       chrom_region)
-            iterator = self.tbx.fetch(chrom_region, start_region, end_region)
+            iterator = tbx.fetch(chrom_region, start_region, end_region)
 
         else:
-            if chrom_region not in list(self.interval_tree):
+            print("Using interval tree")
+            inttree = eval(inttree_var)
+            if chrom_region not in list(inttree):
                 chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
-                if chrom_region not in list(self.interval_tree):
+                if chrom_region not in list(inttree):
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
                                      + chrom_region + " existss as a "
@@ -183,12 +218,12 @@ file_type = {}
                                      "file. This will generate an empty "
                                      "track!!\n")
                     return score_list, pos_list
-            chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
-            iterator = iter(sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]))
+            chrom_region = self.check_chrom_str_bytes(inttree, chrom_region)
+            iterator = iter(sorted(inttree[chrom_region][start_region - 10000:end_region + 10000]))
 
         prev_end = start_region
         for row in iterator:
-            start, end, values = self._get_row_data(row)
+            start, end, values = self._get_row_data(row, tbx_var)
             # if the region is not consecutive with respect to the previous
             # nan values are added.
             if return_nans and prev_end < start:
@@ -221,6 +256,34 @@ file_type = {}
         else:
             score_list, x_values = self.get_values_as_bdg(score_list,
                                                           pos_list)
+
+        if (self.tbx2 is not None or self.interval_tree2 is not None) and \
+                'second_file' in self.properties['operation']:
+            print(self.tbx2)
+            score_list2, pos_list2 = self.get_scores(chrom_region, start_region, end_region,
+                                                     tbx_var='self.tbx2', inttree_var='self.interval_tree2')
+            if pos_list2 == []:
+                return
+            score_list2 = [float(x[0]) for x in score_list2]
+            score_list2, x_values2 = self.get_values_as_bigwig(score_list2,
+                                                               pos_list2,
+                                                               chrom_region,
+                                                               start_region,
+                                                               end_region)
+            # compute the operation
+            operation = self.properties['operation']
+            # Substitute log by np.log to make it evaluable:
+            operation = operation.replace('log', 'np.log')
+            try:
+                new_score_list = eval('[' + operation + ' for file,second_file in zip(score_list, score_list2)]')
+                new_score_list = np.array(new_score_list)
+            except Exception as e:
+                raise Exception("The operation in section {} could not be"
+                                " computed: {}".
+                                format(self.properties['section_name'],
+                                       e))
+            else:
+                score_list = new_score_list
 
         plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
                       self.properties['color'],
