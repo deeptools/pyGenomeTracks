@@ -181,6 +181,7 @@ file_type = {}
             operation = self.properties['operation']
             operation = operation.replace('second_file', 'scores_per_bin2')
             operation = operation.replace('file', 'scores_per_bin')
+            operation = operation.replace('log', 'np.log')
             try:
                 new_scores_per_bin = eval(operation)
             except Exception as e:
