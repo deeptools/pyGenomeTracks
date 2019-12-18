@@ -50,8 +50,22 @@ file_type = {}
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
-    def __init__(self, *args, **kwarg):
-        super(EpilogosTrack, self).__init__(*args, **kwarg)
+    def __init__(self, properties_dict):
+        GenomeTrack.__init__(properties_dict)
+
+        self.tbx = None
+        # try to load a tabix file is available
+        if self.properties['file'].endswith(".bgz"):
+            # from the tabix file is not possible to know the
+            # global min and max
+            try:
+                self.tbx = pysam.TabixFile(self.properties['file'])
+            except IOError:
+                self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+        # load the file as an interval tree
+        else:
+            self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+        self.num_fields = None
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)

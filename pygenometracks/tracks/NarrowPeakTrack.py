@@ -57,9 +57,25 @@ file_type = {}
     INTEGER_PROPERTIES = {}
     # color can only be a color
 
+    def __init__(self, properties_dict):
+        GenomeTrack.__init__(properties_dict)
+
+        self.tbx = None
+        # try to load a tabix file is available
+        if self.properties['file'].endswith(".bgz"):
+            # from the tabix file is not possible to know the
+            # global min and max
+            try:
+                self.tbx = pysam.TabixFile(self.properties['file'])
+            except IOError:
+                self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+        # load the file as an interval tree
+        else:
+            self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+        self.num_fields = None
+
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
-        self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
         # uses bezier curves to plot a shape that
