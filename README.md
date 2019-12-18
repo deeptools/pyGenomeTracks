@@ -481,6 +481,8 @@ negative_color |  |  |  |  |  |  | not set | not set |  |  |
 nans_to_zeros |  |  |  |  |  |  | false | false |  |  | 
 summary_method |  |  |  |  |  |  | mean | not set |  |  | 
 number_of_bins |  |  |  |  |  |  | 700 | 700 |  |  | 
+second_file |  |  |  |  |  |  | not set |  |  |  | 
+operation |  |  |  |  |  |  | file |  |  |  | 
 use_middle |  |  |  |  |  |  |  | false |  |  | 
 rasterize |  |  |  |  |  |  |  | false | true |  | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center |  | 
