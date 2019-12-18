@@ -93,7 +93,6 @@ file_type = {}
             if not isinstance(qcat_json, str):
                 # This would happen if the qcat file has a missing value.
                 # The missing value is filled with np.repeat(np.nan, ..) and should be skipped here.
-                # The hole will be fill with np.repeat(np.nan, ..)
                 continue
             qcat_json = '{' + qcat_json.replace('id', '"id"').replace('qcat', '"qcat"') + '}'
             qcat = json.loads(qcat_json)
