@@ -129,6 +129,76 @@ file_type = hlines
 with open(os.path.join(ROOT, "hlines.ini"), 'w') as fh:
     fh.write(tracks)
 
+tracks = """
+[test bigwig1]
+file = bigwig_chrx_2e6_5e6.bw
+second_file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+height = 4
+title = first bw
+min_value = 0
+max_value = 30
+
+[test bigwig2]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = red
+height = 4
+title = second bw
+min_value = 0
+max_value = 30
+orientation = inverted
+
+[spacer]
+height = 0.5
+
+[test bigwig dif]
+file = bigwig_chrx_2e6_5e6.bw
+second_file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+negative_color = red
+height = 8
+title = operation = file - second_file
+operation = file - second_file
+min_value = -30
+max_value = 30
+nans_to_zeros = true
+
+[spacer]
+height = 0.5
+
+[test bigwig op]
+file = bigwig_chrx_2e6_5e6.bw
+second_file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+negative_color = red
+height = 8
+title = operation = log10((1 + file)/(1 + second_file))
+operation = log10((1 + file)/(1 + second_file))
+nans_to_zeros = true
+
+[spacer]
+height = 0.5
+
+[test bigwig op2]
+file = bigwig_chrx_2e6_5e6.bw
+second_file = bigwig2_X_2.5e6_3.5e6.bw
+color = red
+height = 4
+title = operation = 2 + second_file
+operation = 2 + second_file
+nans_to_zeros = true
+max_value = 32
+min_value = 0
+
+[spacer]
+height = 0.5
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "operation.ini"), 'w') as fh:
+    fh.write(tracks)
+
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -175,6 +245,22 @@ def test_hlines():
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
     res = compare_images(os.path.join(ROOT, 'master_hlines.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_op():
+    region = "X:2700000-3100000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_', delete=False)
+    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName {outfile}" \
+           "".format(ini=os.path.join(ROOT, "operation.ini"),
+                     outfile=outfile.name, region=region).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_operation.png'),
                          outfile.name, tolerance)
     assert res is None, res
 
