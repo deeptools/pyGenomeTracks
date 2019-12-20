@@ -162,7 +162,8 @@ file_type = {}
 
         self.norm = None
 
-        self.properties['colormap'] = self.process_colormap()
+        self.process_color('colormap', colormap_possible=True,
+                           colormap_only=True, default_value_is_colormap=True)
 
         self.cmap = cm.get_cmap(self.properties['colormap'])
         self.cmap.set_bad('black')
@@ -335,42 +336,3 @@ file_type = {}
         im = ax.pcolormesh(x, y, np.flipud(matrix_c),
                            vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
         return im
-
-    def process_colormap(self):
-        # If someone what to use its own colormap,
-        # he can specify the rgb values or color values:
-        # For example:
-        # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
-        if self.properties['colormap'][0] == '[':
-            try:
-                custom_colors = eval(self.properties['colormap'])
-            except SyntaxError as err:
-                self.log.warning("*WARNING* the list specified for colormap"
-                                 " ({}) is not valid: "
-                                 "{}.\nColormap has been set to "
-                                 "{}".format(self.properties['colormap'],
-                                             err,
-                                             DEFAULT_MATRIX_COLORMAP))
-                return(DEFAULT_MATRIX_COLORMAP)
-            else:
-                try:
-                    return(colors.LinearSegmentedColormap.from_list(
-                           'custom', custom_colors, N=100))
-                except ValueError:
-                    self.log.warning("*WARNING* the list specified for "
-                                     "colormap ({}) cannot be evaluated."
-                                     "\nColormap has been set to "
-                                     "{}".format(self.properties['colormap'],
-                                                 DEFAULT_MATRIX_COLORMAP))
-                    return(DEFAULT_MATRIX_COLORMAP)
-        else:
-            if self.properties['colormap'] not in cm.datad:
-                self.log.warning("*WARNING* colormap: '{}' for section {}"
-                                 " is not valid. Colormap has "
-                                 "been set to "
-                                 "{}".format(self.properties['colormap'],
-                                             self.properties['section_name'],
-                                             DEFAULT_MATRIX_COLORMAP))
-                return(DEFAULT_MATRIX_COLORMAP)
-            else:
-                return(self.properties['colormap'])

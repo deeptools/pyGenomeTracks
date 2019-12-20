@@ -83,27 +83,19 @@ file_type = {}
 
         self.colormap = None
         # check if the color given is a color map
-        if not matplotlib.colors.is_color_like(self.properties['color']):
-            # check if the color is a valid colormap name
-            if self.properties['color'] not in matplotlib.cm.datad:
-                self.log.warning("*WARNING* color: '{}' for section {}"
-                                 " is not valid. Color has "
-                                 "been set to "
-                                 "{}".format(self.properties['color'],
-                                             self.properties['section_name'],
+        is_colormap = self.process_color('color', colormap_possible=True,
+                                         default_value_is_colormap=False)
+        if is_colormap:
+            if not has_score:
+                self.log.warning("*WARNING* for section {}"
+                                 " a colormap was chosen but some "
+                                 "lines do not have scores."
+                                 "Color has been set to "
+                                 "{}".format(self.properties['section_name'],
                                              DEFAULT_LINKS_COLOR))
                 self.properties['color'] = DEFAULT_LINKS_COLOR
             else:
-                if not has_score:
-                    self.log.warning("*WARNING* for section {}"
-                                     " a colormap was chosen but some "
-                                     "lines do not have scores."
-                                     "Color has been set to "
-                                     "{}".format(self.properties['section_name'],
-                                                 DEFAULT_LINKS_COLOR))
-                    self.properties['color'] = DEFAULT_LINKS_COLOR
-                else:
-                    self.colormap = self.properties['color']
+                self.colormap = self.properties['color']
 
         if self.colormap is not None:
             if self.properties['min_value'] is not None:
