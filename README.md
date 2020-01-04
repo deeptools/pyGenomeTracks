@@ -2,6 +2,7 @@
 [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=plastic)](http://bioconda.github.io)
 [![Build Status](https://travis-ci.org/deeptools/pyGenomeTracks.svg?branch=master)](https://travis-ci.org/deeptools/pyGenomeTracks)
 
+
 pyGenomeTracks
 ==============
 
@@ -19,9 +20,27 @@ are highly customizable. Currently, it is possible to plot:
  * links (represented as arcs)
  * Hi-C matrices
 
-pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
+pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of
+pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
 
 ![pyGenomeTracks example](./docs/content/images/hic_example_nat_comm_small.png)
+
+Table of content
+----------------
+  * [Installation](#installation)
+  * [Usage](#usage)
+  * [Citation](#citation)
+  * [Examples](#examples)
+  * [Examples with peaks](#examples-with-peaks)
+  * [Examples with Hi-C data](#examples-with-hi-c-data)
+  * [Examples with Epilogos](#examples-with-epilogos)
+  * [Examples with multiple options](#examples-with-multiple-options)
+  * [Examples with multiple options for bigwig tracks](#examples-with-multiple-options-for-bigwig-tracks)
+  * [Examples with Hi-C data](#examples-with-hi-c-data-1)
+  * [Possible parameters](#possible-parameters)
+  * [Adding new tracks](#adding-new-tracks)
+  * [External users](#external-users)
+
 
 
 Installation
@@ -550,3 +569,9 @@ Adding new tracks
 If you are interested in adding new tracks, please see [Creating_new_tracks.md](./docs/Creating_new_tracks.md).
 
 pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser) (See e.g. [Chorogenome navigator](http://chorogenome.ie-freiburg.mpg.de/) which is made with HiCBrowser)
+
+External users
+--------------
+
+* [CoolBox](https://github.com/GangCaoLab/CoolBox) is an interactive genomic data explorer for Jupyter Notebooks
+* [Galaxy](https://usegalaxy.eu/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks) integration offers a graphical user-interface to create PGT plots. It is also possible to include PGT into workflows and automatic pipelines.
