@@ -200,17 +200,48 @@ $ pyGenomeTracks --tracks bigwig_with_genes_and_vlines.ini --region X:2,800,000-
 ![pyGenomeTracks bigwig example](./examples/bigwig_with_genes_and_vlines.png)
 
 You can also overlay bigwig with or without transparency.
+<!-- Master alpha ini start-->
 ```INI
+
 [test bigwig]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 7
-title = (bigwig color=blue 2000 bins) overlayed with (bigwig mean color=red alpha = 0.5 max over 300 bins) overlayed with (bigwig mean color=red alpha=0.5 200 bins)
+title = No alpha:
+        (bigwig color=blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) max over 300 bins) overlaid with (bigwig mean color = green 200 bins)
 number_of_bins = 2000
+min_value = 0
+max_value =  30
 
 [test bigwig max]
 file = bigwig2_X_2.5e6_3.5e6.bw
-color = red
+color = (0.6, 0, 0)
+summary_method = max
+number_of_bins = 300
+overlay_previous = share-y
+
+[test bigwig mean]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = green
+type = fill
+number_of_bins = 200
+overlay_previous = share-y
+
+[spacer]
+
+[test bigwig]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+height = 7
+title = alpha
+        (bigwig color = blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) alpha = 0.5 max over 300 bins) overlaid with (bigwig mean color = green alpha = 0.5 200 bins)
+number_of_bins = 2000
+min_value = 0
+max_value = 30
+
+[test bigwig max]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = (0.6, 0, 0)
 alpha = 0.5
 summary_method = max
 number_of_bins = 300
@@ -226,31 +257,39 @@ overlay_previous = share-y
 
 [spacer]
 
-
 [test bigwig]
 file = bigwig2_X_2.5e6_3.5e6.bw
-color = blue
 height = 7
-title = (bigwig color=blue 2000 bins) overlayed with (bigwig mean color=redmax over 300 bins) overlayed with (bigwig mean color=red 200 bins)
-number_of_bins = 2000
-
-[test bigwig max]
-file = bigwig2_X_2.5e6_3.5e6.bw
-color = red
+title = alpha for lines/points:
+        (bigwig color=(0.6, 0, 0) alpha = 0.5 max) overlaid with (bigwig mean color = green alpha = 0.5 line:2) overlaid with (bigwig min color = blue alpha = 0.5 points:2)
+color = (0.6, 0, 0)
+alpha = 0.5
 summary_method = max
 number_of_bins = 300
-overlay_previous = share-y
+min_value = 0
+max_value =  30
 
 [test bigwig mean]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = green
-type = fill
-number_of_bins = 200
+type = line:2
+alpha = 0.5
+summary_method = mean
+number_of_bins = 300
 overlay_previous = share-y
 
+[test bigwig min]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+summary_method = min
+number_of_bins = 1000
+type = points:3
+alpha = 0.5
+overlay_previous = share-y
 
 [x-axis]
 ```
+<!-- Master alpha ini end-->
 
 ```bash
 $ pyGenomeTracks --tracks alpha.ini --region X:2700000-3100000 -o master_alpha.png
@@ -266,12 +305,14 @@ pyGenomeTracks has an option to plot peaks using MACS2 narrowPeak format.
 The following is an example of the output in which the peak shape is
 drawn based on the start, end, summit and height of the peak.
 
+<!-- Master narrow ini start-->
 ```INI
+
 [narrow]
 file = test.narrowPeak
 height = 4
 max_value = 40
-title = max_value=40
+title = max_value = 40
 
 [narrow 2]
 file = test.narrowPeak
@@ -280,7 +321,8 @@ show_labels = false
 show_data_range =  false
 color = #00FF0080
 use_summit = false
-title = show_labels=false; show_data_range=false; use_summit=false;color=#00FF0080
+title = show_labels = false; show_data_range = false; use_summit = false; color = #00FF0080
+
 [spacer]
 
 [narrow 3]
@@ -290,7 +332,7 @@ show_labels = false
 color = #0000FF80
 use_summit = false
 width_adjust = 4
-title = show_labels=false;width_adjust=3
+title = show_labels = false; use_summit = false; width_adjust = 4
 
 [spacer]
 
@@ -299,10 +341,11 @@ file = test.narrowPeak
 height = 3
 type = box
 color = blue
-title = type=box;color=blue;
+title = type = box; color = blue;
 
 [x-axis]
 ```
+<!-- Master narrow ini end-->
 ![pyGenomeTracks bigwig example](./pygenometracks/tests/test_data/master_narrowPeak.png)
 
 Examples with Hi-C data

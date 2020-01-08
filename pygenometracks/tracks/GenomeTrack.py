@@ -247,7 +247,7 @@ height = 2
                 # valid_color is not None
                 # We build a colormap with only one color
                 valid_colormap = mc.LinearSegmentedColormap.from_list(
-                                'custom', [valid_color], N=100)
+                    'custom', [valid_color], N=100)
             self.properties[param] = valid_colormap
             return True
         else:
