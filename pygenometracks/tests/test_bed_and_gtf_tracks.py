@@ -295,34 +295,26 @@ def test_plot_tracks_bed_arrow():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3120000-3150000 "\
+    args = "--tracks {0} --BED {1} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
+           "--outFileName {2}" \
            "".format(os.path.join(ROOT, 'bed_arrow_tracks.ini'),
+                     os.path.join(ROOT, 'regions.bed'),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
+    first_file = outfile.name[:-4] + '_X-3120000-3150000.png'
     res = compare_images(os.path.join(ROOT, 'master_bed_arrow.png'),
-                         outfile.name, tolerance)
+                         first_file, tolerance)
     assert res is None, res
 
-    os.remove(outfile.name)
+    os.remove(first_file)
 
-
-def test_plot_tracks_bed_arrow_zoom():
-
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                 delete=False)
-    args = "--tracks {0} --region X:3130000-3140000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_arrow_tracks.ini'),
-                     outfile.name).split()
-    pygenometracks.plotTracks.main(args)
+    second_file = outfile.name[:-4] + '_X-3130000-3140000.png'
     res = compare_images(os.path.join(ROOT, 'master_bed_arrow_zoom.png'),
-                         outfile.name, tolerance)
+                         second_file, tolerance)
     assert res is None, res
 
-    os.remove(outfile.name)
+    os.remove(second_file)
 
 
 def test_plot_tracks_flybase():
