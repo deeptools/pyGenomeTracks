@@ -2,6 +2,7 @@
 [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=plastic)](http://bioconda.github.io)
 [![Build Status](https://travis-ci.org/deeptools/pyGenomeTracks.svg?branch=master)](https://travis-ci.org/deeptools/pyGenomeTracks)
 
+
 pyGenomeTracks
 ==============
 
@@ -19,9 +20,27 @@ are highly customizable. Currently, it is possible to plot:
  * links (represented as arcs)
  * Hi-C matrices
 
-pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
+pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of
+pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
 
 ![pyGenomeTracks example](./docs/content/images/hic_example_nat_comm_small.png)
+
+Table of content
+----------------
+  * [Installation](#installation)
+  * [Usage](#usage)
+  * [Citation](#citation)
+  * [Examples](#examples)
+  * [Examples with peaks](#examples-with-peaks)
+  * [Examples with Hi-C data](#examples-with-hi-c-data)
+  * [Examples with Epilogos](#examples-with-epilogos)
+  * [Examples with multiple options](#examples-with-multiple-options)
+  * [Examples with multiple options for bigwig tracks](#examples-with-multiple-options-for-bigwig-tracks)
+  * [Examples with Hi-C data](#examples-with-hi-c-data-1)
+  * [Possible parameters](#possible-parameters)
+  * [Adding new tracks](#adding-new-tracks)
+  * [External users](#external-users)
+
 
 
 Installation
@@ -444,6 +463,7 @@ Here is a table to summarize which are the parameters that can be use for each o
 Empty means this parameter is not used.
 not set means that by default the parameter is commented.
 
+<!--- Start of default table -->
 parameter | x-axis | epilogos | links | domains | bed | narrow_peak | bigwig | bedgraph | bedgraph_matrix | hlines | hic_matrix
 -- | - | - | - | - | - | - | - | - | - | - | -
 where | bottom |  |  |  |  |  |  |  |  |  | 
@@ -490,12 +510,12 @@ show_masked_bins |  |  |  |  |  |  |  |  |  |  | false
 scale_factor |  |  |  |  |  |  |  |  |  |  | 1
 transform |  |  |  |  |  |  |  |  |  |  | no
 colormap |  |  |  |  |  |  |  |  |  |  | RdYlBu_r
-
+<!--- End of default table -->
 
 Some parameters can take only discrete values.
 
 They are summarized here:
-
+<!--- Start of possible table -->
 - **where**:
   - for *x-axis*: top, bottom
 - **orientation**:
@@ -542,9 +562,16 @@ They are summarized here:
   - for *bigwig, bedgraph*: true, false
 - **arrowhead_included**:
   - for *bed*: true, false
+<!--- End of possible table -->
 
 Adding new tracks
 -----------------
 If you are interested in adding new tracks, please see [Creating_new_tracks.md](./docs/Creating_new_tracks.md).
 
 pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser) (See e.g. [Chorogenome navigator](http://chorogenome.ie-freiburg.mpg.de/) which is made with HiCBrowser)
+
+External users
+--------------
+
+* [CoolBox](https://github.com/GangCaoLab/CoolBox) is an interactive genomic data explorer for Jupyter Notebooks
+* [Galaxy](https://usegalaxy.eu/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks) integration offers a graphical user-interface to create PGT plots. It is also possible to include PGT into workflows and automatic pipelines.
