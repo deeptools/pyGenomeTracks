@@ -28,7 +28,6 @@ class TADsTrack(BedTrack):
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
-                        'interval_height': [0, np.inf],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}

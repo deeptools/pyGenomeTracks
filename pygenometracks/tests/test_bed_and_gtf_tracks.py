@@ -59,7 +59,6 @@ title = bed4 fontsize = 10; line_width = 1.5; global_max_row = true
 fontsize = 10
 file_type = bed
 global_max_row = true
-interval_height = 200
 line_width = 1.5
 
 [spacer]
@@ -162,7 +161,6 @@ height = 3
 title = bed4 fontsize = 10; line_width = 1.5
 fontsize = 10
 file_type = bed
-interval_height = 200
 line_width = 1.5
 
 [spacer]
