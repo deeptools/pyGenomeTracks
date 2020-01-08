@@ -483,9 +483,9 @@ file_type = {}
             ax.set_ylim(ymin, ymax)
 
             if self.properties['display'] == 'interleaved':
-                ax.set_ylim(-5, 205)
+                ax.set_ylim(-0.05, 2.05)
             elif self.properties['display'] == 'collapsed':
-                ax.set_ylim(-5, 105)
+                ax.set_ylim(-0.05, 1.05)
 
     def plot_label(self, label_ax):
         label_ax.text(0.05, 1, self.properties['title'],
