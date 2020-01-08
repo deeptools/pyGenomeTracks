@@ -138,7 +138,7 @@ title = No alpha:
         (bigwig color=blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) max over 300 bins) overlaid with (bigwig mean color = green 200 bins)
 number_of_bins = 2000
 min_value = 0
-max_value =  30
+max_value = 30
 
 [test bigwig max]
 file = bigwig2_X_2.5e6_3.5e6.bw
@@ -194,7 +194,7 @@ alpha = 0.5
 summary_method = max
 number_of_bins = 300
 min_value = 0
-max_value =  30
+max_value = 30
 
 [test bigwig mean]
 file = bigwig2_X_2.5e6_3.5e6.bw

@@ -211,7 +211,7 @@ title = No alpha:
         (bigwig color=blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) max over 300 bins) overlaid with (bigwig mean color = green 200 bins)
 number_of_bins = 2000
 min_value = 0
-max_value =  30
+max_value = 30
 
 [test bigwig max]
 file = bigwig2_X_2.5e6_3.5e6.bw
@@ -267,7 +267,7 @@ alpha = 0.5
 summary_method = max
 number_of_bins = 300
 min_value = 0
-max_value =  30
+max_value = 30
 
 [test bigwig mean]
 file = bigwig2_X_2.5e6_3.5e6.bw
@@ -528,12 +528,12 @@ use_middle |  |  |  |  |  |  |  | false |  |  |
 rasterize |  |  |  |  |  |  |  | false | true |  | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center |  | 
 plot_horizontal_lines |  |  |  |  |  |  |  |  | false |  | 
+colormap |  |  |  |  |  |  |  |  | viridis |  | RdYlBu_r
 region |  |  |  |  |  |  |  |  |  |  | not set
 depth |  |  |  |  |  |  |  |  |  |  | 100000
 show_masked_bins |  |  |  |  |  |  |  |  |  |  | false
 scale_factor |  |  |  |  |  |  |  |  |  |  | 1
 transform |  |  |  |  |  |  |  |  |  |  | no
-colormap |  |  |  |  |  |  |  |  |  |  | RdYlBu_r
 <!--- End of default table -->
 
 Some parameters can take only discrete values.

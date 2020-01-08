@@ -38,9 +38,9 @@ use_middle |  |  |  |  |  |  |  | false |  |  |
 rasterize |  |  |  |  |  |  |  | false | true |  | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center |  | 
 plot_horizontal_lines |  |  |  |  |  |  |  |  | false |  | 
+colormap |  |  |  |  |  |  |  |  | viridis |  | RdYlBu_r
 region |  |  |  |  |  |  |  |  |  |  | not set
 depth |  |  |  |  |  |  |  |  |  |  | 100000
 show_masked_bins |  |  |  |  |  |  |  |  |  |  | false
 scale_factor |  |  |  |  |  |  |  |  |  |  | 1
 transform |  |  |  |  |  |  |  |  |  |  | no
-colormap |  |  |  |  |  |  |  |  |  |  | RdYlBu_r
