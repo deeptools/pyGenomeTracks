@@ -12,6 +12,15 @@ warnings.filterwarnings("ignore", message="It appears you have a transcript "
                         "feature in your GTF file. You may want to use the "
                         "`disable_infer_transcripts` option to speed up "
                         "database creation")
+# In gffutils v0.10 they changed the error message:
+warnings.filterwarnings("ignore", message="It appears you have a gene feature"
+                        " in your GTF file. You may want to use the "
+                        "`disable_infer_genes=True` option to speed up database "
+                        "creation")
+warnings.filterwarnings("ignore", message="It appears you have a transcript "
+                        "feature in your GTF file. You may want to use the "
+                        "`disable_infer_transcripts=True` option to speed up "
+                        "database creation")
 
 
 class ReadGtf(object):
