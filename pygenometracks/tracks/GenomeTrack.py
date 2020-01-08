@@ -4,7 +4,7 @@ from .. utilities import to_string, to_bytes
 import logging
 import numpy as np
 from matplotlib import colors as mc
-from matplotlib import cm
+import matplotlib.pyplot as plt
 
 
 class GenomeTrack(object):
@@ -198,7 +198,7 @@ height = 2
         if not colormap_possible:
             if valid_color is None:
                 self.log.warning("*WARNING* {}: '{}' for section {}"
-                                 " is not valid. {} has "
+                                 " is not valid. It has "
                                  "been set to "
                                  "{}".format(param,
                                              self.properties[param],
@@ -227,14 +227,14 @@ height = 2
                         except ValueError:
                             pass
                 else:
-                    if self.properties[param] in cm.datad:
+                    if self.properties[param] in dir(plt.cm):
                         valid_colormap = self.properties[param]
         # Here, colormap is possible
         # valid_color is None or a valid color
         # valid_colormap is None or a valid colormap or the default value
         if valid_color is None and valid_colormap is None:
             self.log.warning("*WARNING* {}: '{}' for section {}"
-                             " is not valid. {} has "
+                             " is not valid. It has "
                              "been set to "
                              "{}".format(param,
                                          self.properties[param],
