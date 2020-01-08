@@ -42,7 +42,7 @@ use_middle = true
 [genes]
 file = HoxD_cluster_regulatory_regions_mm10.bed
 height = 3
-title = "HoxD genes and regulatory regions"
+title = HoxD genes and regulatory regions
 
 """
 with open(os.path.join(ROOT, "bedgraph_useMid.ini"), 'w') as fh:

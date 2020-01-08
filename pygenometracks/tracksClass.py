@@ -497,6 +497,11 @@ class PlotTracks(object):
             # The 'overlay_previous' is initialized:
             if 'overlay_previous' not in track_options:
                 track_options['overlay_previous'] = 'no'
+            if track_options['overlay_previous'] not in ['no', 'yes', 'share-y']:
+                raise InputError("In section {}, overlay_previous was set to {}."
+                                 " Possible options are no, yes, share-y"
+                                 "".format(section_name,
+                                           track_options['overlay_previous']))
             # If there is no title:
             if 'title' not in track_options:
                 track_options['title'] = ''
