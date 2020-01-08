@@ -194,7 +194,7 @@ height = 2
                                                  self.properties[param],
                                                  self.properties['section_name'],
                                                  default_value))
-                valid_color = default_value
+                    valid_color = default_value
         if not colormap_possible:
             if valid_color is None:
                 self.log.warning("*WARNING* {}: '{}' for section {}"
