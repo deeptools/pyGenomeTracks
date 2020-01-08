@@ -64,6 +64,7 @@ file_type = {}
                          'title', 'color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
+                        'alpha': [0, 1],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
