@@ -208,9 +208,9 @@ height = 2
             self.properties[param] = valid_color
             return False
         else:
+            valid_colormap = None
             # We will try to process the color as a colormap
             if valid_color is None:
-                valid_colormap = None
                 # If someone what to use its own colormap,
                 # he can specify the rgb values or color values:
                 # For example:
@@ -230,8 +230,8 @@ height = 2
                     if self.properties[param] in dir(plt.cm):
                         valid_colormap = self.properties[param]
         # Here, colormap is possible
-        # valid_color is None or a valid color
-        # valid_colormap is None or a valid colormap or the default value
+        # valid_color is None or a valid color or the default value
+        # valid_colormap is None or a valid colormap
         if valid_color is None and valid_colormap is None:
             self.log.warning("*WARNING* {}: '{}' for section {}"
                              " is not valid. It has "
@@ -245,9 +245,15 @@ height = 2
         if colormap_only:
             if valid_colormap is None:
                 # valid_color is not None
-                # We build a colormap with only one color
-                valid_colormap = mc.LinearSegmentedColormap.from_list(
-                    'custom', [valid_color], N=100)
+                self.log.warning("*WARNING* {}: '{}' for section {}"
+                                 " is not valid: it is a color whereas"
+                                 " a colormap was expected. It has "
+                                 "been set to "
+                                 "{}".format(param,
+                                             self.properties[param],
+                                             self.properties['section_name'],
+                                             default_value))
+                valid_colormap = default_value
             self.properties[param] = valid_colormap
             return True
         else:
