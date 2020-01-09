@@ -48,6 +48,37 @@ title = HoxD genes and regulatory regions
 with open(os.path.join(ROOT, "bedgraph_useMid.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[x-axis]
+where = top
+
+[test bedgraph neg]
+file = test_with_neg_values.bg.gz
+color = blue
+negative_color = red
+title = color = blue; negative_color = red
+height = 5
+
+[test bedgraph neg]
+file = test_with_neg_values.bg.gz
+color = cyan
+negative_color = darkred
+type = line:2
+title = color = cyan; negative_color = darkred; type = line:2
+height = 5
+
+[test bedgraph neg]
+file = test_with_neg_values.bg.gz
+color = black
+negative_color = lime
+type = points:2
+title = color = black; negative_color = lime; type = points:2
+height = 5
+"""
+
+with open(os.path.join(ROOT, "bedgraph_negative.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -80,6 +111,22 @@ def test_plot_bedgraph_tracks_rasterize():
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
     res = compare_images(os.path.join(ROOT, 'master_bedgraph_useMid.pdf'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_negative():
+    region = "X:2700000-3100000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_negative_test_', delete=False)
+    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName {outfile}" \
+           "".format(ini=os.path.join(ROOT, "bedgraph_negative.ini"),
+                     outfile=outfile.name, region=region).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_negative.png'),
                          outfile.name, tolerance)
     assert res is None, res
 
