@@ -7,7 +7,6 @@ from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 from matplotlib.path import Path
 import matplotlib.patches as patches
-from .. utilities import file_to_intervaltree
 import numpy as np
 
 DEFAULT_NARROWPEAK_COLOR = '#FF000080'  # red, alpha=0.55
@@ -41,7 +40,8 @@ file_type = {}
                            'show_labels': True,
                            'use_summit': True,
                            'width_adjust': 1.5,
-                           'type': 'peak'}
+                           'type': 'peak',
+                           'region': None}  # Cannot be set manually but is set by tracksClass
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
@@ -59,7 +59,6 @@ file_type = {}
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
-        self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
         # uses bezier curves to plot a shape that

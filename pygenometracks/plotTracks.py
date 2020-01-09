@@ -153,7 +153,7 @@ from .utilities import InputError
 matplotlib.use('Agg')
 
 # Used in case no end of a genomic interval was set:
-HUGE_NUMBER = 1e15
+HUGE_NUMBER = 1e15  # also used in HiCMatrixTrack
 DEFAULT_BED_COLOR = '#1f78b4'
 DEFAULT_BIGWIG_COLOR = '#33a02c'
 DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
@@ -327,5 +327,3 @@ def main(args=None):
             trp.plot(file_name, chrom, start, end, title=args.title)
     else:
         trp.plot(args.outFileName, *regions[0], title=args.title)
-
-

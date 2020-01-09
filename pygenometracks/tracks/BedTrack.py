@@ -9,11 +9,15 @@ from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from intervaltree import IntervalTree, Interval
 import numpy as np
+import pybedtools
+import sys
+import tempfile
 
 DEFAULT_BED_COLOR = '#1f78b4'
 DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
+AROUND_REGION = 100000
 
 
 class BedTrack(GenomeTrack):
@@ -121,7 +125,8 @@ file_type = {}
                            'arrow_interval': 2,
                            'arrowhead_included': False,
                            'color_utr': 'grey',
-                           'height_utr': 1}
+                           'height_utr': 1,
+                           'region': None}  # Cannot be set manually but is set by tracksClass
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -154,7 +159,7 @@ file_type = {}
         # this is bed3, bed4, bed5, bed6, bed8, bed9 or bed12
         self.len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions
-        self.interval_tree, min_score, max_score = self.process_bed()
+        self.interval_tree, min_score, max_score = self.process_bed(self.properties['region'])
         if self.colormap is not None:
             if self.properties['min_value'] is not None:
                 min_score = self.properties['min_value']
@@ -225,15 +230,39 @@ file_type = {}
 
         return self.len_w
 
-    def process_bed(self):
+    def process_bed(self, pRegion=None):
+        is_gtf = self.properties['file'].endswith('gtf') or \
+            self.properties['file'].endswith('gtf.gz')
+        file_to_open = self.properties['file']
+        # Check if we can restrict the interval tree to a region:
+        if pRegion is not None and not self.properties['global_max_row']:
+            # I increase the region to get the intervals:
+            pRegion[1] = max([0, pRegion[1] - AROUND_REGION])
+            pRegion[2] += AROUND_REGION
+            # We use pybedtools to overlap:
+            original_file = pybedtools.BedTool(file_to_open)
+            # We will overlap with both version of chromosome name:
+            chrom = self.change_chrom_names(pRegion[0])
+            bothRegions = ("{0} {1} {2}\n{3} {1} {2}"
+                           .format(*pRegion,
+                                   chrom))
+            region = pybedtools.BedTool(bothRegions, from_string=True)
+            # Bedtools will put a warning because I am using inconsistent
+            # nomenclature (with and without chr)
+            sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
+            try:
+                file_to_open = original_file.intersect(region, wa=True).fn
+            except pybedtools.helpers.BEDToolsError:
+                file_to_open = self.properties['file']
+            sys.stderr.close()
+            sys.stderr = sys.__stderr__
 
-        if self.properties['file'].endswith('gtf') or \
-           self.properties['file'].endswith('gtf.gz'):
-            bed_file_h = ReadGtf(self.properties['file'],
+        if is_gtf:
+            bed_file_h = ReadGtf(file_to_open,
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
         else:
-            bed_file_h = ReadBed(opener(self.properties['file']))
+            bed_file_h = ReadBed(opener(file_to_open))
         self.bed_type = bed_file_h.file_type
 
         if self.properties['color'] == 'bed_rgb' and \
@@ -263,7 +292,7 @@ file_type = {}
 
         if valid_intervals == 0:
             self.log.warning("No valid intervals were found in file "
-                             "{}".format(self.properties['file_name']))
+                             "{}\n".format(self.properties['file']))
 
         return interval_tree, min_score, max_score
 

@@ -245,4 +245,3 @@ def test_plot_tracks_with_hic_rasterize_height_2chr():
     assert res is None, res
 
     os.remove(second_file)
-    

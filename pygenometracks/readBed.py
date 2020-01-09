@@ -27,7 +27,11 @@ class ReadBed(object):
         self.file_handle = file_handle
         self.line_number = 0
         # guess file type
-        fields = self.get_no_comment_line()
+        try:
+            fields = self.get_no_comment_line()
+        except StopIteration:
+            # The file is empty
+            fields = "chrDoesNotExists\t0\t1"
         fields = to_string(fields)
         fields = fields.split('\t')
 

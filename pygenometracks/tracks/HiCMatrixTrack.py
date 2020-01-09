@@ -7,10 +7,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import LogFormatter
 from . GenomeTrack import GenomeTrack
-from .. import plotTracks
 import logging
 import itertools
 
+# Used in case no end of a genomic interval was set:
+HUGE_NUMBER = 1e15  # also used in HiCMatrixTrack
 DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -54,7 +55,7 @@ show_masked_bins = false
 # rasterize = false
 file_type = {}
     """.format(TRACK_TYPE)
-    DEFAULTS_PROPERTIES = {'region': None,
+    DEFAULTS_PROPERTIES = {'region': None,  # Cannot be set manually but is set by tracksClass
                            'depth': 100000,
                            'orientation': None,
                            'show_masked_bins': False,
@@ -88,7 +89,7 @@ file_type = {}
         super(HiCMatrixTrack, self).set_properties_defaults()
         region = None
         if self.properties['region'] is not None:
-            if self.properties['region'][2] == plotTracks.HUGE_NUMBER:
+            if self.properties['region'][2] == HUGE_NUMBER:
                 region = [str(self.properties['region'][0])]
             elif len(self.properties['region']) == 3:
                 start = int(self.properties['region'][1]) - self.properties['depth']

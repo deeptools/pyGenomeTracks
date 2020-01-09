@@ -75,7 +75,7 @@ class PlotTracks(object):
         self.track_list = None
         start = self.print_elapsed(None)
         self.available_tracks = self.get_available_tracks()
-        self.parse_tracks(tracks_file)
+        self.parse_tracks(tracks_file, pRegion=pRegion)
         if fontsize:
             fontsize = fontsize
         else:
@@ -103,11 +103,8 @@ class PlotTracks(object):
                 # for all other tracks that are not axis or spacer
                 # the track_class is obtained from the available tracks
                 track_class = self.available_tracks[properties['file_type']]
-                if properties['file_type'] == 'hic_matrix':
-                    properties['region'] = pRegion
-                    self.track_obj_list.append(track_class(properties))
-                else:
-                    self.track_obj_list.append(track_class(properties))
+                properties['region'] = pRegion
+                self.track_obj_list.append(track_class(properties))
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
@@ -321,11 +318,14 @@ class PlotTracks(object):
 
         return
 
-    def parse_tracks(self, tracks_file):
+    def parse_tracks(self, tracks_file, pRegion=None):
         """
         Parses a configuration file
 
         :param tracks_file: file path containing the track configuration
+        :param pRegion: a list [chrom, start, end]
+                        on which the data should be loaded
+                        here the vlines
         :return: array of dictionaries and vlines_file.
                  One dictionary per track
         """
@@ -516,7 +516,7 @@ class PlotTracks(object):
         self.track_list = track_list
         if self.vlines_properties:
             self.vlines_intval_tree, __, __ = \
-                file_to_intervaltree(self.vlines_properties['file'])
+                file_to_intervaltree(self.vlines_properties['file'], pRegion)
 
     @staticmethod
     def check_file_exists(track_dict, tracks_path):

@@ -467,7 +467,7 @@ not set means that by default the parameter is commented.
 parameter | x-axis | epilogos | links | domains | bed | narrow_peak | bigwig | bedgraph | bedgraph_matrix | hlines | hic_matrix
 -- | - | - | - | - | - | - | - | - | - | - | -
 where | bottom |  |  |  |  |  |  |  |  |  | 
-fontsize | 15 |  |  | 12 | 12 |  |  |  |  |  | 
+fontsize | 15 |  |  |  | 12 |  |  |  |  |  | 
 categories_file |  | not set |  |  |  |  |  |  |  |  | 
 orientation |  | not set | not set | not set | not set | not set | not set | not set | not set | not set | not set
 links_type |  |  | arcs |  |  |  |  |  |  |  | 
@@ -504,7 +504,6 @@ use_middle |  |  |  |  |  |  |  | false |  |  |
 rasterize |  |  |  |  |  |  |  | false | true |  | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center |  | 
 plot_horizontal_lines |  |  |  |  |  |  |  |  | false |  | 
-region |  |  |  |  |  |  |  |  |  |  | not set
 depth |  |  |  |  |  |  |  |  |  |  | 100000
 show_masked_bins |  |  |  |  |  |  |  |  |  |  | false
 scale_factor |  |  |  |  |  |  |  |  |  |  | 1

@@ -66,9 +66,10 @@ def main():
             track_type = "x-axis"
         has_default = False
         for p, value in track_class.DEFAULTS_PROPERTIES.items():
-            all_default_parameters[p] = all_default_parameters.get(p, {})
-            all_default_parameters[p][track_type] = value
-            has_default = True
+            if p != 'region':
+                all_default_parameters[p] = all_default_parameters.get(p, {})
+                all_default_parameters[p][track_type] = value
+                has_default = True
         if has_default:
             all_tracks_with_default += [track_type]
 

@@ -2,6 +2,10 @@ import sys
 import gzip
 import numpy as np
 from intervaltree import IntervalTree, Interval
+import pybedtools
+import tempfile
+
+AROUND_REGION = 100000
 
 
 class InputError(Exception):
@@ -54,17 +58,50 @@ def opener(filename):
         return f
 
 
-def file_to_intervaltree(file_name):
+def file_to_intervaltree(file_name, pRegion=None):
     """
     converts a BED like file into a bx python interval tree
     :param file_name: string file name
+    :param pRegion: a list [chrom, start, end] with the region to restrict
+                    the data to.
     :return: interval tree dictionary. They key is the chromosome/contig name and the
     value is an IntervalTree. Each of the intervals have as 'value' the fields[3:] if any.
     """
+    print("FILE_TO_INTERVALTREE")
+    file_to_open = file_name
+    # Check if we can restrict the interval tree to a region:
+    if pRegion is not None:
+        print("HERE")
+        # I increase the region to get the intervals:
+        pRegion[1] = max([0, pRegion[1] - AROUND_REGION])
+        pRegion[2] += AROUND_REGION
+        # We use pybedtools to overlap:
+        original_file = pybedtools.BedTool(file_name)
+        # We will overlap with both version of chromosome name:
+        chrom = pRegion[0]
+        if chrom.startswith('chr'):
+            # remove the chr part from chromosome name
+            chrom = chrom[3:]
+        else:
+            # prefix with 'chr' the chromosome name
+            chrom = 'chr' + chrom
+        bothRegions = ("{0} {1} {2}\n{3} {1} {2}"
+                       .format(*pRegion,
+                               chrom))
+        region = pybedtools.BedTool(bothRegions, from_string=True)
+        # Bedtools will put a warning because I am using inconsistent
+        # nomenclature (with and without chr)
+        sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
+        try:
+            file_to_open = original_file.intersect(region, wa=True).fn
+        except pybedtools.helpers.BEDToolsError:
+            file_to_open = file_name
+        sys.stderr.close()
+        sys.stderr = sys.__stderr__
     # iterate over a BED like file
     # saving the data into an interval tree
     # for quick retrieval
-    file_h = opener(file_name)
+    file_h = opener(file_to_open)
     line_number = 0
     valid_intervals = 0
     prev_chrom = None
@@ -128,7 +165,7 @@ def file_to_intervaltree(file_name):
         valid_intervals += 1
 
     if valid_intervals == 0:
-        sys.stderr.write("No valid intervals were found in file {}".format(file_name))
+        sys.stderr.write("No valid intervals were found in file {}\n".format(file_name))
     file_h.close()
 
     return interval_tree, min_value, max_value

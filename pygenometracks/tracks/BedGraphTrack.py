@@ -62,7 +62,8 @@ file_type = {}
                            'summary_method': None,
                            'rasterize': False,
                            'number_of_bins': 700,
-                           'type': 'fill'}
+                           'type': 'fill',
+                           'region': None}  # Cannot be set manually but is set by tracksClass
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -95,10 +96,12 @@ file_type = {}
             try:
                 self.tbx = pysam.TabixFile(self.properties['file'])
             except IOError:
-                self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                                  self.properties['region'])
         # load the file as an interval tree
         else:
-            self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+            self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                              self.properties['region'])
 
         self.num_fields = None
 

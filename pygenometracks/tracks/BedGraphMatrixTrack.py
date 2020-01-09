@@ -40,7 +40,8 @@ file_type = {}
                            'show_data_range': True,
                            'plot_horizontal_lines': False,
                            'orientation': None,
-                           'rasterize': True}
+                           'rasterize': True,
+                           'region': None}  # Cannot be set manually but is set by tracksClass
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
