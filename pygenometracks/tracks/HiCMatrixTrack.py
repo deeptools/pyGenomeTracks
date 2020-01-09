@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import LogFormatter
 from . GenomeTrack import GenomeTrack
+from .. import plotTracks
 import logging
 import itertools
 
@@ -87,7 +88,7 @@ file_type = {}
         super(HiCMatrixTrack, self).set_properties_defaults()
         region = None
         if self.properties['region'] is not None:
-            if self.properties['region'][2] == 1e15:
+            if self.properties['region'][2] == plotTracks.HUGE_NUMBER:
                 region = [str(self.properties['region'][0])]
             elif len(self.properties['region']) == 3:
                 start = int(self.properties['region'][1]) - self.properties['depth']
@@ -98,11 +99,15 @@ file_type = {}
                 region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(end)]
         # try to open with end region + depth to avoid triangle effect in the plot
         # if it fails open it with given end region.
+        # if it still fails do not specify the region.
         try:
             self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
         except Exception:
             region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(self.properties['region'][2])]
-            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
+            try:
+                self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
+            except Exception:
+                self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'])
 
         if len(self.hic_ma.matrix.data) == 0:
             raise Exception("Matrix {} is empty".format(self.properties['file']))

@@ -144,12 +144,16 @@ type = vlines
 import sys
 import argparse
 import matplotlib
-matplotlib.use('Agg')
+import warnings
 
 from pygenometracks.tracksClass import PlotTracks
 from pygenometracks._version import __version__
 from .utilities import InputError
 
+matplotlib.use('Agg')
+
+# Used in case no end of a genomic interval was set:
+HUGE_NUMBER = 1e15
 DEFAULT_BED_COLOR = '#1f78b4'
 DEFAULT_BIGWIG_COLOR = '#33a02c'
 DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
@@ -240,7 +244,11 @@ def get_region(region_string):
     """
     if region_string:
         # separate the chromosome name and the location using the ':' character
-        chrom, position = region_string.strip().split(":")
+        try:
+            chrom, position = region_string.strip().split(":")
+        except ValueError:
+            # It can be a full chromosome:
+            return region_string.strip(), 0, HUGE_NUMBER
 
         # clean up the position
         for char in ",.;|!{}()":
@@ -254,7 +262,7 @@ def get_region(region_string):
         try:
             region_end = int(position_list[1])
         except IndexError:
-            region_end = 1e15  # a huge number
+            region_end = HUGE_NUMBER
         if region_start < 0:
             region_start = 0
         if region_end <= region_start:
@@ -269,12 +277,11 @@ def get_region(region_string):
 def main(args=None):
 
     args = parse_arguments().parse_args(args)
-    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height, fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
 
+    # Identify the regions to plot:
     if args.BED:
-        count = 0
+        regions = []
         for line in args.BED.readlines():
-            count += 1
             try:
                 chrom, start, end = line.strip().split('\t')[0:3]
             except ValueError:
@@ -282,22 +289,43 @@ def main(args=None):
             try:
                 start, end = map(int, [start, end])
             except ValueError as detail:
-                sys.stderr.write("Invalid value found at line\t{}\t. {}\n".format(line, detail))
-            name = args.outFileName.split(".")
-            file_suffix = name[-1]
-            file_prefix = ".".join(name[:-1])
+                warnings.warn("Invalid value found at line\t{}\t. {}\n".format(line, detail))
+                continue
+            regions.append((chrom, start, end))
+    else:
+        regions = [get_region(args.region)]
 
+    if len(regions) == 0:
+        raise InputError("There is no valid regions to plot.")
+
+    # Try to find a region to get the data:
+    pRegion = None
+    if len(set([r[0] for r in regions])) == 1:
+        chrom = regions[0][0]
+        start = min([r[1] for r in regions])
+        end = max([r[2] for r in regions])
+        pRegion = [chrom, start, end]
+
+    # Create all the tracks
+    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height,
+                     fontsize=args.fontSize, dpi=args.dpi,
+                     track_label_width=args.trackLabelFraction,
+                     pRegion=pRegion)
+
+    # Plot them
+    if args.BED:
+        name = args.outFileName.split(".")
+        file_suffix = name[-1]
+        file_prefix = ".".join(name[:-1])
+        for chrom, start, end in regions:
             file_name = "{}_{}-{}-{}.{}".format(file_prefix, chrom, start, end, file_suffix)
             if end - start < 200000:
-                sys.stderr.write("A region shorter than 200kb has been "
-                                 "detected! This can be too small to return "
-                                 "a proper TAD plot!\n")
-                # start -= 100000
-                # start = max(0, start)
-                # end += 100000
+                warnings.warn("A region shorter than 200kb has been "
+                              "detected! This can be too small to return "
+                              "a proper TAD plot!\n")
             sys.stderr.write("saving {}\n".format(file_name))
-            # print("{} {} {}".format(chrom, start, end))
             trp.plot(file_name, chrom, start, end, title=args.title)
     else:
-        region = get_region(args.region)
-        trp.plot(args.outFileName, *region, title=args.title)
+        trp.plot(args.outFileName, *regions[0], title=args.title)
+
+
