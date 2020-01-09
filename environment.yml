@@ -15,5 +15,6 @@ dependencies:
     - pysam >=0.14
     - pytest
     - gffutils >=0.9
+    - pybedtools >=0.8.1
     - pip:
         - "git+https://github.com/deeptools/pyGenomeTracks.git"
