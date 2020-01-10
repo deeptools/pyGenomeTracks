@@ -11,7 +11,7 @@ import logging
 import itertools
 
 # Used in case no end of a genomic interval was set:
-HUGE_NUMBER = 1e15  # also used in HiCMatrixTrack
+HUGE_NUMBER = 1e15  # also used in plotTracks
 DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -89,26 +89,26 @@ file_type = {}
         super(HiCMatrixTrack, self).set_properties_defaults()
         region = None
         if self.properties['region'] is not None:
+            chrom = self.properties['region'][0]
+            # The chromosome name will be UCSC format because
+            # cooler v0.8.5 can fetch UCSC format in Ensembl-like format
+            # but not the contrary
+            if not chrom.startswith('chr'):
+                chrom = 'chr' + chrom
             if self.properties['region'][2] == HUGE_NUMBER:
-                region = [str(self.properties['region'][0])]
+                region = [chrom]
             elif len(self.properties['region']) == 3:
-                start = int(self.properties['region'][1]) - self.properties['depth']
+                start = self.properties['region'][1] - self.properties['depth']
                 if start < 0:
                     start = 0
-                end = int(self.properties['region'][2]) + self.properties['depth']
+                end = self.properties['region'][2] + self.properties['depth']
 
-                region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(end)]
-        # try to open with end region + depth to avoid triangle effect in the plot
-        # if it fails open it with given end region.
-        # if it still fails do not specify the region.
-        try:
-            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
-        except Exception:
-            region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(self.properties['region'][2])]
-            try:
-                self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
-            except Exception:
-                self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'])
+                region = ["{}:{}-{}".format(chrom, start, end)]
+            else:
+                region = None
+        # open with end region +/- depth to avoid triangle effect in the plot
+        self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                          pChrnameList=region)
 
         if len(self.hic_ma.matrix.data) == 0:
             raise Exception("Matrix {} is empty".format(self.properties['file']))
