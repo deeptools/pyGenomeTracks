@@ -148,22 +148,6 @@ height = 2
             self.plot_type = default_plot_type
 
     @staticmethod
-    def change_chrom_names(chrom):
-        """
-        Changes UCSC chromosome names to ensembl chromosome names
-        and vice versa.
-        """
-        # TODO: mapping from chromosome names like mithocondria is missing
-        if chrom.startswith('chr'):
-            # remove the chr part from chromosome name
-            chrom = chrom[3:]
-        else:
-            # prefix with 'chr' the chromosome name
-            chrom = 'chr' + chrom
-
-        return chrom
-
-    @staticmethod
     def get_alternative_chrom_names(chrom):
         """
         Gives alternative chrom names from ensembl/UCSC/gencode/NCBI/RefSeq using
