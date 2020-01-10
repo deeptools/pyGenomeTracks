@@ -297,16 +297,20 @@ class PlotTracks(object):
 
         if chrom_region not in list(self.vlines_intval_tree):
             chrom_region_before = chrom_region
-            chrom_region = GenomeTrack.change_chrom_names(chrom_region)
-            if chrom_region not in list(self.vlines_intval_tree):
-                log.warning("*Warning*\nNeither "
-                            + chrom_region_before + " nor "
-                            + chrom_region + " existss as a "
+            possible_chrom_names = GenomeTrack.get_alternative_chrom_names(chrom_region)
+            compatible_chrom_names = [c for c in possible_chrom_names
+                                      if c in self.vlines_intval_tree]
+            if len(compatible_chrom_names) == 0:
+                log.warning("*Warning*\nNeither " + chrom_region_before
+                            + " nor " + str(possible_chrom_names)
+                            + " exists as a "
                             "chromosome name inside the "
                             "file with vertical lines. "
                             "No vertical lines will be "
                             "plotted!!\n")
                 return
+            else:
+                chrom_region = compatible_chrom_names[0]
         chrom_region = GenomeTrack.check_chrom_str_bytes(self.vlines_intval_tree, chrom_region)
 
         for region in sorted(self.vlines_intval_tree[chrom_region][start_region - 10000:end_region + 10000]):

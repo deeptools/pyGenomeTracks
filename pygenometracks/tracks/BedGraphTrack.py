@@ -157,32 +157,39 @@ file_type = {}
         if self.tbx is not None:
             if chrom_region not in self.tbx.contigs:
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
-                if chrom_region not in self.tbx.contigs:
+                possible_chrom_names = self.get_alternative_chrom_names(chrom_region)
+                compatible_chrom_names = [c for c in possible_chrom_names
+                                          if c in self.tbx.contigs]
+                if len(compatible_chrom_names) == 0:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
-                                     + chrom_region + " existss as a "
+                                     + str(possible_chrom_names) + " exists as a "
                                      "chromosome name inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")
                     return score_list, pos_list
+                else:
+                    chrom_region = compatible_chrom_names[0]
 
             chrom_region = self.check_chrom_str_bytes(self.tbx.contigs,
                                                       chrom_region)
             iterator = self.tbx.fetch(chrom_region, start_region, end_region)
-
         else:
+
             if chrom_region not in list(self.interval_tree):
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
-                if chrom_region not in list(self.interval_tree):
-                    self.log.warning("*Warning*\nNeither "
-                                     + chrom_region_before + " nor "
-                                     + chrom_region + " existss as a "
-                                     "chromosome name inside the bedgraph "
-                                     "file. This will generate an empty "
-                                     "track!!\n")
+                possible_chrom_names = self.get_alternative_chrom_names(chrom_region)
+                compatible_chrom_names = [c for c in possible_chrom_names
+                                          if c in self.interval_tree]
+                if len(compatible_chrom_names) == 0:
+                    self.log.warning("*Warning*\nNeither " + chrom_region_before
+                                     + " nor " + str(possible_chrom_names)
+                                     + " exists as a "
+                                     "chromosome name inside the bedgraph file. "
+                                     "This will generate an empty track!!\n")
                     return score_list, pos_list
+                else:
+                    chrom_region = compatible_chrom_names[0]
             chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
             iterator = iter(sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]))
 

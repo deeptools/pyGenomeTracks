@@ -3,6 +3,7 @@
 from .. utilities import to_string, to_bytes
 import logging
 import numpy as np
+from pygenometracks._chromMapping import __chromMapping__
 
 
 class GenomeTrack(object):
@@ -161,6 +162,14 @@ height = 2
             chrom = 'chr' + chrom
 
         return chrom
+
+    @staticmethod
+    def get_alternative_chrom_names(chrom):
+        """
+        Gives alternative chrom names from ensembl/UCSC/gencode/NCBI/RefSeq using
+        https://github.com/dpryan79/ChromosomeMappings.git
+        """
+        return __chromMapping__.get(chrom, [])
 
     @staticmethod
     def check_chrom_str_bytes(iteratable_obj, p_obj):

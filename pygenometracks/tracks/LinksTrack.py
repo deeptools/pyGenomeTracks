@@ -130,13 +130,18 @@ file_type = {}
 
         if chrom_region not in list(self.interval_tree):
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
-            if chrom_region not in list(self.interval_tree):
+            possible_chrom_names = self.get_alternative_chrom_names(chrom_region)
+            compatible_chrom_names = [c for c in possible_chrom_names
+                                      if c in self.interval_tree]
+            if len(compatible_chrom_names) == 0:
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
-                                 "chromosome name inside the link file. "
+                                 + " nor " + str(possible_chrom_names)
+                                 + " exists as a "
+                                 "chromosome name inside the bed file. "
                                  "This will generate an empty track!!\n")
                 return
+            else:
+                chrom_region = compatible_chrom_names[0]
 
         chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
 

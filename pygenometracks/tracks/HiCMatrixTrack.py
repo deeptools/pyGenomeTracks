@@ -173,13 +173,18 @@ file_type = {}
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if chrom_region not in chrom_sizes:
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
-            if chrom_region not in chrom_sizes:
+            possible_chrom_names = self.get_alternative_chrom_names(chrom_region)
+            compatible_chrom_names = [c for c in possible_chrom_names
+                                      if c in chrom_sizes]
+            if len(compatible_chrom_names) == 0:
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
-                                 "chromosome name on the matrix. "
+                                 + " nor " + str(possible_chrom_names)
+                                 + " exists as a "
+                                 "chromosome name inside the matrix file. "
                                  "This will generate an empty track!!\n")
                 return
+            else:
+                chrom_region = compatible_chrom_names[0]
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
         if region_end > chrom_sizes[chrom_region]:
