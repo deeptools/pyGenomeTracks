@@ -90,11 +90,6 @@ file_type = {}
         region = None
         if self.properties['region'] is not None:
             chrom = self.properties['region'][0]
-            # The chromosome name will be UCSC format because
-            # cooler v0.8.5 can fetch UCSC format in Ensembl-like format
-            # but not the contrary
-            if not chrom.startswith('chr'):
-                chrom = 'chr' + chrom
             if self.properties['region'][2] == HUGE_NUMBER:
                 region = [chrom]
             elif len(self.properties['region']) == 3:
@@ -107,6 +102,11 @@ file_type = {}
             else:
                 region = None
         # open with end region +/- depth to avoid triangle effect in the plot
+        # This will exit the program if:
+        # - the file is a cool file and:
+        #    - the region goes over the chromosome size
+        #   or
+        #   - the chromosome is not part of the matrix
         self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
                                           pChrnameList=region)
 
