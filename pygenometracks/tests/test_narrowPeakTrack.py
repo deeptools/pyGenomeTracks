@@ -14,7 +14,8 @@ tracks = """
 file = test.narrowPeak
 height = 4
 max_value = 40
-title = max_value = 40
+line_width = 0.1
+title = max_value = 40;line_width = 0.1
 
 [narrow 2]
 file = test.narrowPeak
@@ -43,7 +44,18 @@ file = test.narrowPeak
 height = 3
 type = box
 color = blue
-title = type = box; color = blue;
+line_width = 2
+title = type = box; color = blue; line_width = 2
+
+[spacer]
+
+[narrow 5]
+file = test.narrowPeak
+height = 3
+type = box
+color = blue
+use_summit = false
+title = type = box; color = blue; use_summit = false
 
 [x-axis]
 """
