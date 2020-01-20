@@ -111,7 +111,11 @@ file_type = {}
                                           pChrnameList=region)
 
         if len(self.hic_ma.matrix.data) == 0:
-            raise Exception("Matrix {} is empty".format(self.properties['file']))
+            if self.properties['region'] is None:
+                raise Exception("Matrix {} is empty".format(self.properties['file']))
+            else:
+                return
+
         if self.properties['show_masked_bins']:
             pass
         else:
@@ -174,6 +178,11 @@ file_type = {}
         self.cmap.set_bad('black')
 
     def plot(self, ax, chrom_region, region_start, region_end):
+        if len(self.hic_ma.matrix.data) == 0:
+            self.log.warning("*Warning*\nThere is no data for the region "
+                             "considered on the matrix. "
+                             "This will generate an empty track!!\n")
+            return
 
         log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
