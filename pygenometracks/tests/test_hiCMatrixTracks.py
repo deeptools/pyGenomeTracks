@@ -119,7 +119,7 @@ with open(os.path.join(ROOT, "browser_tracks_cool.ini"), 'w') as fh:
 
 browser_tracks_with_hic = """
 [hic matrix]
-file = Li_et_al_2015.h5
+file = Li_et_al_2015.cool
 title = depth = 200000; transform = log1p; min_value = 5; height = 5
 depth = 200000
 min_value = 5
