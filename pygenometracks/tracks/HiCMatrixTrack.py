@@ -191,14 +191,15 @@ file_type = {}
             chrom_region = self.change_chrom_names(chrom_region)
             if chrom_region not in chrom_sizes:
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
+                                 + " nor " + chrom_region + " exists as a "
                                  "chromosome name on the matrix. "
                                  "This will generate an empty track!!\n")
                 return
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
         if region_end > chrom_sizes[chrom_region]:
-            raise Exception("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n"
+            # raise Exception("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n"
+            self.log.warning("*Warning*\nThe region to plot extends beyond the chromosome size. Please check.\n"
                             "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
                                                                          region_start, region_end))
 
@@ -264,7 +265,10 @@ file_type = {}
 
         else:
             # try to use a 'aesthetically pleasant' max value
-            vmax = np.percentile(matrix.diagonal(1), 80)
+            try:
+                vmax = np.percentile(matrix.diagonal(1), 80)
+            except Exception:
+                vmax = None
 
         if self.properties['min_value'] is not None:
             vmin = self.properties['min_value']
