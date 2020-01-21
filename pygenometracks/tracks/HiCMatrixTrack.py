@@ -200,8 +200,8 @@ file_type = {}
         if region_end > chrom_sizes[chrom_region]:
             # raise Exception("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n"
             self.log.warning("*Warning*\nThe region to plot extends beyond the chromosome size. Please check.\n"
-                            "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
-                                                                         region_start, region_end))
+                             "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
+                                                                          region_start, region_end))
 
         # if self.properties['file'].endswith('.cool'):
         #     # load now the region to be plotted
