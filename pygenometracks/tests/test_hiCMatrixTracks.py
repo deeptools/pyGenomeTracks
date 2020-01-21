@@ -158,6 +158,30 @@ show_masked_bins = false
 with open(os.path.join(ROOT, "browser_tracks_hic_rasterize_height.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic)
 
+browser_tracks_with_hic = """
+[hic matrix]
+file = small_test2.cool
+title = cool with few interactions show_masked_bins = false (default)
+depth = 200000
+file_type = hic_matrix
+height = 5
+
+[spacer]
+
+[hic matrix]
+file = small_test2.cool
+title = cool with few interactions show_masked_bins = true
+depth = 200000
+file_type = hic_matrix
+height = 5
+show_masked_bins = true
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic)
+
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -245,3 +269,52 @@ def test_plot_tracks_with_hic_rasterize_height_2chr():
     assert res is None, res
 
     os.remove(second_file)
+
+
+def test_plot_tracks_with_hic_small_test():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {} --BED {} "\
+           "--trackLabelFraction 0.23 --width 38 " \
+           "--outFileName {}" \
+           "".format(os.path.join(ROOT,
+                                  'browser_tracks_hic_small_test.ini'),
+                     os.path.join(ROOT, 'regions_chr1XY.bed'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    for region in ['_chr1-0-500000', '_chrX-2500000-2600000', '_chrY-0-1000000']:
+        file = outfile.name[:-4] + region + '.png'
+        res = compare_images(os.path.join(ROOT,
+                                          'master_plot_hic_small_test'
+                                          + region + '.png'),
+                             file, tolerance)
+        assert res is None, res
+
+        os.remove(file)
+
+
+# The tests with individual chromosome does not give the same result:
+# For the moment there is an issue in chr1 it comes from HiCMatrix
+# For the others the problem is the colorbar which is different when you do not load all data.
+
+# def test_plot_tracks_with_hic_small_test_individual():
+#     for region in ['chrX:2500000-2600000', 'chrY:-0-1000000']:
+
+#         outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+#                                      delete=False)
+#         args = "--tracks {} --region {} "\
+#                "--trackLabelFraction 0.23 --width 38 " \
+#                "--outFileName {}" \
+#                "".format(os.path.join(ROOT,
+#                                      'browser_tracks_hic_small_test.ini'),
+#                          region,
+#                          outfile.name).split()
+#         pygenometracks.plotTracks.main(args)
+#         res = compare_images(os.path.join(ROOT,
+#                                           'master_plot_hic_small_test_'
+#                                           + region.replace(':', '-') + '.png'),
+#                              outfile.name, tolerance)
+#         assert res is None, res
+
+#         os.remove(outfile.name)
