@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . GenomeTrack import GenomeTrack
+import numpy as np
 
 
 class TextTrack(GenomeTrack):
@@ -21,6 +22,7 @@ x position =
     FLOAT_PROPERTIES = {'height': [0, np.inf],
                         'x_position': [0, np.inf]}
     INTEGER_PROPERTIES = {}
+
     def plot(self, ax, chrom, region_start, region_end):
         """
         This example simply plots the given title at a fixed

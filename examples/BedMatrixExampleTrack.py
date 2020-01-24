@@ -3,6 +3,7 @@ import numpy as np
 from . BedGraphTrack import BedGraphTrack
 from . GenomeTrack import GenomeTrack
 
+
 class BedGraphMatrixTrack(BedGraphTrack):
     # this track class extends a BedGraphTrack that is already part of
     # pyGenomeTracks. The advantage of extending this class is that
@@ -53,7 +54,7 @@ class BedGraphMatrixTrack(BedGraphTrack):
         """
         start_pos = []
         matrix_rows = []
-        
+
         # the BedGraphTrack already has methods to read files
         # in which the first three columns are chrom, start,end
         # here we used the interval_tree method inherited from the
@@ -84,7 +85,6 @@ class BedGraphMatrixTrack(BedGraphTrack):
         img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
         img.set_rasterized(True)
 
-
     def plot_y_axis(self, ax, plot_axis):
-        """turn off y_axis plot"
+        """turn off y_axis plot"""
         pass

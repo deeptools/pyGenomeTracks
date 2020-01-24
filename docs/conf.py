@@ -21,6 +21,7 @@ project = 'pyGenomeTracks'
 copyright = '2020, Lucille Lopez-Delisle, Leily Rabbani, Fidel Ramirez, Thomas Manke, Joachim Wolff,  Bjoern Gruening, Rolf Backofen'
 author = 'Lucille Lopez-Delisle, Leily Rabbani, Fidel Ramirez, Thomas Manke, Joachim Wolff,  Bjoern Gruening, Rolf Backofen'
 
+
 # Copied from deeptools
 def get_version():
     import re
@@ -48,8 +49,7 @@ release = version
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinxarg.ext'
-]
+extensions = ['sphinxarg.ext']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
