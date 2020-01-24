@@ -46,12 +46,3 @@ Table of content
    content/possible-parameters
    content/adding-new-tracks
 
-
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
