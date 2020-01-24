@@ -1,7 +1,7 @@
 Examples
 ========
 
-(These examples can found in the `examples/ <https://github.com/deeptools/pyGenomeTracks/tree/master/examples>`_ or `test_data/ <https://github.com/deeptools/pyGenomeTracks/tree/master/tests/test_data>`_ folders of the github repository)
+These examples and the input data for these examples can found in the `examples/ <https://github.com/deeptools/pyGenomeTracks/tree/master/examples>`_ or `test_data/ <https://github.com/deeptools/pyGenomeTracks/tree/master/tests/test_data>`_ folders of the github repository.
 
 
 .. contents:: 
@@ -251,8 +251,8 @@ Here is an example where the height was set or not set and the heatmap was raste
 
 The output is available here: `master_plot_hic_rasterize_height.pdf <https://github.com/deeptools/pyGenomeTracks/raw/master/pygenometracks/tests/test_data/master_plot_hic_rasterize_height.pdf>`_.
 
-In these examples is where the overlay tracks are more useful. Notice that any track can be overlay over a Hi-C matrix. Most useful is to overlay TADs or to overlay links using the `triangles` option
-that will point in the Hi-C matrix the pixel with the link contact. When overlaying links and TADs is useful to set `overlay_previous=share-y` such that the two tracks match the positions. This is not
+This examples is where the overlay tracks are more useful. Notice that any track can be overlay over a Hi-C matrix. Most useful is to overlay TADs or to overlay links using the ``triangles`` option
+that will point in the Hi-C matrix the pixel with the link contact. When overlaying links and TADs is useful to set ``overlay_previous=share-y`` such that the two tracks match the positions. This is not
 required when overlying other type of data like a bigwig file that has a different y-scale.
 
 .. image:: ../../pygenometracks/tests/test_data/master_plot_hic.png
