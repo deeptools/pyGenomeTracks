@@ -103,7 +103,7 @@ def main():
                mat, fmt='%s', delimiter=" | ")
 
     max_char = max([len(mat[i, j]) for i in range(mat.shape[0]) for j in range(mat.shape[1])])
-    mat[1, : ] = ['=' * max_char] * mat.shape[1]
+    mat[1, :] = ['=' * max_char] * mat.shape[1]
     np.savetxt(os.path.join("docs", "content", "all_default_properties_rst.txt"),
                mat, fmt='%-{}s'.format(max_char), delimiter="  ",
                header='  '.join(mat[1, :]), footer='  '.join(mat[1, :]),
