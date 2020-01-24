@@ -23,7 +23,7 @@ The fastest way to obtain **Python 3.6 together with numpy** is
 via the `Anaconda Scientific Python
 Distribution <https://store.continuum.io/cshop/anaconda/>`_.
 Just download the version that's suitable for your operating system and
-follow the directions for its installation. All of the requirements for deepTools can be installed in Anaconda with:
+follow the directions for its installation. All of the requirements for pyGenomeTracks can be installed in Anaconda with:
 
 .. code:: bash
 
@@ -32,7 +32,7 @@ follow the directions for its installation. All of the requirements for deepTool
 Command line installation using ``pip``
 -----------------------------------------
 
-Install deepTools using the following command:
+Install pyGenomeTracks using the following command:
 ::
 
 	$ pip install pyGenomeTracks
@@ -73,7 +73,7 @@ a specific folder using the ``--prefix`` option)
 Galaxy installation
 --------------------
 
-deepTools can be easily integrated into a local `Galaxy <http://galaxyproject.org>`_.
+pyGenomeTracks can be easily integrated into a local `Galaxy <http://galaxyproject.org>`_.
 The wrapper and its dependencies are available in the `Galaxy Tool
 Shed <http://toolshed.g2.bx.psu.edu/view/iuc/pygenometracks>`_.
 
@@ -90,7 +90,7 @@ for your admin user and run the the installation script:
 		-o iuc -r <revision> --name pygenometracks \
 		--tool-deps --repository-deps --panel-section-name plots
 
-The ``-r`` argument specifies the version of deepTools.
+The ``-r`` argument specifies the version of pygenometracks.
 
 You can watch the installation status under: Top Panel --> Admin --> Manage
 installed tool shed repositories
