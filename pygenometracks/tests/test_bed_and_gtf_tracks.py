@@ -105,7 +105,7 @@ title = fontsize = 30
 with open(os.path.join(ROOT, "bed_and_gtf_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
-browser_tracks="""
+browser_tracks = """
 [x-axis]
 where = top
 title = where =top
@@ -394,6 +394,7 @@ def test_plot_tracks_bed_and_gtf():
 
     os.remove(outfile.name)
 
+
 def test_plot_tracks_bed_and_gtf_zoom():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
@@ -409,6 +410,7 @@ def test_plot_tracks_bed_and_gtf_zoom():
     assert res is None, res
 
     os.remove(outfile.name)
+
 
 def test_plot_tracks_bed_and_gtf_lim():
 
