@@ -45,3 +45,6 @@ pgt --tracks ./pygenometracks/tests/test_data/browser_tracks.ini --region X:0-10
 pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.2.png
 pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.5.png
 pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.5_fs20.png --fontSize 20
+pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --trackLabelHAlign right --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.5_ral.png
+pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --trackLabelHAlign center --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.5_cal.png
+pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --trackLabelHAlign center --width 38 --dpi 250 -o ./pygenometracks/tests/test_data/master_title_0.5_cal_d250.png
