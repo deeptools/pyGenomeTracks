@@ -121,7 +121,8 @@ file_type = {}
                            'arrow_interval': 2,
                            'arrowhead_included': False,
                            'color_utr': 'grey',
-                           'height_utr': 1}
+                           'height_utr': 1,
+                           'labels_in_margin': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -130,7 +131,7 @@ file_type = {}
                            'style': ['flybase', 'UCSC'],
                            'display': DISPLAY_BED_VALID}
     BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
-                          'arrowhead_included']
+                          'arrowhead_included', 'labels_in_margin']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
@@ -459,6 +460,11 @@ file_type = {}
                     pass
                 elif bed.end > start_region and bed.end < end_region:
                     ax.text(bed.end + self.small_relative,
+                            ypos + (self.properties['interval_height'] / 2),
+                            bed.name, horizontalalignment='left',
+                            verticalalignment='center', fontproperties=self.fp)
+                elif self.properties['labels_in_margin'] and bed.end >= end_region:
+                    ax.text(end_region + self.small_relative,
                             ypos + (self.properties['interval_height'] / 2),
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
