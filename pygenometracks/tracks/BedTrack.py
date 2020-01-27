@@ -495,12 +495,29 @@ file_type = {}
             elif self.properties['display'] == 'collapsed':
                 ax.set_ylim(-5, 105)
 
-    def plot_label(self, label_ax):
-        label_ax.text(0.05, 1, self.properties['title'],
-                      horizontalalignment='left', size='large',
-                      verticalalignment='top',
-                      transform=label_ax.transAxes,
-                      wrap=True)
+    def plot_label(self, label_ax, width_dpi, h_align='left'):
+        if h_align == 'left':
+            label_ax.text(0.05, 1, self.properties['title'],
+                          horizontalalignment='left', size='large',
+                          verticalalignment='top',
+                          transform=label_ax.transAxes,
+                          wrap=True)
+        elif h_align == 'right':
+            txt = label_ax.text(1, 1, self.properties['title'],
+                                horizontalalignment='right', size='large',
+                                verticalalignment='top',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
+        else:
+            txt = label_ax.text(0.5, 1, self.properties['title'],
+                                horizontalalignment='center', size='large',
+                                verticalalignment='top',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
 
     def plot_y_axis(self, ax, plot_axis):
         if self.colormap is not None:

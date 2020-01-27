@@ -114,11 +114,29 @@ height = 2
         ax.text(-0.2, 1, ymax_str, verticalalignment='top', horizontalalignment='right', transform=ax.transAxes)
         ax.patch.set_visible(False)
 
-    def plot_label(self, label_ax):
-        label_ax.text(0.05, 0.5, self.properties['title'],
-                      horizontalalignment='left',
-                      size='large', verticalalignment='center',
-                      transform=label_ax.transAxes, wrap=True)
+    def plot_label(self, label_ax, width_dpi, h_align='left'):
+        if h_align == 'left':
+            label_ax.text(0.05, 0.5, self.properties['title'],
+                          horizontalalignment='left', size='large',
+                          verticalalignment='center',
+                          transform=label_ax.transAxes,
+                          wrap=True)
+        elif h_align == 'right':
+            txt = label_ax.text(1, 0.5, self.properties['title'],
+                                horizontalalignment='right', size='large',
+                                verticalalignment='center',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
+        else:
+            txt = label_ax.text(0.5, 0.5, self.properties['title'],
+                                horizontalalignment='center', size='large',
+                                verticalalignment='center',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
 
     def process_type_for_coverage_track(self):
         default_plot_type = 'fill'

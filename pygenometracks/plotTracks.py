@@ -226,6 +226,13 @@ def parse_arguments(args=None):
                         default=0.05,
                         type=float)
 
+    parser.add_argument('--trackLabelHAlign',
+                        help='By default, the horizontal alignment of the track '
+                             'labels is left. This alignemnt can be changed to '
+                             'right or center.',
+                        default='left',
+                        choices=['left', 'right', 'center'])
+
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
 
@@ -297,7 +304,9 @@ def main(args=None):
                 # end += 100000
             sys.stderr.write("saving {}\n".format(file_name))
             # print("{} {} {}".format(chrom, start, end))
-            trp.plot(file_name, chrom, start, end, title=args.title)
+            trp.plot(file_name, chrom, start, end, title=args.title,
+                     h_align_titles=args.trackLabelHAlign)
     else:
         region = get_region(args.region)
-        trp.plot(args.outFileName, *region, title=args.title)
+        trp.plot(args.outFileName, *region, title=args.title,
+                 h_align_titles=args.trackLabelHAlign)

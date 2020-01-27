@@ -199,7 +199,8 @@ class PlotTracks(object):
 
         return track_height
 
-    def plot(self, file_name, chrom, start, end, title=None):
+    def plot(self, file_name, chrom, start, end, title=None,
+             h_align_titles='left'):
         track_height = self.get_tracks_height(start_region=start,
                                               end_region=end)
 
@@ -259,11 +260,16 @@ class PlotTracks(object):
 
                     label_axis = plt.subplot(grids[idx, 2])
                     label_axis.set_axis_off()
+                    # I get the width of the label_axis to be able to wrap the
+                    # labels when right or center aligned.
+                    width_inch = label_axis.get_window_extent().width
+                    width_dpi = width_inch * self.dpi / fig.dpi
 
             plot_axis.set_xlim(start, end)
             track.plot(plot_axis, chrom, start, end)
             track.plot_y_axis(y_axis, plot_axis)
-            track.plot_label(label_axis)
+            track.plot_label(label_axis, width_dpi=width_dpi,
+                             h_align=h_align_titles)
 
             if track.properties['overlay_previous'] == 'share-y':
                 plot_axis.set_ylim(ylim)
