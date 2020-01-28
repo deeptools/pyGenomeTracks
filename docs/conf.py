@@ -14,12 +14,33 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../'))
 
+from unittest.mock import Mock
 
+import warnings
+
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+
+# import mock
+
+MOCK_MODULES = ['numpy', 'numpy.core', 'numpy.core.multiarray', 'numpy.distutils.core', 'pandas', 'pysam', 'intervaltree',
+                'scipy', 'scipy.sparse', 'scipy.stats', 'scipy.ndimage', 'scipy.special',
+                'matplotlib', 'matplotlib.pyplot', 'matplotlib.gridspec', 'matplotlib.ticker',
+                'matplotlib.textpath', 'matplotlib.patches', 'matplotlib.colors', 'matplotlib.cm',
+                'mpl_toolkits', 'mpl_toolkits.axisartist', 'mpl_toolkits.mplot3d', 'mpl_toolkits.axes_grid1',
+                'Bio', 'Bio.Seq', 'Bio.Alphabet', 'pyBigWig', 'tables', 'pytables', 'future', 'past', 'past.builtins',
+                'future.utils', 'cooler', 'logging', 'unidecode', 'hic2cool', 'hicmatrix', 'hicmatrix.HiCMatrix',
+                'hicmatrix.lib', 'pybedtools']
+
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = Mock()
+
+autodoc_mock_imports = MOCK_MODULES
 # -- Project information -----------------------------------------------------
 
 project = 'pyGenomeTracks'
-copyright = '2020, Lucille Lopez-Delisle, Leily Rabbani, Fidel Ramirez, Thomas Manke, Joachim Wolff,  Bjoern Gruening, Rolf Backofen'
-author = 'Lucille Lopez-Delisle, Leily Rabbani, Fidel Ramirez, Thomas Manke, Joachim Wolff,  Bjoern Gruening, Rolf Backofen'
+copyright = '2020, Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolff, Thomas Manke, , Bjoern Gruening, Fidel Ramirez'
+author = 'Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolff, Thomas Manke,  Bjoern Gruening, Fidel Ramirez'
 
 
 # Copied from deeptools

@@ -1,5 +1,6 @@
 Possible parameters
 ===================
+
 Here is a table to summarize which are the parameters that can be use for each of the `file_type` and which is the default value:
 Empty means this parameter is not used.
 not set means that by default the parameter is commented.
