@@ -199,7 +199,9 @@ file_type = {}
         # (for example, TADsTracks do not have color_utr)
         for param in [p for p in ['border_color', 'color_utr']
                       if p in self.properties]:
-            if not matplotlib.colors.is_color_like(self.properties[param]):
+            if not matplotlib.colors.is_color_like(self.properties[param]) \
+               and self.properties[param] != 'bed_rgb' \
+               and self.properties[param] != self.properties['color']:
                 self.log.warning("*WARNING* {}: '{}' for section {}"
                                  " is not valid. Color has "
                                  "been set to "
@@ -437,7 +439,8 @@ file_type = {}
                         free_row = len(row_last_position)
                         row_last_position.append(bed_extended_end)
 
-                rgb, edgecolor = self.get_rgb_and_edge_color(bed)
+                rgb = self.get_rgb(bed)
+                edgecolor = self.get_rgb(bed, param='border_color', default=rgb)
 
                 ypos = self.get_y_pos(free_row)
 
@@ -533,26 +536,31 @@ file_type = {}
                 # with other labels
                 labels[idx].set_verticalalignment('top')
 
-    def get_rgb_and_edge_color(self, bed):
-        rgb = self.properties['color']
-        edgecolor = self.properties['border_color']
+    def get_rgb(self, bed, param='color', default=DEFAULT_BED_COLOR):
+        """
+        get the rgb value for the bed and the param given:
+        :param bed:
+        :param param:
+        :param default: the default value if it fails
+        :return: color
+        """
+        rgb = self.properties[param]
 
         if self.colormap:
             # translate value field (in the example above is 0 or 0.2686...)
             # into a color
             rgb = self.colormap.to_rgba(bed.score)
-            self.rgb = rgb
-        if self.properties['color'] == 'bed_rgb':
+        if self.properties[param] == 'bed_rgb':
             # if rgb is set in the bed line, this overrides the previously
             # defined colormap
             if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
                 try:
                     rgb = [float(x) / 255 for x in bed.rgb]
                 except IndexError:
-                    rgb = DEFAULT_BED_COLOR
+                    rgb = default
             else:
-                rgb = DEFAULT_BED_COLOR
-        return rgb, edgecolor
+                rgb = default
+        return rgb
 
     def draw_gene_simple(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
@@ -596,7 +604,7 @@ file_type = {}
 
         first_pos = positions.pop()
         if first_pos[2] == 'UTR':
-            _rgb = self.properties['color_utr']
+            _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
             # The arrow will be centered on
             # ypos + self.properties['interval_height'] /2
             # The total height will be
@@ -620,7 +628,7 @@ file_type = {}
 
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
-                _rgb = self.properties['color_utr']
+                _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
                 y0 = ypos + self.properties['interval_height'] * \
                     (1 - self.properties['height_utr']) / 2
                 height = self.properties['interval_height'] * \
@@ -867,7 +875,7 @@ file_type = {}
         last_corner = None
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
-                _rgb = self.properties['color_utr']
+                _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
                 y0 = y_bottom - self.properties['interval_height'] / 2 * \
                     (1 - self.properties['height_utr']) / 2
                 height = self.properties['interval_height'] / 2 * \
@@ -918,7 +926,8 @@ file_type = {}
             y1 = 0
             y2 = (region.end - region.begin)
 
-            rgb, edgecolor = self.get_rgb_and_edge_color(region.data)
+            rgb = self.get_rgb(bed)
+            edgecolor = self.get_rgb(bed, param='border_color', default=rgb)
 
             triangle = Polygon([[x1, y1], [x2, y2], [x3, y1]], closed=True,
                                facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line_width'])
