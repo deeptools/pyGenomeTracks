@@ -696,7 +696,7 @@ file_type = {}
             # x0 and x1 are the start/end of the current block
             x0 = bed.start + bed.block_starts[idx]
             x1 = x0 + bed.block_sizes[idx]
-            # We deal with the special case where 
+            # We deal with the special case where
             # there is no coding independently
             if bed.thick_start == bed.thick_end:
                 positions.append((x0, x1, 'UTR'))
