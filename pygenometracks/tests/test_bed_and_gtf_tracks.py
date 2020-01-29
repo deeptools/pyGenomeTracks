@@ -271,6 +271,74 @@ height_utr = 0.7
 with open(os.path.join(ROOT, "bed_flybase_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[x-axis]
+where = top
+
+[spacer]
+height = 0.05
+
+[test bed4]
+file = dm3_genes.bed4.gz
+height = 7
+title = bed4 style = tssarrow
+style = tssarrow
+fontsize = 10
+
+[spacer]
+height = 1
+
+[test bed6]
+file = dm3_genes.bed6.gz
+height = 7
+title = bed6 style = tssarrow
+style = tssarrow
+fontsize = 10
+
+[spacer]
+height = 1
+
+[genes 0]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 10
+style = tssarrow
+fontsize = 10
+
+[genes 0]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 10; arrow_length = 5000 (5kb)
+style = tssarrow
+arrow_length = 5000
+fontsize = 10
+
+[spacer]
+height = 1
+
+[genes 1]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 10; color_utr = red
+style = tssarrow
+fontsize = 10
+color_utr = red
+
+[spacer]
+height = 1
+
+[genes 2]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 10; height_utr = 0.7
+style = tssarrow
+fontsize = 10
+height_utr = 0.7
+"""
+with open(os.path.join(ROOT, "bed_tssarrow_tracks.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -336,6 +404,57 @@ def test_plot_tracks_flybase():
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_bed_flybase.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_tssarrow():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3000000-3300000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_tssarrow_tracks.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_tssarrow.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_tssarrow_zoom():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3020000-3070000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_tssarrow_tracks.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_tssarrow_zoom.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_tssarrow_zoom2():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3130000-3150000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_tssarrow_tracks.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_tssarrow_zoom2.png'),
                          outfile.name, tolerance)
     assert res is None, res
 
