@@ -330,7 +330,7 @@ file_type = {}
         if self.properties['display'] == 'interleaved':
             ypos = self.properties['interval_height'] \
                 if self.counter % 2 == 0 \
-                else 1
+                else 0
         # if the collapsed directive is given
         # ypos is always 0
         elif self.properties['display'] == 'collapsed':
@@ -480,7 +480,8 @@ file_type = {}
                                  format(self.properties['file'],
                                         self.properties['section_name'],
                                         chrom_region, start_region, end_region))
-            ymax = 0
+
+            ymax = - 0.05 * self.properties['interval_height']
 
             if self.properties['global_max_row']:
                 ymin = self.max_num_row[chrom_region] * self.row_scale
@@ -495,9 +496,9 @@ file_type = {}
             ax.set_ylim(ymin, ymax)
 
             if self.properties['display'] == 'interleaved':
-                ax.set_ylim(-5, 205)
+                ax.set_ylim(2.05 * self.properties['interval_height'], ymax)
             elif self.properties['display'] == 'collapsed':
-                ax.set_ylim(-5, 105)
+                ax.set_ylim(1.05 * self.properties['interval_height'], ymax)
 
     def plot_label(self, label_ax):
         label_ax.text(0.05, 1, self.properties['title'],
