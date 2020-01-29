@@ -840,7 +840,7 @@ file_type = {}
                 arrow_length = 10 * self.small_relative
             else:
                 arrow_length = self.properties['arrow_length']
-            y_arrow = ypos - self.properties['interval_height'] / 8
+            y_arrow = ypos + self.properties['interval_height'] / 8
             head_width = self.properties['interval_height'] / 4
             head_length = self.small_relative * 3
             # plot the arrow to indicate tss
