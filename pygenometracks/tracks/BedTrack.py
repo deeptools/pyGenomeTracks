@@ -481,24 +481,26 @@ file_type = {}
                                         self.properties['section_name'],
                                         chrom_region, start_region, end_region))
 
-            ymax = - 0.05 * self.properties['interval_height']
+            epsilon = 0.08
+            ymax = - epsilon * self.properties['interval_height']
 
             if self.properties['global_max_row']:
                 ymin = self.max_num_row[chrom_region] * self.row_scale
 
             elif self.properties['gene_rows'] is not None:
                 ymin = self.properties['gene_rows'] * self.row_scale
+
             else:
-                ymin = max_ypos + self.properties['interval_height']
+                ymin = max_ypos + (1 + epsilon) * self.properties['interval_height']
 
             self.log.debug("ylim {},{}".format(ymin, ymax))
             # the axis is inverted (thus, ymax < ymin)
             ax.set_ylim(ymin, ymax)
 
             if self.properties['display'] == 'interleaved':
-                ax.set_ylim(2.05 * self.properties['interval_height'], ymax)
+                ax.set_ylim((2 + epsilon) * self.properties['interval_height'], ymax)
             elif self.properties['display'] == 'collapsed':
-                ax.set_ylim(1.05 * self.properties['interval_height'], ymax)
+                ax.set_ylim((1 + epsilon) * self.properties['interval_height'], ymax)
 
     def plot_label(self, label_ax):
         label_ax.text(0.05, 1, self.properties['title'],
