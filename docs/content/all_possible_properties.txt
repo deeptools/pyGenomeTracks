@@ -7,7 +7,7 @@
 - **line_style**:
   - for *links, hlines*: solid, dashed, dotted, dashdot
 - **style**:
-  - for *bed*: flybase, UCSC
+  - for *bed*: flybase, UCSC, tssarrow
 - **display**:
   - for *bed*: collapsed, triangles, interleaved, stacked
 - **type**:

@@ -491,6 +491,7 @@ arrow_interval |  |  |  |  | 2 |  |  |  |  |  |
 arrowhead_included |  |  |  |  | false |  |  |  |  |  | 
 color_utr |  |  |  |  | grey |  |  |  |  |  | 
 height_utr |  |  |  |  | 1 |  |  |  |  |  | 
+arrow_length |  |  |  |  | not set |  |  |  |  |  | 
 show_data_range |  |  |  |  |  | true | true | true | true | true | 
 show_labels |  |  |  |  |  | true |  |  |  |  | 
 use_summit |  |  |  |  |  | true |  |  |  |  | 
@@ -525,7 +526,7 @@ They are summarized here:
 - **line_style**:
   - for *links, hlines*: solid, dashed, dotted, dashdot
 - **style**:
-  - for *bed*: flybase, UCSC
+  - for *bed*: flybase, UCSC, tssarrow
 - **display**:
   - for *bed*: collapsed, triangles, interleaved, stacked
 - **type**:
