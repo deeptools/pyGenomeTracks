@@ -194,3 +194,19 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                             color=negative_color,
                             facecolor=negative_color,
                             alpha=alpha)
+
+
+def get_length_w(fig_width, region_start, region_end, fontsize):
+    """
+    to improve the visualization of the labels
+    it is good to have an estimation of their length
+    in base pairs. In the following code I try to get the
+    length of a 'W' in base pairs.
+    """
+    # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
+    inches_per_pt = 1.0 / 72.27
+    font_in_inches = fontsize * inches_per_pt
+    region_len = region_end - region_start
+    bp_per_inch = region_len / fig_width
+    font_in_bp = font_in_inches * bp_per_inch
+    return font_in_bp

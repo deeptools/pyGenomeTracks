@@ -1,7 +1,7 @@
 from . GenomeTrack import GenomeTrack
 from .. readBed import ReadBed
 from .. readGtf import ReadGtf
-from .. utilities import opener
+from .. utilities import opener, get_length_w
 import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
@@ -205,26 +205,6 @@ file_type = {}
         # to set the distance between rows
         self.row_scale = self.properties['interval_height'] * 2.3
 
-    def get_length_w(self, fig_width, region_start, region_end):
-        """
-        to improve the visualization of the genes
-        it is good to have an estimation of the label
-        length. In the following code I try to get the
-        length of a 'W' in base pairs.
-        """
-        if self.properties['labels']:
-            # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
-            inches_per_pt = 1.0 / 72.27
-            font_in_inches = self.properties['fontsize'] * inches_per_pt
-            region_len = region_end - region_start
-            bp_per_inch = region_len / fig_width
-            font_in_bp = font_in_inches * bp_per_inch
-            self.len_w = font_in_bp
-        else:
-            self.len_w = 1
-
-        return self.len_w
-
     def process_bed(self):
 
         if self.properties['file'].endswith('gtf') or \
@@ -355,8 +335,13 @@ file_type = {}
         else:
             self.counter = 0
             self.small_relative = 0.004 * (end_region - start_region)
-            self.get_length_w(ax.get_figure().get_figwidth(), start_region,
-                              end_region)
+            if self.properties['labels']:
+                self.len_w = get_length_w(ax.get_figure().get_figwidth(),
+                                          start_region, end_region,
+                                          self.properties['fontsize'])
+            else:
+                self.len_w = 1
+
             if self.properties['global_max_row']:
                 self.get_max_num_row(self.len_w, self.small_relative)
 
