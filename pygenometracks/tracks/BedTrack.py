@@ -926,8 +926,8 @@ file_type = {}
             y1 = 0
             y2 = (region.end - region.begin)
 
-            rgb = self.get_rgb(bed)
-            edgecolor = self.get_rgb(bed, param='border_color', default=rgb)
+            rgb = self.get_rgb(region.data)
+            edgecolor = self.get_rgb(region.data, param='border_color', default=rgb)
 
             triangle = Polygon([[x1, y1], [x2, y2], [x3, y1]], closed=True,
                                facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line_width'])
