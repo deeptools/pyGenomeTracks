@@ -12,28 +12,30 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 browser_tracks = """
 [sb1]
 file_type = scalebar
-title = scalebar
+title = scalebar; where = top
+where = top
 
 [spacer]
 
 [sb1b]
 file_type = scalebar
-title = scalebar; height = 3
+title = scalebar; height = 3; where = top
 height = 3
+where = top
 
 [spacer]
 
 [sb5]
 file_type = scalebar
 fontsize = 6
-title = scalebar; fontsize = 6
+title = scalebar; fontsize = 6; where = top
+where = top
 
 [spacer]
 
 [sb2]
 file_type = scalebar
-where = left
-title = scalebar; where = left
+title = scalebar
 
 [spacer]
 

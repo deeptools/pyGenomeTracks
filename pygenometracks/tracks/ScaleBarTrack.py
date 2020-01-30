@@ -28,7 +28,7 @@ color = black
 #size = 100000
 # where: where the size of the scale bar should
 # appear among left, right, top, bottom
-# default is top
+# default is left
 #where = right
 # fontsize: default is 12
 #fontsize = 10
@@ -40,7 +40,7 @@ file_type = {}
                            'line_width': 0.5,
                            'x_center': None,
                            'size': None,
-                           'where': 'top',
+                           'where': 'left',
                            'height': 0.5}
     NECESSARY_PROPERTIES = []
     SYNONYMOUS_PROPERTIES = {}
