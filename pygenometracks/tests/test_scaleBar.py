@@ -75,7 +75,7 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 def test_scale_bar():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.2" \
+    args = "--tracks {0} --region X:3000000-3300000 --trackLabelFraction 0.2" \
            " --width 38 --dpi 130 --outFileName {1}" \
            "".format(os.path.join(ROOT, "scale_bar.ini"),
                      outfile.name).split()
@@ -91,7 +91,7 @@ def test_scale_bar():
 def test_scale_bar_zoom():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3200000-3500000 --trackLabelFraction 0.2" \
+    args = "--tracks {0} --region X:3200000-3300000 --trackLabelFraction 0.2" \
            " --width 38 --dpi 130 --outFileName {1}" \
            "".format(os.path.join(ROOT, "scale_bar.ini"),
                      outfile.name).split()
