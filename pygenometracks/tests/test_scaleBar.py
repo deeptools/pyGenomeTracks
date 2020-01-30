@@ -102,4 +102,3 @@ def test_scale_bar_zoom():
     assert res is None, res
 
     os.remove(outfile.name)
-
