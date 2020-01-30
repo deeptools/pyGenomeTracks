@@ -338,6 +338,79 @@ height_utr = 0.7
 with open(os.path.join(ROOT, "bed_tssarrow_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[x-axis]
+where = top
+
+[spacer]
+height = 0.5
+
+[genes 0]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 10; color = bed_rgb
+style = tssarrow
+fontsize = 10
+color = bed_rgb
+
+[spacer]
+
+[genes 1]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 10; color = bed_rgb; color_utr = bed_rgb
+style = tssarrow
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+
+[spacer]
+
+[genes 2]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = UCSC; fontsize = 10; color = bed_rgb; color_utr = bed_rgb
+style = UCSC
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+
+[spacer]
+
+[genes 3]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = flybase; fontsize = 10; color = bed_rgb; color_utr = bed_rgb
+style = flybase
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+
+[spacer]
+
+[genes 4]
+file = hoxd_genes_noGm_rgb.bed.gz
+height = 3
+title = genes except Gm (bed12) style = tssarrow; fontsize = 10; color = bed_rgb; color_utr = bed_rgb
+style = tssarrow
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+
+[spacer]
+
+[genes 5]
+file = hoxd_genes_noGm_rgb.bed.gz
+height = 1
+title = genes except Gm (bed12) style = tssarrow; fontsize = 10; color = bed_rgb; color_utr = bed_rgb; display = collapsed
+style = tssarrow
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+display = collapsed
+"""
+with open(os.path.join(ROOT, "bed_genes_rgb.ini"), 'w') as fh:
+    fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -472,6 +545,23 @@ def test_plot_tracks_bed_with_maxLab():
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_maxLab.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_genes_rgb():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region chr2:74,650,000-74,710,000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_genes_rgb.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_genes_rgb.png'),
                          outfile.name, tolerance)
     assert res is None, res
 
