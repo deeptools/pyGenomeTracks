@@ -1,15 +1,15 @@
-# This bash script can be used to regenerate the README when parameters changed in tracksclasses.
+# This bash script can be used to regenerate the tables used
+# in possible parameters when parameters changed in tracksclasses.
+# As well as updating the usage part in the README.md
 
-# Firts run the python script getAllDefaultsAndPossible.py
 python pygenometracks/getAllDefaultsAndPossible.py 
 
-# This generates 2 tables to include in the README
-# First include the first one: docs/content/all_default_properties.txt
-awk 'NR==1,/<!--- Start of default table -->/' README.md > newREADME.md
-cat docs/content/all_default_properties.txt >> newREADME.md
-awk '/<!--- End of default table -->/{toprint = 1}toprint == 1{print}' README.md >> newREADME.md
-# Then include the second one: docs/content/all_possible_properties.txt
-awk 'NR==1,/<!--- Start of possible table -->/' newREADME.md > README.md
-cat docs/content/all_possible_properties.txt >> README.md
-awk '/<!--- End of possible table -->/{toprint = 1}toprint == 1{print}' newREADME.md >> README.md
-rm newREADME.md
+# This generates 2 tables that will be included in the readthedocs documentation
+
+# Then for the usage:
+awk 'NR==1,/<!--- Start of possible arguments of pgt -->/' README.md > newREADME.md
+echo "\`\`\` text" >> newREADME.md
+bin/pyGenomeTracks -h | awk '/optional arguments:/{toprint = 1}toprint == 1 {print}' >> newREADME.md
+echo "\`\`\`" >> newREADME.md
+awk '/<!--- End of possible arguments of pgt -->/{toprint = 1}toprint == 1{print}' README.md >> newREADME.md
+mv newREADME.md README.md
