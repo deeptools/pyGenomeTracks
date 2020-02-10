@@ -1,6 +1,7 @@
 import sys
 import gzip
 import numpy as np
+from tqdm import tqdm
 from intervaltree import IntervalTree, Interval
 
 
@@ -74,7 +75,7 @@ def file_to_intervaltree(file_name):
     min_value = float('Inf')
     max_value = -float('Inf')
 
-    for line in file_h.readlines():
+    for line in tqdm(file_h.readlines()):
         line_number += 1
         line = to_string(line)
         if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
@@ -194,3 +195,16 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                             color=negative_color,
                             facecolor=negative_color,
                             alpha=alpha)
+
+
+def count_lines(file_h, asBed=False):
+    n = 0
+    for line in file_h:
+        if asBed:
+            line = to_string(line)
+            if line.startswith("#") or line.startswith("track") or \
+               line.startswith("browser") or line.strip() == '':
+                continue
+        n += 1
+    file_h.close()
+    return(n)

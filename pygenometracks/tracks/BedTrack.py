@@ -1,7 +1,7 @@
 from . GenomeTrack import GenomeTrack
 from .. readBed import ReadBed
 from .. readGtf import ReadGtf
-from .. utilities import opener
+from .. utilities import opener, count_lines
 import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
@@ -9,6 +9,7 @@ from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from intervaltree import IntervalTree, Interval
 import numpy as np
+from tqdm import tqdm
 
 DEFAULT_BED_COLOR = '#1f78b4'
 DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']
@@ -232,7 +233,10 @@ file_type = {}
             bed_file_h = ReadGtf(self.properties['file'],
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
+            total_length = bed_file_h.length
         else:
+            total_length = count_lines(opener(self.properties['file']),
+                                       asBed=True)
             bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
 
@@ -248,7 +252,7 @@ file_type = {}
 
         max_score = float('-inf')
         min_score = float('inf')
-        for bed in bed_file_h:
+        for bed in tqdm(bed_file_h, total=total_length):
             if bed.score < min_score:
                 min_score = bed.score
             if bed.score > max_score:
@@ -260,6 +264,11 @@ file_type = {}
             interval_tree[bed.chromosome].add(Interval(bed.start,
                                                        bed.end, bed))
             valid_intervals += 1
+
+        try:
+            bed_file_h.file_handle.close()
+        except AttributeError:
+            pass
 
         if valid_intervals == 0:
             self.log.warning("No valid intervals were found in file "
