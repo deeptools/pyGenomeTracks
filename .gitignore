@@ -40,3 +40,6 @@ htmlcov
 
 # vscode
 .vscode
+
+# sphinx
+docs/_build

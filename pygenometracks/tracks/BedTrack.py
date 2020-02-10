@@ -559,7 +559,7 @@ file_type = {}
     def draw_gene_with_introns_flybase_style(self, ax, bed, ypos, rgb,
                                              edgecolor, linewidth):
         """
-        draws a gene using different styles
+        draws a gene like in flybase gbrowse.
         """
         if bed.block_count == 0 and bed.thick_start == bed.start and \
            bed.thick_end == bed.end:
@@ -571,28 +571,7 @@ file_type = {}
                 'black', linewidth=linewidth, zorder=-1)
 
         # get start, end of all the blocks
-        positions = []
-        for idx in range(0, bed.block_count):
-            x0 = bed.start + bed.block_starts[idx]
-            x1 = x0 + bed.block_sizes[idx]
-            if bed.thick_start == bed.thick_end:
-                positions.append((x0, x1, 'UTR'))
-
-            elif x0 < bed.thick_start < x1:
-                positions.append((x0, bed.thick_start, 'UTR'))
-                positions.append((bed.thick_start, x1, 'coding'))
-
-            elif x0 < bed.thick_end < x1:
-                positions.append((x0, bed.thick_end, 'coding'))
-                positions.append((bed.thick_end, x1, 'UTR'))
-
-            else:
-                if x1 < bed.thick_start or x0 > bed.thick_end:
-                    type = 'UTR'
-                else:
-                    type = 'coding'
-
-                positions.append((x0, x1, type))
+        positions = self._split_bed_to_blocks(bed)
 
         # plot all blocks as rectangles except the last if the strand is + or
         # the first is the strand is -, which are drawn as arrows.
@@ -694,9 +673,57 @@ file_type = {}
 
         return vertices
 
+    def _split_bed_to_blocks(self, bed):
+        """
+        Split a bed entry into blocks to plot
+        :param bed: a namedtuple with at least 6 fields
+        :return: a list of tuple (start, end, type) with type in ['UTR', 'coding']
+        """
+        if self.bed_type != 'bed12':
+            # No thick_start, thick_end, block_count:
+            return [(bed.start, bed.end, 'coding')]
+
+        # get start, end of all the blocks
+        positions = []
+        for idx in range(0, bed.block_count):
+            # x0 and x1 are the start/end of the current block
+            x0 = bed.start + bed.block_starts[idx]
+            x1 = x0 + bed.block_sizes[idx]
+            # We deal with the special case where
+            # there is no coding independently
+            if bed.thick_start == bed.thick_end:
+                positions.append((x0, x1, 'UTR'))
+                continue
+            # If the beginning of the coding region
+            # is withing the current block
+            if x0 < bed.thick_start < x1:
+                # What is before is UTR
+                positions.append((x0, bed.thick_start, 'UTR'))
+                # The start of the interval is updated
+                x0 = bed.thick_start
+
+            # If the end of the coding region
+            # is withing the current block
+            if x0 < bed.thick_end < x1:
+                # What is before is coding
+                positions.append((x0, bed.thick_end, 'coding'))
+                # The start of the interval is updated
+                x0 = bed.thick_end
+
+            if x1 < bed.thick_start or x0 >= bed.thick_end:
+                type = 'UTR'
+            else:
+                type = 'coding'
+
+            positions.append((x0, x1, type))
+
+        return positions
+
     def draw_gene_with_introns(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
-        draws a gene like in flybase gbrowse.
+        draws a gene like in UCSC
+        Except that for the moment no arrow are plotted
+        on the coding part
         """
 
         if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
@@ -717,15 +744,28 @@ file_type = {}
                 y0 = ypos
                 y1 = ypos + 1
 
-            if x0 < bed.thick_start < x1:
-                vertices = ([(x0, ypos + 1 / 4), (x0, ypos + 3 / 4),
+            if x0 < bed.thick_start < x1 and x0 < bed.thick_end < x1:
+                vertices = ([(x0, ypos + 1 / 4),
+                             (x0, ypos + 3 / 4),
                              (bed.thick_start, ypos + 3 / 4),
                              (bed.thick_start, ypos + 1),
-                             (bed.thick_start, ypos + 1),
-                             (x1, ypos + 1), (x1, ypos),
+                             (bed.thick_end, ypos + 1),
+                             (bed.thick_end, ypos + 3 / 4),
+                             (x1, ypos + 3 / 4),
+                             (x1, ypos + 1 / 4),
+                             (bed.thick_end, ypos + 1 / 4),
+                             (bed.thick_end, ypos),
                              (bed.thick_start, ypos),
                              (bed.thick_start, ypos + 1 / 4)])
-
+            elif x0 < bed.thick_start < x1:
+                vertices = ([(x0, ypos + 1 / 4),
+                             (x0, ypos + 3 / 4),
+                             (bed.thick_start, ypos + 3 / 4),
+                             (bed.thick_start, ypos + 1),
+                             (x1, ypos + 1),
+                             (x1, ypos),
+                             (bed.thick_start, ypos),
+                             (bed.thick_start, ypos + 1 / 4)])
             elif x0 < bed.thick_end < x1:
                 vertices = ([(x0, ypos),
                              (x0, ypos + 1),

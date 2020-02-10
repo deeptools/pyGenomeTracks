@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . GenomeTrack import GenomeTrack
+import numpy as np
 
 
 class TextTrack(GenomeTrack):
@@ -11,8 +12,16 @@ title =
 text =
 # x position of text in the plot (in bp)
 x position =
-file_type = {}
-    """.format(TRACK_TYPE)
+"""
+    DEFAULTS_PROPERTIES = {'text': 'hello world'}
+    NECESSARY_PROPERTIES = ['x_position']
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = ['text', 'title', 'file_type']
+    FLOAT_PROPERTIES = {'height': [0, np.inf],
+                        'x_position': [0, np.inf]}
+    INTEGER_PROPERTIES = {}
 
     def plot(self, ax, chrom, region_start, region_end):
         """
@@ -26,5 +35,4 @@ file_type = {}
             end_region: end coordinate
         """
         # print text at position x = self.properties['x position'] and y = 0.5 (center of the plot)
-        ax.text(float(self.properties['x position']), 0.5, self.properties['text'])
-        # print title in legend axis
+        ax.text(self.properties['x_position'], 0.5, self.properties['text'])
