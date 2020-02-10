@@ -102,6 +102,13 @@ def main():
     np.savetxt(os.path.join("docs", "content", "all_default_properties.txt"),
                mat, fmt='%s', delimiter=" | ")
 
+    max_char = max([len(mat[i, j]) for i in range(mat.shape[0]) for j in range(mat.shape[1])])
+    mat[1, :] = ['=' * max_char] * mat.shape[1]
+    np.savetxt(os.path.join("docs", "content", "all_default_properties_rst.txt"),
+               mat, fmt='%-{}s'.format(max_char), delimiter="  ",
+               header='  '.join(mat[1, :]), footer='  '.join(mat[1, :]),
+               comments='')
+
     # For the possible:
     with open(os.path.join("docs", "content", "all_possible_properties.txt"),
               'w') as fo:
@@ -120,22 +127,22 @@ def main():
                             break
                     if not added:
                         possible_values[track_type] = pv
-            fo.write("- **" + p + "**:\n")
+            fo.write("- **" + p + "**:\n\n")
             for name in [k for k in possible_values]:
                 reformated_possible = ", ".join([v for v in possible_values[name]
                                                 if v is not None])
                 if None in possible_values[name]:
                     reformated_possible += ", " + not_set_string
-                fo.write("  - for *" + name + "*: " + reformated_possible + "\n")
+                fo.write("  - for *" + name + "*: " + reformated_possible + "\n\n")
         for p, pv in GOOD_PRACTICES.items():
             names = []
             for track_type in all_tracks_with_default:
                 if track_type in all_default_parameters[p]:
                     names += [track_type]
-            fo.write("- **" + p + "**:\n")
+            fo.write("- **" + p + "**:\n\n")
             name = track_separator.join(names)
             reformated_possible = ", ".join([v for k, v in pv.items()])
-            fo.write("  - for *" + name + "*: " + reformated_possible + "\n")
+            fo.write("  - for *" + name + "*: " + reformated_possible + "\n\n")
 
 
 if __name__ == "__main__":

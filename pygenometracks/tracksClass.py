@@ -95,6 +95,7 @@ class PlotTracks(object):
         # initialize each track
         self.track_obj_list = []
         for idx, properties in enumerate(self.track_list):
+            log.info("initialize {}".format(properties['section_name']))
             if 'spacer' in properties:
                 self.track_obj_list.append(SpacerTrack(properties))
             elif 'x-axis' in properties:
