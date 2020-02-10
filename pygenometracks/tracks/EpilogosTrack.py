@@ -90,6 +90,10 @@ file_type = {}
             # the qcat_json is a pseudo json line, that misses
             # the { } and the quotes. The following lines fix that.
             qcat_json = qcat_json[0]
+            if not isinstance(qcat_json, str):
+                # This would happen if the qcat file has a missing value.
+                # The missing value is filled with np.repeat(np.nan, ..) and should be skipped here.
+                continue
             qcat_json = '{' + qcat_json.replace('id', '"id"').replace('qcat', '"qcat"') + '}'
             qcat = json.loads(qcat_json)
 
