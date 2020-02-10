@@ -129,6 +129,96 @@ file_type = hlines
 with open(os.path.join(ROOT, "hlines.ini"), 'w') as fh:
     fh.write(tracks)
 
+tracks = """
+[test bigwig]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+height = 7
+title = No alpha:
+        (bigwig color=blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) max over 300 bins) overlaid with (bigwig mean color = green 200 bins)
+number_of_bins = 2000
+min_value = 0
+max_value = 30
+
+[test bigwig max]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = (0.6, 0, 0)
+summary_method = max
+number_of_bins = 300
+overlay_previous = share-y
+
+[test bigwig mean]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = green
+type = fill
+number_of_bins = 200
+overlay_previous = share-y
+
+[spacer]
+
+[test bigwig]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+height = 7
+title = alpha
+        (bigwig color = blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) alpha = 0.5 max over 300 bins) overlaid with (bigwig mean color = green alpha = 0.5 200 bins)
+number_of_bins = 2000
+min_value = 0
+max_value = 30
+
+[test bigwig max]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = (0.6, 0, 0)
+alpha = 0.5
+summary_method = max
+number_of_bins = 300
+overlay_previous = share-y
+
+[test bigwig mean]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = green
+alpha = 0.5
+type = fill
+number_of_bins = 200
+overlay_previous = share-y
+
+[spacer]
+
+[test bigwig]
+file = bigwig2_X_2.5e6_3.5e6.bw
+height = 7
+title = alpha for lines/points:
+        (bigwig color=(0.6, 0, 0) alpha = 0.5 max) overlaid with (bigwig mean color = green alpha = 0.5 line:2) overlaid with (bigwig min color = blue alpha = 0.5 points:2)
+color = (0.6, 0, 0)
+alpha = 0.5
+summary_method = max
+number_of_bins = 300
+min_value = 0
+max_value = 30
+
+[test bigwig mean]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = green
+type = line:2
+alpha = 0.5
+summary_method = mean
+number_of_bins = 300
+overlay_previous = share-y
+
+[test bigwig min]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+summary_method = min
+number_of_bins = 1000
+type = points:3
+alpha = 0.5
+overlay_previous = share-y
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "alpha.ini"), 'w') as fh:
+    fh.write(tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 

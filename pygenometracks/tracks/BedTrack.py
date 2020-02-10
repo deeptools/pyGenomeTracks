@@ -172,36 +172,19 @@ file_type = {}
         super(BedTrack, self).set_properties_defaults()
         self.fp = font_manager.FontProperties(size=self.properties['fontsize'])
         self.colormap = None
-
         # check if the color given is a color map
-        if not matplotlib.colors.is_color_like(self.properties['color']) \
-           and self.properties['color'] != 'bed_rgb':
-            # check if the color is a valid colormap name
-            if self.properties['color'] not in matplotlib.cm.datad:
-                self.log.warning("*WARNING* color: '{}' for section {}"
-                                 " is not valid. Color has "
-                                 "been set to "
-                                 "{}".format(self.properties['color'],
-                                             self.properties['section_name'],
-                                             DEFAULT_BED_COLOR))
-                self.properties['color'] = DEFAULT_BED_COLOR
-            else:
-                self.colormap = self.properties['color']
+        is_colormap = self.process_color('color', colormap_possible=True,
+                                         bed_rgb_possible=True,
+                                         default_value_is_colormap=False)
+        if is_colormap:
+            self.colormap = self.properties['color']
 
         # check if border_color and color_utr are colors
         # if they are part of self.properties
         # (for example, TADsTracks do not have color_utr)
         for param in [p for p in ['border_color', 'color_utr']
                       if p in self.properties]:
-            if not matplotlib.colors.is_color_like(self.properties[param]):
-                self.log.warning("*WARNING* {}: '{}' for section {}"
-                                 " is not valid. Color has "
-                                 "been set to "
-                                 "{}".format(param,
-                                             self.properties[param],
-                                             self.properties['section_name'],
-                                             self.DEFAULTS_PROPERTIES[param]))
-                self.properties[param] = self.DEFAULTS_PROPERTIES[param]
+            self.process_color(param)
 
         # to set the distance between rows
         self.row_scale = self.properties['interval_height'] * 2.3
