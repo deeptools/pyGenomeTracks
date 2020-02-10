@@ -83,6 +83,9 @@ fontsize = 10
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
 #global_max_row = true
+# If you want to display the name of the gene which goes over the plotted
+# region in the right margin put:
+#labels_in_margin = true
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
@@ -121,7 +124,8 @@ file_type = {}
                            'arrow_interval': 2,
                            'arrowhead_included': False,
                            'color_utr': 'grey',
-                           'height_utr': 1}
+                           'height_utr': 1,
+                           'labels_in_margin': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -130,7 +134,7 @@ file_type = {}
                            'style': ['flybase', 'UCSC'],
                            'display': DISPLAY_BED_VALID}
     BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
-                          'arrowhead_included']
+                          'arrowhead_included', 'labels_in_margin']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
@@ -437,6 +441,11 @@ file_type = {}
                             ypos + 0.5,
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
+                elif self.properties['labels_in_margin'] and bed.end >= end_region:
+                    ax.text(end_region + self.small_relative,
+                            ypos + (self.properties['interval_height'] / 2),
+                            bed.name, horizontalalignment='left',
+                            verticalalignment='center', fontproperties=self.fp)
 
             if self.counter == 0:
                 self.log.warning("*Warning* No intervals were found for file {} "
@@ -464,12 +473,29 @@ file_type = {}
             elif self.properties['display'] == 'collapsed':
                 ax.set_ylim(-0.05, 1.05)
 
-    def plot_label(self, label_ax):
-        label_ax.text(0.05, 1, self.properties['title'],
-                      horizontalalignment='left', size='large',
-                      verticalalignment='top',
-                      transform=label_ax.transAxes,
-                      wrap=True)
+    def plot_label(self, label_ax, width_dpi, h_align='left'):
+        if h_align == 'left':
+            label_ax.text(0.05, 1, self.properties['title'],
+                          horizontalalignment='left', size='large',
+                          verticalalignment='top',
+                          transform=label_ax.transAxes,
+                          wrap=True)
+        elif h_align == 'right':
+            txt = label_ax.text(1, 1, self.properties['title'],
+                                horizontalalignment='right', size='large',
+                                verticalalignment='top',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
+        else:
+            txt = label_ax.text(0.5, 1, self.properties['title'],
+                                horizontalalignment='center', size='large',
+                                verticalalignment='top',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
 
     def plot_y_axis(self, ax, plot_axis):
         if self.colormap is not None:
