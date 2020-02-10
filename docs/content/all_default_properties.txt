@@ -12,7 +12,6 @@ alpha |  |  | 0.8 |  |  |  | 1 | 1 |  | 1 |
 max_value |  |  | not set | not set | not set | not set | not set | not set | not set | not set | not set
 min_value |  |  | not set | not set | not set |  | not set | not set | not set | not set | not set
 border_color |  |  |  | black | black |  |  |  |  |  | 
-interval_height |  |  |  | 100 | 100 |  |  |  |  |  | 
 prefered_name |  |  |  | transcript_name | transcript_name |  |  |  |  |  | 
 merge_transcripts |  |  |  | false | false |  |  |  |  |  | 
 labels |  |  |  |  | true |  |  |  |  |  | 
