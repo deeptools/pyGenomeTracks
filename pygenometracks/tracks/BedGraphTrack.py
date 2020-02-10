@@ -54,7 +54,7 @@ nans_to_zeros = true
 # 'log': transformed_values = log(log_pseudocount + initial_values)
 # 'log2': transformed_values = log2(log_pseudocount + initial_values)
 # 'log10': transformed_values = log10(log_pseudocount + initial_values)
-# '-log': transformed_values = log(-(log_pseudocount + initial_values))
+# '-log': transformed_values = log(log_pseudocount + initial_values)
 # For example:
 #tranform = log
 #log_pseudocount = 2

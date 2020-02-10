@@ -234,14 +234,14 @@ def transform(score_list, transform, log_pseudocount, file):
         else:
             return(np.log1p(score_list))
     elif transform == '-log':
-        if np.nanmax(score_list.max) >= - log_pseudocount:
-            msg = ("\n*ERROR*\ncoverage contains values greater or equal to"
+        if np.nanmax(score_list.max) <= - log_pseudocount:
+            msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
                    " - {0}.\n"
-                   "log( - ({0} + <values>)) transformation can not be applied"
+                   "- log( {0} + <values>) transformation can not be applied"
                    " to values in file: {1}".format(log_pseudocount, file))
             raise Exception(msg)
         else:
-            return(np.log(- (log_pseudocount + score_list)))
+            return(- np.log(log_pseudocount + score_list))
     else:
         warnings.warn('The transform: {} for file {} is not valid.'
                       'will not use any transformation'.format(transform,

@@ -134,8 +134,8 @@ height = 2
             elif transform == 'log1p':
                 ymin, ymid, ymax = np.expm1([ymin, ymid, ymax])
             elif transform == '-log':
-                ymin, ymid, ymax = - (np.exp([ymin, ymid, ymax])
-                                      - log_pseudocount)
+                ymin, ymid, ymax = np.exp(- [ymin, ymid, ymax]) - \
+                    log_pseudocount
             ymid_str = value_to_str(ymid)
             # plot something that looks like this:
             # ymax ┐
@@ -157,11 +157,6 @@ height = 2
             else:
                 if transform == 'log1p':
                     ymid_str = "log(1 + x)"
-                elif transform == '-log':
-                    if log_pseudocount == 0:
-                        ymid_str = "log(-x)".format(log_pseudocount)
-                    else:
-                        ymid_str = "log(-({} + x))".format(log_pseudocount)
                 else:
                     if log_pseudocount == 0:
                         ymid_str = "{}(x)".format(transform)
