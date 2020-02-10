@@ -59,7 +59,6 @@ title = bed4 fontsize = 10; line_width = 1.5; global_max_row = true
 fontsize = 10
 file_type = bed
 global_max_row = true
-interval_height = 200
 line_width = 1.5
 
 [spacer]
@@ -103,6 +102,110 @@ title = fontsize = 30
 
 """
 with open(os.path.join(ROOT, "bed_and_gtf_tracks.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[x-axis]
+where = top
+title = where =top
+
+[spacer]
+height = 0.05
+
+[genes 2]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = UCSC; fontsize = 10
+style = UCSC
+fontsize = 10
+labels_in_margin = true
+
+[genes 2bis]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = UCSC; arrow_interval=10; fontsize = 10
+style = UCSC
+arrow_interval = 10
+fontsize = 10
+labels_in_margin = true
+
+[spacer]
+height = 1
+
+[test bed6]
+file = dm3_genes.bed6.gz
+height = 7
+title = bed6 border_color = black; gene_rows=10; fontsize=7; color=Reds
+        (when a color map is used for the color (e.g. coolwarm, Reds) the bed
+        score column mapped to a color)
+fontsize = 7
+file_type = bed
+color = Reds
+border_color = black
+gene_rows = 10
+labels_in_margin = true
+
+[spacer]
+height = 1
+
+[test bed4]
+file = dm3_genes.bed4.gz
+height = 10
+title = bed4 fontsize = 10; line_width = 1.5; global_max_row = true
+        (global_max_row sets the number of genes per row as the maximum found
+        anywhere in the genome, hence the white space at the bottom)
+fontsize = 10
+file_type = bed
+global_max_row = true
+interval_height = 200
+line_width = 1.5
+labels_in_margin = true
+
+[spacer]
+height = 1
+
+[test gtf]
+file = dm3_subset_BDGP5.78.gtf.gz
+height = 10
+title = gtf from ensembl
+fontsize = 12
+file_type = bed
+labels_in_margin = true
+
+[spacer]
+height = 1
+
+[test bed]
+file = dm3_subset_BDGP5.78_asbed_sorted.bed.gz
+height = 10
+title = gtf from ensembl in bed12
+fontsize = 12
+file_type = bed
+labels_in_margin = true
+
+[spacer]
+height = 1
+
+[test gtf collapsed]
+file = dm3_subset_BDGP5.78.gtf.gz
+height = 10
+title = gtf from ensembl one entry per gene
+merge_transcripts = true
+prefered_name = gene_name
+fontsize = 12
+file_type = bed
+labels_in_margin = true
+
+[spacer]
+height = 1
+
+[x-axis]
+fontsize = 30
+title = fontsize = 30
+
+"""
+
+with open(os.path.join(ROOT, "bed_and_gtf_tracks_labels_in_margin.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 browser_tracks = """
@@ -162,7 +265,6 @@ height = 3
 title = bed4 fontsize = 10; line_width = 1.5
 fontsize = 10
 file_type = bed
-interval_height = 200
 line_width = 1.5
 
 [spacer]
@@ -313,6 +415,57 @@ def test_plot_tracks_bed_and_gtf():
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_bed_and_gtf.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_and_gtf_zoom():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3050000-3100000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_and_gtf_tracks.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_and_gtf_zoom.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_and_gtf_lim():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3050000-3100000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_and_gtf_tracks_labels_in_margin.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_and_gtf_zoom_lim.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_and_gtf_lim_ral():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3050000-3100000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--trackLabelHAlign right --outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_and_gtf_tracks_labels_in_margin.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_and_gtf_zoom_lim_ral.png'),
                          outfile.name, tolerance)
     assert res is None, res
 

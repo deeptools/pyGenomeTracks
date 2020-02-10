@@ -1,7 +1,7 @@
 from . GenomeTrack import GenomeTrack
 from .. readBed import ReadBed
 from .. readGtf import ReadGtf
-from .. utilities import opener
+from .. utilities import opener, count_lines
 import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
@@ -9,6 +9,7 @@ from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from intervaltree import IntervalTree, Interval
 import numpy as np
+from tqdm import tqdm
 
 DEFAULT_BED_COLOR = '#1f78b4'
 DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']
@@ -84,6 +85,9 @@ fontsize = 10
 #global_max_row = true
 # If you want to plot all labels inside the plotting region:
 #all_labels_inside = true
+# If you want to display the name of the gene which goes over the plotted
+# region in the right margin put:
+#labels_in_margin = true
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
@@ -111,7 +115,6 @@ file_type = {}
                            'labels': True,
                            'style': 'flybase',
                            'display': DEFAULT_DISPLAY_BED,
-                           'interval_height': 100,  # This one is not defined in the documentation
                            'line_width': 0.5,
                            'max_labels': 60,
                            'prefered_name': 'transcript_name',
@@ -124,7 +127,8 @@ file_type = {}
                            'arrowhead_included': False,
                            'color_utr': 'grey',
                            'height_utr': 1,
-                           'all_labels_inside': False}
+                           'all_labels_inside': False,
+                           'labels_in_margin': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -133,7 +137,8 @@ file_type = {}
                            'style': ['flybase', 'UCSC'],
                            'display': DISPLAY_BED_VALID}
     BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
-                          'arrowhead_included', 'all_labels_inside']
+                          'arrowhead_included', 'all_labels_inside',
+                          'labels_in_margin']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
@@ -141,7 +146,6 @@ file_type = {}
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
-                        'interval_height': [0, np.inf],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf],
                         'height_utr': [0, 1]}
@@ -174,39 +178,22 @@ file_type = {}
         super(BedTrack, self).set_properties_defaults()
         self.fp = font_manager.FontProperties(size=self.properties['fontsize'])
         self.colormap = None
-
         # check if the color given is a color map
-        if not matplotlib.colors.is_color_like(self.properties['color']) \
-           and self.properties['color'] != 'bed_rgb':
-            # check if the color is a valid colormap name
-            if self.properties['color'] not in matplotlib.cm.datad:
-                self.log.warning("*WARNING* color: '{}' for section {}"
-                                 " is not valid. Color has "
-                                 "been set to "
-                                 "{}".format(self.properties['color'],
-                                             self.properties['section_name'],
-                                             DEFAULT_BED_COLOR))
-                self.properties['color'] = DEFAULT_BED_COLOR
-            else:
-                self.colormap = self.properties['color']
+        is_colormap = self.process_color('color', colormap_possible=True,
+                                         bed_rgb_possible=True,
+                                         default_value_is_colormap=False)
+        if is_colormap:
+            self.colormap = self.properties['color']
 
         # check if border_color and color_utr are colors
         # if they are part of self.properties
         # (for example, TADsTracks do not have color_utr)
         for param in [p for p in ['border_color', 'color_utr']
                       if p in self.properties]:
-            if not matplotlib.colors.is_color_like(self.properties[param]):
-                self.log.warning("*WARNING* {}: '{}' for section {}"
-                                 " is not valid. Color has "
-                                 "been set to "
-                                 "{}".format(param,
-                                             self.properties[param],
-                                             self.properties['section_name'],
-                                             self.DEFAULTS_PROPERTIES[param]))
-                self.properties[param] = self.DEFAULTS_PROPERTIES[param]
+            self.process_color(param)
 
         # to set the distance between rows
-        self.row_scale = self.properties['interval_height'] * 2.3
+        self.row_scale = 2.3
 
     def get_length_w(self, fig_width, region_start, region_end):
         """
@@ -235,7 +222,10 @@ file_type = {}
             bed_file_h = ReadGtf(self.properties['file'],
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
+            total_length = bed_file_h.length
         else:
+            total_length = count_lines(opener(self.properties['file']),
+                                       asBed=True)
             bed_file_h = ReadBed(opener(self.properties['file']))
         self.bed_type = bed_file_h.file_type
 
@@ -251,7 +241,7 @@ file_type = {}
 
         max_score = float('-inf')
         min_score = float('inf')
-        for bed in bed_file_h:
+        for bed in tqdm(bed_file_h, total=total_length):
             if bed.score < min_score:
                 min_score = bed.score
             if bed.score > max_score:
@@ -263,6 +253,11 @@ file_type = {}
             interval_tree[bed.chromosome].add(Interval(bed.start,
                                                        bed.end, bed))
             valid_intervals += 1
+
+        try:
+            bed_file_h.file_handle.close()
+        except AttributeError:
+            pass
 
         if valid_intervals == 0:
             self.log.warning("No valid intervals were found in file "
@@ -322,11 +317,11 @@ file_type = {}
         """
 
         # if the interleaved directive is given,
-        # ypos simply oscilates between 0 and 100
+        # ypos simply oscilates between 0 and 1
         if self.properties['display'] == 'interleaved':
-            ypos = self.properties['interval_height'] \
+            ypos = 1 \
                 if self.counter % 2 == 0 \
-                else 1
+                else 0
         # if the collapsed directive is given
         # ypos is always 0
         elif self.properties['display'] == 'collapsed':
@@ -481,6 +476,11 @@ file_type = {}
                             verticalalignment='center', fontproperties=self.fp)
                 elif bed.end > start_region and bed.end < end_region:
                     ax.text(bed.end + self.small_relative,
+                            ypos + 0.5,
+                            bed.name, horizontalalignment='left',
+                            verticalalignment='center', fontproperties=self.fp)
+                elif self.properties['labels_in_margin'] and bed.end >= end_region:
+                    ax.text(end_region + self.small_relative,
                             ypos + (self.properties['interval_height'] / 2),
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
@@ -500,23 +500,40 @@ file_type = {}
             elif self.properties['gene_rows'] is not None:
                 ymin = self.properties['gene_rows'] * self.row_scale
             else:
-                ymin = max_ypos + self.properties['interval_height']
+                ymin = max_ypos + 1
 
             self.log.debug("ylim {},{}".format(ymin, ymax))
             # the axis is inverted (thus, ymax < ymin)
             ax.set_ylim(ymin, ymax)
 
             if self.properties['display'] == 'interleaved':
-                ax.set_ylim(-5, 205)
+                ax.set_ylim(-0.05, 2.05)
             elif self.properties['display'] == 'collapsed':
-                ax.set_ylim(-5, 105)
+                ax.set_ylim(-0.05, 1.05)
 
-    def plot_label(self, label_ax):
-        label_ax.text(0.05, 1, self.properties['title'],
-                      horizontalalignment='left', size='large',
-                      verticalalignment='top',
-                      transform=label_ax.transAxes,
-                      wrap=True)
+    def plot_label(self, label_ax, width_dpi, h_align='left'):
+        if h_align == 'left':
+            label_ax.text(0.05, 1, self.properties['title'],
+                          horizontalalignment='left', size='large',
+                          verticalalignment='top',
+                          transform=label_ax.transAxes,
+                          wrap=True)
+        elif h_align == 'right':
+            txt = label_ax.text(1, 1, self.properties['title'],
+                                horizontalalignment='right', size='large',
+                                verticalalignment='top',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
+        else:
+            txt = label_ax.text(0.5, 1, self.properties['title'],
+                                horizontalalignment='center', size='large',
+                                verticalalignment='top',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
 
     def plot_y_axis(self, ax, plot_axis):
         if self.colormap is not None:
@@ -570,8 +587,7 @@ file_type = {}
 
         if bed.strand not in ['+', '-']:
             ax.add_patch(Rectangle((bed.start, ypos),
-                         bed.end - bed.start,
-                         self.properties['interval_height'],
+                         bed.end - bed.start, 1,
                          edgecolor=edgecolor, facecolor=rgb,
                          linewidth=linewidth))
         else:
@@ -584,40 +600,19 @@ file_type = {}
     def draw_gene_with_introns_flybase_style(self, ax, bed, ypos, rgb,
                                              edgecolor, linewidth):
         """
-        draws a gene using different styles
+        draws a gene like in flybase gbrowse.
         """
         if bed.block_count == 0 and bed.thick_start == bed.start and \
            bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor)
             return
-        half_height = self.properties['interval_height'] / 2
+        half_height = 1 / 2
         # draw 'backbone', a line from the start until the end of the gene
         ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height],
                 'black', linewidth=linewidth, zorder=-1)
 
         # get start, end of all the blocks
-        positions = []
-        for idx in range(0, bed.block_count):
-            x0 = bed.start + bed.block_starts[idx]
-            x1 = x0 + bed.block_sizes[idx]
-            if bed.thick_start == bed.thick_end:
-                positions.append((x0, x1, 'UTR'))
-
-            elif x0 < bed.thick_start < x1:
-                positions.append((x0, bed.thick_start, 'UTR'))
-                positions.append((bed.thick_start, x1, 'coding'))
-
-            elif x0 < bed.thick_end < x1:
-                positions.append((x0, bed.thick_end, 'coding'))
-                positions.append((bed.thick_end, x1, 'UTR'))
-
-            else:
-                if x1 < bed.thick_start or x0 > bed.thick_end:
-                    type = 'UTR'
-                else:
-                    type = 'coding'
-
-                positions.append((x0, x1, type))
+        positions = self._split_bed_to_blocks(bed)
 
         # plot all blocks as rectangles except the last if the strand is + or
         # the first is the strand is -, which are drawn as arrows.
@@ -628,17 +623,15 @@ file_type = {}
         if first_pos[2] == 'UTR':
             _rgb = self.properties['color_utr']
             # The arrow will be centered on
-            # ypos + self.properties['interval_height'] /2
+            # ypos + 1 / 2
             # The total height will be
-            # self.properties['interval_height'] * self.properties['height_utr']
-            y0 = ypos + self.properties['interval_height'] * \
-                (1 - self.properties['height_utr']) / 2
-            half_height = self.properties['interval_height'] * \
-                self.properties['height_utr'] / 2
+            # self.properties['height_utr']
+            y0 = ypos + (1 - self.properties['height_utr']) / 2
+            half_height = self.properties['height_utr'] / 2
         else:
             _rgb = rgb
             y0 = ypos
-            half_height = self.properties['interval_height'] / 2
+            half_height = 1 / 2
 
         vertices = self._draw_arrow(first_pos[0], first_pos[1], bed.strand,
                                     y0, half_height)
@@ -651,14 +644,12 @@ file_type = {}
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
                 _rgb = self.properties['color_utr']
-                y0 = ypos + self.properties['interval_height'] * \
-                    (1 - self.properties['height_utr']) / 2
-                height = self.properties['interval_height'] * \
-                    self.properties['height_utr']
+                y0 = ypos + (1 - self.properties['height_utr']) / 2
+                height = self.properties['height_utr']
             else:
                 _rgb = rgb
                 y0 = ypos
-                height = self.properties['interval_height']
+                height = 1
 
             vertices = [(start_pos, y0), (start_pos, y0 + height),
                         (end_pos, y0 + height), (end_pos, y0)]
@@ -679,7 +670,7 @@ file_type = {}
         :return: None
         """
         if half_height is None:
-            half_height = self.properties['interval_height'] / 2
+            half_height = 1 / 2
         # The y values are common to both strands:
         y0 = ypos
         y1 = ypos + 2 * half_height
@@ -723,48 +714,107 @@ file_type = {}
 
         return vertices
 
+    def _split_bed_to_blocks(self, bed):
+        """
+        Split a bed entry into blocks to plot
+        :param bed: a namedtuple with at least 6 fields
+        :return: a list of tuple (start, end, type) with type in ['UTR', 'coding']
+        """
+        if self.bed_type != 'bed12':
+            # No thick_start, thick_end, block_count:
+            return [(bed.start, bed.end, 'coding')]
+
+        # get start, end of all the blocks
+        positions = []
+        for idx in range(0, bed.block_count):
+            # x0 and x1 are the start/end of the current block
+            x0 = bed.start + bed.block_starts[idx]
+            x1 = x0 + bed.block_sizes[idx]
+            # We deal with the special case where
+            # there is no coding independently
+            if bed.thick_start == bed.thick_end:
+                positions.append((x0, x1, 'UTR'))
+                continue
+            # If the beginning of the coding region
+            # is withing the current block
+            if x0 < bed.thick_start < x1:
+                # What is before is UTR
+                positions.append((x0, bed.thick_start, 'UTR'))
+                # The start of the interval is updated
+                x0 = bed.thick_start
+
+            # If the end of the coding region
+            # is withing the current block
+            if x0 < bed.thick_end < x1:
+                # What is before is coding
+                positions.append((x0, bed.thick_end, 'coding'))
+                # The start of the interval is updated
+                x0 = bed.thick_end
+
+            if x1 < bed.thick_start or x0 >= bed.thick_end:
+                type = 'UTR'
+            else:
+                type = 'coding'
+
+            positions.append((x0, x1, type))
+
+        return positions
+
     def draw_gene_with_introns(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
-        draws a gene like in flybase gbrowse.
+        draws a gene like in UCSC
+        Except that for the moment no arrow are plotted
+        on the coding part
         """
 
         if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
-        half_height = self.properties['interval_height'] / 2
-        quarter_height = self.properties['interval_height'] / 4
-        three_quarter_height = quarter_height * 3
 
         # draw 'backbone', a line from the start until the end of the gene
-        ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height], 'black', linewidth=linewidth, zorder=-1)
+        ax.plot([bed.start, bed.end], [ypos + 1 / 2, ypos + 1 / 2], 'black', linewidth=linewidth, zorder=-1)
 
         for idx in range(0, bed.block_count):
             x0 = bed.start + bed.block_starts[idx]
             x1 = x0 + bed.block_sizes[idx]
             if x1 < bed.thick_start or x0 > bed.thick_end or \
                bed.thick_start == bed.thick_end:
-                y0 = ypos + quarter_height
-                y1 = ypos + three_quarter_height
+                y0 = ypos + 1 / 4
+                y1 = ypos + 3 / 4
             else:
                 y0 = ypos
-                y1 = ypos + self.properties['interval_height']
+                y1 = ypos + 1
 
-            if x0 < bed.thick_start < x1:
-                vertices = ([(x0, ypos + quarter_height), (x0, ypos + three_quarter_height),
-                             (bed.thick_start, ypos + three_quarter_height),
-                             (bed.thick_start, ypos + self.properties['interval_height']),
-                             (bed.thick_start, ypos + self.properties['interval_height']),
-                             (x1, ypos + self.properties['interval_height']), (x1, ypos),
-                             (bed.thick_start, ypos), (bed.thick_start, ypos + quarter_height)])
-
+            if x0 < bed.thick_start < x1 and x0 < bed.thick_end < x1:
+                vertices = ([(x0, ypos + 1 / 4),
+                             (x0, ypos + 3 / 4),
+                             (bed.thick_start, ypos + 3 / 4),
+                             (bed.thick_start, ypos + 1),
+                             (bed.thick_end, ypos + 1),
+                             (bed.thick_end, ypos + 3 / 4),
+                             (x1, ypos + 3 / 4),
+                             (x1, ypos + 1 / 4),
+                             (bed.thick_end, ypos + 1 / 4),
+                             (bed.thick_end, ypos),
+                             (bed.thick_start, ypos),
+                             (bed.thick_start, ypos + 1 / 4)])
+            elif x0 < bed.thick_start < x1:
+                vertices = ([(x0, ypos + 1 / 4),
+                             (x0, ypos + 3 / 4),
+                             (bed.thick_start, ypos + 3 / 4),
+                             (bed.thick_start, ypos + 1),
+                             (x1, ypos + 1),
+                             (x1, ypos),
+                             (bed.thick_start, ypos),
+                             (bed.thick_start, ypos + 1 / 4)])
             elif x0 < bed.thick_end < x1:
                 vertices = ([(x0, ypos),
-                             (x0, ypos + self.properties['interval_height']),
-                             (bed.thick_end, ypos + self.properties['interval_height']),
-                             (bed.thick_end, ypos + three_quarter_height),
-                             (x1, ypos + three_quarter_height),
-                             (x1, ypos + quarter_height),
-                             (bed.thick_end, ypos + quarter_height),
+                             (x0, ypos + 1),
+                             (bed.thick_end, ypos + 1),
+                             (bed.thick_end, ypos + 3 / 4),
+                             (x1, ypos + 3 / 4),
+                             (x1, ypos + 1 / 4),
+                             (bed.thick_end, ypos + 1 / 4),
                              (bed.thick_end, ypos)])
             else:
                 vertices = ([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])
@@ -848,7 +898,7 @@ file_type = {}
             xdata = [xpos + self.small_relative / 4,
                      xpos - self.small_relative / 4,
                      xpos + self.small_relative / 4]
-        ydata = [ypos + self.properties['interval_height'] / 4,
-                 ypos + self.properties['interval_height'] / 2,
-                 ypos + self.properties['interval_height'] * 3 / 4]
+        ydata = [ypos + 1 / 4,
+                 ypos + 1 / 2,
+                 ypos + 3 / 4]
         ax.add_line(Line2D(xdata, ydata, color='black', linewidth=self.properties['line_width']))
