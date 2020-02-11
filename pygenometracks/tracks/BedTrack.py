@@ -443,7 +443,7 @@ file_type = {}
                             verticalalignment='center', fontproperties=self.fp)
                 elif self.properties['labels_in_margin'] and bed.end >= end_region:
                     ax.text(end_region + self.small_relative,
-                            ypos + (self.properties['interval_height'] / 2),
+                            ypos + (1 / 2),
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
 
