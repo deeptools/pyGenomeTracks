@@ -45,6 +45,10 @@ color = red
 #line_width = 0.5
 # options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
 line_style = solid
+# To be able to see small arcs when big arcs exists, you can set
+# the upper y limit.
+# The unit is bp. This corresponds to the longest arc you will see.
+#ylim = 100000
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'links_type': 'arcs',
@@ -54,10 +58,12 @@ file_type = {}
                            'color': DEFAULT_LINKS_COLOR,
                            'alpha': 0.8,
                            'max_value': None,
-                           'min_value': None}
+                           'min_value': None,
+                           'ylim': None}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
-                             'min_value': {'auto': None}}
+                             'min_value': {'auto': None},
+                             'ylim': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'links_type': ['arcs', 'triangles', 'loops'],
                            'line_style': ['solid', 'dashed',
@@ -68,6 +74,7 @@ file_type = {}
                          'title', 'color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
+                        'ylim': [0, np.inf],
                         'alpha': [0, 1],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf]}
@@ -160,11 +167,15 @@ file_type = {}
         # the arc height is equal to the radius, the track height is the largest
         # radius plotted plus an small increase to avoid cropping of the arcs
         self.max_height *= 1.1
+        if self.properties['ylim'] is None:
+            ymax = self.max_height
+        else:
+            ymax = self.properties['ylim']
         self.log.debug("{} were links plotted".format(count))
         if self.properties['orientation'] == 'inverted':
-            ax.set_ylim(self.max_height, -1)
+            ax.set_ylim(ymax, -1)
         else:
-            ax.set_ylim(-1, self.max_height)
+            ax.set_ylim(-1, ymax)
 
         # I guess this was forgotten
         # self.log.debug('title is {}'.format(self.properties['title']))
