@@ -30,15 +30,19 @@ class LinksTrack(GenomeTrack):
 # For these tracks do not hesitate to put large line_width like 5 or 10.
 links_type = arcs
 # color of the lines
+color = red
 # if color is a valid colormap name (like RdYlGn),
 # then the score is mapped to the colormap.
-color = red
+#color = RdYlGn
+# To set the minimum and maximum value of the colormap:
+#min_value = 0
+#max_value = 1.2
 # To use transparency, you can use alpha
 # default is 0.8
 # alpha = 0.5
 # if line_width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
-# line_width = 0.5
+#line_width = 0.5
 # options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
 line_style = solid
 file_type = {}
@@ -155,7 +159,7 @@ file_type = {}
 
         # the arc height is equal to the radius, the track height is the largest
         # radius plotted plus an small increase to avoid cropping of the arcs
-        self.max_height += self.max_height * 0.1
+        self.max_height *= 1.1
         self.log.debug("{} were links plotted".format(count))
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(self.max_height, -1)
@@ -191,21 +195,23 @@ file_type = {}
 
     def plot_arcs(self, ax, interval):
 
-        diameter = (interval.end - interval.begin)
-        radius = float(diameter) / 2
-        center = interval.begin + float(diameter) / 2
-        if radius > self.max_height:
-            self.max_height = radius
-        ax.plot([center], [diameter])
+        width = (interval.end - interval.begin)
+        half_height = width
+        center = interval.begin + width / 2
+        if half_height > self.max_height:
+            self.max_height = half_height
+        # I think this was an error...
+        # ax.plot([center], [diameter])
         if self.colormap:
             # translate score field
             # into a color
             rgb = self.colormap.to_rgba(interval.data[4])
         else:
             rgb = self.properties['color']
-        ax.add_patch(Arc((center, 0), diameter,
-                         diameter, 0, 0, 180, color=rgb,
-                         linewidth=self.line_width, ls=self.properties['line_style']))
+        ax.add_patch(Arc((center, 0), width,
+                         2 * half_height, 0, 0, 180, color=rgb,
+                         linewidth=self.line_width,
+                         ls=self.properties['line_style']))
 
     def plot_triangles(self, ax, interval):
         x1 = interval.begin
