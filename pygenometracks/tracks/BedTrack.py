@@ -855,16 +855,16 @@ file_type = {}
         # get start, end of all the blocks
         positions = self._split_bed_to_blocks(bed)
 
-        y_bottom = ypos + self.properties['interval_height']
-        y_top_intron = ypos + self.properties['interval_height'] / 4
+        y_bottom = ypos + 1
+        y_top_intron = ypos + 1 / 4
 
         if bed.strand in ["+", "-"]:
             if self.properties['arrow_length'] is None:
                 arrow_length = 10 * self.small_relative
             else:
                 arrow_length = self.properties['arrow_length']
-            y_arrow = ypos + self.properties['interval_height'] / 8
-            head_width = self.properties['interval_height'] / 4
+            y_arrow = ypos + 1 / 8
+            head_width = 1 / 4
             head_length = self.small_relative * 3
             # plot the arrow to indicate tss
             if bed.strand == "+":
@@ -889,14 +889,12 @@ file_type = {}
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
                 _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
-                y0 = y_bottom - self.properties['interval_height'] / 2 * \
-                    (1 - self.properties['height_utr']) / 2
-                height = self.properties['interval_height'] / 2 * \
-                    self.properties['height_utr']
+                y0 = y_bottom - 1 / 2 * (1 - self.properties['height_utr']) / 2
+                height = 1 / 2 * self.properties['height_utr']
             else:
                 _rgb = rgb
                 y0 = y_bottom
-                height = self.properties['interval_height'] / 2
+                height = 1 / 2
 
             vertices = [(start_pos, y0), (start_pos, y0 - height),
                         (end_pos, y0 - height), (end_pos, y0)]
