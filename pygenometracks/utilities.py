@@ -1,6 +1,7 @@
 import sys
 import gzip
 import numpy as np
+from tqdm import tqdm
 from intervaltree import IntervalTree, Interval
 import warnings
 
@@ -75,7 +76,7 @@ def file_to_intervaltree(file_name):
     min_value = float('Inf')
     max_value = -float('Inf')
 
-    for line in file_h.readlines():
+    for line in tqdm(file_h.readlines()):
         line_number += 1
         line = to_string(line)
         if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
@@ -247,3 +248,32 @@ def transform(score_list, transform, log_pseudocount, file):
                       'will not use any transformation'.format(transform,
                                                                file))
         return(score_list)
+
+
+def get_length_w(fig_width, region_start, region_end, fontsize):
+    """
+    to improve the visualization of the labels
+    it is good to have an estimation of their length
+    in base pairs. In the following code I try to get the
+    length of a 'W' in base pairs.
+    """
+    # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
+    inches_per_pt = 1.0 / 72.27
+    font_in_inches = fontsize * inches_per_pt
+    region_len = region_end - region_start
+    bp_per_inch = region_len / fig_width
+    font_in_bp = font_in_inches * bp_per_inch
+    return font_in_bp
+
+
+def count_lines(file_h, asBed=False):
+    n = 0
+    for line in file_h:
+        if asBed:
+            line = to_string(line)
+            if line.startswith("#") or line.startswith("track") or \
+               line.startswith("browser") or line.strip() == '':
+                continue
+        n += 1
+    file_h.close()
+    return(n)

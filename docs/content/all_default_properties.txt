@@ -12,7 +12,6 @@ alpha |  |  | 0.8 |  |  |  | 1 | 1 |  | 1 |
 max_value |  |  | not set | not set | not set | not set | not set | not set | not set | not set | not set
 min_value |  |  | not set | not set | not set |  | not set | not set | not set | not set | not set
 border_color |  |  |  | black | black |  |  |  |  |  | 
-interval_height |  |  |  | 100 | 100 |  |  |  |  |  | 
 prefered_name |  |  |  | transcript_name | transcript_name |  |  |  |  |  | 
 merge_transcripts |  |  |  | false | false |  |  |  |  |  | 
 labels |  |  |  |  | true |  |  |  |  |  | 
@@ -25,6 +24,7 @@ arrow_interval |  |  |  |  | 2 |  |  |  |  |  |
 arrowhead_included |  |  |  |  | false |  |  |  |  |  | 
 color_utr |  |  |  |  | grey |  |  |  |  |  | 
 height_utr |  |  |  |  | 1 |  |  |  |  |  | 
+arrow_length |  |  |  |  | not set |  |  |  |  |  | 
 show_data_range |  |  |  |  |  | true | true | true | true | true | 
 show_labels |  |  |  |  |  | true |  |  |  |  | 
 use_summit |  |  |  |  |  | true |  |  |  |  | 
@@ -41,8 +41,8 @@ use_middle |  |  |  |  |  |  |  | false |  |  |
 rasterize |  |  |  |  |  |  |  | false | true |  | true
 pos_score_in_bin |  |  |  |  |  |  |  |  | center |  | 
 plot_horizontal_lines |  |  |  |  |  |  |  |  | false |  | 
+colormap |  |  |  |  |  |  |  |  | viridis |  | RdYlBu_r
 region |  |  |  |  |  |  |  |  |  |  | not set
 depth |  |  |  |  |  |  |  |  |  |  | 100000
 show_masked_bins |  |  |  |  |  |  |  |  |  |  | false
 scale_factor |  |  |  |  |  |  |  |  |  |  | 1
-colormap |  |  |  |  |  |  |  |  |  |  | RdYlBu_r

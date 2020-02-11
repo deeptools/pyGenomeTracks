@@ -98,8 +98,11 @@ file_type = {}
     def set_properties_defaults(self):
         super(BigWigTrack, self).set_properties_defaults()
         super(BigWigTrack, self).process_type_for_coverage_track()
+        self.process_color('color')
         if self.properties['negative_color'] is None:
             self.properties['negative_color'] = self.properties['color']
+        else:
+            self.process_color('negative_color')
 
     def plot(self, ax, chrom_region, start_region, end_region):
         formated_region = "{}:{}-{}".format(chrom_region, start_region, end_region)

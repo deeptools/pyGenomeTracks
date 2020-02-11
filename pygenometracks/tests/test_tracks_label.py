@@ -52,6 +52,57 @@ def test_large_width_label():
     os.remove(outfile.name)
 
 
+def test_large_width_label_ral():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
+    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.5" \
+           " --width 38 --dpi 130 --outFileName {1}" \
+           " --trackLabelHAlign right" \
+           "".format(os.path.join(ROOT, "title.ini"),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_title_0.5_ral.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_large_width_label_cal():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
+    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.5" \
+           " --width 38 --dpi 130 --outFileName {1}" \
+           " --trackLabelHAlign center" \
+           "".format(os.path.join(ROOT, "title.ini"),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_title_0.5_cal.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_large_width_label_cal_dpi250():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
+    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.5" \
+           " --width 38 --dpi 250 --outFileName {1}" \
+           " --trackLabelHAlign center" \
+           "".format(os.path.join(ROOT, "title.ini"),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_title_0.5_cal_d250.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_large_width_label_big_font():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)

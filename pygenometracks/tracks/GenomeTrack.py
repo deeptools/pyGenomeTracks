@@ -3,6 +3,8 @@
 from .. utilities import to_string, to_bytes
 import logging
 import numpy as np
+from matplotlib import colors as mc
+import matplotlib.pyplot as plt
 
 
 class GenomeTrack(object):
@@ -170,11 +172,29 @@ height = 2
 
         ax.patch.set_visible(False)
 
-    def plot_label(self, label_ax):
-        label_ax.text(0.05, 0.5, self.properties['title'],
-                      horizontalalignment='left',
-                      size='large', verticalalignment='center',
-                      transform=label_ax.transAxes, wrap=True)
+    def plot_label(self, label_ax, width_dpi, h_align='left'):
+        if h_align == 'left':
+            label_ax.text(0.05, 0.5, self.properties['title'],
+                          horizontalalignment='left', size='large',
+                          verticalalignment='center',
+                          transform=label_ax.transAxes,
+                          wrap=True)
+        elif h_align == 'right':
+            txt = label_ax.text(1, 0.5, self.properties['title'],
+                                horizontalalignment='right', size='large',
+                                verticalalignment='center',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
+        else:
+            txt = label_ax.text(0.5, 0.5, self.properties['title'],
+                                horizontalalignment='center', size='large',
+                                verticalalignment='center',
+                                transform=label_ax.transAxes,
+                                wrap=True)
+            # To be able to wrap to the left:
+            txt._get_wrap_line_width = lambda: width_dpi
 
     def process_type_for_coverage_track(self):
         default_plot_type = 'fill'
@@ -201,6 +221,122 @@ height = 2
                              "".format(self.properties['type'],
                                        self.properties['section_name']))
             self.plot_type = default_plot_type
+
+    def process_color(self, param, colormap_possible=False,
+                      bed_rgb_possible=False, colormap_only=False,
+                      default_value_is_colormap=False):
+        """
+        Put a valid color/colormap in self.properties[param]
+        Args:
+            param: param to check/update the value
+            colormap_possible: if the self.properties[param] can be a colormap
+            bed_rgb_possible: if the self.properties[param] can be 'bed_rgb'
+            colormap_only: if the self.properties[param] must be a colormap
+
+        Returns:
+            True if the self.properties[param] is a colormap
+            False if the self.properties[param] is not a colormap
+
+        """
+        default_value = self.DEFAULTS_PROPERTIES[param]
+        valid_color = None
+        if bed_rgb_possible and self.properties[param] == 'bed_rgb':
+            return False
+        if mc.is_color_like(self.properties[param]):
+            valid_color = self.properties[param]
+        # It can be a tuple (for example (1, 0.88, 2./3) would be a valid color):
+        elif self.properties[param][0] == '(':
+            try:
+                custom_color = eval(self.properties[param])
+            except ValueError:
+                self.log.warning("*WARNING* {}: '{}' for section {}"
+                                 " is not valid. {} has "
+                                 "been set to "
+                                 "{}".format(param,
+                                             self.properties[param],
+                                             self.properties['section_name'],
+                                             default_value))
+                valid_color = default_value
+            else:
+                if mc.is_color_like(custom_color):
+                    valid_color = custom_color
+                else:
+                    self.log.warning("*WARNING* {}: '{}' for section {}"
+                                     " is not valid. {} has "
+                                     "been set to "
+                                     "{}".format(param,
+                                                 self.properties[param],
+                                                 self.properties['section_name'],
+                                                 default_value))
+                    valid_color = default_value
+        if not colormap_possible:
+            if valid_color is None:
+                self.log.warning("*WARNING* {}: '{}' for section {}"
+                                 " is not valid. It has "
+                                 "been set to "
+                                 "{}".format(param,
+                                             self.properties[param],
+                                             self.properties['section_name'],
+                                             default_value))
+                valid_color = default_value
+            self.properties[param] = valid_color
+            return False
+        else:
+            valid_colormap = None
+            # We will try to process the color as a colormap
+            if valid_color is None:
+                # If someone what to use its own colormap,
+                # he can specify the rgb values or color values:
+                # For example:
+                # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+                if self.properties[param][0] == '[':
+                    try:
+                        custom_colors = eval(self.properties['colormap'])
+                    except SyntaxError:
+                        pass
+                    else:
+                        try:
+                            valid_colormap = mc.LinearSegmentedColormap.from_list(
+                                'custom', custom_colors, N=100)
+                        except ValueError:
+                            pass
+                else:
+                    if self.properties[param] in dir(plt.cm):
+                        valid_colormap = self.properties[param]
+        # Here, colormap is possible
+        # valid_color is None or a valid color or the default value
+        # valid_colormap is None or a valid colormap
+        if valid_color is None and valid_colormap is None:
+            self.log.warning("*WARNING* {}: '{}' for section {}"
+                             " is not valid. It has "
+                             "been set to "
+                             "{}".format(param,
+                                         self.properties[param],
+                                         self.properties['section_name'],
+                                         default_value))
+            self.properties[param] = default_value
+            return default_value_is_colormap
+        if colormap_only:
+            if valid_colormap is None:
+                # valid_color is not None
+                self.log.warning("*WARNING* {}: '{}' for section {}"
+                                 " is not valid: it is a color whereas"
+                                 " a colormap was expected. It has "
+                                 "been set to "
+                                 "{}".format(param,
+                                             self.properties[param],
+                                             self.properties['section_name'],
+                                             default_value))
+                valid_colormap = default_value
+            self.properties[param] = valid_colormap
+            return True
+        else:
+            if valid_color is not None:
+                self.properties[param] = valid_color
+                return False
+            else:
+                self.properties[param] = valid_colormap
+                return True
 
     @staticmethod
     def change_chrom_names(chrom):

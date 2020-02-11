@@ -12,7 +12,6 @@ class TADsTrack(BedTrack):
                            'orientation': None,
                            'color': DEFAULT_BED_COLOR,
                            'border_color': 'black',
-                           'interval_height': 100,  # This one is not defined in the documentation
                            'line_width': 0.5,
                            'prefered_name': 'transcript_name',
                            'merge_transcripts': False,
@@ -29,7 +28,6 @@ class TADsTrack(BedTrack):
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
-                        'interval_height': [0, np.inf],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}

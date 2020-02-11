@@ -16,7 +16,7 @@
 
 - **style**:
 
-  - for *bed*: flybase, UCSC
+  - for *bed*: flybase, UCSC, tssarrow
 
 - **display**:
 
