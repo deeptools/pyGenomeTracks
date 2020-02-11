@@ -753,7 +753,7 @@ def test_plot_tracks_bed_all_label_inside():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3050000-3080000 "\
+    args = "--tracks {0} --region X:3050000-3100000 "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
            "--outFileName {1}" \
            "".format(os.path.join(ROOT, 'bed_all_labels_inside.ini'),
