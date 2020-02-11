@@ -46,7 +46,7 @@ color = red
 # options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
 line_style = solid
 # If you want to compact the arcs (when you have both long and short arcs)
-# You can choose a compact level of 
+# You can choose a compact level of
 # 1 (the height is proportional to the square root of the distance)
 # 2 (the height is the same for all distances)
 # (default is 0 proportional to distance)
