@@ -49,6 +49,8 @@ line_style = solid
 # the upper y limit.
 # The unit is bp. This corresponds to the longest arc you will see.
 #ylim = 100000
+# If you want to compact the arcs (when you have both long and short arcs)
+#compact_arcs = true
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'links_type': 'arcs',
@@ -59,7 +61,8 @@ file_type = {}
                            'alpha': 0.8,
                            'max_value': None,
                            'min_value': None,
-                           'ylim': None}
+                           'ylim': None,
+                           'compact_arcs': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -68,7 +71,7 @@ file_type = {}
                            'links_type': ['arcs', 'triangles', 'loops'],
                            'line_style': ['solid', 'dashed',
                                           'dotted', 'dashdot']}
-    BOOLEAN_PROPERTIES = []
+    BOOLEAN_PROPERTIES = ['compact_arcs']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'links_type', 'line_style',
                          'title', 'color']
@@ -170,7 +173,10 @@ file_type = {}
         if self.properties['ylim'] is None:
             ymax = self.max_height
         else:
-            ymax = self.properties['ylim']
+            if self.properties['compact_arcs']:
+                ymax = np.sqrt(self.properties['ylim'])
+            else:
+                ymax = self.properties['ylim']
         self.log.debug("{} were links plotted".format(count))
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, -1)
@@ -207,7 +213,10 @@ file_type = {}
     def plot_arcs(self, ax, interval):
 
         width = (interval.end - interval.begin)
-        half_height = width
+        if self.properties['compact_arcs']:
+            half_height = np.sqrt(width)
+        else:
+            half_height = width
         center = interval.begin + width / 2
         if half_height > self.max_height:
             self.max_height = half_height
@@ -229,7 +238,11 @@ file_type = {}
         x2 = x1 + float(interval.end - interval.begin) / 2
         x3 = interval.end
         y1 = 0
-        y2 = (interval.end - interval.begin)
+        if self.properties['compact_arcs']:
+            y2 = np.sqrt(interval.end - interval.begin)
+        else:
+            y2 = (interval.end - interval.begin)
+        
         if self.colormap:
             # translate score field
             # into a color
