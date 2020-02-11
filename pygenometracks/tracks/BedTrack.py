@@ -456,7 +456,7 @@ file_type = {}
                 elif start_pos != bed.start:
                     # The label will be plotted before
                     ax.text(bed.start - self.small_relative,
-                            ypos + (self.properties['interval_height'] / 2),
+                            ypos + (1 / 2),
                             bed.name, horizontalalignment='right',
                             verticalalignment='center', fontproperties=self.fp)
                 elif bed.end > start_region and bed.end < end_region:
