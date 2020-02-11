@@ -66,12 +66,13 @@ fontsize = 10
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
 # if display is not given, then each region is plotted using the gene style
-#optional, default is black. To remove the background color, simply set 'color' and 'background color' to the
-# same value
+# optional, default is black. To remove the border, simply set 'border_color' to none
+# Not used in tssarrow style
 #border_color = black
 # style to plot the genes when they have exon information
 #style = UCSC
 #style = flybase
+#style = tssarrow
 # maximum number of gene rows to be plotted. This
 # field is useful to limit large number of close genes
 # to be printed over many rows. When several images want
@@ -91,12 +92,16 @@ fontsize = 10
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
-# if you use flybase style, you can choose the color of non-coding intervals:
+# if you use tssarrow style, you can choose the length of the arrow in bp
+# (default is 4% of the plotted region)
+#arrow_length = 5000
+# if you use flybase or tssarrow style, you can choose the color of non-coding intervals:
 #color_utr = grey
 # as well as the proportion between their height and the one of coding
 # (by default they are the same height):
 #height_utr = 1
-# By default, for oriented intervals the arrowhead is added
+# By default, for oriented intervals in flybase style,
+# or bed files with less than 12 columns, the arrowhead is added
 # outside of the interval.
 # If you want that the tip of the arrow correspond to
 # the extremity of the interval use:
@@ -127,6 +132,7 @@ file_type = {}
                            'arrowhead_included': False,
                            'color_utr': 'grey',
                            'height_utr': 1,
+                           'arrow_length': None,
                            'all_labels_inside': False,
                            'labels_in_margin': False}
     NECESSARY_PROPERTIES = ['file']
@@ -134,7 +140,7 @@ file_type = {}
                              'min_value': {'auto': None},
                              'display': DISPLAY_BED_SYNONYMOUS}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'style': ['flybase', 'UCSC'],
+                           'style': ['flybase', 'UCSC', 'tssarrow'],
                            'display': DISPLAY_BED_VALID}
     BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
                           'arrowhead_included', 'all_labels_inside',
@@ -151,7 +157,8 @@ file_type = {}
                         'height_utr': [0, 1]}
     INTEGER_PROPERTIES = {'gene_rows': [0, np.inf],
                           'max_labels': [0, np.inf],
-                          'arrow_interval': [1, np.inf]}
+                          'arrow_interval': [1, np.inf],
+                          'arrow_length': [0, np.inf]}
     # The color can be a color or a colormap or 'bed_rgb'
     # border_color, color_utr can only be a color
 
@@ -190,7 +197,7 @@ file_type = {}
         # (for example, TADsTracks do not have color_utr)
         for param in [p for p in ['border_color', 'color_utr']
                       if p in self.properties]:
-            self.process_color(param)
+            self.process_color(param, bed_rgb_possible=True)
 
         # to set the distance between rows
         self.row_scale = 2.3
@@ -426,7 +433,8 @@ file_type = {}
                         free_row = len(row_last_position)
                         row_last_position.append(bed_extended_end)
 
-                rgb, edgecolor = self.get_rgb_and_edge_color(bed)
+                rgb = self.get_rgb(bed)
+                edgecolor = self.get_rgb(bed, param='border_color', default=rgb)
 
                 ypos = self.get_y_pos(free_row)
 
@@ -440,7 +448,10 @@ file_type = {}
                 if ypos > max_ypos:
                     max_ypos = ypos
 
-                if self.bed_type == 'bed12':
+                if self.properties['style'] == 'tssarrow':
+                    self.draw_gene_tssarrow_style(ax, bed, ypos, rgb,
+                                                  linewidth)
+                elif self.bed_type == 'bed12':
                     if self.properties['style'] == 'flybase':
                         self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
                                                                   rgb, edgecolor,
@@ -477,24 +488,27 @@ file_type = {}
                                  format(self.properties['file'],
                                         self.properties['section_name'],
                                         chrom_region, start_region, end_region))
-            ymax = 0
+
+            epsilon = 0.08
+            ymax = - epsilon
 
             if self.properties['global_max_row']:
                 ymin = self.max_num_row[chrom_region] * self.row_scale
 
             elif self.properties['gene_rows'] is not None:
                 ymin = self.properties['gene_rows'] * self.row_scale
+
             else:
-                ymin = max_ypos + 1
+                ymin = max_ypos + (1 + epsilon)
 
             self.log.debug("ylim {},{}".format(ymin, ymax))
             # the axis is inverted (thus, ymax < ymin)
             ax.set_ylim(ymin, ymax)
 
             if self.properties['display'] == 'interleaved':
-                ax.set_ylim(-0.05, 2.05)
+                ax.set_ylim(2 + epsilon, ymax)
             elif self.properties['display'] == 'collapsed':
-                ax.set_ylim(-0.05, 1.05)
+                ax.set_ylim(1 + epsilon, ymax)
 
     def plot_label(self, label_ax, width_dpi, h_align='left'):
         if h_align == 'left':
@@ -544,26 +558,31 @@ file_type = {}
                 # with other labels
                 labels[idx].set_verticalalignment('top')
 
-    def get_rgb_and_edge_color(self, bed):
-        rgb = self.properties['color']
-        edgecolor = self.properties['border_color']
+    def get_rgb(self, bed, param='color', default=DEFAULT_BED_COLOR):
+        """
+        get the rgb value for the bed and the param given:
+        :param bed:
+        :param param:
+        :param default: the default value if it fails
+        :return: color
+        """
+        rgb = self.properties[param]
 
         if self.colormap:
             # translate value field (in the example above is 0 or 0.2686...)
             # into a color
             rgb = self.colormap.to_rgba(bed.score)
-            self.rgb = rgb
-        if self.properties['color'] == 'bed_rgb':
+        if self.properties[param] == 'bed_rgb':
             # if rgb is set in the bed line, this overrides the previously
             # defined colormap
             if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
                 try:
                     rgb = [float(x) / 255 for x in bed.rgb]
                 except IndexError:
-                    rgb = DEFAULT_BED_COLOR
+                    rgb = default
             else:
-                rgb = DEFAULT_BED_COLOR
-        return rgb, edgecolor
+                rgb = default
+        return rgb
 
     def draw_gene_simple(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
@@ -589,7 +608,7 @@ file_type = {}
         """
         if bed.block_count == 0 and bed.thick_start == bed.start and \
            bed.thick_end == bed.end:
-            self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor)
+            self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
         half_height = 1 / 2
         # draw 'backbone', a line from the start until the end of the gene
@@ -606,7 +625,7 @@ file_type = {}
 
         first_pos = positions.pop()
         if first_pos[2] == 'UTR':
-            _rgb = self.properties['color_utr']
+            _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
             # The arrow will be centered on
             # ypos + 1 / 2
             # The total height will be
@@ -628,7 +647,7 @@ file_type = {}
 
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
-                _rgb = self.properties['color_utr']
+                _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
                 y0 = ypos + (1 - self.properties['height_utr']) / 2
                 height = self.properties['height_utr']
             else:
@@ -824,6 +843,77 @@ file_type = {}
                     for xpos in pos:
                         self._plot_small_arrow(ax, xpos, ypos, bed.strand)
 
+    def draw_gene_tssarrow_style(self, ax, bed, ypos, rgb, linewidth):
+        """
+        Draw genes like this:
+          -->
+          |
+          ----------- ^ ---
+          |         |   | |
+          -----------   ---
+        """
+        # get start, end of all the blocks
+        positions = self._split_bed_to_blocks(bed)
+
+        y_bottom = ypos + 1
+        y_top_intron = ypos + 1 / 4
+
+        if bed.strand in ["+", "-"]:
+            if self.properties['arrow_length'] is None:
+                arrow_length = 10 * self.small_relative
+            else:
+                arrow_length = self.properties['arrow_length']
+            y_arrow = ypos + 1 / 8
+            head_width = 1 / 4
+            head_length = self.small_relative * 3
+            # plot the arrow to indicate tss
+            if bed.strand == "+":
+                x = bed.start
+                dx = arrow_length
+            else:
+                x = bed.end
+                dx = - arrow_length
+            # First plot the vertical line:
+            ax.add_line(Line2D((x, x), (y_bottom, y_arrow), color=rgb, linewidth=linewidth))
+            # Then the arrow
+            ax.arrow(x, y_arrow, dx, 0, overhang=1, width=0,
+                     head_width=head_width,
+                     head_length=head_length,
+                     length_includes_head=True,
+                     color=rgb, linewidth=linewidth)
+
+        # plot all blocks as rectangles like in the flybase mode but
+        # with half the height and no border
+        # as well as the junction between exons:
+        last_corner = None
+        for start_pos, end_pos, _type in positions:
+            if _type == 'UTR':
+                _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
+                y0 = y_bottom - 1 / 2 * (1 - self.properties['height_utr']) / 2
+                height = 1 / 2 * self.properties['height_utr']
+            else:
+                _rgb = rgb
+                y0 = y_bottom
+                height = 1 / 2
+
+            vertices = [(start_pos, y0), (start_pos, y0 - height),
+                        (end_pos, y0 - height), (end_pos, y0)]
+
+            ax.add_patch(Polygon(vertices, closed=True, fill=True,
+                                 edgecolor="none",
+                                 facecolor=_rgb,
+                                 linewidth=linewidth))
+            if last_corner is not None:
+                if last_corner[0] < start_pos:
+                    xdata = (last_corner[0], (last_corner[0] + start_pos) / 2,
+                             start_pos)
+                    ydata = (last_corner[1], y_top_intron,
+                             y0 - height)
+                    ax.add_line(Line2D(xdata, ydata, color=last_corner[2],
+                                       linewidth=linewidth))
+
+            last_corner = (end_pos, y0 - height, _rgb)
+
     def plot_triangles(self, ax, genes_overlap):
         """
         Plots the boundaries as triangles in the given ax.
@@ -847,7 +937,8 @@ file_type = {}
             y1 = 0
             y2 = (region.end - region.begin)
 
-            rgb, edgecolor = self.get_rgb_and_edge_color(region.data)
+            rgb = self.get_rgb(region.data)
+            edgecolor = self.get_rgb(region.data, param='border_color', default=rgb)
 
             triangle = Polygon([[x1, y1], [x2, y2], [x3, y1]], closed=True,
                                facecolor=rgb, edgecolor=edgecolor, linewidth=self.properties['line_width'])
