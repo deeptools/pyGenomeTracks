@@ -101,7 +101,8 @@ install_requires_py = ["numpy >=1.16",
                        "hicmatrix >=9",
                        "pysam >=0.14",
                        "pytest",
-                       "gffutils >=0.9"
+                       "gffutils >=0.9",
+                       "tqdm >=4.20"
                        ]
 
 if sys.version_info[0] == 2 or (sys.version_info[0] == 3 and sys.version_info[1] == 4):

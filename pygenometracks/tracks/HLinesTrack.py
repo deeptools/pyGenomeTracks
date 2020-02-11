@@ -60,6 +60,10 @@ file_type = {}
                              ''.format(self.properties['y_values'],
                                        detail))
 
+    def set_properties_defaults(self):
+        super(HLinesTrack, self).set_properties_defaults()
+        self.process_color('color')
+
     def plot(self, ax, chrom_region, start_region, end_region):
         self.log.debug("y_values: {}".format(self.y_values))
         for y_value in self.y_values:
