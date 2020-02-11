@@ -45,12 +45,17 @@ color = red
 #line_width = 0.5
 # options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
 line_style = solid
+# If you want to compact the arcs (when you have both long and short arcs)
+# You can choose a compact level of 
+# 1 (the height is proportional to the square root of the distance)
+# 2 (the height is the same for all distances)
+# (default is 0 proportional to distance)
+#compact_arcs_level = 2
 # To be able to see small arcs when big arcs exists, you can set
 # the upper y limit.
 # The unit is bp. This corresponds to the longest arc you will see.
+# This option is incompatible with compact_arcs_level = 2
 #ylim = 100000
-# If you want to compact the arcs (when you have both long and short arcs)
-#compact_arcs = true
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'links_type': 'arcs',
@@ -62,7 +67,7 @@ file_type = {}
                            'max_value': None,
                            'min_value': None,
                            'ylim': None,
-                           'compact_arcs': False}
+                           'compact_arcs_level': '0'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -70,11 +75,12 @@ file_type = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'links_type': ['arcs', 'triangles', 'loops'],
                            'line_style': ['solid', 'dashed',
-                                          'dotted', 'dashdot']}
-    BOOLEAN_PROPERTIES = ['compact_arcs']
+                                          'dotted', 'dashdot'],
+                           'compact_arcs_level': ['0', '1', '2']}
+    BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'links_type', 'line_style',
-                         'title', 'color']
+                         'title', 'color', 'compact_arcs_level']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'ylim': [0, np.inf],
@@ -123,6 +129,15 @@ file_type = {}
 
             cmap = matplotlib.cm.get_cmap(self.properties['color'])
             self.colormap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
+
+        if self.properties['compact_arcs_level'] == '2' and \
+           self.properties['ylim'] is not None:
+            self.log.warning("*WARNING* for section {}"
+                             " a ylim was set but "
+                             "compact_arcs_level was set to 2."
+                             "ylim will be ignore."
+                             "".format(self.properties['section_name']))
+            self.properties['ylim'] = None
 
     def plot(self, ax, chrom_region, region_start, region_end):
         """
@@ -173,7 +188,7 @@ file_type = {}
         if self.properties['ylim'] is None:
             ymax = self.max_height
         else:
-            if self.properties['compact_arcs']:
+            if self.properties['compact_arcs_level'] == '1':
                 ymax = np.sqrt(self.properties['ylim'])
             else:
                 ymax = self.properties['ylim']
@@ -213,8 +228,10 @@ file_type = {}
     def plot_arcs(self, ax, interval):
 
         width = (interval.end - interval.begin)
-        if self.properties['compact_arcs']:
+        if self.properties['compact_arcs_level'] == '1':
             half_height = np.sqrt(width)
+        elif self.properties['compact_arcs_level'] == '2':
+            half_height = 1000
         else:
             half_height = width
         center = interval.begin + width / 2
@@ -238,8 +255,10 @@ file_type = {}
         x2 = x1 + float(interval.end - interval.begin) / 2
         x3 = interval.end
         y1 = 0
-        if self.properties['compact_arcs']:
+        if self.properties['compact_arcs_level'] == '1':
             y2 = np.sqrt(interval.end - interval.begin)
+        elif self.properties['compact_arcs_level'] == '2':
+            y2 = 1000
         else:
             y2 = (interval.end - interval.begin)
 
