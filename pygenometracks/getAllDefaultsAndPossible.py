@@ -1,11 +1,11 @@
 """
 This python script will generate two files:
-- docs/content/all_default_properties.txt
-This file is a markdown table with all the defaults values for each parameter
-for each track class. This table can be copy pasted in the README.md
+- docs/content/all_default_properties_rst.txt
+This file is a rst table with all the defaults values for each parameter
+for each track class. This table is included in the readthedocs
 - docs/content/all_possible_properties.txt
 This file is a markdown list with possible values.
-This can also be copy pasted in the README.md
+This can also be used in the readthedocs
 """
 from pygenometracks.tracksClass import PlotTracks, XAxisTrack
 import numpy as np
@@ -29,21 +29,6 @@ track_separator = ', '
 #                   # 'skip': {True: 'yes', False: 'no'},
 #                   'merge_transcripts': {True: 'on', False: 'off'},
 #                   'nans_to_zeros': {True: 'True', False: 'False'}}
-
-# We now want people to use true/false:
-GOOD_PRACTICES = {'labels': {True: 'true', False: 'false'},
-                  'show_data_range': {True: 'true', False: 'false'},
-                  'plot_horizontal_lines': {True: 'true', False: 'false'},
-                  'use_middle': {True: 'true', False: 'false'},
-                  'rasterize': {True: 'true', False: 'false'},
-                  'global_max_row': {True: 'true', False: 'false'},
-                  'show_masked_bins': {True: 'true', False: 'false'},
-                  'show_labels': {True: 'true', False: 'false'},
-                  'use_summit': {True: 'true', False: 'false'},
-                  # 'skip': {True: 'true', False: 'false'},
-                  'merge_transcripts': {True: 'true', False: 'false'},
-                  'nans_to_zeros': {True: 'true', False: 'false'},
-                  'arrowhead_included': {True: 'true', False: 'false'}}
 
 
 def main():
@@ -76,6 +61,10 @@ def main():
             all_possible_parameters[p] = all_possible_parameters.get(p, {})
             all_possible_parameters[p][track_type] = value
 
+        for p in track_class.BOOLEAN_PROPERTIES:
+            all_possible_parameters[p] = all_possible_parameters.get(p, {})
+            all_possible_parameters[p][track_type] = ["true", "false"]
+
     # For the default they are summarized in a matrix
     mat = np.empty((len(all_default_parameters) + 2, len(all_tracks) + 1),
                    dtype='U25')
@@ -91,17 +80,14 @@ def main():
             default = all_default_parameters[p].get(track_type,
                                                     not_used_string)
 
-            if p in GOOD_PRACTICES and default is not not_used_string:
-                default = GOOD_PRACTICES[p][default]
+            if isinstance(default, bool):
+                default = str(default).lower()
 
             if default is None:
                 default = not_set_string
 
             mat[i + 2, j] = default
-    # The matrix is written in a file to be able to use it in the README.md
-    np.savetxt(os.path.join("docs", "content", "all_default_properties.txt"),
-               mat, fmt='%s', delimiter=" | ")
-
+    # The matrix is written in a file to be able to use it in the readthedocs
     max_char = max([len(mat[i, j]) for i in range(mat.shape[0]) for j in range(mat.shape[1])])
     mat[1, :] = ['=' * max_char] * mat.shape[1]
     np.savetxt(os.path.join("docs", "content", "all_default_properties_rst.txt"),
@@ -134,15 +120,6 @@ def main():
                 if None in possible_values[name]:
                     reformated_possible += ", " + not_set_string
                 fo.write("  - for *" + name + "*: " + reformated_possible + "\n\n")
-        for p, pv in GOOD_PRACTICES.items():
-            names = []
-            for track_type in all_tracks_with_default:
-                if track_type in all_default_parameters[p]:
-                    names += [track_type]
-            fo.write("- **" + p + "**:\n\n")
-            name = track_separator.join(names)
-            reformated_possible = ", ".join([v for k, v in pv.items()])
-            fo.write("  - for *" + name + "*: " + reformated_possible + "\n\n")
 
 
 if __name__ == "__main__":

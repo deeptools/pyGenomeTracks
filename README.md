@@ -107,6 +107,10 @@ optional arguments:
                         By default the space dedicated to the track labels is
                         0.05 of the plot width. This fraction can be changed
                         with this parameter if needed.
+  --trackLabelHAlign {left,right,center}
+                        By default, the horizontal alignment of the track
+                        labels is left. This alignemnt can be changed to right
+                        or center.
   --version             show program's version number and exit
 ```
 <!--- End of possible arguments of pgt -->
