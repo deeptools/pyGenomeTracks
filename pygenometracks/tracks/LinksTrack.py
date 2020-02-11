@@ -242,7 +242,7 @@ file_type = {}
             y2 = np.sqrt(interval.end - interval.begin)
         else:
             y2 = (interval.end - interval.begin)
-        
+
         if self.colormap:
             # translate score field
             # into a color
