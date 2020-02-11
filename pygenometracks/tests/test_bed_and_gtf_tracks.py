@@ -372,6 +372,34 @@ height_utr = 0.7
 with open(os.path.join(ROOT, "bed_flybase_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+
+browser_tracks = """
+[x-axis]
+where = top
+title = where =top
+
+[spacer]
+height = 0.05
+
+[genes 2]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = UCSC
+style = UCSC
+fontsize = 10
+
+
+[genes 2]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = UCSC all_labels_inside = true
+style = UCSC
+fontsize = 10
+all_labels_inside = True
+"""
+with open(os.path.join(ROOT, "bed_all_labels_inside.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -505,6 +533,23 @@ def test_plot_tracks_bed_with_maxLab():
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_maxLab.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_all_label_inside():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3050000-3080000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_all_labels_inside.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_all_label_inside.png'),
                          outfile.name, tolerance)
     assert res is None, res
 

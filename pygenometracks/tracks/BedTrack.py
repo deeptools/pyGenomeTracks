@@ -83,6 +83,8 @@ fontsize = 10
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
 #global_max_row = true
+# If you want to plot all labels inside the plotting region:
+#all_labels_inside = true
 # If you want to display the name of the gene which goes over the plotted
 # region in the right margin put:
 #labels_in_margin = true
@@ -125,6 +127,7 @@ file_type = {}
                            'arrowhead_included': False,
                            'color_utr': 'grey',
                            'height_utr': 1,
+                           'all_labels_inside': False,
                            'labels_in_margin': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
@@ -134,7 +137,8 @@ file_type = {}
                            'style': ['flybase', 'UCSC'],
                            'display': DISPLAY_BED_VALID}
     BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
-                          'arrowhead_included', 'labels_in_margin']
+                          'arrowhead_included', 'all_labels_inside',
+                          'labels_in_margin']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
@@ -395,13 +399,26 @@ file_type = {}
                     bed_extended_end = (bed.end + 2 * self.small_relative)
 
                 # get smallest free row
+                start_pos = bed.start
                 if len(row_last_position) == 0:
                     free_row = 0
                     row_last_position.append(bed_extended_end)
                 else:
-                    # get list of rows that are less than bed.start, then take the min
+                    # If all_labels_inside = True
+                    # genes which goes over will have their labels inside
+                    if self.properties['all_labels_inside'] and self.properties['labels'] \
+                       and bed_extended_end > end_region:
+                        start_pos = int(bed.start - (num_name_characters * self.len_w))
+                        # Check that the start position is not outside:
+                        if start_pos < start_region:
+                            # If it would be outside, we use the default right label
+                            start_pos = bed.start
+                        else:
+                            bed_extended_end = (bed.end + 2 * self.small_relative)
+
+                    # get list of rows that are less than start_pos, then take the min
                     idx_list = [idx for idx, value in enumerate(row_last_position)
-                                if value < bed.start]
+                                if value < start_pos]
                     if len(idx_list):
                         free_row = min(idx_list)
                         row_last_position[free_row] = bed_extended_end
@@ -436,6 +453,12 @@ file_type = {}
 
                 if not self.properties['labels']:
                     pass
+                elif start_pos != bed.start:
+                    # The label will be plotted before
+                    ax.text(bed.start - self.small_relative,
+                            ypos + (1 / 2),
+                            bed.name, horizontalalignment='right',
+                            verticalalignment='center', fontproperties=self.fp)
                 elif bed.end > start_region and bed.end < end_region:
                     ax.text(bed.end + self.small_relative,
                             ypos + 0.5,
