@@ -51,25 +51,29 @@ class ReadGtf(object):
                        'block_sizes', 'block_starts']
 
         self.BedInterval = collections.namedtuple('BedInterval', self.fields)
-
-        # Will process the gtf to get one item per transcript:
-        # This will create a database:
-        self.db = gffutils.create_db(file_path, ':memory:')
         # I think the name which should be written
         # should be the transcript_name
         # But we can change it to gene_name
         self.prefered_name = prefered_name
         self.merge_transcripts = merge_transcripts
 
-        if self.merge_transcripts:
-            self.length = len([i for i in self.db.features_of_type("gene")])
-            self.all_transcripts = self.db.features_of_type("gene",
-                                                            order_by='start')
+        # Will process the gtf to get one item per transcript:
+        # This will create a database:
+        try:
+            self.db = gffutils.create_db(file_path, ':memory:')
+        except ValueError:
+            self.length = 0
+            self.all_transcripts = open(file_path, 'r')
         else:
-            self.length = len([i for
-                               i in self.db.features_of_type("transcript")])
-            self.all_transcripts = self.db.features_of_type("transcript",
-                                                            order_by='start')
+            if self.merge_transcripts:
+                self.length = len([i for i in self.db.features_of_type("gene")])
+                self.all_transcripts = self.db.features_of_type("gene",
+                                                                order_by='start')
+            else:
+                self.length = len([i for
+                                i in self.db.features_of_type("transcript")])
+                self.all_transcripts = self.db.features_of_type("transcript",
+                                                                order_by='start')
 
     def __iter__(self):
         return self
