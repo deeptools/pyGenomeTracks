@@ -188,7 +188,7 @@ with open(os.path.join(ROOT, "browser_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 
-browser_tracks="""
+browser_tracks = """
 [x-axis]
 
 [bed]

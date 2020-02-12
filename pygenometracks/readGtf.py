@@ -70,8 +70,7 @@ class ReadGtf(object):
                 self.all_transcripts = self.db.features_of_type("gene",
                                                                 order_by='start')
             else:
-                self.length = len([i for
-                                i in self.db.features_of_type("transcript")])
+                self.length = len([i for i in self.db.features_of_type("transcript")])
                 self.all_transcripts = self.db.features_of_type("transcript",
                                                                 order_by='start')
 
