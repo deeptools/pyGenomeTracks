@@ -248,7 +248,7 @@ file_type = {}
 
         if valid_intervals == 0:
             self.log.warning("No valid intervals were found in file "
-                             "{}".format(self.properties['file_name']))
+                             "{}".format(self.properties['file']))
 
         return interval_tree, min_score, max_score
 
