@@ -49,3 +49,6 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3
 bin/pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --trackLabelHAlign right --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.5_ral.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --trackLabelHAlign center --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.5_cal.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.5 --trackLabelHAlign center --width 38 --dpi 250 -o ./pygenometracks/tests/test_data/master_title_0.5_cal_d250.png
+
+# tests arcs
+bin/pgt --tracks ./pygenometracks/tests/test_data/short_long_arcs.ini --region chr11:40000000-46000000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_short_long_arcs.png

@@ -2,6 +2,8 @@
 
   - for *x-axis*: top, bottom
 
+  - for *scalebar*: left, right, top, bottom
+
 - **orientation**:
 
   - for *epilogos, links, domains, bed, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix*: inverted, not set
@@ -14,6 +16,14 @@
 
   - for *links, hlines*: solid, dashed, dotted, dashdot
 
+- **compact_arcs_level**:
+
+  - for *links*: 0, 1, 2
+
+- **merge_transcripts**:
+
+  - for *domains, bed*: true, false
+
 - **style**:
 
   - for *bed*: flybase, UCSC, tssarrow
@@ -22,53 +32,35 @@
 
   - for *bed*: collapsed, triangles, interleaved, stacked
 
+- **labels**:
+
+  - for *bed*: true, false
+
+- **global_max_row**:
+
+  - for *bed*: true, false
+
+- **arrowhead_included**:
+
+  - for *bed*: true, false
+
+- **all_labels_inside**:
+
+  - for *bed*: true, false
+
+- **labels_in_margin**:
+
+  - for *bed*: true, false
+
 - **type**:
 
   - for *narrow_peak*: peak, box
 
   - for *bedgraph_matrix*: matrix, lines
 
-- **summary_method**:
-
-  - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
-
-  - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
-
-- **pos_score_in_bin**:
-
-  - for *bedgraph_matrix*: center, block
-
-- **transform**:
-
-  - for *hic_matrix*: no, log, log1p, -log
-
-- **labels**:
-
-  - for *bed*: true, false
-
 - **show_data_range**:
 
   - for *narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines*: true, false
-
-- **plot_horizontal_lines**:
-
-  - for *bedgraph_matrix*: true, false
-
-- **use_middle**:
-
-  - for *bedgraph*: true, false
-
-- **rasterize**:
-
-  - for *bedgraph, bedgraph_matrix, hic_matrix*: true, false
-
-- **global_max_row**:
-
-  - for *bed*: true, false
-
-- **show_masked_bins**:
-
-  - for *hic_matrix*: true, false
 
 - **show_labels**:
 
@@ -78,15 +70,37 @@
 
   - for *narrow_peak*: true, false
 
-- **merge_transcripts**:
+- **summary_method**:
 
-  - for *domains, bed*: true, false
+  - for *bigwig*: mean, average, max, min, stdev, dev, coverage, cov, sum
+
+  - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
 
 - **nans_to_zeros**:
 
   - for *bigwig, bedgraph*: true, false
 
-- **arrowhead_included**:
+- **use_middle**:
 
-  - for *bed*: true, false
+  - for *bedgraph*: true, false
+
+- **rasterize**:
+
+  - for *bedgraph, bedgraph_matrix, hic_matrix*: true, false
+
+- **pos_score_in_bin**:
+
+  - for *bedgraph_matrix*: center, block
+
+- **plot_horizontal_lines**:
+
+  - for *bedgraph_matrix*: true, false
+
+- **transform**:
+
+  - for *hic_matrix*: no, log, log1p, -log
+
+- **show_masked_bins**:
+
+  - for *hic_matrix*: true, false
 
