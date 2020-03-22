@@ -2,7 +2,8 @@ Adding new tracks
 =================
 
 Adding new tracks to pyGenomeTracks only requires adding a new class to the ``pygenometracks/tracks`` folder.
-The class should inherit the ``GenomeTrack`` (or other track class available) and should have a ``plot`` method.
+The name of the file must end with ``Track.py``.
+The class must inherit the ``GenomeTrack`` (or other track class available) and must have a ``plot`` method.
 In order to work well with the config checker it should also have some global variable:
 - ``DEFAULTS_PROPERTIES`` is a dictionary where each key is a parameter and each value is the default value when it is not set or when something goes wrong.
 - ``NECESSARY_PROPERTIES``  is an array with all the parameters which are necessary for this track (usually 'file')
