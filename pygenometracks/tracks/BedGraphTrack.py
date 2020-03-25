@@ -53,6 +53,8 @@ nans_to_zeros = true
 # operation will be evaluated, it should contains file or
 # file and second_file,
 # we advice to use nans_to_zeros = true to avoid unexpected nan values
+#operation = 0.89 * file
+#operation = - file
 #operation = file - second_file
 #operation = log2((1 + file) / (1 + second_file))
 #operation = max(file, second_file)
