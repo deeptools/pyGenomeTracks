@@ -55,8 +55,8 @@ color = blue
 height = 4
 title = file summary_method = mean
 summary_method = mean
-#min_value = -30
-#max_value = 30
+min_value = 0
+max_value = 30
 
 [test file]
 file = bedgraph2_X_2.5e6_3.5e6.bdg
@@ -64,8 +64,19 @@ color = red
 height = 4
 title = second_file summary_method = mean
 summary_method = mean
-#min_value = -30
-#max_value = 30
+min_value = 0
+max_value = 30
+
+
+[spacer]
+height = 0.5
+
+[test op0]
+file = bedgraph_chrx_2e6_5e6.bg.bgz
+color = blue
+height = 4
+title = operation = log1p(file) (no summary_method)
+operation = log1p(file)
 
 
 [spacer]
@@ -113,8 +124,6 @@ max_value = 30
 
 [spacer]
 height = 0.5
-
-
 
 [x-axis]
 """

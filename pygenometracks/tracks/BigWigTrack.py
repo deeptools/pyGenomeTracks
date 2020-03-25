@@ -1,6 +1,6 @@
 from . GenomeTrack import GenomeTrack
 import numpy as np
-from .. utilities import plot_coverage
+from .. utilities import plot_coverage, InputError
 import pyBigWig
 
 DEFAULT_BIGWIG_COLOR = '#33a02c'
@@ -34,13 +34,15 @@ summary_method = mean
 # similarly points:ms sets the point size (markersize (ms) to the given float
 # type = line:0.5
 # type = points:0.5
-# to compute operations on the fly between 2 bigwig files
-#second_file = path for the second file
-# operation will be evaluated, it should contains file and second_file,
+# to compute operations on the fly on the file
+# or between 2 bigwig files
+# operation will be evaluated, it should contains file or
+# file and second_file,
 # we advice to use nans_to_zeros = true to avoid unexpected nan values
 #operation = file - second_file
 #operation = log2((1 + file) / (1 + second_file))
 #operation = max(file, second_file)
+#second_file = path for the second file
 # set show_data_range to false to hide the text on the upper-left showing the data range
 show_data_range = true
 file_type = {}
@@ -83,8 +85,13 @@ file_type = {}
         super(self.__class__, self).__init__(*args, **kwargs)
         self.bw = pyBigWig.open(self.properties['file'])
         self.bw2 = None
-        if self.properties['second_file'] is not None:
-            self.bw2 = pyBigWig.open(self.properties['second_file'])
+        if 'second_file' in self.properties['operation']:
+            if self.properties['second_file'] is None:
+                raise InputError("operation: {} requires to set the parameter"
+                                 " second_file."
+                                 "".format(self.properties['operation']))
+            else:
+                self.bw2 = pyBigWig.open(self.properties['second_file'])
 
     def set_properties_defaults(self):
         super(BigWigTrack, self).set_properties_defaults()
@@ -140,8 +147,24 @@ file_type = {}
                 break
 
         x_values = np.linspace(start_region, end_region, self.properties['number_of_bins'])
-
-        if self.bw2 is not None:
+        # compute the operation
+        operation = self.properties['operation']
+        # Substitute log by np.log to make it evaluable:
+        operation = operation.replace('log', 'np.log')
+        if operation == 'file':
+            pass
+        elif 'second_file' not in operation:
+            try:
+                new_scores_per_bin = eval('[' + operation + ' for file in scores_per_bin]')
+                new_scores_per_bin = np.array(new_scores_per_bin)
+            except Exception as e:
+                raise Exception("The operation in section {} could not be"
+                                " computed: {}".
+                                format(self.properties['section_name'],
+                                       e))
+            else:
+                scores_per_bin = new_scores_per_bin
+        else:
             # Check the chrom
             chrom_region2 = chrom_region
             if chrom_region2 not in self.bw2.chroms().keys():
@@ -182,16 +205,17 @@ file_type = {}
                         self.log.warning("After {} the scores could be computed".format(num_tries))
                     break
             # compute the operation
-            operation = self.properties['operation']
-            # Substitute log by np.log to make it evaluable:
-            operation = operation.replace('log', 'np.log')
             try:
-                new_scores_per_bin = eval('[' + operation + ' for file,second_file in zip(scores_per_bin, scores_per_bin2)]')
+                new_scores_per_bin = eval('[' + operation
+                                          + ' for file, second_file in'
+                                          ' zip(scores_per_bin,'
+                                          ' scores_per_bin2)]')
                 new_scores_per_bin = np.array(new_scores_per_bin)
             except Exception as e:
-                raise Exception("The operation in section {} could not be"
+                raise Exception("The operation {}, in section {} could not be"
                                 " computed: {}".
-                                format(self.properties['section_name'],
+                                format(self.properties['operation'],
+                                       self.properties['section_name'],
                                        e))
             else:
                 scores_per_bin = new_scores_per_bin

@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree, plot_coverage
+from .. utilities import file_to_intervaltree, plot_coverage, InputError
 import numpy as np
 import pyBigWig
 import tempfile
@@ -48,13 +48,15 @@ nans_to_zeros = true
 # mean/average/stdev/dev/max/min/cov/coverage/sum
 # summary_method = mean
 # number_of_bins = 700
-# to compute operations on the fly between 2 bedgraph files
-#second_file = path for the second file
-# operation will be evaluated, it should contains file and second_file,
+# to compute operations on the fly on the file
+# or between 2 bedgraph files
+# operation will be evaluated, it should contains file or
+# file and second_file,
 # we advice to use nans_to_zeros = true to avoid unexpected nan values
 #operation = file - second_file
 #operation = log2((1 + file) / (1 + second_file))
 #operation = max(file, second_file)
+#second_file = path for the second file
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
@@ -104,24 +106,30 @@ file_type = {}
             try:
                 self.tbx = pysam.TabixFile(self.properties['file'])
             except IOError:
-                self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'])
         # load the file as an interval tree
         else:
-            self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+            self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'])
 
         self.tbx2 = None
         self.interval_tree2 = None
-        if self.properties['second_file'] is not None:
-            if self.properties['second_file'].endswith(".bgz"):
-                # from the tabix file is not possible to know the
-                # global min and max
-                try:
-                    self.tbx2 = pysam.TabixFile(self.properties['second_file'])
-                except IOError:
-                    self.interval_tree2, ymin, ymax = file_to_intervaltree(self.properties['second_file'])
-            # load the file as an interval tree
+
+        if 'second_file' in self.properties['operation']:
+            if self.properties['second_file'] is None:
+                raise InputError("operation: {} requires to set the parameter"
+                                 " second_file."
+                                 "".format(self.properties['operation']))
             else:
-                self.interval_tree2, ymin, ymax = file_to_intervaltree(self.properties['second_file'])
+                if self.properties['second_file'].endswith(".bgz"):
+                    # from the tabix file is not possible to know the
+                    # global min and max
+                    try:
+                        self.tbx2 = pysam.TabixFile(self.properties['second_file'])
+                    except IOError:
+                        self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'])
+                # load the file as an interval tree
+                else:
+                    self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'])
 
         self.num_fields = None
 
@@ -134,9 +142,11 @@ file_type = {}
         else:
             self.process_color('negative_color')
 
-        if self.properties['second_file'] is not None and \
+        if 'second_file' in self.properties['operation'] and \
+           self.properties['second_file'] is not None and \
            self.properties['summary_method'] is None:
             self.log.warning("When an operation is computed"
+                             " between 2 files"
                              " a summary_method needs to be"
                              " used. Will use mean.")
             self.properties['summary_method'] = 'mean'
@@ -258,11 +268,28 @@ file_type = {}
         else:
             score_list, x_values = self.get_values_as_bdg(score_list,
                                                           pos_list)
+        # compute the operation
+        operation = self.properties['operation']
+        # Substitute log by np.log to make it evaluable:
+        operation = operation.replace('log', 'np.log')
+        if operation == 'file':
+            pass
+        elif 'second_file' not in operation:
+            try:
+                new_score_list = eval('[' + operation + ' for file in score_list]')
+                new_score_list = np.array(new_score_list)
+            except Exception as e:
+                raise Exception("The operation in section {} could not be"
+                                " computed: {}".
+                                format(self.properties['section_name'],
+                                       e))
+            else:
+                score_list = new_score_list
 
-        if (self.tbx2 is not None or self.interval_tree2 is not None) and \
-                'second_file' in self.properties['operation']:
+        else:
             score_list2, pos_list2 = self.get_scores(chrom_region, start_region, end_region,
-                                                     tbx_var='self.tbx2', inttree_var='self.interval_tree2')
+                                                     tbx_var='self.tbx2',
+                                                     inttree_var='self.interval_tree2')
             if pos_list2 == []:
                 return
             score_list2 = [float(x[0]) for x in score_list2]
@@ -272,9 +299,6 @@ file_type = {}
                                                                start_region,
                                                                end_region)
             # compute the operation
-            operation = self.properties['operation']
-            # Substitute log by np.log to make it evaluable:
-            operation = operation.replace('log', 'np.log')
             try:
                 new_score_list = eval('[' + operation + ' for file,second_file in zip(score_list, score_list2)]')
                 new_score_list = np.array(new_score_list)

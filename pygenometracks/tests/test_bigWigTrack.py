@@ -190,6 +190,17 @@ nans_to_zeros = true
 max_value = 32
 min_value = 0
 
+[test bigwig op2bis]
+file = bigwig_chrx_2e6_5e6.bw
+second_file = bigwig2_X_2.5e6_3.5e6.bw
+color = blue
+height = 4
+title = operation = 1 + 2 * file
+operation = 1 + 2 * file
+nans_to_zeros = true
+max_value = 32
+min_value = 0
+
 [spacer]
 height = 0.5
 
@@ -212,7 +223,7 @@ operation = (file + second_file) / 2
 nans_to_zeros = true
 overlay_previous = share-y
 
-[test bigwig op4]
+[test bigwig op5]
 file = bigwig_chrx_2e6_5e6.bw
 second_file = bigwig2_X_2.5e6_3.5e6.bw
 color = yellow
