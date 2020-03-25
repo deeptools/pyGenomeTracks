@@ -29,6 +29,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/epilogos.ini --region X:310000
 # test_hiCMatrixTracks:
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_plot_hic.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_rasterize_height.ini --region X:2500000-2600000 --trackLabelFraction 0.23 --width 38 --dpi 10 -o ./pygenometracks/tests/test_data/master_plot_hic_rasterize_height.pdf
+bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_log-log.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_plot_hic_log-log.png
 
 # test_logScale:
 pgt --tracks ./pygenometracks/tests/test_data/log1p.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_log1p.png
