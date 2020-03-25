@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import unittest
 import matplotlib as mpl
 from matplotlib.testing.compare import compare_images
 from tempfile import NamedTemporaryFile
@@ -44,7 +45,19 @@ with open(os.path.join(ROOT, "log1p.ini"), 'w') as fh:
     fh.write(tracks)
 
 tracks = """
+[test bigwig]
+file = bigwig_chrx_2e6_5e6.bw
+color = red
+height = 5
+transform = log
+title = bigwig transform = log
+"""
 
+with open(os.path.join(ROOT, "log_neg.ini"), 'w') as fh:
+    fh.write(tracks)
+
+
+tracks = """
 [test bedgraph]
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = blue
@@ -135,3 +148,17 @@ def test_log_tracks():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+class TestLogNegMethods(unittest.TestCase):
+    def test_log_tracks_with_0values(self):
+        region = "X:2700000-3100000"
+        outfile = NamedTemporaryFile(suffix='.png', prefix='log_test_', delete=False)
+        args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
+            "--dpi 130 --outFileName {outfile}" \
+            "".format(ini=os.path.join(ROOT, "log_neg.ini"),
+                      outfile=outfile.name, region=region).split()
+        with self.assertRaises(Exception) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("coverage contains values smaller or equal to" in str(context.exception))
