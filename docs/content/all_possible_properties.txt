@@ -76,6 +76,16 @@
 
   - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
 
+- **transform**:
+
+  - for *bigwig, bedgraph*: no, log, log1p, -log, log2, log10
+
+  - for *hic_matrix*: no, log, log1p, -log
+
+- **y_axis_values**:
+
+  - for *bigwig, bedgraph*: original, transformed
+
 - **nans_to_zeros**:
 
   - for *bigwig, bedgraph*: true, false
@@ -95,10 +105,6 @@
 - **plot_horizontal_lines**:
 
   - for *bedgraph_matrix*: true, false
-
-- **transform**:
-
-  - for *hic_matrix*: no, log, log1p, -log
 
 - **show_masked_bins**:
 
