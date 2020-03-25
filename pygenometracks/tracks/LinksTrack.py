@@ -30,17 +30,32 @@ class LinksTrack(GenomeTrack):
 # For these tracks do not hesitate to put large line_width like 5 or 10.
 links_type = arcs
 # color of the lines
+color = red
 # if color is a valid colormap name (like RdYlGn),
 # then the score is mapped to the colormap.
-color = red
+#color = RdYlGn
+# To set the minimum and maximum value of the colormap:
+#min_value = 0
+#max_value = 1.2
 # To use transparency, you can use alpha
 # default is 0.8
 # alpha = 0.5
 # if line_width is not given, the score is used to set the line width
 # using the following formula (0.5 * square root(score)
-# line_width = 0.5
+#line_width = 0.5
 # options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
 line_style = solid
+# If you want to compact the arcs (when you have both long and short arcs)
+# You can choose a compact level of
+# 1 (the height is proportional to the square root of the distance)
+# 2 (the height is the same for all distances)
+# (default is 0 proportional to distance)
+#compact_arcs_level = 2
+# To be able to see small arcs when big arcs exists, you can set
+# the upper y limit.
+# The unit is bp. This corresponds to the longest arc you will see.
+# This option is incompatible with compact_arcs_level = 2
+#ylim = 100000
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'links_type': 'arcs',
@@ -50,20 +65,26 @@ file_type = {}
                            'color': DEFAULT_LINKS_COLOR,
                            'alpha': 0.8,
                            'max_value': None,
-                           'min_value': None}
+                           'min_value': None,
+                           'ylim': None,
+                           'compact_arcs_level': '0'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
-                             'min_value': {'auto': None}}
+                             'min_value': {'auto': None},
+                             'ylim': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'links_type': ['arcs', 'triangles', 'loops'],
                            'line_style': ['solid', 'dashed',
-                                          'dotted', 'dashdot']}
+                                          'dotted', 'dashdot'],
+                           'compact_arcs_level': ['0', '1', '2']}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'links_type', 'line_style',
-                         'title', 'color']
+                         'title', 'color', 'compact_arcs_level']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
+                        'ylim': [0, np.inf],
+                        'alpha': [0, 1],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
@@ -83,27 +104,19 @@ file_type = {}
 
         self.colormap = None
         # check if the color given is a color map
-        if not matplotlib.colors.is_color_like(self.properties['color']):
-            # check if the color is a valid colormap name
-            if self.properties['color'] not in matplotlib.cm.datad:
-                self.log.warning("*WARNING* color: '{}' for section {}"
-                                 " is not valid. Color has "
-                                 "been set to "
-                                 "{}".format(self.properties['color'],
-                                             self.properties['section_name'],
+        is_colormap = self.process_color('color', colormap_possible=True,
+                                         default_value_is_colormap=False)
+        if is_colormap:
+            if not has_score:
+                self.log.warning("*WARNING* for section {}"
+                                 " a colormap was chosen but some "
+                                 "lines do not have scores."
+                                 "Color has been set to "
+                                 "{}".format(self.properties['section_name'],
                                              DEFAULT_LINKS_COLOR))
                 self.properties['color'] = DEFAULT_LINKS_COLOR
             else:
-                if not has_score:
-                    self.log.warning("*WARNING* for section {}"
-                                     " a colormap was chosen but some "
-                                     "lines do not have scores."
-                                     "Color has been set to "
-                                     "{}".format(self.properties['section_name'],
-                                                 DEFAULT_LINKS_COLOR))
-                    self.properties['color'] = DEFAULT_LINKS_COLOR
-                else:
-                    self.colormap = self.properties['color']
+                self.colormap = self.properties['color']
 
         if self.colormap is not None:
             if self.properties['min_value'] is not None:
@@ -116,6 +129,15 @@ file_type = {}
 
             cmap = matplotlib.cm.get_cmap(self.properties['color'])
             self.colormap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
+
+        if self.properties['compact_arcs_level'] == '2' and \
+           self.properties['ylim'] is not None:
+            self.log.warning("*WARNING* for section {}"
+                             " a ylim was set but "
+                             "compact_arcs_level was set to 2."
+                             "ylim will be ignore."
+                             "".format(self.properties['section_name']))
+            self.properties['ylim'] = None
 
     def plot(self, ax, chrom_region, region_start, region_end):
         """
@@ -162,12 +184,19 @@ file_type = {}
 
         # the arc height is equal to the radius, the track height is the largest
         # radius plotted plus an small increase to avoid cropping of the arcs
-        self.max_height += self.max_height * 0.1
+        self.max_height *= 1.1
+        if self.properties['ylim'] is None:
+            ymax = self.max_height
+        else:
+            if self.properties['compact_arcs_level'] == '1':
+                ymax = np.sqrt(self.properties['ylim'])
+            else:
+                ymax = self.properties['ylim']
         self.log.debug("{} were links plotted".format(count))
         if self.properties['orientation'] == 'inverted':
-            ax.set_ylim(self.max_height, -1)
+            ax.set_ylim(ymax, -1)
         else:
-            ax.set_ylim(-1, self.max_height)
+            ax.set_ylim(-1, ymax)
 
         # I guess this was forgotten
         # self.log.debug('title is {}'.format(self.properties['title']))
@@ -198,28 +227,41 @@ file_type = {}
 
     def plot_arcs(self, ax, interval):
 
-        diameter = (interval.end - interval.begin)
-        radius = float(diameter) / 2
-        center = interval.begin + float(diameter) / 2
-        if radius > self.max_height:
-            self.max_height = radius
-        ax.plot([center], [diameter])
+        width = (interval.end - interval.begin)
+        if self.properties['compact_arcs_level'] == '1':
+            half_height = np.sqrt(width)
+        elif self.properties['compact_arcs_level'] == '2':
+            half_height = 1000
+        else:
+            half_height = width
+        center = interval.begin + width / 2
+        if half_height > self.max_height:
+            self.max_height = half_height
+        # I think this was an error...
+        # ax.plot([center], [diameter])
         if self.colormap:
             # translate score field
             # into a color
             rgb = self.colormap.to_rgba(interval.data[4])
         else:
             rgb = self.properties['color']
-        ax.add_patch(Arc((center, 0), diameter,
-                         diameter, 0, 0, 180, color=rgb,
-                         linewidth=self.line_width, ls=self.properties['line_style']))
+        ax.add_patch(Arc((center, 0), width,
+                         2 * half_height, 0, 0, 180, color=rgb,
+                         linewidth=self.line_width,
+                         ls=self.properties['line_style']))
 
     def plot_triangles(self, ax, interval):
         x1 = interval.begin
         x2 = x1 + float(interval.end - interval.begin) / 2
         x3 = interval.end
         y1 = 0
-        y2 = (interval.end - interval.begin)
+        if self.properties['compact_arcs_level'] == '1':
+            y2 = np.sqrt(interval.end - interval.begin)
+        elif self.properties['compact_arcs_level'] == '2':
+            y2 = 1000
+        else:
+            y2 = (interval.end - interval.begin)
+
         if self.colormap:
             # translate score field
             # into a color

@@ -173,7 +173,6 @@ title = bed6 fontsize = 10; line_width = 1.5; global_max_row = true
 fontsize = 10
 file_type = bed
 global_max_row = true
-interval_height = 200
 line_width = 1.5
 
 [x-axis]
@@ -186,6 +185,43 @@ type = vlines
 
 """
 with open(os.path.join(ROOT, "browser_tracks.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+
+browser_tracks = """
+[x-axis]
+
+[bed]
+title = empty bed
+file = empty.bed
+
+[gtf]
+title = empty gtf
+file = empty.gtf
+
+[tad]
+title = empty domains
+file = empty.bed
+file_type = domains
+
+[bedgraph]
+title = empty bedgraph
+file = empty.bedgraph
+
+[narrowPeak]
+title = empty narrowPeak
+file = empty.narrowPeak
+
+[bedgraph_matrix]
+title = empty bedgraph_matrix
+file = empty.bm
+file_type = bedgraph_matrix
+
+[links]
+title = empty links
+file = empty.links
+"""
+with open(os.path.join(ROOT, "empty.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 
@@ -202,6 +238,22 @@ def test_plot_tracks():
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
     res = compare_images(os.path.join(ROOT, 'master_plot.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_empty_files():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
+    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.2" \
+           " --width 38 --dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT, "empty.ini"),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_empty.png'),
                          outfile.name, tolerance)
     assert res is None, res
 

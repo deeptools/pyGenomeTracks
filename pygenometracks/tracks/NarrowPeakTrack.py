@@ -33,6 +33,8 @@ use_summit = true
 type = peak
 # if the peaks look too thin, the can be adjusted
 width_adjust = 1.5
+# optional: line_width
+#line_width = 0.5
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'orientation': None,
@@ -42,7 +44,8 @@ file_type = {}
                            'show_labels': True,
                            'use_summit': True,
                            'width_adjust': 1.5,
-                           'type': 'peak'}
+                           'type': 'peak',
+                           'line_width': 1}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
@@ -54,6 +57,7 @@ file_type = {}
                          'color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'width_adjust': [0, np.inf],
+                        'line_width': [0, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
     # color can only be a color
@@ -77,6 +81,8 @@ file_type = {}
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
+        self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
+        self.process_color('color')
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
         # uses bezier curves to plot a shape that
@@ -131,9 +137,13 @@ file_type = {}
             else:
                 summit = None
             if self.properties['type'] == 'box':
-                self.patches.append(Rectangle((start, 20), end - start, 60, edgecolor='black',))
+                self.patches.append(Rectangle((start, 20), end - start, 60,
+                                              edgecolor='black',
+                                              linewidth=self.properties['line_width']))
                 if summit is not None:
-                    self.patches.append(Rectangle((summit, 0), 1, 100, edgecolor='black',))
+                    self.patches.append(Rectangle((summit, 0), 1, 100,
+                                                  edgecolor='black',
+                                                  linewidth=self.properties['line_width']))
                 max_signal = 110
             else:
                 if signal_value > max_signal:
@@ -141,6 +151,7 @@ file_type = {}
                 p = self.peak_plot(start, end, signal_value, center=summit,
                                    width_adjust=self.properties['width_adjust'])
                 p.set_edgecolor(self.properties['color'])
+                p.set_linewidth(self.properties['line_width'])
                 self.patches.append(p)
 
             x_pos = start + float(end - start) / 2

@@ -128,8 +128,12 @@ file_type = {}
     def set_properties_defaults(self):
         super(BedGraphTrack, self).set_properties_defaults()
         super(BedGraphTrack, self).process_type_for_coverage_track()
+        self.process_color('color')
         if self.properties['negative_color'] is None:
             self.properties['negative_color'] = self.properties['color']
+        else:
+            self.process_color('negative_color')
+
         if self.properties['second_file'] is not None and \
            self.properties['summary_method'] is None:
             self.log.warning("When an operation is computed"

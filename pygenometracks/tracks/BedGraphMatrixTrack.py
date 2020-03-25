@@ -4,6 +4,9 @@ from .. utilities import file_to_intervaltree
 import numpy as np
 import matplotlib.pyplot as plt
 import pysam
+from matplotlib import cm
+
+DEFAULT_BEDGRAPHMATRIX_COLORMAP = 'viridis'
 
 
 class BedGraphMatrixTrack(BedGraphTrack):
@@ -24,6 +27,12 @@ type = lines
 # If the type is not lines, you can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = false
+# The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
+# the default color map is viridis
+# If you want your own colormap you can put the values of the color you want
+# For example, colormap = ['blue', 'yellow', 'red']
+# or colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+#colormap = Reds
 # pos_score_in_bin means 'position of score with respect to bin start and end'
 # if the lines option is used, the y values can be put at the
 # center of the bin (default) or they can be plot as 'block',
@@ -42,7 +51,8 @@ file_type = {}
                            'show_data_range': True,
                            'plot_horizontal_lines': False,
                            'orientation': None,
-                           'rasterize': True}
+                           'rasterize': True,
+                           'colormap': DEFAULT_BEDGRAPHMATRIX_COLORMAP}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -53,7 +63,7 @@ file_type = {}
                           'rasterize']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'type', 'pos_score_in_bin', 'orientation',
-                         'title']
+                         'title', 'colormap']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'height': [0, np.inf]}
@@ -79,6 +89,11 @@ file_type = {}
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
+        if self.properties['type'] == 'matrix':
+            self.process_color('colormap', colormap_possible=True,
+                               colormap_only=True,
+                               default_value_is_colormap=True)
+            self.cmap = cm.get_cmap(self.properties['colormap'])
 
     def plot(self, ax, chrom_region, start_region, end_region):
         """
@@ -132,7 +147,8 @@ file_type = {}
             shading = 'gouraud'
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
-            self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax, shading=shading)
+            self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax,
+                                     shading=shading, cmap=self.cmap)
             if self.properties['rasterize']:
                 self.img.set_rasterized(True)
 
