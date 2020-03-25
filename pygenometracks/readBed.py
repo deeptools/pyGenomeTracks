@@ -27,11 +27,15 @@ class ReadBed(object):
         self.file_handle = file_handle
         self.line_number = 0
         # guess file type
-        fields = self.get_no_comment_line()
-        fields = to_string(fields)
-        fields = fields.split('\t')
+        try:
+            fields = self.get_no_comment_line()
+        except StopIteration:
+            self.file_type = 'bed6'
+        else:
+            fields = to_string(fields)
+            fields = fields.split('\t')
 
-        self.guess_file_type(fields)
+            self.guess_file_type(fields)
         self.file_handle.seek(0)
         self.prev_chrom = None
         self.prev_start = -1
