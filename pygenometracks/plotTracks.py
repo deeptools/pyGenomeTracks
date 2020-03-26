@@ -150,15 +150,7 @@ from pygenometracks.tracksClass import PlotTracks
 from pygenometracks._version import __version__
 from .utilities import InputError
 
-DEFAULT_BED_COLOR = '#1f78b4'
-DEFAULT_BIGWIG_COLOR = '#33a02c'
-DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
-DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
-DEFAULT_TRACK_HEIGHT = 3  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
-# proportion of width dedicated to (figure, legends)
-# DEFAULT_WIDTH_RATIOS = (0.95, 0.05)
-DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.12, 'top': 0.9}
 
 
 def parse_arguments(args=None):
