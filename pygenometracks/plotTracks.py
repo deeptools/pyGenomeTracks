@@ -189,7 +189,7 @@ def parse_arguments(args=None):
                        )
 
     parser.add_argument('--width',
-                        help='figure width in centimeters',
+                        help='figure width in centimeters (default is {})'.format(DEFAULT_FIGURE_WIDTH),
                         type=float,
                         default=DEFAULT_FIGURE_WIDTH)
 
@@ -209,13 +209,12 @@ def parse_arguments(args=None):
                         required=True)
 
     parser.add_argument('--fontSize',
-                        help='Font size for the labels of the plot',
-                        type=float,
-                        )
+                        help='Font size for the labels of the plot (default is 0.3 * figure width)',
+                        type=float)
 
     parser.add_argument('--dpi',
                         help='Resolution for the image in case the'
-                             ' ouput is a raster graphics image (e.g png, jpg)',
+                             ' ouput is a raster graphics image (e.g png, jpg) (default is 72)',
                         type=int,
                         default=72
                         )
