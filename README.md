@@ -90,7 +90,7 @@ optional arguments:
                         plot, in BED format, can be given. If this is the
                         case, multiple files will be created using a prefix
                         the value of --outFileName
-  --width WIDTH         figure width in centimeters
+  --width WIDTH         figure width in centimeters (default is 40)
   --height HEIGHT       Figure height in centimeters. If not given, the figure
                         height is computed based on the heights of the tracks.
                         If given, the track height are proportionally scaled
@@ -100,9 +100,10 @@ optional arguments:
   --outFileName OUTFILENAME, -out OUTFILENAME
                         File name to save the image, file prefix in case
                         multiple images are stored
-  --fontSize FONTSIZE   Font size for the labels of the plot
+  --fontSize FONTSIZE   Font size for the labels of the plot (default is 0.3 *
+                        figure width)
   --dpi DPI             Resolution for the image in case the ouput is a raster
-                        graphics image (e.g png, jpg)
+                        graphics image (e.g png, jpg) (default is 72)
   --trackLabelFraction TRACKLABELFRACTION
                         By default the space dedicated to the track labels is
                         0.05 of the plot width. This fraction can be changed
