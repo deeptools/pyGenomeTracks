@@ -2,14 +2,12 @@
 
 from . GenomeTrack import GenomeTrack
 from . BedGraphTrack import BedGraphTrack
-from .. utilities import file_to_intervaltree
 
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 from matplotlib.path import Path
 import matplotlib.patches as patches
 import numpy as np
-import pysam
 
 DEFAULT_NARROWPEAK_COLOR = '#FF000080'  # red, alpha=0.55
 
@@ -64,12 +62,10 @@ file_type = {}
 
     def __init__(self, properties_dict):
         GenomeTrack.__init__(self, properties_dict)
-
         self.load_file()
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
-        self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
         self.process_color('color')
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):

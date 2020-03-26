@@ -2,13 +2,11 @@
 from __future__ import division
 from . BedGraphTrack import BedGraphTrack
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree
 import json
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 from matplotlib import cm
 import numpy as np
-import pysam
 
 
 class EpilogosTrack(BedGraphTrack):

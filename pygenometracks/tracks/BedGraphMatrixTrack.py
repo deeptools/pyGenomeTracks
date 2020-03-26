@@ -1,9 +1,7 @@
 from . BedGraphTrack import BedGraphTrack
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree
 import numpy as np
 import matplotlib.pyplot as plt
-import pysam
 from matplotlib import cm
 
 DEFAULT_BEDGRAPHMATRIX_COLORMAP = 'viridis'
