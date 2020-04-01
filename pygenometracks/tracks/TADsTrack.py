@@ -46,7 +46,6 @@ height = 5
 file_type = {}
     """.format(TRACK_TYPE)
 
-
     DEFAULTS_PROPERTIES = {'fontsize': 12,
                            'orientation': None,
                            'color': DEFAULT_BED_COLOR,
