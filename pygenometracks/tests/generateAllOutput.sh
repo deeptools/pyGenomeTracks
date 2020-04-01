@@ -53,3 +53,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3
 
 # tests arcs
 bin/pgt --tracks ./pygenometracks/tests/test_data/short_long_arcs.ini --region chr11:40000000-46000000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_short_long_arcs.png
+
+# tests scaleBar
+bin/pgt --tracks pygenometracks/tests/test_data/scale_bar.ini --region X:3200000-3300000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_zoom.png
+bin/pgt --tracks pygenometracks/tests/test_data/scale_bar.ini --region X:3000000-3300000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar.png
