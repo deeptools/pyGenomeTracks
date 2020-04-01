@@ -134,21 +134,23 @@ file_type = {}
                            'height_utr': 1,
                            'arrow_length': None,
                            'all_labels_inside': False,
-                           'labels_in_margin': False}
+                           'labels_in_margin': False,
+                           'type': 'bed'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
                              'display': DISPLAY_BED_SYNONYMOUS}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'style': ['flybase', 'UCSC', 'tssarrow'],
-                           'display': DISPLAY_BED_VALID}
+                           'display': DISPLAY_BED_VALID,
+                           'type': ['bed', 'gtf']}
     BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
                           'arrowhead_included', 'all_labels_inside',
                           'labels_in_margin']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
-                         'color_utr', 'display']
+                         'color_utr', 'display', 'type']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
@@ -201,11 +203,14 @@ file_type = {}
 
         # to set the distance between rows
         self.row_scale = 2.3
+        # Guess type from file extension:
+        if self.properties['file'].endswith('gtf') or \
+           self.properties['file'].endswith('gtf.gz'):
+            self.properties['type'] = 'gtf'
 
     def process_bed(self):
 
-        if self.properties['file'].endswith('gtf') or \
-           self.properties['file'].endswith('gtf.gz'):
+        if self.properties['type'] == 'gtf':
             bed_file_h = ReadGtf(self.properties['file'],
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
