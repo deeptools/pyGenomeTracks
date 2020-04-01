@@ -144,7 +144,7 @@ class PlotTracks(object):
 
         """
         track_height = []
-        for track_dict in self.track_list:
+        for i, track_dict in enumerate(self.track_list):
             # if overlay_previous is set to a value other than no
             # then, skip this track height
             if track_dict['overlay_previous'] != 'no':
@@ -195,6 +195,7 @@ class PlotTracks(object):
                     (end_region - start_region)
             else:
                 height = DEFAULT_TRACK_HEIGHT
+                self.track_list[i]['height'] = height
 
             track_height.append(height)
 
