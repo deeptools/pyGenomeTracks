@@ -224,6 +224,12 @@ def parse_arguments(args=None):
                         default='left',
                         choices=['left', 'right', 'center'])
 
+    parser.add_argument('--decreasingXAxis',
+                        help='By default, the x-axis is increasing but if you '
+                             'want to see all the tracks with a decreasing X '
+                             'axis. Put this option.',
+                        action='store_true')
+
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
 
@@ -267,7 +273,9 @@ def get_region(region_string):
 def main(args=None):
 
     args = parse_arguments().parse_args(args)
-    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height, fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
+    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height,
+                     fontsize=args.fontSize, dpi=args.dpi,
+                     track_label_width=args.trackLabelFraction)
 
     if args.BED:
         count = 0
@@ -296,8 +304,10 @@ def main(args=None):
             sys.stderr.write("saving {}\n".format(file_name))
             # print("{} {} {}".format(chrom, start, end))
             trp.plot(file_name, chrom, start, end, title=args.title,
-                     h_align_titles=args.trackLabelHAlign)
+                     h_align_titles=args.trackLabelHAlign,
+                     decreasingXAxis=args.decreasingXAxis)
     else:
         region = get_region(args.region)
         trp.plot(args.outFileName, *region, title=args.title,
-                 h_align_titles=args.trackLabelHAlign)
+                 h_align_titles=args.trackLabelHAlign,
+                 decreasingXAxis=args.decreasingXAxis)

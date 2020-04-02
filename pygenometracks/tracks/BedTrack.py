@@ -382,6 +382,8 @@ file_type = {}
             # check for overlapping genes including
             # label size (if plotted)
 
+            if ax.get_xlim()[0] > ax.get_xlim()[1]:
+                genes_overlap = reversed(genes_overlap)
             for region in genes_overlap:
                 """
                 BED12 gene format with exon locations at the end
@@ -398,40 +400,73 @@ file_type = {}
                 self.counter += 1
                 bed = region.data
 
+                if ax.get_xlim()[0] < ax.get_xlim()[1]:
+                    bed_left = bed.start
+                    bed_right = bed.end
+
+                    def add_to_right(a, b):
+                        return(a + b)
+
+                    def add_to_left(a, b):
+                        return(a - b)
+
+                    def is_left_to(a, b):
+                        return(a < b)
+
+                    def is_right_to(a, b):
+                        return(a > b)
+
+                else:
+                    bed_left = bed.end
+                    bed_right = bed.start
+
+                    def add_to_right(a, b):
+                        return(a - b)
+
+                    def add_to_left(a, b):
+                        return(a + b)
+
+                    def is_left_to(a, b):
+                        return(a > b)
+
+                    def is_right_to(a, b):
+                        return(a < b)
+
                 if self.properties['labels']:
                     num_name_characters = len(bed.name) + 2
                     # +2 to account for a space before and after the name
-                    bed_extended_end = int(bed.end + (num_name_characters * self.len_w))
+                    bed_extended_right = int(add_to_right(bed_right, (num_name_characters * self.len_w)))
                 else:
-                    bed_extended_end = (bed.end + 2 * self.small_relative)
+                    bed_extended_right = add_to_right(bed_right, 2 * self.small_relative)
 
+                bed_extended_left = bed_left
                 # get smallest free row
-                start_pos = bed.start
                 if len(row_last_position) == 0:
                     free_row = 0
-                    row_last_position.append(bed_extended_end)
+                    row_last_position.append(bed_extended_right)
                 else:
                     # If all_labels_inside = True
                     # genes which goes over will have their labels inside
                     if self.properties['all_labels_inside'] and self.properties['labels'] \
-                       and bed_extended_end > end_region:
-                        start_pos = int(bed.start - (num_name_characters * self.len_w))
+                       and is_right_to(bed_extended_right, ax.get_xlim()[1]):
+                        bed_extended_left = int(add_to_left(bed_left, (num_name_characters * self.len_w)))
                         # Check that the start position is not outside:
-                        if start_pos < start_region:
+                        if is_left_to(bed_extended_left, ax.get_xlim()[0]):
                             # If it would be outside, we use the default right label
-                            start_pos = bed.start
+                            bed_extended_left = bed_left
                         else:
-                            bed_extended_end = (bed.end + 2 * self.small_relative)
+                            # If we keep the label to the left, we update the right extended
+                            bed_extended_right = add_to_right(bed_right, 2 * self.small_relative)
 
-                    # get list of rows that are less than start_pos, then take the min
+                    # get list of rows that are left to bed_extended_left, then take the min
                     idx_list = [idx for idx, value in enumerate(row_last_position)
-                                if value < start_pos]
+                                if is_left_to(value, bed_extended_left)]
                     if len(idx_list):
                         free_row = min(idx_list)
-                        row_last_position[free_row] = bed_extended_end
+                        row_last_position[free_row] = bed_extended_right
                     else:
                         free_row = len(row_last_position)
-                        row_last_position.append(bed_extended_end)
+                        row_last_position.append(bed_extended_right)
 
                 rgb = self.get_rgb(bed)
                 edgecolor = self.get_rgb(bed, param='border_color', default=rgb)
@@ -464,19 +499,20 @@ file_type = {}
 
                 if not self.properties['labels']:
                     pass
-                elif start_pos != bed.start:
+                elif bed_extended_left != bed_left:
                     # The label will be plotted before
-                    ax.text(bed.start - self.small_relative,
+                    ax.text(add_to_left(bed_left, self.small_relative),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='right',
                             verticalalignment='center', fontproperties=self.fp)
-                elif bed.end > start_region and bed.end < end_region:
-                    ax.text(bed.end + self.small_relative,
+                elif bed_right > start_region and bed_right < end_region:
+                    ax.text(add_to_right(bed_right, self.small_relative),
                             ypos + 0.5,
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
-                elif self.properties['labels_in_margin'] and bed.end >= end_region:
-                    ax.text(end_region + self.small_relative,
+                elif self.properties['labels_in_margin'] \
+                        and (bed_right == end_region or is_right_to(bed_right, end_region)):
+                    ax.text(add_to_right(ax.get_xlim()[1], self.small_relative),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
