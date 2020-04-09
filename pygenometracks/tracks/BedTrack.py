@@ -164,7 +164,7 @@ file_type = {}
 
     def __init__(self, *args, **kwarg):
         super(BedTrack, self).__init__(*args, **kwarg)
-        self.bed_type = None  # once the bed file is read,
+        self.bed_type = None  # once the bed file is processed,
         # this is bed3, bed4, bed5, bed6, bed8, bed9 or bed12
         self.len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions

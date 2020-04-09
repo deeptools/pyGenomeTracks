@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import collections
-from .utilities import to_string
+from .utilities import to_string, InputError
 
 
 class ReadBed(object):
@@ -177,19 +177,22 @@ class ReadBed(object):
         line_data = line_data.split("\t")
 
         if self.file_type == 'bed12':
-            assert len(line_data) == 12, \
+            assert len(line_data) >= 12, \
                 "File type detected is bed12 but line {}: {} does " \
                 "not have 12 fields.".format(self.line_number, bed_line)
+            line_data = line_data[:12]
 
         elif self.file_type == 'bed9':
-            assert len(line_data) == 9, \
+            assert len(line_data) >= 9, \
                 "File type detected is bed9 but line {}: {} does " \
                 "not have 9 fields.".format(self.line_number, bed_line)
+            line_data = line_data[:9]
 
         elif self.file_type == 'bed8':
-            assert len(line_data) == 8, \
+            assert len(line_data) >= 8, \
                 "File type detected is bed8 but line {}: {} does " \
                 "not have 8 fields.".format(self.line_number, bed_line)
+            line_data = line_data[:8]
 
         elif self.file_type == 'bed6':
             # It is possible that the number of fields was not standard.
@@ -221,17 +224,33 @@ class ReadBed(object):
                         r = '.'
                 line_values.append(r)
 
-            elif idx in [1, 2, 6, 7, 9]:
-                # start and end fields must be integers, same for thichStart(6),
-                # and thickEnd(7) and blockCount(9) fields
+            elif idx in [1, 2]:
+                # start and end fields must be integers
                 try:
                     line_values.append(int(r))
                 except ValueError:
-                    sys.stderr.write("Value: {} in field {} at line {}"
+                    raise InputError("Value: {} in field {} at line {}"
                                      " is not an integer"
                                      "\n".format(r, idx + 1,
                                                  self.line_number))
-                    return dict()
+            elif idx in [6, 7, 9]:
+                # thichStart(6), thickEnd(7) and blockCount(9) fields
+                # Should be integer, if they are not we change the bed type
+                try:
+                    line_values.append(int(r))
+                except ValueError:
+                    if idx == 9:
+                        self.file_type = 'bed8'
+                    else:
+                        self.file_type = 'bed6'
+                    self.BedInterval = collections.namedtuple('BedInterval',
+                                                              self.fields[:int(self.file_type[-1])])
+                    sys.stderr.write("Value: {} in field {} at line {}"
+                                     " is not an integer"
+                                     "\n Only the first {} fields will"
+                                     " be used.\n".format(r, idx + 1,
+                                                          self.line_number,
+                                                          self.file_type[-1]))
             # check item rgb
             elif idx == 8:
                 r = to_string(r)
@@ -244,7 +263,7 @@ class ReadBed(object):
                                          "The rgb field {} is not "
                                          "valid.\nError message: {}"
                                          "\n".format(self.line_number, r,
-                                                     detail))
+                                                     detail.message))
                 line_values.append(r)
 
             elif idx in [10, 11]:
@@ -257,7 +276,7 @@ class ReadBed(object):
                     sys.stderr.write("Error reading line #{}. "
                                      "The block field {} is not "
                                      "valid.\nError message: {}"
-                                     "\n".format(self.line_number, r, detail))
+                                     "\n".format(self.line_number, r, detail.message))
                 line_values.append(r)
 
             else:
@@ -289,7 +308,8 @@ class ReadBed(object):
             line_values = [line_values[i] if i < len(line_values)
                            else default[i - 3]
                            for i in range(6)]
-
+        # In case the file_type changed
+        line_values = line_values[:int(self.file_type[-1])]
         return self.BedInterval._make(line_values)
 
 
