@@ -140,19 +140,16 @@ class ReadBed(object):
         line_data = line_data.split("\t")
 
         if not is_first_line:
-            if self.file_type == 'bed6':
-                # It is possible that the number of fields was not standard.
-                # To be able to process it as bed6, the extra-fields are removed.
-                line_data = line_data[:6]
-                # If the file_type is below, values will be added.
-            else:
+            if self.file_type != 'bed6':
+                # When bed6 you can have less fields in one row
+                # because there are default values
                 assert len(line_data) >= self.fields_to_read, \
                     "File type detected is {} but line {}: {} does " \
                     "not have {} fields.".format(self.file_type,
                                                  self.line_number,
                                                  bed_line,
                                                  self.fields_to_read)
-                line_data = line_data[:self.fields_to_read]
+            line_data = line_data[:self.fields_to_read]
 
         line_values = []
         for idx, r in enumerate(line_data):
@@ -199,11 +196,10 @@ class ReadBed(object):
                         else:
                             self.file_type = 'bed6'
                             self.fields_to_read = 6
-                        sys.stderr.write("Value: {} in field {} at line {}"
+                        sys.stderr.write("Value: {} in field {}"
                                          " is not an integer"
                                          "\n Only the first {} fields will"
                                          " be used.\n".format(r, idx + 1,
-                                                              self.line_number,
                                                               self.fields_to_read))
                         break
                     else:
@@ -233,7 +229,7 @@ class ReadBed(object):
                         passed = False
                 if not passed:
                     if is_first_line:
-                        sys.stderr.write("Error reading line: #{}. "
+                        sys.stderr.write("Warning: "
                                          "The rgb field {} is not "
                                          "valid.\nOnly the first 8 fields"
                                          " will be used.\n"
@@ -242,7 +238,7 @@ class ReadBed(object):
                         self.fields_to_read = 8
                         break
                     else:
-                        sys.stderr.write("Error reading line: #{}. "
+                        sys.stderr.write("Warning: reading line: #{}. "
                                          "The rgb field {} is not "
                                          "valid.\n0"
                                          " will be used.\n"
@@ -257,23 +253,23 @@ class ReadBed(object):
                     r = [int(x) for x in r_parts if x != '']
                 except ValueError as detail:
                     if is_first_line:
-                        sys.stderr.write("Error : "
+                        sys.stderr.write("Warning: "
                                          "The block field {} is not "
                                          "valid.\nError message: {}"
                                          "\nOnly the first 9 fields"
                                          " will be used.\n"
                                          "".format(r,
-                                                   detail.message))
+                                                   detail))
                         self.file_type = 'bed9'
                         self.fields_to_read = 9
                         break
                     else:
-                        sys.stderr.write("Error reading line #{}. "
-                                         "The block field {} is not "
+                        sys.stderr.write("Warning: reading line #{}, "
+                                         "the block field {} is not "
                                          "valid.\nError message: {}"
                                          "\nNo block will be used.\n"
                                          "".format(self.line_number, r,
-                                                   detail.message))
+                                                   detail))
                         line_values[9] = 1
                         line_values[10] = line_values[1]
                         line_values[11] = line_values[2] - line_values[1]
@@ -286,22 +282,22 @@ class ReadBed(object):
                     tmp = float(r)
                 except (ValueError, TypeError) as detail:
                     if is_first_line:
-                        sys.stderr.write("Error: "
+                        sys.stderr.write("Warning: "
                                          "The block field 5 (score) is not "
-                                         "valid.\nError message: {}"
+                                         "valid: {}.\nError message: {}"
                                          "\nOnly the first 4 fields "
-                                         "will be used".format(self.line_number, r,
-                                                               detail.message))
+                                         "will be used.\n".format(r,
+                                                               detail))
                         self.file_type = 'bed6'
                         self.fields_to_read = 4
                         break
                     else:
-                        sys.stderr.write("Error reading line #{}. "
-                                         "The block field 5 (score) is not "
-                                         "valid.\nError message: {}"
+                        sys.stderr.write("Warning: reading line #{}, "
+                                         "the block field 5 (score) is not "
+                                         "valid: {}.\nError message: {}"
                                          "\n0 "
-                                         "will be used".format(self.line_number, r,
-                                                               detail.message))
+                                         "will be used.\n".format(self.line_number, r,
+                                                               detail))
                         line_values.append(0.)
                 else:
                     line_values.append(tmp)
