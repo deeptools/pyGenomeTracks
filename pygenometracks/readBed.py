@@ -287,7 +287,7 @@ class ReadBed(object):
                                          "valid: {}.\nError message: {}"
                                          "\nOnly the first 4 fields "
                                          "will be used.\n".format(r,
-                                                               detail))
+                                                                  detail))
                         self.file_type = 'bed6'
                         self.fields_to_read = 4
                         break
@@ -295,9 +295,9 @@ class ReadBed(object):
                         sys.stderr.write("Warning: reading line #{}, "
                                          "the block field 5 (score) is not "
                                          "valid: {}.\nError message: {}"
-                                         "\n0 "
-                                         "will be used.\n".format(self.line_number, r,
-                                                               detail))
+                                         "\n0 will be used.\n"
+                                         "".format(self.line_number, r,
+                                                   detail))
                         line_values.append(0.)
                 else:
                     line_values.append(tmp)

@@ -459,7 +459,8 @@ display = collapsed
 with open(os.path.join(ROOT, "bed_genes_rgb.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
-browser_tracks="""[macs2 broadPeak]
+browser_tracks = """
+[macs2 broadPeak]
 file = broadPeak.broadPeak
 title = broadPeak
 file_type = bed
