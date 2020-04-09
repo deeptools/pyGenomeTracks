@@ -618,32 +618,33 @@ file_type = {}
         # get start, end of all the blocks
         positions = self._split_bed_to_blocks(bed)
 
-        # plot all blocks as rectangles except the last if the strand is + or
-        # the first is the strand is -, which are drawn as arrows.
-        if bed.strand == '-':
-            positions = positions[::-1]
+        if bed.strand != '.':
+            # plot all blocks as rectangles except the last if the strand is + or
+            # the first is the strand is -, which are drawn as arrows.
+            if bed.strand == '-':
+                positions = positions[::-1]
 
-        first_pos = positions.pop()
-        if first_pos[2] == 'UTR':
-            _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
-            # The arrow will be centered on
-            # ypos + 1 / 2
-            # The total height will be
-            # self.properties['height_utr']
-            y0 = ypos + (1 - self.properties['height_utr']) / 2
-            half_height = self.properties['height_utr'] / 2
-        else:
-            _rgb = rgb
-            y0 = ypos
-            half_height = 1 / 2
+            first_pos = positions.pop()
+            if first_pos[2] == 'UTR':
+                _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
+                # The arrow will be centered on
+                # ypos + 1 / 2
+                # The total height will be
+                # self.properties['height_utr']
+                y0 = ypos + (1 - self.properties['height_utr']) / 2
+                half_height = self.properties['height_utr'] / 2
+            else:
+                _rgb = rgb
+                y0 = ypos
+                half_height = 1 / 2
 
-        vertices = self._draw_arrow(first_pos[0], first_pos[1], bed.strand,
-                                    y0, half_height)
+            vertices = self._draw_arrow(first_pos[0], first_pos[1], bed.strand,
+                                        y0, half_height)
 
-        ax.add_patch(Polygon(vertices, closed=True, fill=True,
-                             edgecolor=edgecolor,
-                             facecolor=_rgb,
-                             linewidth=linewidth))
+            ax.add_patch(Polygon(vertices, closed=True, fill=True,
+                                 edgecolor=edgecolor,
+                                 facecolor=_rgb,
+                                 linewidth=linewidth))
 
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
@@ -966,7 +967,9 @@ file_type = {}
         :
         :return: None
         """
-        if strand == '+':
+        if strand == '.':
+            return()
+        elif strand == '+':
             xdata = [xpos - self.small_relative / 4,
                      xpos + self.small_relative / 4,
                      xpos - self.small_relative / 4]
