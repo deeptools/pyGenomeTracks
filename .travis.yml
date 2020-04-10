@@ -29,7 +29,7 @@ jobs:
     - LINT=1
     - TRAVIS_OS_NAME=linux
     before_install:
-    - curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o
+    - curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o
       miniconda.sh
     - bash miniconda.sh -b -p $HOME/miniconda
     - PATH_WITHOUT_CONDA="$PATH"
