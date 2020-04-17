@@ -16,6 +16,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region X:285000
 
 # test bedGraphTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --region chr2:74,000,000-74,800,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid_zoom.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.pdf
 
 # test bigWigTrack:
