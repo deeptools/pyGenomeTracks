@@ -203,11 +203,12 @@ file_type = {}
         if self.properties['file'].endswith('gtf') or \
            self.properties['file'].endswith('gtf.gz'):
             self.log.warning("Deprecation Warning: "
-                             "In section {}, file_type was set to bed"
+                             "In section {}, file_type was set to {}"
                              " whereas it is a gtf file. In the future"
                              " only bed files will be accepted, please"
                              " use file_type = gtf."
-                             "".format(self.properties['section_name']))
+                             "".format(self.properties['section_name'],
+                                       self.TRACK_TYPE))
             bed_file_h = ReadGtf(self.properties['file'],
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
