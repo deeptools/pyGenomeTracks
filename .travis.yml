@@ -29,7 +29,7 @@ jobs:
     - LINT=1
     - TRAVIS_OS_NAME=linux
     before_install:
-    - curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o
+    - curl -L https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o
       miniconda.sh
     - bash miniconda.sh -b -p $HOME/miniconda
     - PATH_WITHOUT_CONDA="$PATH"
@@ -46,10 +46,10 @@ before_install:
 - export TEST_DATA_DIR="`pwd`/pygenometracks/test/test_data/"
 - echo $TEST_DATA_DIR
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-  curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
+  curl -L https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
   ; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then curl
-  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o miniconda.sh
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+  curl -L https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o miniconda.sh
   ; fi
 - bash miniconda.sh -b -p $HOME/miniconda
 - PATH_WITHOUT_CONDA="$PATH"
