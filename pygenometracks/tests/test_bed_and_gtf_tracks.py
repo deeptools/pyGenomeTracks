@@ -69,7 +69,7 @@ file = dm3_subset_BDGP5.78.gtf.gz
 height = 10
 title = gtf from ensembl
 fontsize = 12
-file_type = bed
+file_type = gtf
 
 [spacer]
 height = 1
@@ -91,7 +91,7 @@ title = gtf from ensembl one entry per gene
 merge_transcripts = true
 prefered_name = gene_name
 fontsize = 12
-file_type = bed
+file_type = gtf
 
 [spacer]
 height = 1
