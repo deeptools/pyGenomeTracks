@@ -95,7 +95,7 @@ color = green
 height = 5
 title = bedgraph color = green operation = log(2+file) min_value = 0.7
 operation = log(2+file)
-min_value = 0
+min_value = 0.7
 
 [test bedgraph]
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
