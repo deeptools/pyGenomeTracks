@@ -105,9 +105,6 @@ install_requires_py = ["numpy >=1.16",
                        "tqdm >=4.20"
                        ]
 
-if sys.version_info[0] == 2 or (sys.version_info[0] == 3 and sys.version_info[1] == 4):
-    install_requires_py.append("configparser >= 3.5.0")
-
 setup(
     name='pyGenomeTracks',
     version=get_version(),
