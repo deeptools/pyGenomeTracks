@@ -1,16 +1,16 @@
 2.0
 ===
 
-This release makes it **very easy to add new tracks*! See the Readme for examples on how to do that.
+This release makes it **very easy to add new tracks**! See the Readme for examples on how to do that.
 
 Furthermore, this release:
 
- * Adds Hi-C tracks
- * Allows a track be plotted over the previous. There is not limit on the tracks that can be plotted on top of each other
- * Removed unnecessary empty space around the resulting image
- * Enlarged the README.md file with new examples and a mini-tutorial on how to add new tracks.
- * Added chromosome name and title to x-axis plot 
- * Added option to plot links as 'triangles'. This is useful to overlay links with Hi-C data to identify the contact pixel.
- * Added line width to bed track
- * Added 'bed graph' track
- * Added a track that can plot .narrowPeaks
+* Adds Hi-C tracks
+* Allows a track be plotted over the previous. There is not limit on the tracks that can be plotted on top of each other
+* Removed unnecessary empty space around the resulting image
+* Enlarged the README.md file with new examples and a mini-tutorial on how to add new tracks.
+* Added chromosome name and title to x-axis plot 
+* Added option to plot links as 'triangles'. This is useful to overlay links with Hi-C data to identify the contact pixel.
+* Added line width to bed track
+* Added 'bed graph' track
+* Added a track that can plot .narrowPeaks

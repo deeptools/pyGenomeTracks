@@ -6,25 +6,26 @@ This is a major release with a lot of new features but also some deprecations in
 During the years we have introduced several ways to enable/disable settings.
 We have used on/off, yes/no, 0/1, true/false. From now on we recommend to only use true/false so that we can unify our config files and make it more intuitive for all pgt-users.
 
-We also removed all 2/3/4 words items and concatenate them now by `_` (https://github.com/deeptools/pyGenomeTracks/pull/132).
+We also removed all 2/3/4 words items and concatenate them now by `_` `#132 <https://github.com/deeptools/pyGenomeTracks/pull/132>`_.
 For example `line width` is now `line_width`. Thanks @LeilyR!
 
 A few new features in this release:
+
 * Every config is now checked for syntax errors before anything is executed (@lldelisle)
 * Added the possibility to merge transcripts into one single gene representation when using gtf (@lldelisle)
 * Added the possibility to rasterize bedgraph plots (@lldelisle)
 * Added the possibility to use summary functions on bedgraphs (@lldelisle)
-* Generate an empty track if a requested region is not in the given track-files. Fixed https://github.com/deeptools/pyGenomeTracks/issues/120 (@LeilyR)
+* Generate an empty track if a requested region is not in the given track-files. Fixed `#120 <https://github.com/deeptools/pyGenomeTracks/issues/120>`_ (@LeilyR)
 * Generate an empty track if a chromosome is missing in bedgraph files (@lldelisle)
 * Improved UCSC style for intron arrows (@lldelisle)
 * Flybase style now supports color_utr and height_uts (@lldelisle)
 * A new tracktype `hlines` was added (@lldelisle)
-* Allow to plot the arcs of the links with a color scale based on scores as proposed in https://github.com/deeptools/pyGenomeTracks/issues/30 (@lldelisle)
-* Allow to plot rectangle on a heatmap for loops. Fixed https://github.com/deeptools/pyGenomeTracks/issues/47 (@Phlya, @lldelisle)
+* Allow to plot the arcs of the links with a color scale based on scores as proposed in `#30 <https://github.com/deeptools/pyGenomeTracks/issues/30>`_ (@lldelisle)
+* Allow to plot rectangle on a heatmap for loops. Fixed `#47 <https://github.com/deeptools/pyGenomeTracks/issues/47>`_ (@Phlya, @lldelisle)
 * A lot of HiC Matrix improvements (@lldelisle)
 * The `alpha` property can now be used nearly everywhere (@lldelisle)
 
-Also checkout our updated [readme](https://github.com/deeptools/pyGenomeTracks/blob/master/README.md).
+Also checkout our updated `readme <https://github.com/deeptools/pyGenomeTracks/blob/master/README.md>`_).
 
 Special thanks to @lldelisle & @LeilyR for such a feature-rich release.
 
