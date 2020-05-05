@@ -163,6 +163,18 @@ file_type = {}
                              " used. Will use mean.")
             self.properties['summary_method'] = 'mean'
 
+        if self.properties['operation'] != 'file':
+            if self.properties['transform'] != 'no':
+                raise InputError("'operation' and 'transform' cannot be set at"
+                                 " the same time.")
+            if self.properties['y_axis_values'] == 'original':
+                self.log.warning("*Warning* 'operation' is used and "
+                                 "'y_axis_values' was set to 'original'. "
+                                 "'y_axis_values' can only be set to "
+                                 "'original' when 'transform' is used.\n"
+                                 " It will be set as 'transformed'.")
+                self.properties['y_axis_values'] = 'transformed'
+
     def load_file(self):
         self.tbx = None
         # try to load a tabix file is available

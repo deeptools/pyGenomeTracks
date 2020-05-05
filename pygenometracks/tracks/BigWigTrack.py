@@ -125,6 +125,17 @@ file_type = {}
             self.properties['negative_color'] = self.properties['color']
         else:
             self.process_color('negative_color')
+        if self.properties['operation'] != 'file':
+            if self.properties['transform'] != 'no':
+                raise InputError("'operation' and 'transform' cannot be set at"
+                                 " the same time.")
+            if self.properties['y_axis_values'] == 'original':
+                self.log.warning("*Warning* 'operation' is used and "
+                                 "'y_axis_values' was set to 'original'. "
+                                 "'y_axis_values' can only be set to "
+                                 "'original' when 'transform' is used.\n"
+                                 " It will be set as 'transformed'.")
+                self.properties['y_axis_values'] = 'transformed'
 
     def plot(self, ax, chrom_region, start_region, end_region):
         formated_region = "{}:{}-{}".format(chrom_region, start_region, end_region)
