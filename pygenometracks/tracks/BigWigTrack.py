@@ -1,6 +1,6 @@
 from . GenomeTrack import GenomeTrack
 import numpy as np
-from .. utilities import plot_coverage, transform
+from .. utilities import plot_coverage, InputError, transform
 import pyBigWig
 
 DEFAULT_BIGWIG_COLOR = '#33a02c'
@@ -34,6 +34,17 @@ summary_method = mean
 # similarly points:ms sets the point size (markersize (ms) to the given float
 # type = line:0.5
 # type = points:0.5
+# to compute operations on the fly on the file
+# or between 2 bigwig files
+# operation will be evaluated, it should contains file or
+# file and second_file,
+# we advice to use nans_to_zeros = true to avoid unexpected nan values
+#operation = 0.89 * file
+#operation = - file
+#operation = file - second_file
+#operation = log2((1 + file) / (1 + second_file))
+#operation = max(file, second_file)
+#second_file = path for the second file
 # set show_data_range to false to hide the text on the upper-left showing the data range
 show_data_range = true
 # To log transform your data you can use transform and log_pseudocount:
@@ -66,7 +77,9 @@ file_type = {}
                            'type': 'fill',
                            'transform': 'no',
                            'log_pseudocount': 0,
-                           'y_axis_values': 'transformed'}
+                           'y_axis_values': 'transformed',
+                           'second_file': None,
+                           'operation': 'file'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -81,7 +94,8 @@ file_type = {}
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
-                         'type', 'transform', 'y_axis_values']
+                         'transform', 'y_axis_values',
+                         'type', 'second_file', 'operation']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'log_pseudocount': [- np.inf, np.inf],
@@ -94,6 +108,14 @@ file_type = {}
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.bw = pyBigWig.open(self.properties['file'])
+        self.bw2 = None
+        if 'second_file' in self.properties['operation']:
+            if self.properties['second_file'] is None:
+                raise InputError("operation: {} requires to set the parameter"
+                                 " second_file."
+                                 "".format(self.properties['operation']))
+            else:
+                self.bw2 = pyBigWig.open(self.properties['second_file'])
 
     def set_properties_defaults(self):
         super(BigWigTrack, self).set_properties_defaults()
@@ -149,6 +171,78 @@ file_type = {}
                 break
 
         x_values = np.linspace(start_region, end_region, self.properties['number_of_bins'])
+        # compute the operation
+        operation = self.properties['operation']
+        # Substitute log by np.log to make it evaluable:
+        operation = operation.replace('log', 'np.log')
+        if operation == 'file':
+            pass
+        elif 'second_file' not in operation:
+            try:
+                new_scores_per_bin = eval('[' + operation + ' for file in scores_per_bin]')
+                new_scores_per_bin = np.array(new_scores_per_bin)
+            except Exception as e:
+                raise Exception("The operation in section {} could not be"
+                                " computed: {}".
+                                format(self.properties['section_name'],
+                                       e))
+            else:
+                scores_per_bin = new_scores_per_bin
+        else:
+            # Check the chrom
+            chrom_region2 = chrom_region
+            if chrom_region2 not in self.bw2.chroms().keys():
+                chrom_region_before2 = chrom_region2
+                chrom_region2 = self.change_chrom_names(chrom_region2)
+                if chrom_region2 not in self.bw2.chroms().keys():
+                    self.log.warning("*Warning*\nNeither "
+                                     + chrom_region_before2 + " nor "
+                                     + chrom_region2 + " exists as a "
+                                     "chromosome name inside the second bigwig"
+                                     " file. This will generate an empty track"
+                                     "!!\n")
+                    return
+            # get the scores
+            # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
+            # of the memory. This only occurs when calling trackPlot from different
+            # processors. Reloading the file solves the problem.
+            num_tries = 0
+            scores_per_bin2 = None
+            while num_tries < 5:
+                num_tries += 1
+                try:
+                    scores_per_bin2 = np.array(self.bw2.stats(chrom_region2, start_region,
+                                                              end_region, nBins=self.properties['number_of_bins'],
+                                                              type=self.properties['summary_method'])).astype(float)
+                    if self.properties['nans_to_zeros'] and np.any(np.isnan(scores_per_bin2)):
+                        scores_per_bin2[np.isnan(scores_per_bin2)] = 0
+                except Exception as e:
+                    self.bw2 = pyBigWig.open(self.properties['second_file'])
+
+                    self.log.warning("error found while reading bigwig scores"
+                                     " of second file"
+                                     " ({}).\nTrying again. Iter num: {}".
+                                     format(e, num_tries))
+                    pass
+                else:
+                    if num_tries > 1:
+                        self.log.warning("After {} the scores could be computed".format(num_tries))
+                    break
+            # compute the operation
+            try:
+                new_scores_per_bin = eval('[' + operation
+                                          + ' for file, second_file in'
+                                          ' zip(scores_per_bin,'
+                                          ' scores_per_bin2)]')
+                new_scores_per_bin = np.array(new_scores_per_bin)
+            except Exception as e:
+                raise Exception("The operation {}, in section {} could not be"
+                                " computed: {}".
+                                format(self.properties['operation'],
+                                       self.properties['section_name'],
+                                       e))
+            else:
+                scores_per_bin = new_scores_per_bin
 
         transformed_scores = transform(scores_per_bin,
                                        self.properties['transform'],

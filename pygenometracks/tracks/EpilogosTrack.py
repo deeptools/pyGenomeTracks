@@ -50,8 +50,10 @@ file_type = {}
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
-    def __init__(self, *args, **kwarg):
-        super(EpilogosTrack, self).__init__(*args, **kwarg)
+    def __init__(self, properties_dict):
+        GenomeTrack.__init__(self, properties_dict)
+
+        self.load_file()
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)

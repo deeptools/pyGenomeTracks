@@ -189,7 +189,7 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                             facecolor=color,
                             alpha=alpha)
             neg_x_values = x_values.copy()
-            neg_x_values[score_list >= 0] = np.nan
+            neg_x_values[score_list > 0] = np.nan
             ax.fill_between(neg_x_values, score_list, linewidth=0.1,
                             color=negative_color,
                             facecolor=negative_color,

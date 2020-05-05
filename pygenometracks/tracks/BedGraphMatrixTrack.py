@@ -68,6 +68,11 @@ file_type = {}
     INTEGER_PROPERTIES = {}
     # The color cannot be set for the moment
 
+    def __init__(self, properties_dict):
+        GenomeTrack.__init__(self, properties_dict)
+
+        self.load_file()
+
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
         if self.properties['type'] == 'matrix':
