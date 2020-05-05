@@ -305,9 +305,9 @@ def main(args=None):
             # print("{} {} {}".format(chrom, start, end))
             trp.plot(file_name, chrom, start, end, title=args.title,
                      h_align_titles=args.trackLabelHAlign,
-                     decreasingXAxis=args.decreasingXAxis)
+                     decreasing_x_axis=args.decreasingXAxis)
     else:
         region = get_region(args.region)
         trp.plot(args.outFileName, *region, title=args.title,
                  h_align_titles=args.trackLabelHAlign,
-                 decreasingXAxis=args.decreasingXAxis)
+                 decreasing_x_axis=args.decreasingXAxis)

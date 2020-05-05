@@ -202,7 +202,7 @@ class PlotTracks(object):
         return track_height
 
     def plot(self, file_name, chrom, start, end, title=None,
-             h_align_titles='left', decreasingXAxis=False):
+             h_align_titles='left', decreasing_x_axis=False):
         track_height = self.get_tracks_height(start_region=start,
                                               end_region=end)
 
@@ -267,7 +267,7 @@ class PlotTracks(object):
                     width_inch = label_axis.get_window_extent().width
                     width_dpi = width_inch * self.dpi / fig.dpi
 
-            if decreasingXAxis:
+            if decreasing_x_axis:
                 plot_axis.set_xlim(end, start)
             else:
                 plot_axis.set_xlim(start, end)
