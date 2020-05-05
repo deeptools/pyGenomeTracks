@@ -290,3 +290,19 @@ def test_plot_tracks_missing_chr():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_plot_tracks_dec():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
+    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.2" \
+           " --width 38 --dpi 130 --outFileName {1} --decreasingXAxis" \
+           "".format(os.path.join(ROOT, "browser_tracks.ini"),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_plot_dec.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)

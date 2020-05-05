@@ -40,8 +40,7 @@ file_type = {}
                            'line_width': 0.5,
                            'x_center': None,
                            'size': None,
-                           'where': 'left',
-                           'height': 0.5}
+                           'where': 'left'}
     NECESSARY_PROPERTIES = []
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {'where': ['left', 'right',

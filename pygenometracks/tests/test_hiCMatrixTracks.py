@@ -208,6 +208,24 @@ def test_plot_tracks_with_hic():
     os.remove(outfile.name)
 
 
+def test_plot_tracks_with_hic_dec():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:2500000-3500000 "\
+           "--trackLabelFraction 0.23 --width 38 " \
+           "--dpi 130 --outFileName {1} --decreasingXAxis" \
+           "".format(os.path.join(ROOT, 'browser_tracks_hic.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_plot_hic_dec.png'),
+                         outfile.name, tolerance)
+    print("saving test to {}".format(outfile.name))
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_plot_tracks_with_cool_region():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',

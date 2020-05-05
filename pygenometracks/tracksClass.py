@@ -144,7 +144,7 @@ class PlotTracks(object):
 
         """
         track_height = []
-        for track_dict in self.track_list:
+        for i, track_dict in enumerate(self.track_list):
             # if overlay_previous is set to a value other than no
             # then, skip this track height
             if track_dict['overlay_previous'] != 'no':
@@ -195,13 +195,14 @@ class PlotTracks(object):
                     (end_region - start_region)
             else:
                 height = DEFAULT_TRACK_HEIGHT
+                self.track_list[i]['height'] = height
 
             track_height.append(height)
 
         return track_height
 
     def plot(self, file_name, chrom, start, end, title=None,
-             h_align_titles='left'):
+             h_align_titles='left', decreasing_x_axis=False):
         track_height = self.get_tracks_height(start_region=start,
                                               end_region=end)
 
@@ -266,7 +267,10 @@ class PlotTracks(object):
                     width_inch = label_axis.get_window_extent().width
                     width_dpi = width_inch * self.dpi / fig.dpi
 
-            plot_axis.set_xlim(start, end)
+            if decreasing_x_axis:
+                plot_axis.set_xlim(end, start)
+            else:
+                plot_axis.set_xlim(start, end)
             track.plot(plot_axis, chrom, start, end)
             track.plot_y_axis(y_axis, plot_axis)
             track.plot_label(label_axis, width_dpi=width_dpi,
