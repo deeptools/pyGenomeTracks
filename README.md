@@ -112,6 +112,9 @@ optional arguments:
                         By default, the horizontal alignment of the track
                         labels is left. This alignemnt can be changed to right
                         or center.
+  --decreasingXAxis     By default, the x-axis is increasing. Use this option
+                        if you want to see all tracks with a decreasing
+                        x-axis.
   --version             show program's version number and exit
 ```
 <!--- End of possible arguments of pgt -->
