@@ -235,15 +235,25 @@ height = 2
                 # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
                 if self.properties[param][0] == '[':
                     try:
-                        custom_colors = eval(self.properties['colormap'])
-                    except SyntaxError:
-                        pass
+                        custom_colors = eval(self.properties[param])
+                    except (SyntaxError, NameError) as e:
+                        self.log.warning("Warning: section {}, {} was set as {} but "
+                                         "raises an error:\n{}\nIt will be ignored and"
+                                         " default value will be used."
+                                         "".format(self.properties['section_name'],
+                                                   param, self.properties[param],
+                                                   e))
                     else:
                         try:
                             valid_colormap = mc.LinearSegmentedColormap.from_list(
                                 'custom', custom_colors, N=100)
-                        except ValueError:
-                            pass
+                        except ValueError as e:
+                            self.log.warning("Warning: section {}, {} was set as {} but "
+                                             "raises an error:\n{}\nIt will be ignored and"
+                                             " default value will be used."
+                                             "".format(self.properties['section_name'],
+                                                       param, self.properties[param],
+                                                       e))
                 else:
                     if self.properties[param] in dir(plt.cm):
                         valid_colormap = self.properties[param]

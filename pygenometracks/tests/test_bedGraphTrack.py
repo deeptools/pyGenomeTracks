@@ -69,6 +69,23 @@ def test_plot_bedgraph_tracks():
     os.remove(outfile.name)
 
 
+def test_plot_bedgraph_tracks_zoom():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
+    args = "--tracks {0} --region chr2:74,000,000-74,800,000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, "bedgraph_useMid.ini"),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_bedgraph_useMid_zoom.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_plot_bedgraph_tracks_rasterize():
 
     outfile = NamedTemporaryFile(suffix='.pdf', prefix='pyGenomeTracks_test_', delete=False)

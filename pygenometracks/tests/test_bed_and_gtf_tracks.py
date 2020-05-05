@@ -507,6 +507,48 @@ file_type = gtf
 with open(os.path.join(ROOT, "uncorrect_ini_files", "bed_as_gtf.ini"), 'w') as fh:
     fh.write(wrong_track)
 
+browser_tracks = """
+[scores]
+file = dm3_genes_withrgbandscore.bed.gz
+title = genes with scores in coding bed_rgb in utr
+color = cool_r
+color_utr = bed_rgb
+border_color = black
+height = 10.0
+
+[scores in utr]
+file = dm3_genes_withrgbandscore.bed.gz
+title = genes with scores in utr, coding is blue, border is bed_rgb
+color = blue
+color_utr = viridis
+border_color = bed_rgb
+height = 10.0
+
+[scores in border_color]
+file = dm3_genes_withrgbandscore.bed.gz
+title = genes with scores in border_color, coding and utr are blue
+color = blue
+color_utr = blue
+border_color = ['red', 'orange']
+height = 10.0
+
+[scores in cod+utr]
+file = dm3_genes_withrgbandscore.bed.gz
+title = genes with scores both in coding and utr as ['blue', 'purple'] (this does not work for color_utr)
+color = ['blue', 'purple']
+color_utr = ['blue', 'purple']
+height = 10.0
+
+[scores in cod+utr 2]
+file = dm3_genes_withrgbandscore.bed.gz
+title = genes with scores both in coding and utr as Reds
+color = Reds
+color_utr = Reds
+height = 10.0
+"""
+with open(os.path.join(ROOT, "bed_colormap_genes.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -728,3 +770,20 @@ def test_bed_as_gtf():
         assert 'This is not a gtf file.' in str(e)
     else:
         raise Exception("The bed as gtf should fail.")
+
+
+def test_plot_tracks_bed_scores():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3000000-3300000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_colormap_genes.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_colormap_genes.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
