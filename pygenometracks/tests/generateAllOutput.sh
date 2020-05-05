@@ -10,12 +10,14 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/bed_tssarrow_tracks.ini --regi
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_tssarrow_tracks.ini --region X:3020000-3070000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_tssarrow_zoom.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_tssarrow_tracks.ini --region X:3130000-3150000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_tssarrow_zoom2.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_all_labels_inside.ini --region X:3100000-3200000 --trackLabelFraction 0.2 --width 38 --dpi 130 --trackLabelHAlign right -o ./pygenometracks/tests/test_data/master_bed_all_label_inside.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bed_colormap_genes.ini --region X:3000000-3300000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_colormap_genes.png
 
 # test_bedGraphMatrixTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region X:2850000-3150000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph.png
 
 # test bedGraphTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --region chr2:74,000,000-74,800,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid_zoom.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.pdf
 
 # test bigWigTrack:
@@ -53,3 +55,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3
 
 # tests arcs
 bin/pgt --tracks ./pygenometracks/tests/test_data/short_long_arcs.ini --region chr11:40000000-46000000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_short_long_arcs.png
+
+# tests scaleBar
+bin/pgt --tracks pygenometracks/tests/test_data/scale_bar.ini --region X:3200000-3300000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_zoom.png
+bin/pgt --tracks pygenometracks/tests/test_data/scale_bar.ini --region X:3000000-3300000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar.png

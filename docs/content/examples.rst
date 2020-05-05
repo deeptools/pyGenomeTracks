@@ -1,7 +1,7 @@
 Examples
 ========
 
-These examples and the input data for these examples can found in the `examples/ <https://github.com/deeptools/pyGenomeTracks/tree/master/examples>`_ or `test_data/ <https://github.com/deeptools/pyGenomeTracks/tree/master/tests/test_data>`_ folders of the github repository.
+These examples and the input data for these examples can found in the `examples/ <https://github.com/deeptools/pyGenomeTracks/tree/master/examples>`_ or `test_data/ <https://github.com/deeptools/pyGenomeTracks/tree/master/pygenometracks/tests/test_data>`_ folders of the github repository.
 
 
 .. contents:: 
