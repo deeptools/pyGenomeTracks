@@ -5,6 +5,8 @@ from matplotlib.testing.compare import compare_images
 from tempfile import NamedTemporaryFile
 import os.path
 import pygenometracks.plotTracks
+from pygenometracks.utilities import InputError
+
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                     "test_data")
@@ -482,6 +484,29 @@ file_type = bed
 with open(os.path.join(ROOT, "bed_unusual_formats.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+wrong_track = """
+[test gtf]
+file = ../dm3_subset_BDGP5.78_gtf.dat
+height = 10
+title = gtf from ensembl (with dat extension)
+fontsize = 12
+file_type = bed
+"""
+with open(os.path.join(ROOT, "uncorrect_ini_files", "gtf_as_bed.ini"), 'w') as fh:
+    fh.write(wrong_track)
+
+
+wrong_track = """
+[test bed]
+file = ../dm3_genes.bed.gz
+height = 10
+title = bed file
+fontsize = 12
+file_type = gtf
+"""
+with open(os.path.join(ROOT, "uncorrect_ini_files", "bed_as_gtf.ini"), 'w') as fh:
+    fh.write(wrong_track)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -668,5 +693,38 @@ def test_plot_tracks_bed_unusual_format():
     res = compare_images(os.path.join(ROOT, 'master_bed_unusual_formats.png'),
                          outfile.name, tolerance)
     assert res is None, res
-
     os.remove(outfile.name)
+
+
+def test_gtf_as_bed():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3100000-3200000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--trackLabelHAlign right --outFileName {1}" \
+           "".format(os.path.join(ROOT, "uncorrect_ini_files", "gtf_as_bed.ini"),
+                     outfile.name).split()
+    try:
+        pygenometracks.plotTracks.main(args)
+    except InputError as e:
+        assert 'This is probably not a bed file.' in str(e)
+    else:
+        raise Exception("The gtf as bed should fail.")
+
+
+def test_bed_as_gtf():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3100000-3200000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--trackLabelHAlign right --outFileName {1}" \
+           "".format(os.path.join(ROOT, "uncorrect_ini_files", "bed_as_gtf.ini"),
+                     outfile.name).split()
+    try:
+        pygenometracks.plotTracks.main(args)
+    except InputError as e:
+        assert 'This is not a gtf file.' in str(e)
+    else:
+        raise Exception("The bed as gtf should fail.")
