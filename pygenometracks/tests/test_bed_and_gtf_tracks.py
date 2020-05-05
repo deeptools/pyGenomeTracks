@@ -65,9 +65,9 @@ line_width = 1.5
 height = 1
 
 [test gtf]
-file = dm3_subset_BDGP5.78.gtf.gz
+file = dm3_subset_BDGP5.78_gtf.dat
 height = 10
-title = gtf from ensembl
+title = gtf from ensembl (with dat extension)
 fontsize = 12
 file_type = gtf
 
