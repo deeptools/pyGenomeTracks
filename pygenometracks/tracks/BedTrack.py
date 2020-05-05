@@ -999,8 +999,8 @@ file_type = {}
         :return: None
         """
         if strand == '.':
-            return()
-        elif strand == '+':
+            return
+        if strand == '+':
             xdata = [xpos - self.small_relative / 4,
                      xpos + self.small_relative / 4,
                      xpos - self.small_relative / 4]
