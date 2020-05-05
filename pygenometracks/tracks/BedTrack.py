@@ -218,7 +218,7 @@ file_type = {}
             total_length = count_lines(opener(self.properties['file']),
                                        asBed=True)
             bed_file_h = ReadBed(opener(self.properties['file']))
-        
+
         return(bed_file_h, total_length)
 
     def process_bed(self):
