@@ -225,9 +225,9 @@ def parse_arguments(args=None):
                         choices=['left', 'right', 'center'])
 
     parser.add_argument('--decreasingXAxis',
-                        help='By default, the x-axis is increasing but if you '
-                             'want to see all the tracks with a decreasing X '
-                             'axis. Put this option.',
+                        help='By default, the x-axis is increasing. '
+                             'Use this option if you want to see all tracks'
+                             ' with a decreasing x-axis.',
                         action='store_true')
 
     parser.add_argument('--version', action='version',
