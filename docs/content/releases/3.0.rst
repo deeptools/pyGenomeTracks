@@ -1,0 +1,6 @@
+3.0
+===
+
+- support for Python 2 has been removed.
+- regions smaller than 200000 can be plotted with a warning message for plotting TADs.
+- non existing chromosomes in some or all of the input files can be asked as regions to plot the tracks.

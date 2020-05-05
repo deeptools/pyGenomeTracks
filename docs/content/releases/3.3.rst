@@ -1,0 +1,27 @@
+3.3
+===
+
+Release 3.3 adds:
+
+- a documentation on readthedocs: https://pygenometracks.readthedocs.io
+- progress bar for bed, gtf, bedgraph, narrowPeak, epilogos
+- all colors can be set as `(r, g, b)` with r, g, b values between 0 and 1.
+- all colormap can be set as an array of colors, for example  `[red, white, (0, 0, 0.5)]`
+- the titles on the right can be align left, right or center with the argument `--trackLabelHAlign`
+- for the links track, 
+  - `compact_arcs_level` to be able to see both very long arcs and very small arcs.
+  - `ylim` to be able to zoom and see small arcs.
+- a new track type: `file_type = scalebar` which by default is close to the UCSC scale bar.
+- for the bed tracks:
+  - a new gene type: `tssarrow`
+  - `border_color` and `color_utr` can be set to `bed_rgb`.
+  - `all_labels_inside` allow to put the name of the region on the left if it ends after the plotted region.
+  - `labels_in_margin` allow to put the name of the region in the margin if it ends after the plotted region.
+- `line_width` can now be set in the narrowPeak tracks.
+- `colormap` can now be set in bedgraphMatrix tracks.
+
+bug fixes:
+- if a bed with no interval is provided, pgt no longer exit.
+- When an exon had both UTR start and UTR end within it, only the UTR start was considered.
+- alpha in links tracks was not used
+- qcat files with missing values are now working.
