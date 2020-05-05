@@ -459,6 +459,29 @@ display = collapsed
 with open(os.path.join(ROOT, "bed_genes_rgb.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[macs2 broadPeak]
+file = broadPeak.broadPeak
+title = broadPeak
+file_type = bed
+
+[spacer]
+
+[macs2 gappedPeak]
+file = gappedPeak.gappedPeak
+title = gappedPeak
+file_type = bed
+
+[spacer]
+
+[macs2 filteredbed]
+file = filtered.results.bed
+title = filtered.results.bed (strange format)
+file_type = bed
+"""
+with open(os.path.join(ROOT, "bed_unusual_formats.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -626,6 +649,23 @@ def test_plot_tracks_bed_all_label_inside():
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_bed_all_label_inside.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_unusual_format():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:20000-40000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, 'bed_unusual_formats.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_unusual_formats.png'),
                          outfile.name, tolerance)
     assert res is None, res
 
