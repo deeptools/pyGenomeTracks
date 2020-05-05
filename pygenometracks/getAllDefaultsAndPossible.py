@@ -39,6 +39,7 @@ starText = ('\n\n* While pyGenomeTracks can convert coverage tracks on the fly,'
             ' example `bamCoverage <https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html>`_'
             ' or `bamCompare <https://deeptools.readthedocs.io/en/develop/content/tools/bamCompare.html>`_')
 
+
 def main():
     all_tracks = PlotTracks.get_available_tracks()
     my_prefered_order_tracks_names = [None, 'epilogos', 'links',
@@ -106,8 +107,9 @@ def main():
                mat, fmt='%-{}s'.format(max_char), delimiter="  ",
                header='  '.join(mat[1, :]), footer='  '.join(mat[1, :]),
                comments='')
-    with open(os.path.join("docs", "content", "all_default_properties_rst.txt"), 'a') as f:
-        f.write(starText)
+    if starPut:
+        with open(os.path.join("docs", "content", "all_default_properties_rst.txt"), 'a') as f:
+            f.write(starText)
     # For the possible:
     with open(os.path.join("docs", "content", "all_possible_properties.txt"),
               'w') as fo:
