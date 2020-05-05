@@ -178,26 +178,47 @@ file_type = {}
             norm = matplotlib.colors.Normalize(vmin=min_score,
                                                vmax=max_score)
 
-            cmap = matplotlib.cm.get_cmap(self.properties['color'])
+            cmap = matplotlib.cm.get_cmap(self.colormap)
             self.colormap = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
     def set_properties_defaults(self):
         super(BedTrack, self).set_properties_defaults()
         self.fp = font_manager.FontProperties(size=self.properties['fontsize'])
         self.colormap = None
+        self.parametersUsingColormap = []
         # check if the color given is a color map
         is_colormap = self.process_color('color', colormap_possible=True,
                                          bed_rgb_possible=True,
                                          default_value_is_colormap=False)
         if is_colormap:
             self.colormap = self.properties['color']
+            self.parametersUsingColormap.append('color')
 
         # check if border_color and color_utr are colors
         # if they are part of self.properties
         # (for example, TADsTracks do not have color_utr)
         for param in [p for p in ['border_color', 'color_utr']
                       if p in self.properties]:
-            self.process_color(param, bed_rgb_possible=True)
+            is_colormap = self.process_color(param, colormap_possible=True,
+                                             bed_rgb_possible=True)
+            if is_colormap:
+                if self.colormap is None:
+                    self.colormap = self.properties[param]
+                    self.parametersUsingColormap.append(param)
+                else:
+                    if self.colormap == self.properties[param]:
+                        self.parametersUsingColormap.append(param)
+                    else:
+                        self.log.warning("*WARNING* section {0}: {1} was set to {2}, "
+                                         "but {3} was set to {4}. "
+                                         "It is not possible to have multiple"
+                                         " colormap. {1} set to {5}"
+                                         "".format(self.properties['section_name'],
+                                                   param, self.properties[param],
+                                                   self.parametersUsingColormap[0],
+                                                   self.colormap,
+                                                   self.DEFAULTS_PROPERTIES[param]))
+                        self.properties[param] = self.DEFAULTS_PROPERTIES[param]
 
         # to set the distance between rows
         self.row_scale = 2.3
@@ -604,11 +625,11 @@ file_type = {}
         """
         rgb = self.properties[param]
 
-        if self.colormap:
+        if self.colormap is not None and param in self.parametersUsingColormap:
             # translate value field (in the example above is 0 or 0.2686...)
             # into a color
             rgb = self.colormap.to_rgba(bed.score)
-        if self.properties[param] == 'bed_rgb':
+        elif self.properties[param] == 'bed_rgb':
             # if rgb is set in the bed line, this overrides the previously
             # defined colormap
             if self.bed_type in ['bed9', 'bed12'] and len(bed.rgb) == 3:
