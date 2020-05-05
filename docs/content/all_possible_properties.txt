@@ -6,7 +6,7 @@
 
 - **orientation**:
 
-  - for *epilogos, links, domains, bed, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix*: inverted, not set
+  - for *epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix*: inverted, not set
 
 - **links_type**:
 
@@ -22,35 +22,35 @@
 
 - **merge_transcripts**:
 
-  - for *domains, bed*: true, false
+  - for *domains, bed, gtf*: true, false
 
 - **style**:
 
-  - for *bed*: flybase, UCSC, tssarrow
+  - for *bed, gtf*: flybase, UCSC, tssarrow
 
 - **display**:
 
-  - for *bed*: collapsed, triangles, interleaved, stacked
+  - for *bed, gtf*: collapsed, triangles, interleaved, stacked
 
 - **labels**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **global_max_row**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **arrowhead_included**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **all_labels_inside**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **labels_in_margin**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **type**:
 

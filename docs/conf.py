@@ -30,7 +30,7 @@ MOCK_MODULES = ['numpy', 'numpy.core', 'numpy.core.multiarray', 'numpy.distutils
                 'mpl_toolkits', 'mpl_toolkits.axisartist', 'mpl_toolkits.mplot3d', 'mpl_toolkits.axes_grid1',
                 'Bio', 'Bio.Seq', 'Bio.Alphabet', 'pyBigWig', 'tables', 'pytables', 'future', 'past', 'past.builtins',
                 'future.utils', 'cooler', 'logging', 'unidecode', 'hic2cool', 'hicmatrix', 'hicmatrix.HiCMatrix',
-                'hicmatrix.lib', 'pybedtools']
+                'hicmatrix.lib', 'pybedtools', 'tqdm']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()

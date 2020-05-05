@@ -1,6 +1,8 @@
 from . GenomeTrack import GenomeTrack
 from .. readBed import ReadBed
+# To remove next 1.0
 from .. readGtf import ReadGtf
+# End to remove
 from .. utilities import opener, get_length_w, count_lines
 import matplotlib
 from matplotlib import font_manager
@@ -21,22 +23,12 @@ class BedTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['bed', 'bed3', 'bed4', 'bed5', 'bed6', 'bed8',
                          'bed9', 'bed12',
                          'bed.gz', 'bed3.gz', 'bed4.gz', 'bed5.gz', 'bed6.gz',
-                         'bed9.gz', 'bed12.gz',
-                         'gtf', 'gtf.gz']
+                         'bed9.gz', 'bed12.gz']
     TRACK_TYPE = 'bed'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 # If the bed file contains the exon
 # structure (bed 12) then this is plotted. Otherwise
 # a region **with direction** is plotted.
-# If a gtf is given, it should end with gtf or gtf.gz or
-# the type should be defined as gtf:
-# type = gtf
-# In the case of a gtf file, by default the transcript_name is used.
-# If you want to use the gene_name:
-# prefered_name = gene_name
-# By default, the gtf is transformed to transcripts
-# If you want to use see only one structure per gene
-# merge_transcripts = true
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 # color = bed_rgb
@@ -122,8 +114,10 @@ file_type = {}
                            'display': DEFAULT_DISPLAY_BED,
                            'line_width': 0.5,
                            'max_labels': 60,
+                           # To remove in next 1.0
                            'prefered_name': 'transcript_name',
                            'merge_transcripts': False,
+                           # end to remove
                            'global_max_row': False,
                            'gene_rows': None,
                            'max_value': None,
@@ -142,13 +136,17 @@ file_type = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'style': ['flybase', 'UCSC', 'tssarrow'],
                            'display': DISPLAY_BED_VALID}
-    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
+    BOOLEAN_PROPERTIES = ['labels', 'global_max_row',
                           'arrowhead_included', 'all_labels_inside',
-                          'labels_in_margin']
-    STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
+                          'labels_in_margin',
+                          # To remove in next 1.0
+                          'merge_transcripts']
+    STRING_PROPERTIES = ['file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
-                         'color_utr', 'display']
+                         'color_utr', 'display',
+                         # To remove in next 1.0
+                         'prefered_name']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'fontsize': [0, np.inf],
@@ -159,12 +157,10 @@ file_type = {}
                           'max_labels': [0, np.inf],
                           'arrow_interval': [1, np.inf],
                           'arrow_length': [0, np.inf]}
-    # The color can be a color or a colormap or 'bed_rgb'
-    # border_color, color_utr can only be a color
 
     def __init__(self, *args, **kwarg):
         super(BedTrack, self).__init__(*args, **kwarg)
-        self.bed_type = None  # once the bed file is read,
+        self.bed_type = None  # once the bed file is processed,
         # this is bed3, bed4, bed5, bed6, bed8, bed9 or bed12
         self.len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions
@@ -223,18 +219,32 @@ file_type = {}
         # to set the distance between rows
         self.row_scale = 2.3
 
-    def process_bed(self):
-
+    def get_bed_handler(self):
+        # To remove in next 1.0
         if self.properties['file'].endswith('gtf') or \
            self.properties['file'].endswith('gtf.gz'):
+            self.log.warning("Deprecation Warning: "
+                             "In section {}, file_type was set to {}"
+                             " whereas it is a gtf file. In the future"
+                             " only bed files will be accepted, please"
+                             " use file_type = gtf."
+                             "".format(self.properties['section_name'],
+                                       self.TRACK_TYPE))
             bed_file_h = ReadGtf(self.properties['file'],
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
             total_length = bed_file_h.length
         else:
+            # end of remove
             total_length = count_lines(opener(self.properties['file']),
                                        asBed=True)
             bed_file_h = ReadBed(opener(self.properties['file']))
+
+        return(bed_file_h, total_length)
+
+    def process_bed(self):
+
+        bed_file_h, total_length = self.get_bed_handler()
         self.bed_type = bed_file_h.file_type
 
         if self.properties['color'] == 'bed_rgb' and \
@@ -675,32 +685,33 @@ file_type = {}
         # get start, end of all the blocks
         positions = self._split_bed_to_blocks(bed)
 
-        # plot all blocks as rectangles except the last if the strand is + or
-        # the first is the strand is -, which are drawn as arrows.
-        if bed.strand == '-':
-            positions = positions[::-1]
+        if bed.strand != '.':
+            # plot all blocks as rectangles except the last if the strand is + or
+            # the first is the strand is -, which are drawn as arrows.
+            if bed.strand == '-':
+                positions = positions[::-1]
 
-        first_pos = positions.pop()
-        if first_pos[2] == 'UTR':
-            _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
-            # The arrow will be centered on
-            # ypos + 1 / 2
-            # The total height will be
-            # self.properties['height_utr']
-            y0 = ypos + (1 - self.properties['height_utr']) / 2
-            half_height = self.properties['height_utr'] / 2
-        else:
-            _rgb = rgb
-            y0 = ypos
-            half_height = 1 / 2
+            first_pos = positions.pop()
+            if first_pos[2] == 'UTR':
+                _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
+                # The arrow will be centered on
+                # ypos + 1 / 2
+                # The total height will be
+                # self.properties['height_utr']
+                y0 = ypos + (1 - self.properties['height_utr']) / 2
+                half_height = self.properties['height_utr'] / 2
+            else:
+                _rgb = rgb
+                y0 = ypos
+                half_height = 1 / 2
 
-        vertices = self._draw_arrow(first_pos[0], first_pos[1], bed.strand,
-                                    y0, half_height)
+            vertices = self._draw_arrow(first_pos[0], first_pos[1], bed.strand,
+                                        y0, half_height)
 
-        ax.add_patch(Polygon(vertices, closed=True, fill=True,
-                             edgecolor=edgecolor,
-                             facecolor=_rgb,
-                             linewidth=linewidth))
+            ax.add_patch(Polygon(vertices, closed=True, fill=True,
+                                 edgecolor=edgecolor,
+                                 facecolor=_rgb,
+                                 linewidth=linewidth))
 
         for start_pos, end_pos, _type in positions:
             if _type == 'UTR':
@@ -1023,6 +1034,8 @@ file_type = {}
         :
         :return: None
         """
+        if strand == '.':
+            return
         if strand == '+':
             xdata = [xpos - self.small_relative / 4,
                      xpos + self.small_relative / 4,

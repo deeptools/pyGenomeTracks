@@ -34,7 +34,7 @@ track_separator = ', '
 def main():
     all_tracks = PlotTracks.get_available_tracks()
     my_prefered_order_tracks_names = [None, 'epilogos', 'links',
-                                      'domains', 'bed', 'narrow_peak',
+                                      'domains', 'bed', 'gtf', 'narrow_peak',
                                       'bigwig', 'bedgraph', 'bedgraph_matrix',
                                       'hlines', 'hic_matrix']
     my_prefered_order_tracks_names = [k for k in my_prefered_order_tracks_names
