@@ -722,6 +722,23 @@ def test_plot_tracks_bed_all_label_inside():
     os.remove(outfile.name)
 
 
+def test_plot_tracks_bed_all_label_inside_Xdec():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:3215000-3240000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--trackLabelHAlign right --outFileName {1} --decreasingXAxis" \
+           "".format(os.path.join(ROOT, 'bed_all_labels_inside.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_bed_all_label_inside_dec.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_plot_tracks_bed_unusual_format():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
