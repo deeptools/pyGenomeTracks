@@ -44,6 +44,7 @@ file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
+                           # In next 1.0 change matrix to lines
                            'type': 'matrix',
                            'pos_score_in_bin': 'center',
                            'show_data_range': True,
@@ -70,6 +71,14 @@ file_type = {}
     # The color cannot be set for the moment
 
     def set_properties_defaults(self):
+        # To remove in next 1.0
+        if 'type' not in self.properties:
+            self.warning("Deprecated Warning: The section {} did"
+                         " not specify the type. For the moment"
+                         " the default type is matrix but in the"
+                         " next version it will be lines."
+                         "".format(self.properties['section_name']))
+        # End to remove
         GenomeTrack.set_properties_defaults(self)
         if self.properties['type'] == 'matrix':
             self.process_color('colormap', colormap_possible=True,
