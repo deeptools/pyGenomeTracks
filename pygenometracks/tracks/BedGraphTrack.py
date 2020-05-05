@@ -38,8 +38,8 @@ nans_to_zeros = true
 # Default is false.
 # use_middle = true
 # By default the bedgraph is plotted at the base pair
-# Resolution. This can lead to very large pdf/svg files
-# If plotting a large regions.
+# resolution. This can lead to very large pdf/svg files
+# If plotting large regions.
 # If you want to decrase the size of your file.
 # You can either rasterize the bedgraph profile by using:
 # rasterize = true
@@ -48,7 +48,20 @@ nans_to_zeros = true
 # mean/average/stdev/dev/max/min/cov/coverage/sum
 # summary_method = mean
 # number_of_bins = 700
-# To log transform your data you can use transform and log_pseudocount:
+# set show_data_range to false to hide the text on the left showing the data range
+show_data_range = true
+# to compute operations on the fly on the file
+# or between 2 bedgraph files
+# operation will be evaluated, it should contains file or
+# file and second_file,
+# we advice to use nans_to_zeros = true to avoid unexpected nan values
+#operation = 0.89 * file
+#operation = - file
+#operation = file - second_file
+#operation = log2((1 + file) / (1 + second_file))
+#operation = max(file, second_file)
+#second_file = path for the second file
+# To log transform your data you can also use transform and log_pseudocount:
 # For the transform values:
 # 'log1p': transformed_values = log(1 + initial_values)
 # 'log': transformed_values = log(log_pseudocount + initial_values)
@@ -62,17 +75,6 @@ nans_to_zeros = true
 # gives the transformed values, if you prefer to see
 # the original values:
 #y_axis_values = original
-# to compute operations on the fly on the file
-# or between 2 bedgraph files
-# operation will be evaluated, it should contains file or
-# file and second_file,
-# we advice to use nans_to_zeros = true to avoid unexpected nan values
-#operation = 0.89 * file
-#operation = - file
-#operation = file - second_file
-#operation = log2((1 + file) / (1 + second_file))
-#operation = max(file, second_file)
-#second_file = path for the second file
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
