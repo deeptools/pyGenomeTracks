@@ -180,7 +180,8 @@ class ReadBed(object):
                     line_values.append(int(r))
                 except ValueError:
                     raise InputError("Value: {} in field {} at line {}"
-                                     " is not an integer"
+                                     " is not an integer. This is "
+                                     "probably not a bed file."
                                      "\n".format(r, idx + 1,
                                                  self.line_number))
             elif idx in [6, 7, 9]:
