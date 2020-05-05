@@ -53,7 +53,8 @@ file_type = {}
                            'colormap': DEFAULT_BEDGRAPHMATRIX_COLORMAP}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
-                             'min_value': {'auto': None}}
+                             'min_value': {'auto': None},
+                             'type': {'line': 'lines'}}
     POSSIBLE_PROPERTIES = {'type': ['matrix', 'lines'],
                            'pos_score_in_bin': ['center', 'block'],
                            'orientation': [None, 'inverted']}
