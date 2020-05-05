@@ -36,7 +36,8 @@ starText = ('\n\n* While pyGenomeTracks can convert coverage tracks on the fly,'
             ' this might be a time-consuming step, especially on large files and'
             ' if you want to replot many times. In this situation, we recommend'
             ' using the deepTools suite to convert your files in advance. For'
-            ' example [bamCoverage](https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html)')
+            ' example `bamCoverage <https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html>`_'
+            ' or `bamCompare <https://deeptools.readthedocs.io/en/develop/content/tools/bamCompare.html>`_')
 
 def main():
     all_tracks = PlotTracks.get_available_tracks()
