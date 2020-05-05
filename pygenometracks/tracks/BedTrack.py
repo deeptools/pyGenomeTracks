@@ -426,32 +426,32 @@ file_type = {}
                     bed_right = bed.end
 
                     def add_to_right(a, b):
-                        return(a + b)
+                        return a + b
 
                     def add_to_left(a, b):
-                        return(a - b)
+                        return a - b
 
                     def is_left_to(a, b):
-                        return(a < b)
+                        return a < b
 
                     def is_right_to(a, b):
-                        return(a > b)
+                        return a > b
 
                 else:
                     bed_left = bed.end
                     bed_right = bed.start
 
                     def add_to_right(a, b):
-                        return(a - b)
+                        return a - b
 
                     def add_to_left(a, b):
-                        return(a + b)
+                        return a + b
 
                     def is_left_to(a, b):
-                        return(a > b)
+                        return a > b
 
                     def is_right_to(a, b):
-                        return(a < b)
+                        return a < b
 
                 if self.properties['labels']:
                     num_name_characters = len(bed.name) + 2
