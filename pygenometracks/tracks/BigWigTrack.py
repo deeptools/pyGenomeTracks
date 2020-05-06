@@ -294,3 +294,8 @@ file_type = {}
                                              self.properties['transform'],
                                              self.properties['log_pseudocount'],
                                              self.properties['y_axis_values'])
+
+    def __del__(self):
+        self.bw.close()
+        if self.bw2 is not None:
+            self.bw2.close()

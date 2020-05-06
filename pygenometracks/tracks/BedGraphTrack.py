@@ -437,3 +437,9 @@ file_type = {}
                                                self.properties['transform'],
                                                self.properties['log_pseudocount'],
                                                self.properties['y_axis_values'])
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()
+        if self.tbx2 is not None:
+            self.tbx2.close()

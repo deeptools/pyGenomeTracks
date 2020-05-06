@@ -529,6 +529,14 @@ class PlotTracks(object):
             self.vlines_intval_tree, __, __ = \
                 file_to_intervaltree(self.vlines_properties['file'])
 
+    def close_files(self):
+        """
+        Close all opened files
+        """
+        for track in self.track_obj_list:
+            track.__del__()
+
+
     @staticmethod
     def check_file_exists(track_dict, tracks_path):
         """
