@@ -267,3 +267,46 @@ The configuration file for this image is:
     $ pyGenomeTracks  --tracks browser_tracks_hic.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o master_plot_hic.png
 
 
+Log transform and Operation Examples
+--------------------------
+
+With the parameter `operation` you can make operations between one or two files (here two bigwig files but this is also working with two bedgraph files). For example, difference, log ratio, scaling...
+
+.. image:: ../../pygenometracks/tests/test_data/master_operation.png
+
+The configuration file for this image is:
+
+.. literalinclude:: ../../pygenometracks/tests/test_data/operation.ini
+    :language: INI
+
+.. code:: bash
+
+    $ pyGenomeTracks --tracks operation.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o master_operation.png
+
+With the parameter `transformation` you can log transform your data and decide to put on the y axis either the transformed values or the original values:
+
+.. image:: ../../pygenometracks/tests/test_data/master_log1p.png
+
+The configuration file for this image is:
+
+.. literalinclude:: ../../pygenometracks/tests/test_data/log1p.ini
+    :language: INI
+
+.. code:: bash
+
+    $ pyGenomeTracks --tracks log1p.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o master_log1p.png
+
+With `operation` you can also do log transformation however nothing will be written on the left of the y axis:
+
+.. image:: ../../pygenometracks/tests/test_data/master_log.png
+
+The configuration file for this image is:
+
+.. literalinclude:: ../../pygenometracks/tests/test_data/log.ini
+    :language: INI
+
+.. code:: bash
+
+    $ pyGenomeTracks --tracks log.ini  --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o master_log.png
+
+
