@@ -32,7 +32,7 @@ track_separator = ', '
 
 putStarsAfter = ['second_file', 'operation']
 starPut = False
-starText = ('\n\n* While pyGenomeTracks can convert coverage tracks on the fly,'
+starText = ('\n\n\* While pyGenomeTracks can convert coverage tracks on the fly,'
             ' this might be a time-consuming step, especially on large files and'
             ' if you want to replot many times. In this situation, we recommend'
             ' using the deepTools suite to convert your files in advance. For'
