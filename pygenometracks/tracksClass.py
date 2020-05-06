@@ -536,7 +536,6 @@ class PlotTracks(object):
         for track in self.track_obj_list:
             track.__del__()
 
-
     @staticmethod
     def check_file_exists(track_dict, tracks_path):
         """
