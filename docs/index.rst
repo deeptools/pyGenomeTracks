@@ -45,4 +45,5 @@ Table of content
    content/examples
    content/possible-parameters
    content/adding-new-tracks
+   content/releases
 
