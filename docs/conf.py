@@ -23,14 +23,14 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # import mock
 
-MOCK_MODULES = ['numpy', 'numpy.core', 'numpy.core.multiarray', 'numpy.distutils.core', 'pandas', 'pysam', 'intervaltree',
-                'scipy', 'scipy.sparse', 'scipy.stats', 'scipy.ndimage', 'scipy.special',
-                'matplotlib', 'matplotlib.pyplot', 'matplotlib.gridspec', 'matplotlib.ticker',
-                'matplotlib.textpath', 'matplotlib.patches', 'matplotlib.colors', 'matplotlib.cm', 'matplotlib.lines',
-                'mpl_toolkits', 'mpl_toolkits.axisartist', 'mpl_toolkits.mplot3d', 'mpl_toolkits.axes_grid1',
-                'Bio', 'Bio.Seq', 'Bio.Alphabet', 'pyBigWig', 'tables', 'pytables', 'future', 'past', 'past.builtins',
-                'future.utils', 'cooler', 'logging', 'unidecode', 'hic2cool', 'hicmatrix', 'hicmatrix.HiCMatrix',
-                'hicmatrix.lib', 'pybedtools', 'tqdm']
+MOCK_MODULES = [# Required for both:
+                'pygenometracks.tracksClass',
+                # For plotTracks in plotTracks
+                'matplotlib',
+                # For plotTracks in utilities
+                'numpy',
+                'tqdm',
+                'intervaltree']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
