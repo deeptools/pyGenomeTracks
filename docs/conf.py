@@ -23,8 +23,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # import mock
 
-MOCK_MODULES = [# Required for both:
-                'pygenometracks.tracksClass',
+MOCK_MODULES = ['pygenometracks.tracksClass',  # (required for both)
                 # For plotTracks in plotTracks
                 'matplotlib',
                 # For plotTracks in utilities
