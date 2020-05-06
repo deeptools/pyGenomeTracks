@@ -138,3 +138,7 @@ file_type = {}
 
     def plot_y_axis(self, ax, plot_axis):
         GenomeTrack.plot_y_axis(self, ax, plot_axis)
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()

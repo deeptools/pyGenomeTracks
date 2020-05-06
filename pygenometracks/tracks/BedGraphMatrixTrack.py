@@ -173,3 +173,7 @@ file_type = {}
                 # move it a bit inside to avoid overlapping
                 # with other labels
                 labels[idx].set_verticalalignment('top')
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()

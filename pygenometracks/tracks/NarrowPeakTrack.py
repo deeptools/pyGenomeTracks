@@ -216,3 +216,7 @@ file_type = {}
         ax.text(-0.2, y_at_zero, ymin_str, verticalalignment='bottom', horizontalalignment='right', transform=ax.transAxes)
         ax.text(-0.2, ymax, ymax_str, verticalalignment='top', horizontalalignment='right', transform=ax.transAxes)
         ax.patch.set_visible(False)
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()
