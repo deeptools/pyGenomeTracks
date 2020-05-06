@@ -70,6 +70,11 @@ file_type = {}
     INTEGER_PROPERTIES = {}
     # The color cannot be set for the moment
 
+    def __init__(self, properties_dict):
+        GenomeTrack.__init__(self, properties_dict)
+
+        self.load_file()
+
     def set_properties_defaults(self):
         # To remove in next 1.0
         if 'type' not in self.properties:
@@ -145,7 +150,7 @@ file_type = {}
 
     def plot_y_axis(self, ax, plot_axis):
         if self.properties['type'] == 'lines':
-            super(BedGraphMatrixTrack, self).plot_y_axis(ax, plot_axis)
+            GenomeTrack.plot_y_axis(self, ax, plot_axis)
         else:
             try:
                 cobar = plt.colorbar(self.img, ax=ax, fraction=0.95)
@@ -168,3 +173,7 @@ file_type = {}
                 # move it a bit inside to avoid overlapping
                 # with other labels
                 labels[idx].set_verticalalignment('top')
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()

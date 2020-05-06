@@ -311,3 +311,4 @@ def main(args=None):
         trp.plot(args.outFileName, *region, title=args.title,
                  h_align_titles=args.trackLabelHAlign,
                  decreasing_x_axis=args.decreasingXAxis)
+    trp.close_files()

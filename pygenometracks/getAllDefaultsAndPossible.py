@@ -30,6 +30,15 @@ track_separator = ', '
 #                   'merge_transcripts': {True: 'on', False: 'off'},
 #                   'nans_to_zeros': {True: 'True', False: 'False'}}
 
+putStarsAfter = ['second_file', 'operation']
+starPut = False
+starText = ('\n\n* While pyGenomeTracks can convert coverage tracks on the fly,'
+            ' this might be a time-consuming step, especially on large files and'
+            ' if you want to replot many times. In this situation, we recommend'
+            ' using the deepTools suite to convert your files in advance. For'
+            ' example `bamCoverage <https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html>`_'
+            ' or `bamCompare <https://deeptools.readthedocs.io/en/develop/content/tools/bamCompare.html>`_')
+
 
 def main():
     all_tracks = PlotTracks.get_available_tracks()
@@ -75,7 +84,11 @@ def main():
         mat[1, j] = '-'
         for i, p in enumerate(all_default_parameters):
             if j == 1:
-                mat[i + 2, 0] = p
+                if p in putStarsAfter:
+                    mat[i + 2, 0] = p + "*"
+                    starPut = True
+                else:
+                    mat[i + 2, 0] = p
 
             default = all_default_parameters[p].get(track_type,
                                                     not_used_string)
@@ -94,7 +107,9 @@ def main():
                mat, fmt='%-{}s'.format(max_char), delimiter="  ",
                header='  '.join(mat[1, :]), footer='  '.join(mat[1, :]),
                comments='')
-
+    if starPut:
+        with open(os.path.join("docs", "content", "all_default_properties_rst.txt"), 'a') as f:
+            f.write(starText)
     # For the possible:
     with open(os.path.join("docs", "content", "all_possible_properties.txt"),
               'w') as fo:

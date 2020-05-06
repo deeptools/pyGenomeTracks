@@ -158,6 +158,35 @@ show_masked_bins = false
 with open(os.path.join(ROOT, "browser_tracks_hic_rasterize_height.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic)
 
+browser_tracks_with_hic = """
+[hic matrix log]
+file = Li_et_al_2015.h5
+title = depth = 200000; transform = log; show_masked_bins = true
+depth = 200000
+transform = log
+min_value = -4
+max_value = 4
+file_type = hic_matrix
+show_masked_bins = true
+
+[spacer]
+
+[hic matrix -log]
+file = Li_et_al_2015.h5
+title = depth = 200000; transform = -log; show_masked_bins = true
+depth = 200000
+transform = -log
+min_value = -4
+max_value = 4
+file_type = hic_matrix
+show_masked_bins = true
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "browser_tracks_hic_log-log.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -209,6 +238,24 @@ def test_plot_tracks_with_cool_region():
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_plot_hic.png'),
                          outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_hic_logmlog():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:2500000-3500000 "\
+           "--trackLabelFraction 0.23 --width 38 " \
+           "--dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT, 'browser_tracks_hic_log-log.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_plot_hic_log-log.png'),
+                         outfile.name, tolerance)
+    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)
