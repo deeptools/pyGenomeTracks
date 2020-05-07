@@ -14,7 +14,7 @@ echo "All available tracks
 for f in docs/content/tracks/auto/*_deduced_from_code.txt; do
     track_name=`basename $f _deduced_from_code.txt`
     echo ":doc:\`tracks/${track_name}\`" >> docs/content/all_tracks.rst
-    if [ ! -e docs/content/tracks/auto/${track_name}.rst ]; then
+    if [ ! -e docs/content/tracks/${track_name}.rst ]; then
         echo "$trackname
 ==========
 
@@ -24,8 +24,8 @@ Description
 Parameters
 ----------
 
-.. include:: auto/$f
-">docs/content/tracks/auto/${track_name}.rst
+.. include:: auto/${track_name}_deduced_from_code.txt
+">docs/content/tracks/${track_name}.rst
     fi
 done
 

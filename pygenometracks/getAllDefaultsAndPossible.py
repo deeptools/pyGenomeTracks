@@ -48,7 +48,7 @@ def main():
     my_prefered_order_tracks_names = ['x-axis', 'epilogos', 'links',
                                       'domains', 'bed', 'gtf', 'narrow_peak',
                                       'bigwig', 'bedgraph', 'bedgraph_matrix',
-                                      'hlines', 'hic_matrix']
+                                      'hlines', 'hic_matrix', 'scalebar']
     my_prefered_order_tracks_names = [k for k in my_prefered_order_tracks_names
                                       if k in all_tracks]
     other_tracks = list(set(all_tracks.keys())
