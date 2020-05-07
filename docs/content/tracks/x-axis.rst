@@ -1,4 +1,4 @@
-
+x-axis
 ==========
 
 Description
@@ -7,5 +7,5 @@ Description
 Parameters
 ----------
 
-.. include:: auto/docs/content/tracks/auto/x-axis_deduced_from_code.txt
+.. include:: auto/x-axis_deduced_from_code.txt
 

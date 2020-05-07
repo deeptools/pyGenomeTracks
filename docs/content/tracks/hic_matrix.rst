@@ -1,4 +1,4 @@
-
+hic_matrix
 ==========
 
 Description
@@ -7,5 +7,5 @@ Description
 Parameters
 ----------
 
-.. include:: auto/docs/content/tracks/auto/hic_matrix_deduced_from_code.txt
+.. include:: auto/hic_matrix_deduced_from_code.txt
 
