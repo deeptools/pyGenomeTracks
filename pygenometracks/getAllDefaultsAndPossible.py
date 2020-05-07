@@ -87,7 +87,7 @@ def main():
     mat[0, 0] = 'parameter'
     mat[1, 0] = '--'
     for j, track_type in enumerate(all_tracks_with_default, start=1):
-        mat[0, j] = track_type
+        mat[0, j] = f":doc:`tracks/{track_type}`"
         mat[1, j] = '-'
         for i, p in enumerate(all_default_parameters):
             if j == 1:
