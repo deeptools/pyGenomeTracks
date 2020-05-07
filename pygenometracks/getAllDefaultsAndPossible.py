@@ -214,6 +214,9 @@ def main():
                             fo.write(f"{line_start}{default_str_no_ind}\n\n")
             if starPut:
                 fo.write(starText)
+        with open(os.path.join("docs", "content", "tracks", "auto", f"{track_type}_options_text.txt"),
+                  'w') as fo:
+            fo.write(track_class.OPTIONS_TXT)
 
 
 if __name__ == "__main__":
