@@ -4,6 +4,8 @@ epilogos
 Description
 -----------
 
+A track for epilogo files.
+
 Parameters
 ----------
 

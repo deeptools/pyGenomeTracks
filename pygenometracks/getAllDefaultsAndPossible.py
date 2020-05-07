@@ -163,7 +163,7 @@ def main():
                          "can choose any float above 0.\n\n")
             elif track_type == "x-axis":
                 fo.write("- **height**: If you do not set it, the height will "
-                         "be ``**fontsize** / 8``, else you "
+                         "be ``fontsize / 8``, else you "
                          "can choose any float above 0.\n\n")
             else:
                 default = DEFAULT_TRACK_HEIGHT

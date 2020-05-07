@@ -4,6 +4,8 @@ bedgraph
 Description
 -----------
 
+A track for bedgraph files.
+
 Parameters
 ----------
 

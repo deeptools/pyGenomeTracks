@@ -4,6 +4,8 @@ gtf
 Description
 -----------
 
+A track for gtf files.
+
 Parameters
 ----------
 

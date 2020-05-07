@@ -4,6 +4,8 @@ hlines
 Description
 -----------
 
+A track to add horizontal lines to your tracks with ``overlay_previous = share-y`` or just to separate group of tracks.
+
 Parameters
 ----------
 

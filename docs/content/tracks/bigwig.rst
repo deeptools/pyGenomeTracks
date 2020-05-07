@@ -4,6 +4,8 @@ bigwig
 Description
 -----------
 
+A track for bigwig files.
+
 Parameters
 ----------
 
