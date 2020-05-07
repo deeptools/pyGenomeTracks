@@ -38,7 +38,10 @@ Optional:
 
 - **y_axis_values**: `transformed` (default) or original.
 
-- **second_file**: by default this option is not set
+- **second_file\***: by default this option is not set
 
-- **operation**: `file` (default)
+- **operation\***: `file` (default)
 
+
+
+\* While pyGenomeTracks can convert coverage tracks on the fly, this might be a time-consuming step, especially on large files and if you want to replot many times. In this situation, we recommend using the deepTools suite to convert your files in advance. For example `bamCoverage <https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html>`_ or `bamCompare <https://deeptools.readthedocs.io/en/develop/content/tools/bamCompare.html>`_
