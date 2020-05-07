@@ -1,6 +1,8 @@
 Releases
 ========
 
+:doc:`releases/3.4`
+"""""""""""""""""""
 :doc:`releases/3.3`
 """""""""""""""""""
 :doc:`releases/3.2.1`
