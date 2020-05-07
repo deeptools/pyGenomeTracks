@@ -4,7 +4,7 @@ epilogos
 Description
 -----------
 
-A track for epilogo files.
+A track for `epilogos <http://compbio.mit.edu/epilogos/>`_ files.
 
 Parameters
 ----------
