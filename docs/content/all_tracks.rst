@@ -28,4 +28,4 @@ All available tracks
 
 :doc:`tracks/spacer`
 
-:doc:`tracks/x-axis`
+:doc:`tracks/x_axis`
