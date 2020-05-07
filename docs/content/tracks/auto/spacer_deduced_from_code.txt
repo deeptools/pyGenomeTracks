@@ -1,0 +1,10 @@
+Necessary:
+^^^^^^^^^^
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: `0.5` (default) or float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+

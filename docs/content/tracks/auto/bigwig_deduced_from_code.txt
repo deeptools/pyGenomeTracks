@@ -1,0 +1,44 @@
+Necessary:
+^^^^^^^^^^
+- **file**
+
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: `0.5` (default) or float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+
+- **orientation**: by default this option is not set but you can also put: inverted.
+
+- **color**: `#33a02c` (default)
+
+- **alpha**: `1` (default) or any float above 0 below 1
+
+- **max_value**: by default this option is not set but you can also put: any float
+
+- **min_value**: by default this option is not set but you can also put: any float
+
+- **show_data_range**: `true` (default) or false.
+
+- **type**: `fill` (default)
+
+- **negative_color**: by default this option is not set
+
+- **nans_to_zeros**: `false` (default) or true.
+
+- **summary_method**: `mean` (default) or average, max, min, stdev, dev, coverage, cov or sum.
+
+- **number_of_bins**: `700` (default) or any integer above 1
+
+- **transform**: `no` (default) or log, log1p, -log, log2 or log10.
+
+- **log_pseudocount**: `0` (default) or any float
+
+- **y_axis_values**: `transformed` (default) or original.
+
+- **second_file**: by default this option is not set
+
+- **operation**: `file` (default)
+
