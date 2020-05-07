@@ -1,0 +1,14 @@
+Necessary:
+^^^^^^^^^^
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: If you do not set it, the height will be ``**fontsize** / 8``, else you can choose any float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+
+- **where**: `bottom` (default) or top.
+
+- **fontsize**: `15` (default) or any float above 0
+
