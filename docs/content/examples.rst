@@ -270,7 +270,7 @@ The configuration file for this image is:
 Log transform and Operation Examples
 --------------------------
 
-With the parameter `operation` you can make operations between one or two files (here two bigwig files but this is also working with two bedgraph files). For example, difference, log ratio, scaling...
+With the parameter ``operation`` you can make operations between one or two files (here two bigwig files but this is also working with two bedgraph files). For example, difference, log ratio, scaling...
 
 .. image:: ../../pygenometracks/tests/test_data/master_operation.png
 
@@ -283,7 +283,7 @@ The configuration file for this image is:
 
     $ pyGenomeTracks --tracks operation.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o master_operation.png
 
-With the parameter `transformation` you can log transform your data and decide to put on the y axis either the transformed values or the original values:
+With the parameter ``transformation`` you can log transform your data and decide to put on the y axis either the transformed values or the original values:
 
 .. image:: ../../pygenometracks/tests/test_data/master_log1p.png
 
@@ -296,7 +296,7 @@ The configuration file for this image is:
 
     $ pyGenomeTracks --tracks log1p.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o master_log1p.png
 
-With `operation` you can also do log transformation however nothing will be written on the left of the y axis:
+With ``operation`` you can also do log transformation however nothing will be written on the left of the y axis:
 
 .. image:: ../../pygenometracks/tests/test_data/master_log.png
 

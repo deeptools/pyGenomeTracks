@@ -32,7 +32,8 @@ track_separator = ', '
 
 putStarsAfter = ['second_file', 'operation']
 starPut = False
-starText = ('\n\n* While pyGenomeTracks can convert coverage tracks on the fly,'
+starText = ('\n\n'
+            r'\* While pyGenomeTracks can convert coverage tracks on the fly,'
             ' this might be a time-consuming step, especially on large files and'
             ' if you want to replot many times. In this situation, we recommend'
             ' using the deepTools suite to convert your files in advance. For'
@@ -145,6 +146,7 @@ def main():
 
     # For the track description:
     for track_type in my_prefered_order_tracks_names + other_tracks:
+        starPut = False
         track_class = all_tracks[track_type]
         with open(os.path.join("docs", "content", "tracks", "auto", f"{track_type}_deduced_from_code.txt"),
                   'w') as fo:
@@ -168,12 +170,18 @@ def main():
                 fo.write(f"- **height**: `{default}` (default) or float above 0.\n\n")
             for p in all_default_parameters:
                 if track_type in all_default_parameters[p]:
+                    if p in putStarsAfter:
+                        line_start = (f"- **{p}"
+                                      r"\***: ")
+                        starPut = True
+                    else:
+                        line_start = f"- **{p}**: "
                     default = all_default_parameters[p][track_type]
                     if isinstance(default, bool):
                         if default:
-                            fo.write(f"- **{p}**: `true` (default) or false.\n\n")
+                            fo.write(f"{line_start}`true` (default) or false.\n\n")
                         else:
-                            fo.write(f"- **{p}**: `false` (default) or true.\n\n")
+                            fo.write(f"{line_start}`false` (default) or true.\n\n")
                     else:
                         if default is None:
                             default_str_no_ind = "by default this option is not set"
@@ -188,7 +196,7 @@ def main():
                                 others_str = ", ".join(others[:-1]) + " or " + others[-1]
                             else:
                                 others_str = others[0]
-                            fo.write(f"- **{p}**: {default_str} {others_str}.\n\n")
+                            fo.write(f"{line_start}{default_str} {others_str}.\n\n")
                         elif p in track_class.FLOAT_PROPERTIES or p in track_class.INTEGER_PROPERTIES:
                             if p in track_class.FLOAT_PROPERTIES:
                                 range_constrains = track_class.FLOAT_PROPERTIES[p]
@@ -201,9 +209,11 @@ def main():
                                 range_str = f"{range_str} above {range_constrains[0]}"
                             if range_constrains[1] != np.inf:
                                 range_str = f"{range_str} below {range_constrains[1]}"
-                            fo.write(f"- **{p}**: {default_str} any {type_p}{range_str}\n\n")
+                            fo.write(f"{line_start}{default_str} any {type_p}{range_str}\n\n")
                         else:
-                            fo.write(f"- **{p}**: {default_str_no_ind}\n\n")
+                            fo.write(f"{line_start}{default_str_no_ind}\n\n")
+            if starPut:
+                fo.write(starText)
 
 
 if __name__ == "__main__":
