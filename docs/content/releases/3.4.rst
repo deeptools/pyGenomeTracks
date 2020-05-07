@@ -15,7 +15,7 @@ Enhancements:
 - For bedgraph and bigwig:
   - logScale: To apply a log transformation to your data you can set ``transform`` to ``log1p``, ``log``, ``log2``, ``log10``, ``-log``. For others than ``log1p``, you can set a ``log_pseudocount``. By default the y axis values will represent the transformed values and the transformation will be written on the left of the y axis but you can decide to keep the original values by setting ``y_axis_values = original``.
   - operation on files: You can plot the result of an operation on one or two files without preprocessing. To use it, put the operation in ``operation`` with the variable ``file`` or both variables ``file`` and ``second_file``, for example ``operation = 0.89 * file`` or ``operation = max(file, second_file)`` or ``operation = file - second_file``. In the two later cases, you need to put the path of the second file in ``second_file``. However, this operation can be time consuming if you do it multiple times and you may prefer to convert your files in advance.
-For more examples on these two new features, visit [the examples](https://pygenometracks.readthedocs.io/en/latest/content/examples.html#log-transform-and-operation-examples)
+For more examples on these two new features, visit `the examples <https://pygenometracks.readthedocs.io/en/latest/content/examples.html#log-transform-and-operation-examples>`_.
 - Both ``type = line`` and ``type = lines`` are working in bedgraph_matrix
 
 Bugfix:
