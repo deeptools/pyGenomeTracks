@@ -14,7 +14,7 @@ In a configuration file, each track is defined as a block of parameters starting
 The tracks are then plotted in the order of the configuration file from top to bottom.
 
 The easiest way to create this file is using the program ``make_tracks_file`` which creates a configuration file with defaults that can be easily changed.
-``make_tracks_file`` uses the file ending to guess the file type. Then, a region can be plotted using ``pyGenomeTracks``. Both programs are described above:
+``make_tracks_file`` uses the file ending to guess the file type. Then, a region can be plotted using ``pyGenomeTracks``. Both programs are described below:
 
 make_tracks_file
 ----------------
