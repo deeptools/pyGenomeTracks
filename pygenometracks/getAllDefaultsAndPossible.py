@@ -32,7 +32,8 @@ track_separator = ', '
 
 putStarsAfter = ['second_file', 'operation']
 starPut = False
-starText = ('\n\n\* While pyGenomeTracks can convert coverage tracks on the fly,'
+starText = ('\n\n'
+            r'\* While pyGenomeTracks can convert coverage tracks on the fly,'
             ' this might be a time-consuming step, especially on large files and'
             ' if you want to replot many times. In this situation, we recommend'
             ' using the deepTools suite to convert your files in advance. For'
@@ -170,7 +171,8 @@ def main():
             for p in all_default_parameters:
                 if track_type in all_default_parameters[p]:
                     if p in putStarsAfter:
-                        line_start = f"- **{p}\***: "
+                        line_start = (f"- **{p}"
+                                      r"\***: ")
                         starPut = True
                     else:
                         line_start = f"- **{p}**: "
