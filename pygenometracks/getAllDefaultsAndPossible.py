@@ -7,7 +7,7 @@ for each track class. This table is included in the readthedocs
 This file is a markdown list with possible values.
 This can also be used in the readthedocs
 """
-from pygenometracks.tracksClass import PlotTracks, XAxisTrack, SpacerTrack, DEFAULT_TRACK_HEIGHT
+from pygenometracks.tracksClass import PlotTracks, DEFAULT_TRACK_HEIGHT
 import numpy as np
 import os.path
 
@@ -146,8 +146,6 @@ def main():
     # For the track description:
     for track_type in my_prefered_order_tracks_names + other_tracks:
         track_class = all_tracks[track_type]
-        if track_class == XAxisTrack:
-            track_type = "x-axis"
         with open(os.path.join("docs", "content", "tracks", "auto", f"{track_type}_deduced_from_code.txt"),
                   'w') as fo:
             fo.write("Necessary:\n")
