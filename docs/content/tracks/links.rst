@@ -13,3 +13,10 @@ Parameters
 
 .. include:: auto/links_deduced_from_code.txt
 
+
+Output of ``make_tracks_file``:
+-------------------------------
+
+.. literalinclude:: auto/links_options_text.txt
+    :language: INI
+

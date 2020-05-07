@@ -1,0 +1,34 @@
+
+# title of track (plotted on the right side)
+title =
+# height of track in cm (ignored if the track is overlay on top the previous track)
+height = 2
+# if you want to plot the track upside-down:
+# orientation = inverted
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay_previous = yes
+
+# color of the scalebar
+color = black
+# To use transparency, you can use alpha
+# default is 1
+# alpha = 0.5
+# line width:
+# line_width = 0.5
+# x_center: coordinate where the scale bar should be plotted (center)
+# if not set it will be in the middle of the plotted area
+#x_center = 3100000
+# size: in bp the length of the scale bar
+# if not set it will be like in UCSC:
+# the higher number that begins with 1, 2 or 5 followed by 0s
+# that is less than half the plotted area
+#size = 100000
+# where: where the size of the scale bar should
+# appear among left, right, top, bottom
+# default is left
+#where = right
+# fontsize: default is 12
+#fontsize = 10
+file_type = scalebar
+    

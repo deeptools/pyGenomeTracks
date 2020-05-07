@@ -26,6 +26,13 @@ Parameters
 ----------
 
 .. include:: auto/${track_name}_deduced_from_code.txt
+
+Output of \`\`make_tracks_file\`\`:
+-------------------------------
+
+.. literalinclude:: auto/${track_name}_options_text.txt
+    :language: INI
+
 ">docs/content/tracks/${track_name}.rst
     fi
 done
