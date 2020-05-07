@@ -143,26 +143,26 @@ class PlotTracks(object):
             # then, skip this track height
             if track_dict['overlay_previous'] != 'no':
                 continue
-            elif track_dict['file_type'] == 'x-axis':
-                height = track_dict['fontsize'] / 8
             elif 'height' in track_dict:
                 height = track_dict['height']
-            # compute the height of a Hi-C track
-            # based on the depth such that the
-            # resulting plot appears proportional
-            #
-            #      /|\
-            #     / | \
-            #    /  |d \   d is the depth that we want to be proportional
-            #   /   |   \  when plotted in the figure
-            # ------------------
-            #   region len
-            #
-            # d (in cm) =  depth (in bp) * 0.5 *
-            #              width (in cm) / region len (in bp)
-
+            elif track_dict['file_type'] == 'x-axis':
+                height = track_dict['fontsize'] / 8
             elif 'depth' in track_dict and \
                  track_dict['file_type'] == 'hic_matrix':
+                # compute the height of a Hi-C track
+                # based on the depth such that the
+                # resulting plot appears proportional
+                #
+                #      /|\
+                #     / | \
+                #    /  |d \   d is the depth that we want to be proportional
+                #   /   |   \  when plotted in the figure
+                # ------------------
+                #   region len
+                #
+                # d (in cm) =  depth (in bp) * 0.5 *
+                #              width (in cm) / region len (in bp)
+
                 # to compute the actual width of the figure the margins
                 # and the region
                 # set for the legends have to be considered
