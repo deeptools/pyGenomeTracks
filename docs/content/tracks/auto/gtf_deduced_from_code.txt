@@ -1,0 +1,52 @@
+Necessary:
+^^^^^^^^^^
+- **file**
+
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: `0.5` (default) or float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+
+- **fontsize**: `12` (default) or any float above 0
+
+- **orientation**: by default this option is not set but you can also put: inverted.
+
+- **line_width**: `0.5` (default) or any float above 0
+
+- **color**: `#1f78b4` (default)
+
+- **border_color**: `black` (default)
+
+- **prefered_name**: `transcript_name` (default)
+
+- **merge_transcripts**: `false` (default) or true.
+
+- **labels**: `true` (default) or false.
+
+- **style**: `flybase` (default) or UCSC or tssarrow.
+
+- **display**: `stacked` (default) or collapsed, triangles or interleaved.
+
+- **max_labels**: `60` (default) or any integer above 0
+
+- **global_max_row**: `false` (default) or true.
+
+- **gene_rows**: by default this option is not set but you can also put: any integer above 0
+
+- **arrow_interval**: `2` (default) or any integer above 1
+
+- **arrowhead_included**: `false` (default) or true.
+
+- **color_utr**: `grey` (default)
+
+- **height_utr**: `1` (default) or any float above 0 below 1
+
+- **arrow_length**: by default this option is not set but you can also put: any integer above 0
+
+- **all_labels_inside**: `false` (default) or true.
+
+- **labels_in_margin**: `false` (default) or true.
+

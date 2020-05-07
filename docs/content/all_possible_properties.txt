@@ -1,3 +1,7 @@
+- **overlay_previous**:
+
+  - for *x-axis, epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, scalebar, spacer*: no, yes, share-y
+
 - **where**:
 
   - for *x-axis*: top, bottom
