@@ -145,7 +145,7 @@ class PlotTracks(object):
                 continue
             elif 'height' in track_dict:
                 height = track_dict['height']
-            elif track_dict['file_type'] == 'x-axis':
+            elif track_dict['file_type'] == 'x_axis':
                 height = track_dict['fontsize'] / 8
             elif 'depth' in track_dict and \
                  track_dict['file_type'] == 'hic_matrix':
@@ -374,7 +374,7 @@ class PlotTracks(object):
                 track_options['file_type'] = 'spacer'
                 track_options['track_class'] = SpacerTrack
             elif section_name.endswith('[x-axis]'):
-                track_options['file_type'] = 'x-axis'
+                track_options['file_type'] = 'x_axis'
                 track_options['track_class'] = XAxisTrack
             # For the others we need to have a 'file_type'
             # Either the file_type is part of the keywords
@@ -642,7 +642,7 @@ class SpacerTrack(GenomeTrack):
 
 class XAxisTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
-    TRACK_TYPE = 'x-axis'
+    TRACK_TYPE = 'x_axis'
     NECESSARY_PROPERTIES = []
     DEFAULTS_PROPERTIES = {'where': 'bottom',
                            'fontsize': 15}

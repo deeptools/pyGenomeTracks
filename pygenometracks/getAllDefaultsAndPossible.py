@@ -46,7 +46,7 @@ possible_for_all = {'overlay_previous': ['no', 'yes', 'share-y']}
 
 def main():
     all_tracks = PlotTracks.get_available_tracks()
-    my_prefered_order_tracks_names = ['x-axis', 'epilogos', 'links',
+    my_prefered_order_tracks_names = ['x_axis', 'epilogos', 'links',
                                       'domains', 'bed', 'gtf', 'narrow_peak',
                                       'bigwig', 'bedgraph', 'bedgraph_matrix',
                                       'hlines', 'hic_matrix', 'scalebar']
@@ -161,7 +161,7 @@ def main():
                 fo.write("- **height**: If you do not set it, the height will "
                          "be adjusted so that each bin is a square, else you "
                          "can choose any float above 0.\n\n")
-            elif track_type == "x-axis":
+            elif track_type == "x_axis":
                 fo.write("- **height**: If you do not set it, the height will "
                          "be ``fontsize / 8``, else you "
                          "can choose any float above 0.\n\n")
