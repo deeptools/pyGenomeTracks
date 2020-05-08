@@ -7,7 +7,6 @@ from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 from matplotlib.path import Path
 import matplotlib.patches as patches
-from .. utilities import file_to_intervaltree
 import numpy as np
 
 DEFAULT_NARROWPEAK_COLOR = '#FF000080'  # red, alpha=0.55
@@ -61,9 +60,12 @@ file_type = {}
     INTEGER_PROPERTIES = {}
     # color can only be a color
 
+    def __init__(self, properties_dict):
+        GenomeTrack.__init__(self, properties_dict)
+        self.load_file()
+
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
-        self.interval_tree, ymin, ymax = file_to_intervaltree(self.properties['file'])
         self.process_color('color')
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
@@ -214,3 +216,7 @@ file_type = {}
         ax.text(-0.2, y_at_zero, ymin_str, verticalalignment='bottom', horizontalalignment='right', transform=ax.transAxes)
         ax.text(-0.2, ymax, ymax_str, verticalalignment='top', horizontalalignment='right', transform=ax.transAxes)
         ax.patch.set_visible(False)
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()

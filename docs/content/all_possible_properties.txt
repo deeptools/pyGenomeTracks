@@ -1,12 +1,16 @@
+- **overlay_previous**:
+
+  - for *x_axis, epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, scalebar, spacer*: no, yes, share-y
+
 - **where**:
 
-  - for *x-axis*: top, bottom
+  - for *x_axis*: top, bottom
 
   - for *scalebar*: left, right, top, bottom
 
 - **orientation**:
 
-  - for *epilogos, links, domains, bed, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix*: inverted, not set
+  - for *epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix*: inverted, not set
 
 - **links_type**:
 
@@ -22,35 +26,35 @@
 
 - **merge_transcripts**:
 
-  - for *domains, bed*: true, false
+  - for *domains, bed, gtf*: true, false
 
 - **style**:
 
-  - for *bed*: flybase, UCSC, tssarrow
+  - for *bed, gtf*: flybase, UCSC, tssarrow
 
 - **display**:
 
-  - for *bed*: collapsed, triangles, interleaved, stacked
+  - for *bed, gtf*: collapsed, triangles, interleaved, stacked
 
 - **labels**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **global_max_row**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **arrowhead_included**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **all_labels_inside**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **labels_in_margin**:
 
-  - for *bed*: true, false
+  - for *bed, gtf*: true, false
 
 - **type**:
 
@@ -76,6 +80,16 @@
 
   - for *bedgraph*: mean, average, max, min, stdev, dev, coverage, cov, sum, not set
 
+- **transform**:
+
+  - for *bigwig, bedgraph*: no, log, log1p, -log, log2, log10
+
+  - for *hic_matrix*: no, log, log1p, -log
+
+- **y_axis_values**:
+
+  - for *bigwig, bedgraph*: original, transformed
+
 - **nans_to_zeros**:
 
   - for *bigwig, bedgraph*: true, false
@@ -95,10 +109,6 @@
 - **plot_horizontal_lines**:
 
   - for *bedgraph_matrix*: true, false
-
-- **transform**:
-
-  - for *hic_matrix*: no, log, log1p, -log
 
 - **show_masked_bins**:
 

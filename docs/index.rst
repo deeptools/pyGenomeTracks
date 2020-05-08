@@ -42,7 +42,9 @@ Table of content
    content/installation
    content/usage
    content/citation
+   content/all_tracks
    content/examples
    content/possible-parameters
    content/adding-new-tracks
+   content/releases
 

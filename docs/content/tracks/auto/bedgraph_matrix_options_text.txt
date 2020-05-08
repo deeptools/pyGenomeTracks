@@ -1,0 +1,42 @@
+
+# title of track (plotted on the right side)
+title =
+# height of track in cm (ignored if the track is overlay on top the previous track)
+height = 2
+# if you want to plot the track upside-down:
+# orientation = inverted
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay_previous = yes
+
+# a bedgraph matrix file is like a bedgraph, except that per bin there
+# are more than one value separated by tab: E.g.
+# This file type is produced by HiCExplorer tool hicFindTads and contains
+# the TAD-separation score at different window sizes
+# chrX	18279	40131	0.399113	0.364118	0.320857	0.274307
+# chrX	40132	54262	0.479340	0.425471	0.366541	0.324736
+#min_value = 0.10
+#max_value = 0.70
+# if type is set as lines, then the TAD score lines are drawn instead
+# of the matrix otherwise a heatmap is plotted
+type = lines
+# If the type is not lines, you can choose to keep the matrix as not rasterized
+# (only used if you use pdf or svg output format) by using:
+# rasterize = false
+# The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
+# the default color map is viridis
+# If you want your own colormap you can put the values of the color you want
+# For example, colormap = ['blue', 'yellow', 'red']
+# or colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+#colormap = Reds
+# pos_score_in_bin means 'position of score with respect to bin start and end'
+# if the lines option is used, the y values can be put at the
+# center of the bin (default) or they can be plot as 'block',
+# which mean to plot the values as a line between the start and end of bin
+pos_score_in_bin = center
+show_data_range = true
+
+# only when type lines is used. Adds horizontal lines
+plot_horizontal_lines = false
+file_type = bedgraph_matrix
+    

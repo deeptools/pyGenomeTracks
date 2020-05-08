@@ -114,19 +114,15 @@ file_type = {}
         # check that the matrix can be log transformed
         if self.properties['transform'] != 'no':
             if self.properties['transform'] == 'log1p':
-                if self.hic_ma.matrix.data.min() + 1 < 0:
-                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                if self.hic_ma.matrix.data.min() + 1 <= 0:
+                    raise Exception("\n*ERROR*\nMatrix contains values below - 1.\n"
                                     "log1p transformation can not be applied to \n"
                                     "values in matrix: {}".format(self.properties['file']))
 
-            elif self.properties['transform'] == '-log':
+            elif self.properties['transform'] in ['-log', 'log']:
                 if self.hic_ma.matrix.data.min() < 0:
-                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
-                                    "log(-1 * <values>) transformation can not be applied to \n"
-                                    "values in matrix: {}".format(self.properties['file']))
-
-            elif self.properties['transform'] == 'log':
-                if self.hic_ma.matrix.data.min() < 0:
+                    # For values not filled or equal to zero there will be a
+                    # mask, they will be replaced by the minimum value after 0.
                     raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
                                     "log transformation can not be applied to \n"
                                     "values in matrix: {}".format(self.properties['file']))
@@ -221,6 +217,7 @@ file_type = {}
                         "to {}".format(self.properties['depth'], depth))
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
+        # Using todense will replace all nan values by 0.
         matrix = np.asarray(matrix.todense().astype(float))
 
         matrix = matrix * self.properties['scale_factor']
@@ -229,21 +226,17 @@ file_type = {}
             matrix += 1
             self.norm = colors.LogNorm()
 
-        elif self.properties['transform'] == '-log':
-            mask = matrix == 0
-            try:
-                matrix[mask] = matrix[mask == False].min()
-                matrix = -1 * np.log(matrix)
-            except ValueError:
-                self.log.info('All values are 0, no log applied.')
-
-        elif self.properties['transform'] == 'log':
+        elif self.properties['transform'] in ['-log', 'log']:
+            # We first replace 0 values by minimum values after 0
             mask = matrix == 0
             try:
                 matrix[mask] = matrix[mask == False].min()
                 matrix = np.log(matrix)
             except ValueError:
                 self.log.info('All values are 0, no log applied.')
+            else:
+                if self.properties['transform'] == '-log':
+                    matrix = - matrix
 
         if self.properties['max_value'] is not None:
             vmax = self.properties['max_value']

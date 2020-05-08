@@ -1,0 +1,4 @@
+1.0
+===
+
+This version added python3 compatibility to the code

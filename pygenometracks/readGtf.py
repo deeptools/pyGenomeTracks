@@ -3,6 +3,7 @@ import collections
 
 import gffutils
 import warnings
+from .utilities import InputError
 
 warnings.filterwarnings("ignore", message="It appears you have a gene feature"
                         " in your GTF file. You may want to use the "
@@ -61,9 +62,12 @@ class ReadGtf(object):
         # This will create a database:
         try:
             self.db = gffutils.create_db(file_path, ':memory:')
-        except ValueError:
-            self.length = 0
-            self.all_transcripts = open(file_path, 'r')
+        except ValueError as ve:
+            if "No lines parsed" in str(ve):
+                self.length = 0
+                self.all_transcripts = open(file_path, 'r')
+            else:
+                raise InputError("This is not a gtf file.")
         else:
             if self.merge_transcripts:
                 self.length = len([i for i in self.db.features_of_type("gene")])

@@ -29,8 +29,7 @@ jobs:
     - LINT=1
     - TRAVIS_OS_NAME=linux
     before_install:
-    - curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o
-      miniconda.sh
+    - curl -L https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
     - bash miniconda.sh -b -p $HOME/miniconda
     - PATH_WITHOUT_CONDA="$PATH"
     - export PATH="$HOME/miniconda/bin:$PATH"
@@ -46,10 +45,10 @@ before_install:
 - export TEST_DATA_DIR="`pwd`/pygenometracks/test/test_data/"
 - echo $TEST_DATA_DIR
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-  curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
+  curl -L https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
   ; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then curl
-  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o miniconda.sh
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+  curl -L https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o miniconda.sh
   ; fi
 - bash miniconda.sh -b -p $HOME/miniconda
 - PATH_WITHOUT_CONDA="$PATH"
@@ -60,10 +59,7 @@ before_install:
 - conda info -a
 install:
 - conda install --yes -c bioconda -c conda-forge python=$TRAVIS_PYTHON_VERSION --file requirements.txt
-- conda install --yes -c conda-forge -c bioconda pytest
-- conda install --yes -c conda-forge -c bioconda nose
-- conda install --yes -c conda-forge -c bioconda ghostscript
-- conda install --yes pathlib
+- conda install --yes -c conda-forge -c bioconda pytest nose ghostscript pathlib
 - python setup.py install
 script:
 - py.test pygenometracks --doctest-modules

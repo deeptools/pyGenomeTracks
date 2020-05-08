@@ -1,0 +1,30 @@
+
+# title of track (plotted on the right side)
+title =
+# height of track in cm (ignored if the track is overlay on top the previous track)
+height = 2
+# if you want to plot the track upside-down:
+# orientation = inverted
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
+# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+#overlay_previous = yes
+
+color = #FF000080
+#max_value = 0.70
+show_data_range = true
+show_labels = true
+# the narrowPeak format provides the information of the
+# peak summit. By default this information is used
+# although some peaks may look crooked.
+use_summit = true
+# type of plot: either box or peak
+# box will plot a rectangle of the peak width
+# peak will plot the shape of the peak, whose height is the
+# narrowPeak file signal value (usually peak coverage)
+type = peak
+# if the peaks look too thin, the can be adjusted
+width_adjust = 1.5
+# optional: line_width
+#line_width = 0.5
+file_type = narrow_peak
+    

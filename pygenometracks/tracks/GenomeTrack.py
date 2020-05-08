@@ -74,12 +74,16 @@ height = 2
                                               default_value))
                 self.properties[prop] = default_value
 
-    def plot_y_axis(self, ax, plot_axis):
+    def plot_y_axis(self, ax, plot_axis, transform='no', log_pseudocount=0,
+                    y_axis='tranformed'):
         """
         Plot the scale of the y axis with respect to the plot_axis
         Args:
             ax: axis to use to plot the scale
             plot_axis: the reference axis to get the max and min.
+            transform: what was the transformation of the data
+            log_pseudocount:
+            y_axis: 'tranformed' or 'original'
 
         Returns:
 
@@ -98,22 +102,74 @@ height = 2
 
         ymin, ymax = plot_axis.get_ylim()
 
+        if transform == 'no' or y_axis == 'transformed':
+            # This is a linear scale
+            # plot something that looks like this:
+            # ymax ┐
+            #      │
+            #      │
+            # ymin ┘
+
+            # the coordinate system used is the ax.transAxes (lower left corner (0,0), upper right corner (1,1)
+            # this way is easier to adjust the positions such that the lines are plotted complete
+            # and not only half of the width of the line.
+            x_pos = [0, 0.5, 0.5, 0]
+            y_pos = [0.01, 0.01, 0.99, 0.99]
+        else:
+            # ymid is the middle between ymin and ymax
+            # if 0 is between ymin and ymax then ymid is 0
+            if ymin * ymax < 0:
+                ymid = 0
+                ymid_pos = - ymin / (ymax - ymin)
+            else:
+                ymid = (ymin + ymax) / 2
+                ymid_pos = 0.5
+
+            if transform == 'log':
+                ymin, ymid, ymax = np.exp([ymin, ymid, ymax]) - log_pseudocount
+            elif transform == 'log2':
+                ymin, ymid, ymax = np.exp2([ymin, ymid, ymax]) - \
+                    log_pseudocount
+            elif transform == 'log10':
+                ymin, ymid, ymax = np.power(10, [ymin, ymid, ymax]) - \
+                    log_pseudocount
+            elif transform == 'log1p':
+                ymin, ymid, ymax = np.expm1([ymin, ymid, ymax])
+            elif transform == '-log':
+                ymin, ymid, ymax = np.exp(- [ymin, ymid, ymax]) - \
+                    log_pseudocount
+            ymid_str = value_to_str(ymid)
+            # plot something that looks like this:
+            # ymax ┐
+            #      │
+            # ymid-|
+            #      │
+            # ymin ┘
+            x_pos = [0, 0.5, 0.5, 0, 0.5, 0.5, 0]
+            y_pos = [0.01, 0.01, ymid_pos, ymid_pos, ymid_pos, 0.99, 0.99]
         ymax_str = value_to_str(ymax)
         ymin_str = value_to_str(ymin)
-        # plot something that looks like this:
-        # ymax ┐
-        #      │
-        #      │
-        # ymin ┘
-
-        # the coordinate system used is the ax.transAxes (lower left corner (0,0), upper right corner (1,1)
-        # this way is easier to adjust the positions such that the lines are plotted complete
-        # and not only half of the width of the line.
-        x_pos = [0, 0.5, 0.5, 0]
-        y_pos = [0.01, 0.01, 0.99, 0.99]
         ax.plot(x_pos, y_pos, color='black', linewidth=1, transform=ax.transAxes)
         ax.text(-0.2, -0.01, ymin_str, verticalalignment='bottom', horizontalalignment='right', transform=ax.transAxes)
         ax.text(-0.2, 1, ymax_str, verticalalignment='top', horizontalalignment='right', transform=ax.transAxes)
+        if transform != 'no':
+            if y_axis == 'original':
+                ax.text(-0.2, ymid_pos, ymid_str, verticalalignment='center',
+                        horizontalalignment='right', transform=ax.transAxes)
+            else:
+                if transform == 'log1p':
+                    ymid_str = "log(1 + x)"
+                else:
+                    if log_pseudocount == 0:
+                        ymid_str = "{}(x)".format(transform)
+                    else:
+                        ymid_str = "{}({} + x)".format(transform,
+                                                       log_pseudocount)
+
+                ax.text(0, 0.5, ymid_str, verticalalignment='center',
+                        horizontalalignment='right', transform=ax.transAxes,
+                        wrap=True)
+
         ax.patch.set_visible(False)
 
     def plot_label(self, label_ax, width_dpi, h_align='left'):
@@ -235,15 +291,25 @@ height = 2
                 # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
                 if self.properties[param][0] == '[':
                     try:
-                        custom_colors = eval(self.properties['colormap'])
-                    except SyntaxError:
-                        pass
+                        custom_colors = eval(self.properties[param])
+                    except (SyntaxError, NameError) as e:
+                        self.log.warning("Warning: section {}, {} was set as {} but "
+                                         "raises an error:\n{}\nIt will be ignored and"
+                                         " default value will be used."
+                                         "".format(self.properties['section_name'],
+                                                   param, self.properties[param],
+                                                   e))
                     else:
                         try:
                             valid_colormap = mc.LinearSegmentedColormap.from_list(
                                 'custom', custom_colors, N=100)
-                        except ValueError:
-                            pass
+                        except ValueError as e:
+                            self.log.warning("Warning: section {}, {} was set as {} but "
+                                             "raises an error:\n{}\nIt will be ignored and"
+                                             " default value will be used."
+                                             "".format(self.properties['section_name'],
+                                                       param, self.properties[param],
+                                                       e))
                 else:
                     if self.properties[param] in dir(plt.cm):
                         valid_colormap = self.properties[param]
@@ -311,3 +377,6 @@ height = 2
             elif type(next(iter(iteratable_obj))) in [bytes, np.bytes_]:
                 p_obj = to_bytes(p_obj)
         return p_obj
+
+    def __del__(self):
+        return

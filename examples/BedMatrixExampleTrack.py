@@ -88,3 +88,7 @@ class BedGraphMatrixTrack(BedGraphTrack):
     def plot_y_axis(self, ax, plot_axis):
         """turn off y_axis plot"""
         pass
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()
