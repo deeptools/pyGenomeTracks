@@ -155,8 +155,9 @@ height = 2
                         ymid_str = "{}({} + x)".format(transform,
                                                        log_pseudocount)
 
-                ax.text(0, (ymax + ymin) / 2, ymid_str, verticalalignment='center',
-                        horizontalalignment='right', wrap=True)                
+                ax.text(0, (ymax + ymin) / 2, ymid_str,
+                        verticalalignment='center',
+                        horizontalalignment='right', wrap=True)
         else:
             # There is a transformation and we want to display original values
             if ymin * ymax < 0:

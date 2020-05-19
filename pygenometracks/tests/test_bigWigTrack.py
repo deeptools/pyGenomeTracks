@@ -436,6 +436,7 @@ def test_hlines():
 
     os.remove(outfile.name)
 
+
 def test_grid():
     region = "X:2700000-3100000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_grid_test_', delete=False)
