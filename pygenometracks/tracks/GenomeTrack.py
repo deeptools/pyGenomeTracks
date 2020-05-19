@@ -126,7 +126,11 @@ height = 2
             # tick2-|
             #       │
             # tick1 ┘
-            ticks_values = [t for t in plot_axis.get_yticks() if t <= ymax and t >= ymin]
+            if ymin < ymax:
+                ticks_values = [t for t in plot_axis.get_yticks() if t <= ymax and t >= ymin]
+            else:
+                ticks_values = [t for t in plot_axis.get_yticks() if t >= ymax and t <= ymin]
+                ticks_values.sort(reverse=True)
             labels_pos = ticks_values
             if transform == 'no' or y_axis == 'transformed':
                 ticks_labels = [value_to_str(t) for t in ticks_values]

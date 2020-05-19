@@ -43,6 +43,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic.ini --regio
 bin/pgt --tracks ./pygenometracks/tests/test_data/log1p.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_log1p.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/log.ini  --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_log.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/log_grid.ini  --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_log_grid.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/log1p_grid.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_log1p_grid.png
 
 # test_make_tracks:
 bin/make_tracks_file --trackFiles pygenometracks/tests/test_data/Li_et_al_2015.h5 pygenometracks/tests/test_data/bigwig_chrx_2e6_5e6.bw pygenometracks/tests/test_data/tad_classification.bed pygenometracks/tests/test_data/epilog.qcat.bgz -o pygenometracks/tests/test_data/master_tracks.ini

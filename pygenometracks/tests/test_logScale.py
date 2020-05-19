@@ -49,6 +49,68 @@ tracks = """
 file = bigwig_chrx_2e6_5e6.bw
 color = red
 height = 5
+transform = no
+title = bigwig transform = no
+[test bigwig]
+file = bigwig_chrx_2e6_5e6.bw
+color = red
+height = 5
+transform = no
+orientation = inverted
+grid = true
+title = bigwig transform = no orientation = inverted grid = true
+
+
+[spacer]
+
+[test bigwig log]
+file = bigwig_chrx_2e6_5e6.bw
+color = red
+height = 5
+transform = log1p
+title = bigwig transform = log1p
+[test bigwig log]
+file = bigwig_chrx_2e6_5e6.bw
+color = red
+height = 5
+transform = log1p
+orientation = inverted
+grid = true
+title = bigwig transform = log1p orientation = inverted grid = true
+
+[spacer]
+
+[test bigwig log]
+file = bigwig_chrx_2e6_5e6.bw
+color = red
+min_value = 0
+height = 5
+transform = log1p
+title = bigwig transform = log1p min_value = 0 y_axis_values = original
+y_axis_values = original
+
+[test bigwig log]
+file = bigwig_chrx_2e6_5e6.bw
+color = red
+min_value = 0
+height = 5
+transform = log1p
+orientation = inverted
+grid = true
+title = bigwig transform = log1p min_value = 0 y_axis_values = original orientation = inverted grid = true
+y_axis_values = original
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "log1p_grid.ini"), 'w') as fh:
+    fh.write(tracks)
+
+tracks = """
+[test bigwig]
+file = bigwig_chrx_2e6_5e6.bw
+color = red
+height = 5
 transform = log
 title = bigwig transform = log
 """
@@ -206,7 +268,6 @@ min_value = 0
 y_axis_values = original
 
 [x-axis]
-
 """
 
 with open(os.path.join(ROOT, "log_grid.ini"), 'w') as fh:
@@ -225,6 +286,22 @@ def test_log1p_track():
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
     res = compare_images(os.path.join(ROOT, 'master_log1p.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_log1p_grid():
+    region = "X:2700000-3100000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='log1p_grid_test_', delete=False)
+    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName {outfile}" \
+           "".format(ini=os.path.join(ROOT, "log1p_grid.ini"),
+                     outfile=outfile.name, region=region).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_log1p_grid.png'),
                          outfile.name, tolerance)
     assert res is None, res
 
