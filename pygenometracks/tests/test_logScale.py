@@ -130,6 +130,88 @@ y_axis_values = original
 with open(os.path.join(ROOT, "log.ini"), 'w') as fh:
     fh.write(tracks)
 
+tracks = """
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = blue
+height = 5
+grid = true
+title = bedgraph color = blue transform = no grid=true
+transform = no
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = blue
+height = 5
+grid = true
+title = bedgraph color = blue transform = log grid=true
+transform = log
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = red
+height = 5
+grid = true
+title = bedgraph color = red transform = log min_value = 1 grid=true
+min_value = 1
+transform = log
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = green
+height = 5
+grid = true
+title = bedgraph color = green transform = log log_pseudocount = 2 min_value = 0 grid=true
+transform = log
+log_pseudocount = 2
+min_value = 0
+
+[test bedgraph with operation]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = green
+height = 5
+grid = true
+title = bedgraph color = green operation = log(2+file) min_value = 0.7 grid=true
+operation = log(2+file)
+min_value = 0.7
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = black
+height = 5
+grid = true
+title = bedgraph color = black transform = log2 log_pseudocount = 1 min_value = 0 grid=true
+transform = log2
+log_pseudocount = 1
+min_value = 0
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = black
+height = 5
+grid = true
+title = bedgraph color = black operation = log2(1+file) min_value = 0 grid=true
+operation = log2(1+file)
+min_value = 0
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = black
+height = 5
+grid = true
+title = bedgraph color = black transform = log2 log_pseudocount = 1 min_value = 0 y_axis_values = original grid=true
+transform = log2
+log_pseudocount = 1
+min_value = 0
+y_axis_values = original
+
+[x-axis]
+
+"""
+
+with open(os.path.join(ROOT, "log_grid.ini"), 'w') as fh:
+    fh.write(tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -160,6 +242,23 @@ def test_log_tracks():
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
     res = compare_images(os.path.join(ROOT, 'master_log.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_log_grid():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_loggrid_', delete=False)
+    args = "--tracks {0} --region chr2:73,800,000-75,744,000 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
+           "--outFileName {1}" \
+           "".format(os.path.join(ROOT, "log_grid.ini"),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_log_grid.png'),
                          outfile.name, tolerance)
     assert res is None, res
 

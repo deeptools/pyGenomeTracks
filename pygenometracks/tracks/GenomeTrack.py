@@ -75,7 +75,7 @@ height = 2
                 self.properties[prop] = default_value
 
     def plot_y_axis(self, ax, plot_axis, transform='no', log_pseudocount=0,
-                    y_axis='tranformed'):
+                    y_axis='tranformed', only_at_ticks=False):
         """
         Plot the scale of the y axis with respect to the plot_axis
         Args:
@@ -84,6 +84,8 @@ height = 2
             transform: what was the transformation of the data
             log_pseudocount:
             y_axis: 'tranformed' or 'original'
+            only_at_ticks: False: only min_max are diplayed
+                           True: only ticks values are displayed
 
         Returns:
 
@@ -101,6 +103,27 @@ height = 2
             return str_value
 
         ymin, ymax = plot_axis.get_ylim()
+
+        if only_at_ticks:
+            # plot something that looks like this:
+            # tick3 ┐
+            #       │
+            # tick2-|
+            #       │
+            # tick1 ┘
+            ticks_values = [t for t in plot_axis.get_yticks() if t <= ymax and t >= ymin]
+            for t in ticks_values:
+                # I add the text
+                ax.text(-0.2, t, value_to_str(t), verticalalignment='center',
+                        horizontalalignment='right')
+            # I plot the line:
+            x_pos = [0, 0.5] + [0.5, 0, 0.5] * (len(ticks_values) - 2) + [0.5, 0]
+            y_pos = [ticks_values[0]] * 2 + np.repeat(ticks_values[1:-1], 3).tolist() + [ticks_values[-1]] * 2
+            ax.plot(x_pos, y_pos, color='black', linewidth=1)
+            ax.set_ylim(plot_axis.get_ylim())
+            ax.set_xlim(0, 1)
+
+            return
 
         if transform == 'no' or y_axis == 'transformed':
             # This is a linear scale
