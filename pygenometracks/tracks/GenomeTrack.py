@@ -102,7 +102,22 @@ height = 2
                 str_value = "{:.1f}".format(value)
             return str_value
 
+        def untransform(value, transform, log_pseudocount):
+            # given a numeric value, transform and log_pseudocount
+            # return the value before the transformation
+            if transform == 'log':
+                return np.exp(value) - log_pseudocount
+            elif transform == 'log2':
+                return np.exp2(value) - log_pseudocount
+            elif transform == 'log10':
+                return np.power(10, value) - log_pseudocount
+            elif transform == 'log1p':
+                return np.expm1(value)
+            elif transform == '-log':
+                return np.exp(- value) - log_pseudocount
+
         ymin, ymax = plot_axis.get_ylim()
+        epsilon = (ymax - ymin) / 100
 
         if only_at_ticks:
             # plot something that looks like this:
@@ -112,74 +127,25 @@ height = 2
             #       │
             # tick1 ┘
             ticks_values = [t for t in plot_axis.get_yticks() if t <= ymax and t >= ymin]
-            for t in ticks_values:
-                # I add the text
-                ax.text(-0.2, t, value_to_str(t), verticalalignment='center',
-                        horizontalalignment='right')
-            # I plot the line:
-            x_pos = [0, 0.5] + [0.5, 0, 0.5] * (len(ticks_values) - 2) + [0.5, 0]
-            y_pos = [ticks_values[0]] * 2 + np.repeat(ticks_values[1:-1], 3).tolist() + [ticks_values[-1]] * 2
-            ax.plot(x_pos, y_pos, color='black', linewidth=1)
-            ax.set_ylim(plot_axis.get_ylim())
-            ax.set_xlim(0, 1)
-
-            return
-
-        if transform == 'no' or y_axis == 'transformed':
+            labels_pos = ticks_values
+            if transform == 'no' or y_axis == 'transformed':
+                ticks_labels = [value_to_str(t) for t in ticks_values]
+            else:
+                # There is a transformation and we want to display original values
+                ticks_labels = [value_to_str(untransform(t, transform, log_pseudocount)) for t in ticks_values]
+        elif transform == 'no' or y_axis == 'transformed':
             # This is a linear scale
             # plot something that looks like this:
             # ymax ┐
             #      │
             #      │
             # ymin ┘
-
-            # the coordinate system used is the ax.transAxes (lower left corner (0,0), upper right corner (1,1)
-            # this way is easier to adjust the positions such that the lines are plotted complete
+            # adjust the positions such that the lines are plotted complete
             # and not only half of the width of the line.
-            x_pos = [0, 0.5, 0.5, 0]
-            y_pos = [0.01, 0.01, 0.99, 0.99]
-        else:
-            # ymid is the middle between ymin and ymax
-            # if 0 is between ymin and ymax then ymid is 0
-            if ymin * ymax < 0:
-                ymid = 0
-                ymid_pos = - ymin / (ymax - ymin)
-            else:
-                ymid = (ymin + ymax) / 2
-                ymid_pos = 0.5
-
-            if transform == 'log':
-                ymin, ymid, ymax = np.exp([ymin, ymid, ymax]) - log_pseudocount
-            elif transform == 'log2':
-                ymin, ymid, ymax = np.exp2([ymin, ymid, ymax]) - \
-                    log_pseudocount
-            elif transform == 'log10':
-                ymin, ymid, ymax = np.power(10, [ymin, ymid, ymax]) - \
-                    log_pseudocount
-            elif transform == 'log1p':
-                ymin, ymid, ymax = np.expm1([ymin, ymid, ymax])
-            elif transform == '-log':
-                ymin, ymid, ymax = np.exp(- [ymin, ymid, ymax]) - \
-                    log_pseudocount
-            ymid_str = value_to_str(ymid)
-            # plot something that looks like this:
-            # ymax ┐
-            #      │
-            # ymid-|
-            #      │
-            # ymin ┘
-            x_pos = [0, 0.5, 0.5, 0, 0.5, 0.5, 0]
-            y_pos = [0.01, 0.01, ymid_pos, ymid_pos, ymid_pos, 0.99, 0.99]
-        ymax_str = value_to_str(ymax)
-        ymin_str = value_to_str(ymin)
-        ax.plot(x_pos, y_pos, color='black', linewidth=1, transform=ax.transAxes)
-        ax.text(-0.2, -0.01, ymin_str, verticalalignment='bottom', horizontalalignment='right', transform=ax.transAxes)
-        ax.text(-0.2, 1, ymax_str, verticalalignment='top', horizontalalignment='right', transform=ax.transAxes)
-        if transform != 'no':
-            if y_axis == 'original':
-                ax.text(-0.2, ymid_pos, ymid_str, verticalalignment='center',
-                        horizontalalignment='right', transform=ax.transAxes)
-            else:
+            ticks_values = [ymin + epsilon, ymax - epsilon]
+            labels_pos = [ymin, ymax]
+            ticks_labels = [value_to_str(v) for v in [ymin, ymax]]
+            if y_axis == 'transformed' and transform != 'no':
                 if transform == 'log1p':
                     ymid_str = "log(1 + x)"
                 else:
@@ -189,10 +155,64 @@ height = 2
                         ymid_str = "{}({} + x)".format(transform,
                                                        log_pseudocount)
 
-                ax.text(0, 0.5, ymid_str, verticalalignment='center',
-                        horizontalalignment='right', transform=ax.transAxes,
-                        wrap=True)
+                ax.text(0, (ymax + ymin) / 2, ymid_str, verticalalignment='center',
+                        horizontalalignment='right', wrap=True)                
+        else:
+            # There is a transformation and we want to display original values
+            if ymin * ymax < 0:
+                ymid = 0
+            else:
+                ymid = (ymin + ymax) / 2
+            # plot something that looks like this:
+            # ymax ┐
+            #      │
+            # ymid-|
+            #      │
+            # ymin ┘
+            ticks_values = [ymin + epsilon, ymid, ymax - epsilon]
+            labels_pos = [ymin, ymid, ymax]
+            ticks_labels = [value_to_str(untransform(v, transform, log_pseudocount)) for v in [ymin, ymid, ymax]]
 
+        # The lower label should be verticalalignment='bottom'
+        # if it corresponds to ymin
+        i = 0
+        if (ymin < ymax and ticks_values[i] <= ymin + epsilon) \
+           or (ymin > ymax and ticks_values[i] >= ymin + epsilon):
+            v_al = 'bottom'
+            adjusted_value = labels_pos[i] - epsilon
+        else:
+            v_al = 'center'
+            adjusted_value = labels_pos[i]
+        ax.text(-0.2, adjusted_value, ticks_labels[i],
+                verticalalignment=v_al, horizontalalignment='right')
+        x_pos = [0, 0.5]
+        y_pos = [ticks_values[i]] * 2
+        for i in range(1, len(ticks_values) - 1):
+            ax.text(-0.2, labels_pos[i], ticks_labels[i],
+                    verticalalignment='center',
+                    horizontalalignment='right')
+            x_pos += [0.5, 0, 0.5]
+            y_pos += [ticks_values[i]] * 3
+
+        # The upper label should be verticalalignment='top'
+        # if it corresponds to ymax
+        i = len(ticks_values) - 1
+        if (ymin < ymax and ticks_values[i] >= ymax - epsilon) \
+           or (ymin > ymax and ticks_values[i] <= ymax - epsilon):
+            v_al = 'top'
+        else:
+            v_al = 'center'
+        ax.text(-0.2, labels_pos[i], ticks_labels[i],
+                verticalalignment=v_al, horizontalalignment='right')
+        x_pos += [0.5, 0]
+        y_pos += [ticks_values[i]] * 2
+
+        # Finally plot the line:
+        ax.plot(x_pos, y_pos, color='black', linewidth=1)
+
+        # Set the lims:
+        ax.set_ylim(plot_axis.get_ylim())
+        ax.set_xlim(0, 1)
         ax.patch.set_visible(False)
 
     def plot_label(self, label_ax, width_dpi, h_align='left'):
