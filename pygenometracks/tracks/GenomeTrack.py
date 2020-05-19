@@ -117,7 +117,13 @@ height = 2
                 return np.exp(- value) - log_pseudocount
 
         ymin, ymax = plot_axis.get_ylim()
+        # If the ticks are closer than epsilon from the top or bottom
+        # The vertical alignment of label is adjusted
         epsilon = (ymax - ymin) / 100
+        # When the ymax and ymin are plotted (when there is no grid)
+        # The tick is shifted inside of epsilon_pretty
+        # To avoid to have only half of the width of the line plotted
+        epsilon_pretty = epsilon
 
         if only_at_ticks:
             # plot something that looks like this:
@@ -146,7 +152,7 @@ height = 2
             # ymin ┘
             # adjust the positions such that the lines are plotted complete
             # and not only half of the width of the line.
-            ticks_values = [ymin + epsilon, ymax - epsilon]
+            ticks_values = [ymin + epsilon_pretty, ymax - epsilon_pretty]
             labels_pos = [ymin, ymax]
             ticks_labels = [value_to_str(v) for v in [ymin, ymax]]
             if y_axis == 'transformed' and transform != 'no':
@@ -174,7 +180,7 @@ height = 2
             # ymid-|
             #      │
             # ymin ┘
-            ticks_values = [ymin + epsilon, ymid, ymax - epsilon]
+            ticks_values = [ymin + epsilon_pretty, ymid, ymax - epsilon_pretty]
             labels_pos = [ymin, ymid, ymax]
             ticks_labels = [value_to_str(untransform(v, transform, log_pseudocount)) for v in [ymin, ymid, ymax]]
 
