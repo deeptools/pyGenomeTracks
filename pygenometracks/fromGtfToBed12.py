@@ -129,7 +129,7 @@ def parse_arguments(args=None):
                         help="Input gtf file (can be gzip).")
     parser.add_argument('--out', '-o', default=sys.stdout,
                         type=argparse.FileType('w'),
-                        help="Output bed12 file.")
+                        help="Output bed12 file (default is stdout).")
     parser.add_argument('--useGene', action="store_true",
                         help="Use the gene name instead of the "
                         "transcript name.")
