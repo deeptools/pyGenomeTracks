@@ -137,7 +137,9 @@ def file_to_intervaltree(file_name):
 
 
 def plot_coverage(ax, x_values, score_list, plot_type, size, color,
-                  negative_color, alpha):
+                  negative_color, alpha, grid):
+    if grid:
+        ax.grid(axis='y', zorder=0)
     if plot_type == 'line':
         if color == negative_color:
             ax.plot(x_values, score_list, '-', linewidth=size, color=color,
