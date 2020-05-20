@@ -99,6 +99,66 @@ where = bottom
 with open(os.path.join(ROOT, "short_long_arcs.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[x-axis]
+where = top
+
+[spacer]
+height = 0.05
+[hic matrix]
+file = Li_et_al_2015.cool
+title = depth = 300000; transform = log1p; min_value = 5 (next track: overlay_previous = share-y links_type = loops)
+depth = 300000
+min_value = 5
+transform = log1p
+file_type = hic_matrix
+show_masked_bins = false
+
+[test arcs overlay]
+file = test_wide.arcs
+color = red
+line_width = 5
+links_type = loops
+overlay_previous = share-y
+
+[test arcs]
+file = test_wide.arcs
+line_width = 3
+color = RdYlGn
+title = links line_width = 3 color RdYlGn
+height = 3
+orientation = inverted
+
+[spacer]
+height = 1
+
+[hic matrix]
+file = Li_et_al_2015.cool
+title = depth = 300000; transform = log1p; min_value = 5 (next track: overlay_previous = share-y links_type = loops)
+depth = 300000
+min_value = 5
+transform = log1p
+file_type = hic_matrix
+show_masked_bins = false
+
+[test arcs overlay]
+file = test_wide.arcs
+color = red
+line_width = 5
+links_type = loops
+overlay_previous = share-y
+
+[test arcs]
+file = test_wide.arcs
+line_width = 3
+color = RdYlGn
+title = links line_width = 3 color RdYlGn use_middle = true
+use_middle = true
+height = 3
+orientation = inverted
+"""
+with open(os.path.join(ROOT, "arcs_use_middle.ini"), 'w') as fh:
+    fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -113,6 +173,22 @@ def test_short_long_arcs():
     pygenometracks.plotTracks.main(args)
     print("saving test to {}".format(outfile.name))
     res = compare_images(os.path.join(ROOT, 'master_short_long_arcs.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_use_middle_arcs():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
+    args = "--tracks {0} --region X:3000000-3300000 --trackLabelFraction 0.2" \
+           " --width 38 --dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT, "arcs_use_middle.ini"),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_arcs_use_middle.png'),
                          outfile.name, tolerance)
     assert res is None, res
 
