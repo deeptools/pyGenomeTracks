@@ -96,19 +96,14 @@ class PlotTracks(object):
         # initialize each track
         self.track_obj_list = []
         for idx, properties in enumerate(self.track_list):
-            if 'spacer' in properties:
-                self.track_obj_list.append(SpacerTrack(properties))
-            elif 'x-axis' in properties:
-                self.track_obj_list.append(XAxisTrack(properties))
+            log.info("initialize {}".format(properties['section_name']))
+            # the track_class is obtained from the available tracks
+            track_class = self.available_tracks[properties['file_type']]
+            if properties['file_type'] == 'hic_matrix':
+                properties['region'] = pRegion
+                self.track_obj_list.append(track_class(properties))
             else:
-                # for all other tracks that are not axis or spacer
-                # the track_class is obtained from the available tracks
-                track_class = self.available_tracks[properties['file_type']]
-                if properties['file_type'] == 'hic_matrix':
-                    properties['region'] = pRegion
-                    self.track_obj_list.append(track_class(properties))
-                else:
-                    self.track_obj_list.append(track_class(properties))
+                self.track_obj_list.append(track_class(properties))
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
@@ -144,31 +139,31 @@ class PlotTracks(object):
 
         """
         track_height = []
-        for track_dict in self.track_list:
+        for i, track_dict in enumerate(self.track_list):
             # if overlay_previous is set to a value other than no
             # then, skip this track height
             if track_dict['overlay_previous'] != 'no':
                 continue
-            elif 'x-axis' in track_dict and track_dict['x-axis'] is True:
-                height = track_dict['fontsize'] / 8
             elif 'height' in track_dict:
                 height = track_dict['height']
-            # compute the height of a Hi-C track
-            # based on the depth such that the
-            # resulting plot appears proportional
-            #
-            #      /|\
-            #     / | \
-            #    /  |d \   d is the depth that we want to be proportional
-            #   /   |   \  when plotted in the figure
-            # ------------------
-            #   region len
-            #
-            # d (in cm) =  depth (in bp) * 0.5 *
-            #              width (in cm) / region len (in bp)
-
+            elif track_dict['file_type'] == 'x_axis':
+                height = track_dict['fontsize'] / 8
             elif 'depth' in track_dict and \
                  track_dict['file_type'] == 'hic_matrix':
+                # compute the height of a Hi-C track
+                # based on the depth such that the
+                # resulting plot appears proportional
+                #
+                #      /|\
+                #     / | \
+                #    /  |d \   d is the depth that we want to be proportional
+                #   /   |   \  when plotted in the figure
+                # ------------------
+                #   region len
+                #
+                # d (in cm) =  depth (in bp) * 0.5 *
+                #              width (in cm) / region len (in bp)
+
                 # to compute the actual width of the figure the margins
                 # and the region
                 # set for the legends have to be considered
@@ -195,12 +190,14 @@ class PlotTracks(object):
                     (end_region - start_region)
             else:
                 height = DEFAULT_TRACK_HEIGHT
+                self.track_list[i]['height'] = height
 
             track_height.append(height)
 
         return track_height
 
-    def plot(self, file_name, chrom, start, end, title=None):
+    def plot(self, file_name, chrom, start, end, title=None,
+             h_align_titles='left', decreasing_x_axis=False):
         track_height = self.get_tracks_height(start_region=start,
                                               end_region=end)
 
@@ -260,11 +257,19 @@ class PlotTracks(object):
 
                     label_axis = plt.subplot(grids[idx, 2])
                     label_axis.set_axis_off()
+                    # I get the width of the label_axis to be able to wrap the
+                    # labels when right or center aligned.
+                    width_inch = label_axis.get_window_extent().width
+                    width_dpi = width_inch * self.dpi / fig.dpi
 
-            plot_axis.set_xlim(start, end)
+            if decreasing_x_axis:
+                plot_axis.set_xlim(end, start)
+            else:
+                plot_axis.set_xlim(start, end)
             track.plot(plot_axis, chrom, start, end)
             track.plot_y_axis(y_axis, plot_axis)
-            track.plot_label(label_axis)
+            track.plot_label(label_axis, width_dpi=width_dpi,
+                             h_align=h_align_titles)
 
             if track.properties['overlay_previous'] == 'share-y':
                 plot_axis.set_ylim(ylim)
@@ -364,12 +369,13 @@ class PlotTracks(object):
                 continue
             # For the other cases, we will append properties dictionnaries
             # to the track_list
-            # If the sections are spacer or x-axis there is no file needed:
+            # If the sections are spacer or x-axis we fill the file_type:
+            # (They are special sections where the title defines the track type)
             if section_name.endswith('[spacer]'):
-                track_options['spacer'] = True
+                track_options['file_type'] = 'spacer'
                 track_options['track_class'] = SpacerTrack
             elif section_name.endswith('[x-axis]'):
-                track_options['x-axis'] = True
+                track_options['file_type'] = 'x_axis'
                 track_options['track_class'] = XAxisTrack
             # For the others we need to have a 'file_type'
             # Either the file_type is part of the keywords
@@ -522,6 +528,11 @@ class PlotTracks(object):
             # The 'overlay_previous' is initialized:
             if 'overlay_previous' not in track_options:
                 track_options['overlay_previous'] = 'no'
+            if track_options['overlay_previous'] not in ['no', 'yes', 'share-y']:
+                raise InputError("In section {}, overlay_previous was set to {}."
+                                 " Possible options are no, yes, share-y"
+                                 "".format(section_name,
+                                           track_options['overlay_previous']))
             # If there is no title:
             if 'title' not in track_options:
                 track_options['title'] = ''
@@ -537,6 +548,13 @@ class PlotTracks(object):
         if self.vlines_properties:
             self.vlines_intval_tree, __, __ = \
                 file_to_intervaltree(self.vlines_properties['file'])
+
+    def close_files(self):
+        """
+        Close all opened files
+        """
+        for track in self.track_obj_list:
+            track.__del__()
 
     @staticmethod
     def check_file_exists(track_dict, tracks_path):
@@ -629,7 +647,7 @@ class PlotTracks(object):
 
 class SpacerTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
-    TRACK_TYPE = None
+    TRACK_TYPE = 'spacer'
     DEFAULTS_PROPERTIES = {}
     NECESSARY_PROPERTIES = []
     SYNONYMOUS_PROPERTIES = {}
@@ -649,7 +667,7 @@ class SpacerTrack(GenomeTrack):
 
 class XAxisTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
-    TRACK_TYPE = None
+    TRACK_TYPE = 'x_axis'
     NECESSARY_PROPERTIES = []
     DEFAULTS_PROPERTIES = {'where': 'bottom',
                            'fontsize': 15}

@@ -1,0 +1,8 @@
+3.1
+===
+
+* add the ability to control alpha of bedgraph tracks (thanks to @mikewolfe)
+* add GTF support (thanks to @lldelisle)
+* add support for various BED flavors (thanks to @lldelisle)
+* adopt codebase to lastest matplotlib changes (thanks to @lldelisle)
+* various new tests, code cleanups and smaller fixes all over

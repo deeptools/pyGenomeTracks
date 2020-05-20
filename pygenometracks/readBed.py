@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import collections
-from .utilities import to_string
+from .utilities import to_string, InputError
 
 
 class ReadBed(object):
@@ -23,15 +23,20 @@ class ReadBed(object):
         :return:
         """
 
+        # file_type can be bed6, bed8, bed9, or bed12
         self.file_type = None
+        # The number of fields to read at each line
+        # Can be 3 to 12
+        self.fields_to_read = 12
         self.file_handle = file_handle
         self.line_number = 0
         # guess file type
-        fields = self.get_no_comment_line()
-        fields = to_string(fields)
-        fields = fields.split('\t')
-
-        self.guess_file_type(fields)
+        try:
+            fields = self.get_no_comment_line()
+        except StopIteration:
+            self.file_type = 'bed6'
+        else:
+            self.get_bed_interval(fields, is_first_line=True)
         self.file_handle.seek(0)
         self.prev_chrom = None
         self.prev_start = -1
@@ -44,14 +49,12 @@ class ReadBed(object):
                        'rgb', 'block_count',
                        'block_sizes', 'block_starts']
 
-        if self.file_type == 'bed12':
-            self.BedInterval = collections.namedtuple('BedInterval', self.fields)
-        elif self.file_type == 'bed9':
-            self.BedInterval = collections.namedtuple('BedInterval', self.fields[:9])
-        elif self.file_type == 'bed8':
-            self.BedInterval = collections.namedtuple('BedInterval', self.fields[:8])
+        if self.fields_to_read <= 6:
+            self.BedInterval = collections.namedtuple('BedInterval',
+                                                      self.fields[:6])
         else:
-            self.BedInterval = collections.namedtuple('BedInterval', self.fields[:6])
+            self.BedInterval = collections.namedtuple('BedInterval',
+                                                      self.fields[:self.fields_to_read])
 
     def __iter__(self):
         return self
@@ -70,42 +73,6 @@ class ReadBed(object):
 
         self.line_number += 1
         return line
-
-    def guess_file_type(self, line_values):
-        """try to guess type of bed file by counting the fields
-        """
-        assert len(line_values) > 2, \
-            "The number of field is less than 3.\n" \
-            "This is not a bed file.\n" \
-            "File: {}\n" \
-            "First line: {}\n".format(self.file_handle.name,
-                                      line_values)
-        if len(line_values) == 3:
-            self.file_type = 'bed3'
-        elif len(line_values) == 4:
-            try:
-                float(line_values[3])
-                self.file_type = 'bedgraph'
-            except ValueError:
-                self.file_type = 'bed4'
-        elif len(line_values) == 5:
-            self.file_type = 'bed5'
-        elif len(line_values) == 6:
-            self.file_type = 'bed6'
-        elif len(line_values) == 8:
-            self.file_type = 'bed8'
-        elif len(line_values) == 12:
-            self.file_type = 'bed12'
-        elif len(line_values) == 9:
-            # this is a case where a specific color is encoded
-            # in the 9th field of the bed file
-            self.file_type = 'bed9'
-        else:
-            # assume bed6
-            self.file_type = 'bed6'
-            sys.stderr.write("Number of fields in BED file is not standard."
-                             "Assuming bed6\n")
-        return self.file_type
 
     def next(self):
         """
@@ -145,7 +112,7 @@ class ReadBed(object):
 
         return bed
 
-    def get_bed_interval(self, bed_line):
+    def get_bed_interval(self, bed_line, is_first_line=False):
         r"""
         Processes each bed line from a bed file, casts the values and returns
         a namedtuple object
@@ -172,27 +139,17 @@ class ReadBed(object):
         line_data = to_string(line_data)
         line_data = line_data.split("\t")
 
-        if self.file_type == 'bed12':
-            assert len(line_data) == 12, \
-                "File type detected is bed12 but line {}: {} does " \
-                "not have 12 fields.".format(self.line_number, bed_line)
-
-        elif self.file_type == 'bed9':
-            assert len(line_data) == 9, \
-                "File type detected is bed9 but line {}: {} does " \
-                "not have 9 fields.".format(self.line_number, bed_line)
-
-        elif self.file_type == 'bed8':
-            assert len(line_data) == 8, \
-                "File type detected is bed8 but line {}: {} does " \
-                "not have 8 fields.".format(self.line_number, bed_line)
-
-        elif self.file_type == 'bed6':
-            # It is possible that the number of fields was not standard.
-            # To be able to process it as bed6, the extra-fields are removed.
-            line_data = line_data[:6]
-
-        # If the file_type is below, values will be added.
+        if not is_first_line:
+            if self.file_type != 'bed6':
+                # When bed6 you can have less fields in one row
+                # because there are default values
+                assert len(line_data) >= self.fields_to_read, \
+                    "File type detected is {} but line {}: {} does " \
+                    "not have {} fields.".format(self.file_type,
+                                                 self.line_number,
+                                                 bed_line,
+                                                 self.fields_to_read)
+            line_data = line_data[:self.fields_to_read]
 
         line_values = []
         for idx, r in enumerate(line_data):
@@ -217,31 +174,77 @@ class ReadBed(object):
                         r = '.'
                 line_values.append(r)
 
-            elif idx in [1, 2, 6, 7, 9]:
-                # start and end fields must be integers, same for thichStart(6),
-                # and thickEnd(7) and blockCount(9) fields
+            elif idx in [1, 2]:
+                # start and end fields must be integers
                 try:
                     line_values.append(int(r))
                 except ValueError:
-                    sys.stderr.write("Value: {} in field {} at line {}"
-                                     " is not an integer"
+                    raise InputError("Value: {} in field {} at line {}"
+                                     " is not an integer. This is "
+                                     "probably not a bed file."
                                      "\n".format(r, idx + 1,
                                                  self.line_number))
-                    return dict()
+            elif idx in [6, 7, 9]:
+                # thichStart(6), thickEnd(7) and blockCount(9) fields
+                # Should be integer, if they are not we change the bed type
+                try:
+                    line_values.append(int(r))
+                except ValueError:
+                    if is_first_line:
+                        if idx == 9:
+                            self.file_type = 'bed8'
+                            self.fields_to_read = 8
+                        else:
+                            self.file_type = 'bed6'
+                            self.fields_to_read = 6
+                        sys.stderr.write("Value: {} in field {}"
+                                         " is not an integer"
+                                         "\n Only the first {} fields will"
+                                         " be used.\n".format(r, idx + 1,
+                                                              self.fields_to_read))
+                        break
+                    else:
+                        default_value = 0 if (idx == 9) else line_values[1]
+                        sys.stderr.write("Value: {} in field {} at line {}"
+                                         " is not an integer"
+                                         "\n {} will be used.\n"
+                                         "".format(r, idx + 1,
+                                                   self.line_number,
+                                                   default_value))
             # check item rgb
             elif idx == 8:
-                r = to_string(r)
-                rgb = r.split(",")
-                if len(rgb) == 3:
-                    try:
-                        r = list(map(int, rgb))
-                    except ValueError as detail:
-                        sys.stderr.write("Error reading line: #{}. "
+                passed = True
+                try:
+                    line_values.append(int(r))
+                except ValueError:
+                    r = to_string(r)
+                    rgb = r.split(",")
+                    if len(rgb) == 3:
+                        try:
+                            r = list(map(int, rgb))
+                        except ValueError:
+                            passed = False
+                        else:
+                            line_values.append(r)
+                    else:
+                        passed = False
+                if not passed:
+                    if is_first_line:
+                        sys.stderr.write("Warning: "
                                          "The rgb field {} is not "
-                                         "valid.\nError message: {}"
-                                         "\n".format(self.line_number, r,
-                                                     detail))
-                line_values.append(r)
+                                         "valid.\nOnly the first 8 fields"
+                                         " will be used.\n"
+                                         "".format(r))
+                        self.file_type = 'bed8'
+                        self.fields_to_read = 8
+                        break
+                    else:
+                        sys.stderr.write("Warning: reading line: #{}. "
+                                         "The rgb field {} is not "
+                                         "valid.\n0"
+                                         " will be used.\n"
+                                         "".format(self.line_number, r))
+                        line_values.append(0)
 
             elif idx in [10, 11]:
                 # this are the block sizes and block start positions
@@ -250,21 +253,64 @@ class ReadBed(object):
                 try:
                     r = [int(x) for x in r_parts if x != '']
                 except ValueError as detail:
-                    sys.stderr.write("Error reading line #{}. "
-                                     "The block field {} is not "
-                                     "valid.\nError message: {}"
-                                     "\n".format(self.line_number, r, detail))
-                line_values.append(r)
+                    if is_first_line:
+                        sys.stderr.write("Warning: "
+                                         "The block field {} is not "
+                                         "valid.\nError message: {}"
+                                         "\nOnly the first 9 fields"
+                                         " will be used.\n"
+                                         "".format(r,
+                                                   detail))
+                        self.file_type = 'bed9'
+                        self.fields_to_read = 9
+                        break
+                    else:
+                        sys.stderr.write("Warning: reading line #{}, "
+                                         "the block field {} is not "
+                                         "valid.\nError message: {}"
+                                         "\nNo block will be used.\n"
+                                         "".format(self.line_number, r,
+                                                   detail))
+                        line_values[9] = 1
+                        line_values[10] = line_values[1]
+                        line_values[11] = line_values[2] - line_values[1]
+                        break
+                else:
+                    line_values.append(r)
 
-            else:
-                # idx = 4 (score)
+            elif idx == 4:
                 try:
                     tmp = float(r)
-                except ValueError:
-                    tmp = r
-                except TypeError:
-                    tmp = r
-                line_values.append(tmp)
+                except (ValueError, TypeError) as detail:
+                    if is_first_line:
+                        sys.stderr.write("Warning: "
+                                         "The block field 5 (score) is not "
+                                         "valid: {}.\nError message: {}"
+                                         "\nOnly the first 4 fields "
+                                         "will be used.\n".format(r,
+                                                                  detail))
+                        self.file_type = 'bed6'
+                        self.fields_to_read = 4
+                        break
+                    else:
+                        sys.stderr.write("Warning: reading line #{}, "
+                                         "the block field 5 (score) is not "
+                                         "valid: {}.\nError message: {}"
+                                         "\n0 will be used.\n"
+                                         "".format(self.line_number, r,
+                                                   detail))
+                        line_values.append(0.)
+                else:
+                    line_values.append(tmp)
+
+        if is_first_line:
+            if self.file_type is None:
+                self.fields_to_read = max([i for i in [3, 4, 5, 6, 8, 9, 12] if i <= len(line_values)])
+                if self.fields_to_read <= 6:
+                    self.file_type = 'bed6'
+                else:
+                    self.file_type = 'bed{}'.format(self.fields_to_read)
+            return()
 
         assert line_values[2] > line_values[1], \
             "Start position larger or equal than end" \

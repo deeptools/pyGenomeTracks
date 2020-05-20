@@ -50,8 +50,10 @@ file_type = {}
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
-    def __init__(self, *args, **kwarg):
-        super(EpilogosTrack, self).__init__(*args, **kwarg)
+    def __init__(self, properties_dict):
+        GenomeTrack.__init__(self, properties_dict)
+
+        self.load_file()
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
@@ -90,6 +92,10 @@ file_type = {}
             # the qcat_json is a pseudo json line, that misses
             # the { } and the quotes. The following lines fix that.
             qcat_json = qcat_json[0]
+            if not isinstance(qcat_json, str):
+                # This would happen if the qcat file has a missing value.
+                # The missing value is filled with np.repeat(np.nan, ..) and should be skipped here.
+                continue
             qcat_json = '{' + qcat_json.replace('id', '"id"').replace('qcat', '"qcat"') + '}'
             qcat = json.loads(qcat_json)
 
@@ -129,3 +135,10 @@ file_type = {}
         if self.properties['orientation'] == 'inverted':
             ymin, ymax = ax.get_ylim()
             ax.set_ylim(ymax, ymin)
+
+    def plot_y_axis(self, ax, plot_axis):
+        GenomeTrack.plot_y_axis(self, ax, plot_axis)
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()

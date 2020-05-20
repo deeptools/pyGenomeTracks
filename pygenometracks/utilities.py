@@ -1,7 +1,9 @@
 import sys
 import gzip
 import numpy as np
+from tqdm import tqdm
 from intervaltree import IntervalTree, Interval
+import warnings
 
 
 class InputError(Exception):
@@ -74,7 +76,7 @@ def file_to_intervaltree(file_name):
     min_value = float('Inf')
     max_value = -float('Inf')
 
-    for line in file_h.readlines():
+    for line in tqdm(file_h.readlines()):
         line_number += 1
         line = to_string(line)
         if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
@@ -135,13 +137,14 @@ def file_to_intervaltree(file_name):
 
 
 def plot_coverage(ax, x_values, score_list, plot_type, size, color,
-                  negative_color, alpha):
+                  negative_color, alpha, grid):
+    if grid:
+        ax.grid(axis='y', zorder=0)
     if plot_type == 'line':
         if color == negative_color:
             ax.plot(x_values, score_list, '-', linewidth=size, color=color,
                     alpha=alpha)
         else:
-            import warnings
             warnings.warn('Line plots with a different negative color might not look pretty')
             pos_x_values = x_values.copy()
             pos_x_values[score_list < 0] = np.nan
@@ -173,7 +176,6 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                     alpha=alpha)
     else:
         if plot_type != 'fill':
-            import warnings
             warnings.warn('The plot type was not part of known types '
                           '(fill, line, points) will be fill.')
         if color == negative_color:
@@ -189,8 +191,74 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                             facecolor=color,
                             alpha=alpha)
             neg_x_values = x_values.copy()
-            neg_x_values[score_list >= 0] = np.nan
+            neg_x_values[score_list > 0] = np.nan
             ax.fill_between(neg_x_values, score_list, linewidth=0.1,
                             color=negative_color,
                             facecolor=negative_color,
                             alpha=alpha)
+
+
+def transform(score_list, transform, log_pseudocount, file):
+    if transform == 'no':
+        return(score_list)
+    elif transform in ['log', 'log2', 'log10']:
+        if np.nanmin(score_list) <= - log_pseudocount:
+            msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
+                   " - {0}.\n"
+                   "{1}({0} + <values>) transformation can not be applied to "
+                   "values in file: {2}".format(log_pseudocount, transform,
+                                                file))
+            raise Exception(msg)
+        else:
+            return(eval('np.' + transform + '(log_pseudocount + score_list)'))
+    elif transform == 'log1p':
+        if np.nanmin(score_list) <= - 1:
+            msg = ("\n*ERROR*\ncoverage contains values below or equal to - 1.\n"
+                   "log1p(<values>) transformation can not be applied to "
+                   "values in file: {}".format(file))
+            raise Exception(msg)
+        else:
+            return(np.log1p(score_list))
+    elif transform == '-log':
+        if np.nanmax(score_list.max) <= - log_pseudocount:
+            msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
+                   " - {0}.\n"
+                   "- log( {0} + <values>) transformation can not be applied"
+                   " to values in file: {1}".format(log_pseudocount, file))
+            raise Exception(msg)
+        else:
+            return(- np.log(log_pseudocount + score_list))
+    else:
+        warnings.warn('The transform: {} for file {} is not valid.'
+                      'will not use any transformation'.format(transform,
+                                                               file))
+        return(score_list)
+
+
+def get_length_w(fig_width, region_start, region_end, fontsize):
+    """
+    to improve the visualization of the labels
+    it is good to have an estimation of their length
+    in base pairs. In the following code I try to get the
+    length of a 'W' in base pairs.
+    """
+    # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
+    inches_per_pt = 1.0 / 72.27
+    font_in_inches = fontsize * inches_per_pt
+    region_len = region_end - region_start
+    bp_per_inch = region_len / fig_width
+    font_in_bp = font_in_inches * bp_per_inch
+    return font_in_bp
+
+
+def count_lines(file_h, asBed=False):
+    n = 0
+    for line in file_h:
+        if asBed:
+            line = to_string(line)
+            if line.startswith("#") or line.startswith("track") or \
+               line.startswith("browser") or line.strip() == '':
+                continue
+        n += 1
+    file_h.close()
+    return(n)

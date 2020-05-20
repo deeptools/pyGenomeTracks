@@ -2,6 +2,26 @@
 import collections
 
 import gffutils
+import warnings
+from .utilities import InputError
+
+warnings.filterwarnings("ignore", message="It appears you have a gene feature"
+                        " in your GTF file. You may want to use the "
+                        "`disable_infer_genes` option to speed up database "
+                        "creation")
+warnings.filterwarnings("ignore", message="It appears you have a transcript "
+                        "feature in your GTF file. You may want to use the "
+                        "`disable_infer_transcripts` option to speed up "
+                        "database creation")
+# In gffutils v0.10 they changed the error message:
+warnings.filterwarnings("ignore", message="It appears you have a gene feature"
+                        " in your GTF file. You may want to use the "
+                        "`disable_infer_genes=True` option to speed up database "
+                        "creation")
+warnings.filterwarnings("ignore", message="It appears you have a transcript "
+                        "feature in your GTF file. You may want to use the "
+                        "`disable_infer_transcripts=True` option to speed up "
+                        "database creation")
 
 
 class ReadGtf(object):
@@ -32,22 +52,31 @@ class ReadGtf(object):
                        'block_sizes', 'block_starts']
 
         self.BedInterval = collections.namedtuple('BedInterval', self.fields)
-
-        # Will process the gtf to get one item per transcript:
-        # This will create a database:
-        self.db = gffutils.create_db(file_path, ':memory:')
         # I think the name which should be written
         # should be the transcript_name
         # But we can change it to gene_name
         self.prefered_name = prefered_name
         self.merge_transcripts = merge_transcripts
 
-        if self.merge_transcripts:
-            self.all_transcripts = self.db.features_of_type("gene",
-                                                            order_by='start')
+        # Will process the gtf to get one item per transcript:
+        # This will create a database:
+        try:
+            self.db = gffutils.create_db(file_path, ':memory:')
+        except ValueError as ve:
+            if "No lines parsed" in str(ve):
+                self.length = 0
+                self.all_transcripts = open(file_path, 'r')
+            else:
+                raise InputError("This is not a gtf file.")
         else:
-            self.all_transcripts = self.db.features_of_type("transcript",
-                                                            order_by='start')
+            if self.merge_transcripts:
+                self.length = len([i for i in self.db.features_of_type("gene")])
+                self.all_transcripts = self.db.features_of_type("gene",
+                                                                order_by='start')
+            else:
+                self.length = len([i for i in self.db.features_of_type("transcript")])
+                self.all_transcripts = self.db.features_of_type("transcript",
+                                                                order_by='start')
 
     def __iter__(self):
         return self

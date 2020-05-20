@@ -1,0 +1,24 @@
+Necessary:
+^^^^^^^^^^
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: `0.5` (default) or float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+
+- **where**: `left` (default) or right, top or bottom.
+
+- **fontsize**: `12` (default) or any float above 0
+
+- **line_width**: `0.5` (default) or any float above 0
+
+- **color**: `black` (default)
+
+- **alpha**: `1` (default) or any float above 0 below 1
+
+- **x_center**: by default this option is not set but you can also put: any integer above 0
+
+- **size**: by default this option is not set but you can also put: any integer above 0
+
