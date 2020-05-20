@@ -11,8 +11,8 @@ class TADsTrack(BedTrack):
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
-# color = bed_rgb
-#if color is a valid colormap name (like RbBlGn), then the score (column 5) is mapped
+#color = bed_rgb
+# if color is a valid colormap name (like RbBlGn), then the score (column 5) is mapped
 # to the colormap.
 # In this case, the the min_value and max_value for the score can be provided, otherwise
 # the maximum score and minimum score found are used.
@@ -25,7 +25,7 @@ color = darkblue
 #line_width = 0.5
 # optional, default is black. To remove the border, simply set 'border_color' to none
 #border_color = black
-# optional. If not given is guessed from the file ending.
+# optional. If not given it is guessed from the file ending.
 file_type = {}
     """.format(TRACK_TYPE)
 
