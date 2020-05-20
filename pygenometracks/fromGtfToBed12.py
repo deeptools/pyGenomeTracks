@@ -1,8 +1,8 @@
 import argparse
 import sys
+import warnings
 
 import gffutils
-import warnings
 
 from pygenometracks._version import __version__
 
@@ -14,15 +14,25 @@ warnings.filterwarnings("ignore", message="It appears you have a transcript "
                         "feature in your GTF file. You may want to use the "
                         "`disable_infer_transcripts` option to speed up "
                         "database creation")
+# In gffutils v0.10 they changed the error message:
+warnings.filterwarnings("ignore", message="It appears you have a gene feature"
+                        " in your GTF file. You may want to use the "
+                        "`disable_infer_genes=True` option to speed up "
+                        "database creation")
+warnings.filterwarnings("ignore", message="It appears you have a transcript "
+                        "feature in your GTF file. You may want to use the "
+                        "`disable_infer_transcripts=True` option to speed up "
+                        "database creation")
 
 
-def convert_gtf_to_bed(fn, fo, useGene, mergeTranscripts, ucsc):
+def convert_gtf_to_bed(fn, fo, useGene, mergeTranscripts,
+                       mergeTranscriptsAndOverlappingExons, ucsc):
     db = gffutils.create_db(fn, ':memory:')
     # For each transcript:
     prefered_name = "transcript_name"
-    if useGene:
+    if useGene or mergeTranscripts or mergeTranscriptsAndOverlappingExons:
         prefered_name = "gene_name"
-    if mergeTranscripts:
+    if mergeTranscripts or mergeTranscriptsAndOverlappingExons:
         all_items = db.features_of_type("gene", order_by='start')
     else:
         all_items = db.features_of_type("transcript", order_by='start')
@@ -40,7 +50,7 @@ def convert_gtf_to_bed(fn, fo, useGene, mergeTranscripts, ucsc):
                                           featuretype='exon',
                                           order_by='start')]).pop()
             except KeyError:
-                # Else take the transcript/gene id
+                # Else take the transcript id
                 trName = tr.id
         # If the cds is defined in the gtf,
         # use it to define the thick start and end
@@ -64,12 +74,42 @@ def convert_gtf_to_bed(fn, fo, useGene, mergeTranscripts, ucsc):
             cds_start = tr.start - 1
             cds_end = tr.start - 1
         # Get all exons starts and lengths
-        exons_starts = [e.start - 1
-                        for e in
-                        db.children(tr, featuretype='exon', order_by='start')]
-        exons_length = [len(e)
-                        for e in
-                        db.children(tr, featuretype='exon', order_by='start')]
+        if mergeTranscriptsAndOverlappingExons:
+            # We merge overlapping exons:
+            exons_starts = []
+            exons_length = []
+            current_start = -1
+            current_end = None
+            for e in db.children(tr, featuretype='exon', order_by='start'):
+                if current_start == -1:
+                    current_start = e.start - 1
+                    current_end = e.end
+                else:
+                    if e.start > current_end:
+                        # This is a non-overlapping exon
+                        # We store the previous exon:
+                        exons_starts.append(current_start)
+                        exons_length.append(current_end - current_start)
+                        # We set the current:
+                        current_start = e.start - 1
+                        current_end = e.end
+                    else:
+                        # This is an overlapping exon
+                        # We update current_end if necessary
+                        current_end = max(current_end, e.end)
+            if current_start != -1:
+                # There is a last exon to store:
+                exons_starts.append(current_start)
+                exons_length.append(current_end - current_start)
+        else:
+            exons_starts = [e.start - 1
+                            for e in
+                            db.children(tr, featuretype='exon',
+                                        order_by='start')]
+            exons_length = [len(e)
+                            for e in
+                            db.children(tr, featuretype='exon',
+                                        order_by='start')]
         # Rewrite the chromosome name if needed:
         chrom = tr.chrom
         if ucsc and chrom[0:3] != 'chr':
@@ -93,18 +133,27 @@ def parse_arguments(args=None):
     parser.add_argument('--useGene', action="store_true",
                         help="Use the gene name instead of the "
                         "transcript name.")
-    parser.add_argument('--mergeTranscripts', action="store_true",
-                        help="Merge all transcripts into a single "
-                        "entry to have one line per gene.")
     parser.add_argument('--ucscformat', action="store_true",
                         help="If you want that all chromosome names "
                         "begin with 'chr'.")
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--mergeTranscripts', action="store_true",
+                       help="Merge all transcripts into a single "
+                            "entry to have one line per gene.")
+    group.add_argument('--mergeTranscriptsAndOverlappingExons',
+                       action="store_true",
+                       help="Merge all transcripts into a single "
+                            "entry to have one line per gene and merge"
+                            " overlapping exons.")
+
     return parser
 
 
 def main(args=None):
     args = parse_arguments().parse_args(args)
     convert_gtf_to_bed(args.input, args.out, args.useGene,
-                       args.mergeTranscripts, args.ucscformat)
+                       args.mergeTranscripts,
+                       args.mergeTranscriptsAndOverlappingExons,
+                       args.ucscformat)
