@@ -111,7 +111,7 @@ def test_short_long_arcs():
            "".format(os.path.join(ROOT, "short_long_arcs.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_short_long_arcs.png'),
                          outfile.name, tolerance)
     assert res is None, res

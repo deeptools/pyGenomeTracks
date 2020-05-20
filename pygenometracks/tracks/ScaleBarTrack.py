@@ -73,15 +73,13 @@ file_type = {}
                 first_char = 1
             size = first_char * 10**(len(str(half_plotted_region)) - 1)
         if size < 1e3:
-            size_label = "{} bases".format(size)
+            size_label = f"{size} bases"
         elif size < 1e6:
             new_size = size / 1e3
-            size_label = "{} kb".format(int(new_size) if new_size.is_integer()
-                                        else new_size)
+            size_label = f"{int(new_size) if new_size.is_integer() else new_size} kb"
         else:
             new_size = size / 1e6
-            size_label = "{} Mb".format(int(new_size) if new_size.is_integer()
-                                        else new_size)
+            size_label = f"{int(new_size) if new_size.is_integer() else new_size} Mb"
 
         # We now draw the |-----|
         x_left = x_center - size / 2

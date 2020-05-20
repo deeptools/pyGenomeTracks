@@ -144,7 +144,7 @@ file_type = {}
                 self.properties['y_axis_values'] = 'transformed'
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        formated_region = "{}:{}-{}".format(chrom_region, start_region, end_region)
+        formated_region = f"{chrom_region}:{start_region}-{end_region}"
 
         if chrom_region not in self.bw.chroms().keys():
             chrom_region_before = chrom_region
@@ -184,7 +184,7 @@ file_type = {}
                 pass
             else:
                 if num_tries > 1:
-                    self.log.warning("After {} the scores could be computed".format(num_tries))
+                    self.log.warning(f"After {num_tries} the scores could be computed")
                 break
 
         x_values = np.linspace(start_region, end_region, self.properties['number_of_bins'])
@@ -243,7 +243,7 @@ file_type = {}
                     pass
                 else:
                     if num_tries > 1:
-                        self.log.warning("After {} the scores could be computed".format(num_tries))
+                        self.log.warning(f"After {num_tries} the scores could be computed")
                     break
             # compute the operation
             try:

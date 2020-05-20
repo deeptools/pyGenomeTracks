@@ -192,7 +192,7 @@ file_type = {}
                 ymax = np.sqrt(self.properties['ylim'])
             else:
                 ymax = self.properties['ylim']
-        self.log.debug("{} were links plotted".format(count))
+        self.log.debug(f"{count} were links plotted")
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, -1)
         else:
@@ -349,8 +349,8 @@ file_type = {}
                     raise InputError("Error reading line: {}. One of the fields is not "
                                      "an integer.\nError message: {}".format(line_number, detail))
 
-                assert start1 <= end1, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
-                assert start2 <= end2, "Error in line #{}, end2 larger than start2 in {}".format(line_number, line)
+                assert start1 <= end1, f"Error in line #{line_number}, end1 larger than start1 in {line}"
+                assert start2 <= end2, f"Error in line #{line_number}, end2 larger than start2 in {line}"
 
                 if has_score:
                     try:
@@ -367,7 +367,7 @@ file_type = {}
                             max_score = score
 
                 if chrom1 != chrom2:
-                    self.log.warning("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
+                    self.log.warning(f"Only links in same chromosome are used. Skipping line\n{line}\n")
                     continue
 
                 if chrom1 not in interval_tree:
@@ -382,7 +382,7 @@ file_type = {}
                 valid_intervals += 1
 
         if valid_intervals == 0:
-            self.log.warning("No valid intervals were found in file {}".format(self.properties['file']))
+            self.log.warning(f"No valid intervals were found in file {self.properties['file']}")
 
         file_h.close()
         return(interval_tree, min_score, max_score, has_score)

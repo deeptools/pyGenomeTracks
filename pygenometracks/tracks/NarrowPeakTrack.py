@@ -141,7 +141,7 @@ file_type = {}
             x_pos = start + float(end - start) / 2
             y_pos = 0 - max_signal * 0.05
             if self.properties['show_labels']:
-                ax.text(x_pos, y_pos, "{}\np-val:{:.1f}\nq-val:{:.1f}".format(name, p_value, q_value),
+                ax.text(x_pos, y_pos, f"{name}\np-val:{p_value:.1f}\nq-val:{q_value:.1f}",
                         horizontalalignment='center', size='smaller', verticalalignment='top')
 
         collection = PatchCollection(self.patches, facecolor=self.properties['color'], match_original=True)
@@ -186,7 +186,7 @@ file_type = {}
             if value % 1 == 0:
                 str_value = str(int(value))
             else:
-                str_value = "{:.1f}".format(value)
+                str_value = f"{value:.1f}"
             return str_value
 
         ymin, ymax = plot_axis.get_ylim()

@@ -49,7 +49,7 @@ def test_epilogos_track():
            "".format(ini=os.path.join(ROOT, "epilogos.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_epilogos.png'),
                          outfile.name, tolerance)
     assert res is None, res

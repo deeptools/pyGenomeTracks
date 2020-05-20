@@ -82,7 +82,7 @@ def test_scale_bar():
            "".format(os.path.join(ROOT, "scale_bar.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_scale_bar.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -98,7 +98,7 @@ def test_scale_bar_zoom():
            "".format(os.path.join(ROOT, "scale_bar.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_scale_bar_zoom.png'),
                          outfile.name, tolerance)
     assert res is None, res

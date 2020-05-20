@@ -143,7 +143,7 @@ def test_plot_bedgraph_tracks():
            "".format(os.path.join(ROOT, "bedgraph_useMid.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_bedgraph_useMid.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -160,7 +160,7 @@ def test_plot_bedgraph_tracks_zoom():
            "".format(os.path.join(ROOT, "bedgraph_useMid.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_bedgraph_useMid_zoom.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -177,7 +177,7 @@ def test_plot_bedgraph_tracks_rasterize():
            "".format(os.path.join(ROOT, 'bedgraph_useMid.ini'),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_bedgraph_useMid.pdf'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -193,7 +193,7 @@ def test_op_bdg():
            "".format(ini=os.path.join(ROOT, "operation_bdg.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_operation_bdg.png'),
                          outfile.name, tolerance)
     assert res is None, res

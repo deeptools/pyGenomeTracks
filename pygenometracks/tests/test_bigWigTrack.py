@@ -397,7 +397,7 @@ def test_bigwig_track():
            "".format(ini=os.path.join(ROOT, "bigwig.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_bigwig.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -413,7 +413,7 @@ def test_alpha():
            "".format(ini=os.path.join(ROOT, "alpha.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_alpha.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -429,7 +429,7 @@ def test_hlines():
            "".format(ini=os.path.join(ROOT, "hlines.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_hlines.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -445,7 +445,7 @@ def test_grid():
            "".format(ini=os.path.join(ROOT, "grid.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_grid.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -461,7 +461,7 @@ def test_op():
            "".format(ini=os.path.join(ROOT, "operation.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_operation.png'),
                          outfile.name, tolerance)
     assert res is None, res

@@ -18,7 +18,7 @@ def test_make_tracks():
                      os.path.join(relative_path, 'tad_classification.bed'),
                      os.path.join(relative_path, 'epilog.qcat.bgz'),
                      outfile.name).split()
-    print("using args: {}".format(" ".join(args)))
+    print(f"using args: {' '.join(args)}")
     pygenometracks.makeTracksFile.main(args)
 
     if filecmp.cmp(outfile.name,

@@ -36,7 +36,7 @@ def update_version_py():
     f = open(os.path.join("pygenometracks", "_version.py"), "w")
     f.write(VERSION_PY % ver)
     f.close()
-    print("set pygenometracks/_version.py to '%s'" % ver)
+    print(f"set pygenometracks/_version.py to '{ver}'")
 
 
 def get_version():
@@ -90,7 +90,7 @@ class install(_install):
             sys.stderr.write(msg)
 
         except Exception as e:
-            sys.stderr.write("Error: {}".format(e))
+            sys.stderr.write(f"Error: {e}")
 
 
 install_requires_py = ["numpy >=1.16",

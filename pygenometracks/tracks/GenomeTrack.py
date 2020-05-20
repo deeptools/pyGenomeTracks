@@ -100,7 +100,7 @@ height = 2
             if value % 1 == 0:
                 str_value = str(int(value))
             else:
-                str_value = "{:.1f}".format(value)
+                str_value = f"{value:.1f}"
             return str_value
 
         def untransform(value, transform, log_pseudocount):
@@ -161,10 +161,9 @@ height = 2
                     ymid_str = "log(1 + x)"
                 else:
                     if log_pseudocount == 0:
-                        ymid_str = "{}(x)".format(transform)
+                        ymid_str = f"{transform}(x)"
                     else:
-                        ymid_str = "{}({} + x)".format(transform,
-                                                       log_pseudocount)
+                        ymid_str = f"{transform}({log_pseudocount} + x)"
 
                 ax.text(0, (ymax + ymin) / 2, ymid_str,
                         verticalalignment='center',

@@ -80,7 +80,7 @@ file_type = {}
 
     def __init__(self, *args, **kwargs):
         super(HiCMatrixTrack, self).__init__(*args, **kwargs)
-        log.debug('FILE {}'.format(self.properties))
+        log.debug(f'FILE {self.properties}')
 
     def set_properties_defaults(self):
         super(HiCMatrixTrack, self).set_properties_defaults()
@@ -104,7 +104,7 @@ file_type = {}
             self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
 
         if len(self.hic_ma.matrix.data) == 0:
-            raise Exception("Matrix {} is empty".format(self.properties['file']))
+            raise Exception(f"Matrix {self.properties['file']} is empty")
         if self.properties['show_masked_bins']:
             pass
         else:
@@ -165,7 +165,7 @@ file_type = {}
 
     def plot(self, ax, chrom_region, region_start, region_end):
 
-        log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
+        log.debug(f'chrom_region {chrom_region}, region_start {region_start}, region_end {region_end}')
         chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if chrom_region not in chrom_sizes:
             chrom_region_before = chrom_region

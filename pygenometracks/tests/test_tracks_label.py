@@ -28,7 +28,7 @@ def test_regular_width_label():
            "".format(os.path.join(ROOT, "title.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_title_0.2.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -44,7 +44,7 @@ def test_large_width_label():
            "".format(os.path.join(ROOT, "title.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_title_0.5.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -61,7 +61,7 @@ def test_large_width_label_ral():
            "".format(os.path.join(ROOT, "title.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_title_0.5_ral.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -78,7 +78,7 @@ def test_large_width_label_cal():
            "".format(os.path.join(ROOT, "title.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_title_0.5_cal.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -95,7 +95,7 @@ def test_large_width_label_cal_dpi250():
            "".format(os.path.join(ROOT, "title.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_title_0.5_cal_d250.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -111,7 +111,7 @@ def test_large_width_label_big_font():
            "".format(os.path.join(ROOT, "title.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_title_0.5_fs20.png'),
                          outfile.name, tolerance)
     assert res is None, res

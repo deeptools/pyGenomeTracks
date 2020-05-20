@@ -181,7 +181,7 @@ def parse_arguments(args=None):
                        )
 
     parser.add_argument('--width',
-                        help='figure width in centimeters (default is {})'.format(DEFAULT_FIGURE_WIDTH),
+                        help=f'figure width in centimeters (default is {DEFAULT_FIGURE_WIDTH})',
                         type=float,
                         default=DEFAULT_FIGURE_WIDTH)
 
@@ -231,7 +231,7 @@ def parse_arguments(args=None):
                         action='store_true')
 
     parser.add_argument('--version', action='version',
-                        version='%(prog)s {}'.format(__version__))
+                        version=f'%(prog)s {__version__}')
 
     return parser
 
@@ -288,12 +288,12 @@ def main(args=None):
             try:
                 start, end = map(int, [start, end])
             except ValueError as detail:
-                sys.stderr.write("Invalid value found at line\t{}\t. {}\n".format(line, detail))
+                sys.stderr.write(f"Invalid value found at line\t{line}\t. {detail}\n")
             name = args.outFileName.split(".")
             file_suffix = name[-1]
             file_prefix = ".".join(name[:-1])
 
-            file_name = "{}_{}-{}-{}.{}".format(file_prefix, chrom, start, end, file_suffix)
+            file_name = f"{file_prefix}_{chrom}-{start}-{end}.{file_suffix}"
             if end - start < 200000:
                 sys.stderr.write("A region shorter than 200kb has been "
                                  "detected! This can be too small to return "
@@ -301,7 +301,7 @@ def main(args=None):
                 # start -= 100000
                 # start = max(0, start)
                 # end += 100000
-            sys.stderr.write("saving {}\n".format(file_name))
+            sys.stderr.write(f"saving {file_name}\n")
             # print("{} {} {}".format(chrom, start, end))
             trp.plot(file_name, chrom, start, end, title=args.title,
                      h_align_titles=args.trackLabelHAlign,

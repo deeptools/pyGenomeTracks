@@ -284,7 +284,7 @@ def test_log1p_track():
            "".format(ini=os.path.join(ROOT, "log1p.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_log1p.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -300,7 +300,7 @@ def test_log1p_grid():
            "".format(ini=os.path.join(ROOT, "log1p_grid.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_log1p_grid.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -317,7 +317,7 @@ def test_log_tracks():
            "".format(os.path.join(ROOT, "log.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_log.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -334,7 +334,7 @@ def test_log_grid():
            "".format(os.path.join(ROOT, "log_grid.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_log_grid.png'),
                          outfile.name, tolerance)
     assert res is None, res

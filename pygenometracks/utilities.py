@@ -85,7 +85,7 @@ def file_to_intervaltree(file_name):
         try:
             chrom, start, end = fields[0:3]
         except Exception as detail:
-            msg = "Error reading line: {}\nError message: {}".format(line_number, detail)
+            msg = f"Error reading line: {line_number}\nError message: {detail}"
             raise InputError(msg)
 
         try:
@@ -104,7 +104,7 @@ def file_to_intervaltree(file_name):
 
         if prev_chrom == chrom:
             assert prev_start <= start, \
-                "Bed file not sorted. Please use a sorted bed file.\n{}{} ".format(prev_line, line)
+                f"Bed file not sorted. Please use a sorted bed file.\n{prev_line}{line} "
 
         if chrom not in interval_tree:
             interval_tree[chrom] = IntervalTree()
@@ -124,13 +124,13 @@ def file_to_intervaltree(file_name):
             except ValueError:
                 pass
 
-        assert end > start, "Start position larger or equal than end for line\n{} ".format(line)
+        assert end > start, f"Start position larger or equal than end for line\n{line} "
 
         interval_tree[chrom].add(Interval(start, end, value))
         valid_intervals += 1
 
     if valid_intervals == 0:
-        sys.stderr.write("No valid intervals were found in file {}".format(file_name))
+        sys.stderr.write(f"No valid intervals were found in file {file_name}")
     file_h.close()
 
     return interval_tree, min_value, max_value

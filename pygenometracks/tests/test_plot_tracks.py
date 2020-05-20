@@ -236,7 +236,7 @@ def test_plot_tracks():
            "".format(os.path.join(ROOT, "browser_tracks.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_plot.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -252,7 +252,7 @@ def test_plot_tracks_empty_files():
            "".format(os.path.join(ROOT, "empty.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_empty.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -268,7 +268,7 @@ def test_plot_tracks_existing_chr_empty_tracks():
            "".format(os.path.join(ROOT, "browser_tracks.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_plot_2.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -284,7 +284,7 @@ def test_plot_tracks_missing_chr():
            "".format(os.path.join(ROOT, "browser_tracks.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_plot_3.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -300,7 +300,7 @@ def test_plot_tracks_dec():
            "".format(os.path.join(ROOT, "browser_tracks.ini"),
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_plot_dec.png'),
                          outfile.name, tolerance)
     assert res is None, res

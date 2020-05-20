@@ -57,7 +57,7 @@ class MultiDict(OrderedDict):
     def __setitem__(self, key, val):
         if isinstance(val, OrderedDict):
             self._unique += 1
-            key = "{}. [{}]".format(str(self._unique), key)
+            key = f"{str(self._unique)}. [{key}]"
         OrderedDict.__setitem__(self, key, val)
 
 
@@ -95,7 +95,7 @@ class PlotTracks(object):
         # initialize each track
         self.track_obj_list = []
         for idx, properties in enumerate(self.track_list):
-            log.info("initialize {}".format(properties['section_name']))
+            log.info(f"initialize {properties['section_name']}")
             # the track_class is obtained from the available tracks
             track_class = self.available_tracks[properties['file_type']]
             if properties['file_type'] == 'hic_matrix':
@@ -229,7 +229,7 @@ class PlotTracks(object):
         skipped_tracks = 0
         plot_axis = None
         for idx, track in enumerate(self.track_obj_list):
-            log.info("plotting {}".format(track.properties['section_name']))
+            log.info(f"plotting {track.properties['section_name']}")
             if idx == 0 and track.properties['overlay_previous'] != 'no':
                 log.warning("First track can not have the `overlay_previous` option")
                 track.properties['overlay_previous'] = 'no'
@@ -661,17 +661,17 @@ class XAxisTrack(GenomeTrack):
     def plot(self, ax, chrom_region, region_start, region_end):
         ticks = ax.get_xticks()
         if ticks[-1] - ticks[1] <= 1e3:
-            labels = ["{:,.0f}".format((x))
+            labels = [f"{x:,.0f}"
                       for x in ticks]
             labels[-2] += " b"
 
         elif ticks[-1] - ticks[1] <= 4e5:
-            labels = ["{:,.0f}".format((x / 1e3))
+            labels = [f"{x / 1000.0:,.0f}"
                       for x in ticks]
             labels[-2] += " Kb"
 
         else:
-            labels = ["{:,.1f} ".format((x / 1e6))
+            labels = [f"{x / 1000000.0:,.1f} "
                       for x in ticks]
             labels[-2] += " Mbp"
 

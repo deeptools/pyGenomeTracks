@@ -77,7 +77,7 @@ def test_narrow_track():
            "".format(ini=os.path.join(ROOT, 'narrow_peak.ini'),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_narrowPeak.png'),
                          outfile.name, tolerance)
     assert res is None, res
@@ -93,7 +93,7 @@ def test_narrow_track_2():
            "".format(ini=os.path.join(ROOT, 'narrow_peak2.ini'),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_narrowPeak2.png'),
                          outfile.name, tolerance)
     assert res is None, res

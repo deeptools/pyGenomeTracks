@@ -136,7 +136,7 @@ def test_bedgraphmatrix_track():
            "".format(ini=os.path.join(ROOT, "bedgraph.ini"),
                      outfile=outfile.name, region=region).split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     res = compare_images(os.path.join(ROOT, 'master_bedgraph.png'),
                          outfile.name, tolerance)
     assert res is None, res

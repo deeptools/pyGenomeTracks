@@ -316,7 +316,7 @@ file_type = {}
                 if free_row > self.max_num_row[bed.chromosome]:
                     self.max_num_row[bed.chromosome] = free_row
 
-        self.log.debug("max number of rows set to {}".format(self.max_num_row))
+        self.log.debug(f"max number of rows set to {self.max_num_row}")
         return self.max_num_row
 
     def get_y_pos(self, free_row):
@@ -566,7 +566,7 @@ file_type = {}
             else:
                 ymin = max_ypos + (1 + epsilon)
 
-            self.log.debug("ylim {},{}".format(ymin, ymax))
+            self.log.debug(f"ylim {ymin},{ymax}")
             # the axis is inverted (thus, ymax < ymin)
             ax.set_ylim(ymin, ymax)
 
@@ -1015,7 +1015,7 @@ file_type = {}
                 ymax = y2
 
         if valid_regions == 0:
-            self.log.warning("No regions found for section {}.".format(self.properties['section_name']))
+            self.log.warning(f"No regions found for section {self.properties['section_name']}.")
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, 0)

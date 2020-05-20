@@ -202,7 +202,7 @@ def test_plot_tracks_with_hic():
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_plot_hic.png'),
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     assert res is None, res
 
     os.remove(outfile.name)
@@ -220,7 +220,7 @@ def test_plot_tracks_with_hic_dec():
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_plot_hic_dec.png'),
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     assert res is None, res
 
     os.remove(outfile.name)
@@ -255,7 +255,7 @@ def test_plot_hic_logmlog():
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_plot_hic_log-log.png'),
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
+    print(f"saving test to {outfile.name}")
     assert res is None, res
 
     os.remove(outfile.name)

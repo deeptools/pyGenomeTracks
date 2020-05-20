@@ -69,9 +69,9 @@ file_type = {}
         self.process_color('color')
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        self.log.debug("y_values: {}".format(self.y_values))
+        self.log.debug(f"y_values: {self.y_values}")
         for y_value in self.y_values:
-            self.log.debug("y_value: {}".format(y_value))
+            self.log.debug(f"y_value: {y_value}")
             ax.axhline(y=y_value,
                        linewidth=self.properties['line_width'],
                        color=self.properties['color'],

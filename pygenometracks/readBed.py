@@ -309,7 +309,7 @@ class ReadBed(object):
                 if self.fields_to_read <= 6:
                     self.file_type = 'bed6'
                 else:
-                    self.file_type = 'bed{}'.format(self.fields_to_read)
+                    self.file_type = f'bed{self.fields_to_read}'
             return()
 
         assert line_values[2] > line_values[1], \
