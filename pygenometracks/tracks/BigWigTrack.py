@@ -61,6 +61,8 @@ show_data_range = true
 # gives the transformed values, if you prefer to see
 # the original values:
 #y_axis_values = original
+# If you want to have a grid on the y-axis
+#grid = true
 file_type = {}
     """.format(TRACK_TYPE)
 
@@ -79,7 +81,8 @@ file_type = {}
                            'log_pseudocount': 0,
                            'y_axis_values': 'transformed',
                            'second_file': None,
-                           'operation': 'file'}
+                           'operation': 'file',
+                           'grid': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -90,7 +93,7 @@ file_type = {}
                            'transform': ['no', 'log', 'log1p', '-log', 'log2',
                                          'log10'],
                            'y_axis_values': ['original', 'transformed']}
-    BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range']
+    BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range', 'grid']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
@@ -264,7 +267,8 @@ file_type = {}
                       self.size,
                       self.properties['color'],
                       self.properties['negative_color'],
-                      self.properties['alpha'])
+                      self.properties['alpha'],
+                      self.properties['grid'])
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
@@ -293,7 +297,8 @@ file_type = {}
         super(BigWigTrack, self).plot_y_axis(ax, plot_axis,
                                              self.properties['transform'],
                                              self.properties['log_pseudocount'],
-                                             self.properties['y_axis_values'])
+                                             self.properties['y_axis_values'],
+                                             self.properties['grid'])
 
     def __del__(self):
         self.bw.close()
