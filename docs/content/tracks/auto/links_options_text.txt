@@ -26,6 +26,9 @@ height = 2
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
 # For these tracks do not hesitate to put large line_width like 5 or 10.
 links_type = arcs
+# For triangles and arcs, by default the extremities coordinates are used
+# To use the middle of start1 and end1 and the middle of start2 and end2
+#use_middle = true
 # color of the lines
 color = red
 # if color is a valid colormap name (like RdYlGn),
