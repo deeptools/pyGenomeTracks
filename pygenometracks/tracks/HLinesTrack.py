@@ -14,6 +14,10 @@ color = black
 # To use transparency, you can use alpha
 # default is 1
 # alpha = 0.5
+# the default for min_value and max_value is 'auto' which means that the scale will go
+# roughly from the minimum value found in the region plotted to the maximum value found.
+min_value = 0
+#max_value = auto
 # line width:
 # line_width = 0.5
 # options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'

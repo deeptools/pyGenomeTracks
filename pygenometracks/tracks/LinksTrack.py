@@ -22,8 +22,8 @@ class LinksTrack(GenomeTrack):
 # depending on the value of links_type either 'arcs' or 'triangles' or 'loops' can be plotted.
 # If arcs, a line will be drawn from the center of the first region (chr1: 150),
 # to the center of the other region (chr1: 275).
-# if triangles, the vertix of the triangle will be drawn at the center between the two points (also the center of
-# each position is used)
+# if triangles, the vertix of the triangle will be drawn at the center between the two points
+# (also the extremity of each position is used)
 # if loops, a rectangle highlighting the intersection between the 2 regions will be shown
 # the triangles, and loops options are convenient to overlay over a
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
