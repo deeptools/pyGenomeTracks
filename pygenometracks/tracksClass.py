@@ -516,12 +516,14 @@ class PlotTracks(object):
             # If a big gtf is used a warning is printed:
             if 'file' in track_options and \
                (track_options['file'].endswith('gtf')
-                    or track_options['file'].endswith('gtf.gz')):
+                    or track_options['file'].endswith('gtf.gz')
+                    or track_options['file_type'] == 'gtf'):
                 file_size = os.path.getsize(track_options['file'])
                 if file_size > 1e7:
                     log.warning("The gtf file of section {} is quite big."
                                 "it will probably take long to get all "
-                                "transcripts.\nYou should consider converting"
+                                "transcripts.\nYou should consider keeping"
+                                " only exons , then converting"
                                 " it to bed first using convert_gtf_file or "
                                 "filtering it for a given region."
                                 "".format(section_name))
