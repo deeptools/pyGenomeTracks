@@ -249,7 +249,7 @@ height = 2
             try:
                 custom_color = eval(self.properties[param])
             except ValueError:
-                self.log.warning("*WARNING* {}: '{}' for section {}"
+                self.log.warning("*WARNING*: '{}' for section {}"
                                  " is not valid. {} has "
                                  "been set to "
                                  "{}".format(param,
@@ -261,7 +261,7 @@ height = 2
                 if mc.is_color_like(custom_color):
                     valid_color = custom_color
                 else:
-                    self.log.warning("*WARNING* {}: '{}' for section {}"
+                    self.log.warning("*WARNING*: '{}' for section {}"
                                      " is not valid. {} has "
                                      "been set to "
                                      "{}".format(param,
