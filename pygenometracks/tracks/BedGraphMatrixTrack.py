@@ -25,7 +25,8 @@ type = lines
 # If the type is not lines, you can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = false
-# The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
+# The different options for color maps can be found here:
+# https://matplotlib.org/users/colormaps.html
 # the default color map is viridis
 # If you want your own colormap you can put the values of the color you want
 # For example, colormap = ['blue', 'yellow', 'red']

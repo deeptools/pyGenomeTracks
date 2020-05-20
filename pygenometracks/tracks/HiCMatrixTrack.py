@@ -19,8 +19,8 @@ class HiCMatrixTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.h5', '.cool', '.mcool']
     TRACK_TYPE = 'hic_matrix'
     OPTIONS_TXT = """
-title =
-# The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
+# The different options for color maps can be found here:
+# https://matplotlib.org/users/colormaps.html
 # the default color map is RdYlBu_r (_r) stands for reverse
 # If you want your own colormap you can put the values of the color you want
 # For example, colormap = ['blue', 'yellow', 'red']
@@ -30,7 +30,8 @@ title =
 # If it is more than 125% of the plotted region, it will
 # be adjsted to this maximum value.
 depth = 100000
-# height of track (in cm) can be given. Otherwise, the height is computed such that the proportions of the
+# height of track (in cm) can be given.
+# Otherwise, the height is computed such that the proportions of the
 # hic matrix are kept (e.g. the image does not appear shrink or extended)
 # height = 10
 # min_value and max_value refer to the contacts in the matrix.
@@ -43,8 +44,6 @@ transform = log1p
 # the default is to extend neighboring bins to
 # obtain an aesthetically pleasant output
 show_masked_bins = false
-# if you want to plot the track upside-down:
-# orientation = inverted
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
 # scale_factor = 1

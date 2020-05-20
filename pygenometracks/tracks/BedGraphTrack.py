@@ -17,11 +17,13 @@ class BedGraphTrack(GenomeTrack):
     TRACK_TYPE = 'bedgraph'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 color = green
+# To use a different color for negative values
+#negative_color = red
 # To use transparency, you can use alpha
 # default is 1
 # alpha = 0.5
 # the default for min_value and max_value is 'auto' which means that the scale will go
-# from the minimum value found in the region plotted to the maximum value found.
+# roughly from the minimum value found in the region plotted to the maximum value found.
 min_value = 0
 #max_value = auto
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
