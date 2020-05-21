@@ -506,13 +506,15 @@ class PlotTracks(object):
             if track_class == BedGraphTrack:
                 file_size = os.path.getsize(track_options['file'])
                 if file_size > 1e7:
+                    if track_options['file'].endswith('gz'):
+                        estimated_time = file_size / 6e6
+                    else:
+                        estimated_time = file_size / 30e6
                     log.warning("The bedgraph file of section {} is quite big."
-                                "it will probably take around {:.1f} min if it"
-                                " is gzipped and {:.1f} min if it is not.\nYou"
+                                "it will probably take around {:.1f} min.\nYou"
                                 " should consider converting it to bigwig "
                                 "first or filtering it for a given region."
-                                "".format(section_name, file_size / 6e6,
-                                          file_size / 30e6))
+                                "".format(section_name, estimated_time))
             # If a big gtf is used a warning is printed:
             if 'file' in track_options and \
                (track_options['file'].endswith('gtf')
