@@ -69,11 +69,9 @@ def file_to_intervaltree(file_name, pRegion=None):
     :return: interval tree dictionary. They key is the chromosome/contig name and the
     value is an IntervalTree. Each of the intervals have as 'value' the fields[3:] if any.
     """
-    print("FILE_TO_INTERVALTREE")
     file_to_open = file_name
     # Check if we can restrict the interval tree to a region:
     if pRegion is not None:
-        print("HERE")
         # I increase the region to get the intervals:
         pRegion[1] = max([0, pRegion[1] - AROUND_REGION])
         pRegion[2] += AROUND_REGION
