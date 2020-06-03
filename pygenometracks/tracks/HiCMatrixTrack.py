@@ -209,17 +209,17 @@ file_type = {}
         # get bin id of start and end of region in given chromosome
         chr_start_id, chr_end_id = self.hic_ma.getChrBinRange(chrom_region)
         chr_start = self.hic_ma.cut_intervals[chr_start_id][1]
-        chr_end = self.hic_ma.cut_intervals[chr_end_id - 1][1]
+        chr_end = self.hic_ma.cut_intervals[chr_end_id - 1][2]
         start_bp = max(chr_start, region_start - self.properties['depth'])
         end_bp = min(chr_end, region_end + self.properties['depth'])
 
         idx, start_pos = list(zip(*[(idx, x[1]) for idx, x in
                                     enumerate(self.hic_ma.cut_intervals)
                                     if x[0] == chrom_region and x[1] >= start_bp and x[2] <= end_bp]))
-
-        idx = idx[0:-1]
         # select only relevant matrix part
         matrix = self.hic_ma.matrix[idx, :][:, idx]
+        # update the start_pos to add the last end:
+        start_pos = tuple(list(start_pos) + [self.hic_ma.cut_intervals[idx[-1]][2]])
         # limit the 'depth' based on the length of the region being viewed
 
         region_len = region_end - region_start
