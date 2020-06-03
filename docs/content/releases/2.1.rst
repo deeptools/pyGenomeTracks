@@ -1,0 +1,6 @@
+2.1
+===
+
+* Support for epilogos  #38 
+* HiC improvements and migration to use `HiCMatrix <https://github.com/deeptools/HiCMatrix>`_. Thanks to *@joachimwolff* for these changes.
+* Different coloring of negative and positive bigwig values is now possible. Thanks to *@Phlya* for this improvement.

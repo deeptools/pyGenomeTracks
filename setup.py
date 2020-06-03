@@ -96,17 +96,15 @@ class install(_install):
 install_requires_py = ["numpy >=1.16",
                        "matplotlib ==3.1.1",
                        "intervaltree >=2.1.0",
-                       "pyBigWig >=0.3.4",
+                       "pyBigWig >=0.3.16",
                        "future >=0.17.0",
-                       "hicmatrix >=9",
+                       "hicmatrix >=12",
                        "pysam >=0.14",
                        "pytest",
                        "gffutils >=0.9",
                        "pybedtools >=0.8.1"
+                       "tqdm >=4.20"
                        ]
-
-if sys.version_info[0] == 2 or (sys.version_info[0] == 3 and sys.version_info[1] == 4):
-    install_requires_py.append("configparser >= 3.5.0")
 
 setup(
     name='pyGenomeTracks',

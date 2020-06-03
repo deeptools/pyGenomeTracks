@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree, plot_coverage
+from .. utilities import file_to_intervaltree, plot_coverage, InputError, transform
 import numpy as np
 import pyBigWig
 import tempfile
@@ -17,11 +17,13 @@ class BedGraphTrack(GenomeTrack):
     TRACK_TYPE = 'bedgraph'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
 color = green
+# To use a different color for negative values
+#negative_color = red
 # To use transparency, you can use alpha
 # default is 1
 # alpha = 0.5
 # the default for min_value and max_value is 'auto' which means that the scale will go
-# from the minimum value found in the region plotted to the maximum value found.
+# roughly from the minimum value found in the region plotted to the maximum value found.
 min_value = 0
 #max_value = auto
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
@@ -38,8 +40,8 @@ nans_to_zeros = true
 # Default is false.
 # use_middle = true
 # By default the bedgraph is plotted at the base pair
-# Resolution. This can lead to very large pdf/svg files
-# If plotting a large regions.
+# resolution. This can lead to very large pdf/svg files
+# If plotting large regions.
 # If you want to decrase the size of your file.
 # You can either rasterize the bedgraph profile by using:
 # rasterize = true
@@ -48,6 +50,35 @@ nans_to_zeros = true
 # mean/average/stdev/dev/max/min/cov/coverage/sum
 # summary_method = mean
 # number_of_bins = 700
+# set show_data_range to false to hide the text on the left showing the data range
+show_data_range = true
+# to compute operations on the fly on the file
+# or between 2 bedgraph files
+# operation will be evaluated, it should contains file or
+# file and second_file,
+# we advice to use nans_to_zeros = true to avoid unexpected nan values
+#operation = 0.89 * file
+#operation = - file
+#operation = file - second_file
+#operation = log2((1 + file) / (1 + second_file))
+#operation = max(file, second_file)
+#second_file = path for the second file
+# To log transform your data you can also use transform and log_pseudocount:
+# For the transform values:
+# 'log1p': transformed_values = log(1 + initial_values)
+# 'log': transformed_values = log(log_pseudocount + initial_values)
+# 'log2': transformed_values = log2(log_pseudocount + initial_values)
+# 'log10': transformed_values = log10(log_pseudocount + initial_values)
+# '-log': transformed_values = log(log_pseudocount + initial_values)
+# For example:
+#tranform = log
+#log_pseudocount = 2
+# When a transformation is applied, by default the y axis
+# gives the transformed values, if you prefer to see
+# the original values:
+#y_axis_values = original
+# If you want to have a grid on the y-axis
+#grid = true
 file_type = {}
     """.format(TRACK_TYPE)
     DEFAULTS_PROPERTIES = {'max_value': None,
@@ -63,22 +94,33 @@ file_type = {}
                            'rasterize': False,
                            'number_of_bins': 700,
                            'type': 'fill',
-                           'region': None}  # Cannot be set manually but is set by tracksClass
+                           'region': None,  # Cannot be set manually but is set by tracksClass
+                           'transform': 'no',
+                           'log_pseudocount': 0,
+                           'y_axis_values': 'transformed',
+                           'second_file': None,
+                           'operation': 'file',
+                           'grid': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'summary_method': ['mean', 'average', 'max', 'min',
                                               'stdev', 'dev', 'coverage',
-                                              'cov', 'sum', None]}
+                                              'cov', 'sum', None],
+                           'transform': ['no', 'log', 'log1p', '-log', 'log2',
+                                         'log10'],
+                           'y_axis_values': ['original', 'transformed']}
     BOOLEAN_PROPERTIES = ['show_data_range', 'nans_to_zeros',
-                          'use_middle', 'rasterize']
+                          'use_middle', 'rasterize', 'grid']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
-                         'type']
+                         'type', 'transform', 'y_axis_values',
+                         'second_file', 'operation']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
+                        'log_pseudocount': [- np.inf, np.inf],
                         'alpha': [0, 1],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {'number_of_bins': [1, np.inf]}
@@ -87,7 +129,59 @@ file_type = {}
 
     def __init__(self, properties_dict):
         super(BedGraphTrack, self).__init__(properties_dict)
+        self.load_file()
 
+        self.tbx2 = None
+        self.interval_tree2 = None
+
+        if 'second_file' in self.properties['operation']:
+            if self.properties['second_file'] is None:
+                raise InputError("operation: {} requires to set the parameter"
+                                 " second_file."
+                                 "".format(self.properties['operation']))
+            else:
+                if self.properties['second_file'].endswith(".bgz"):
+                    # from the tabix file is not possible to know the
+                    # global min and max
+                    try:
+                        self.tbx2 = pysam.TabixFile(self.properties['second_file'])
+                    except IOError:
+                        self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'])
+                # load the file as an interval tree
+                else:
+                    self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'])
+
+    def set_properties_defaults(self):
+        super(BedGraphTrack, self).set_properties_defaults()
+        super(BedGraphTrack, self).process_type_for_coverage_track()
+        self.process_color('color')
+        if self.properties['negative_color'] is None:
+            self.properties['negative_color'] = self.properties['color']
+        else:
+            self.process_color('negative_color')
+
+        if 'second_file' in self.properties['operation'] and \
+           self.properties['second_file'] is not None and \
+           self.properties['summary_method'] is None:
+            self.log.warning("When an operation is computed"
+                             " between 2 files"
+                             " a summary_method needs to be"
+                             " used. Will use mean.")
+            self.properties['summary_method'] = 'mean'
+
+        if self.properties['operation'] != 'file':
+            if self.properties['transform'] != 'no':
+                raise InputError("'operation' and 'transform' cannot be set at"
+                                 " the same time.")
+            if self.properties['y_axis_values'] == 'original':
+                self.log.warning("*Warning* 'operation' is used and "
+                                 "'y_axis_values' was set to 'original'. "
+                                 "'y_axis_values' can only be set to "
+                                 "'original' when 'transform' is used.\n"
+                                 " It will be set as 'transformed'.")
+                self.properties['y_axis_values'] = 'transformed'
+
+    def load_file(self):
         self.tbx = None
         # try to load a tabix file is available
         if self.properties['file'].endswith(".bgz"):
@@ -105,13 +199,7 @@ file_type = {}
 
         self.num_fields = None
 
-    def set_properties_defaults(self):
-        super(BedGraphTrack, self).set_properties_defaults()
-        super(BedGraphTrack, self).process_type_for_coverage_track()
-        if self.properties['negative_color'] is None:
-            self.properties['negative_color'] = self.properties['color']
-
-    def _get_row_data(self, row):
+    def _get_row_data(self, row, tbx_var='self.tbx'):
         """
         Returns the chrom, start, end and fields from either a tabix or a
         interval tree.
@@ -123,7 +211,8 @@ file_type = {}
             start, end, fields where values is a list
 
         """
-        if self.tbx is not None:
+        tbx = eval(tbx_var)
+        if tbx is not None:
             fields = row.split("\t")
             values = fields[3:]
             start = int(fields[1])
@@ -142,7 +231,8 @@ file_type = {}
             self.num_fields = len(values)
         return start, end, values
 
-    def get_scores(self, chrom_region, start_region, end_region, return_nans=True):
+    def get_scores(self, chrom_region, start_region, end_region,
+                   return_nans=True, tbx_var='self.tbx', inttree_var='self.interval_tree'):
         """
         Retrieves the score (or scores or whatever fields are in a bedgraph like file) and the positions
         for a given region.
@@ -157,11 +247,12 @@ file_type = {}
         """
         score_list = []
         pos_list = []
-        if self.tbx is not None:
-            if chrom_region not in self.tbx.contigs:
+        tbx = eval(tbx_var)
+        if tbx is not None:
+            if chrom_region not in tbx.contigs:
                 chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
-                if chrom_region not in self.tbx.contigs:
+                if chrom_region not in tbx.contigs:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
                                      + chrom_region + " existss as a "
@@ -170,15 +261,16 @@ file_type = {}
                                      "track!!\n")
                     return score_list, pos_list
 
-            chrom_region = self.check_chrom_str_bytes(self.tbx.contigs,
+            chrom_region = self.check_chrom_str_bytes(tbx.contigs,
                                                       chrom_region)
-            iterator = self.tbx.fetch(chrom_region, start_region, end_region)
+            iterator = tbx.fetch(chrom_region, start_region, end_region)
 
         else:
-            if chrom_region not in list(self.interval_tree):
+            inttree = eval(inttree_var)
+            if chrom_region not in list(inttree):
                 chrom_region_before = chrom_region
                 chrom_region = self.change_chrom_names(chrom_region)
-                if chrom_region not in list(self.interval_tree):
+                if chrom_region not in list(inttree):
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
                                      + chrom_region + " existss as a "
@@ -186,12 +278,12 @@ file_type = {}
                                      "file. This will generate an empty "
                                      "track!!\n")
                     return score_list, pos_list
-            chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
-            iterator = iter(sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]))
+            chrom_region = self.check_chrom_str_bytes(inttree, chrom_region)
+            iterator = iter(sorted(inttree[chrom_region][start_region - 10000:end_region + 10000]))
 
         prev_end = start_region
         for row in iterator:
-            start, end, values = self._get_row_data(row)
+            start, end, values = self._get_row_data(row, tbx_var)
             # if the region is not consecutive with respect to the previous
             # nan values are added.
             if return_nans and prev_end < start:
@@ -224,19 +316,75 @@ file_type = {}
         else:
             score_list, x_values = self.get_values_as_bdg(score_list,
                                                           pos_list)
+        # compute the operation
+        operation = self.properties['operation']
+        # Substitute log by np.log to make it evaluable:
+        operation = operation.replace('log', 'np.log')
+        if operation == 'file':
+            pass
+        elif 'second_file' not in operation:
+            try:
+                new_score_list = eval('[' + operation + ' for file in score_list]')
+                new_score_list = np.array(new_score_list)
+            except Exception as e:
+                raise Exception("The operation in section {} could not be"
+                                " computed: {}".
+                                format(self.properties['section_name'],
+                                       e))
+            else:
+                score_list = new_score_list
 
-        plot_coverage(ax, x_values, score_list, self.plot_type, self.size,
+        else:
+            score_list2, pos_list2 = self.get_scores(chrom_region, start_region, end_region,
+                                                     tbx_var='self.tbx2',
+                                                     inttree_var='self.interval_tree2')
+            if pos_list2 == []:
+                return
+            score_list2 = [float(x[0]) for x in score_list2]
+            score_list2, x_values2 = self.get_values_as_bigwig(score_list2,
+                                                               pos_list2,
+                                                               chrom_region,
+                                                               start_region,
+                                                               end_region)
+            # compute the operation
+            try:
+                new_score_list = eval('[' + operation + ' for file,second_file in zip(score_list, score_list2)]')
+                new_score_list = np.array(new_score_list)
+            except Exception as e:
+                raise Exception("The operation in section {} could not be"
+                                " computed: {}".
+                                format(self.properties['section_name'],
+                                       e))
+            else:
+                score_list = new_score_list
+
+        transformed_scores = transform(score_list,
+                                       self.properties['transform'],
+                                       self.properties['log_pseudocount'],
+                                       self.properties['file'])
+
+        plot_coverage(ax, x_values, transformed_scores, self.plot_type,
+                      self.size,
                       self.properties['color'],
                       self.properties['negative_color'],
-                      self.properties['alpha'])
+                      self.properties['alpha'],
+                      self.properties['grid'])
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
         plot_ymin, plot_ymax = ax.get_ylim()
         if ymax is None:
             ymax = plot_ymax
+        else:
+            ymax = transform(np.array([ymax]), self.properties['transform'],
+                             self.properties['log_pseudocount'],
+                             'ymax')
         if ymin is None:
             ymin = plot_ymin
+        else:
+            ymin = transform(np.array([ymin]), self.properties['transform'],
+                             self.properties['log_pseudocount'],
+                             'ymin')
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, ymin)
@@ -293,3 +441,16 @@ file_type = {}
             score_list[np.isnan(score_list)] = 0
 
         return score_list, x_values
+
+    def plot_y_axis(self, ax, plot_axis):
+        super(BedGraphTrack, self).plot_y_axis(ax, plot_axis,
+                                               self.properties['transform'],
+                                               self.properties['log_pseudocount'],
+                                               self.properties['y_axis_values'],
+                                               self.properties['grid'])
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()
+        if self.tbx2 is not None:
+            self.tbx2.close()

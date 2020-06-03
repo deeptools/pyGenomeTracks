@@ -14,6 +14,10 @@ color = black
 # To use transparency, you can use alpha
 # default is 1
 # alpha = 0.5
+# the default for min_value and max_value is 'auto' which means that the scale will go
+# roughly from the minimum value found in the region plotted to the maximum value found.
+min_value = 0
+#max_value = auto
 # line width:
 # line_width = 0.5
 # options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
@@ -59,6 +63,10 @@ file_type = {}
             raise InputError('y_values ({}) not valid. \nError: {}'
                              ''.format(self.properties['y_values'],
                                        detail))
+
+    def set_properties_defaults(self):
+        super(HLinesTrack, self).set_properties_defaults()
+        self.process_color('color')
 
     def plot(self, ax, chrom_region, start_region, end_region):
         self.log.debug("y_values: {}".format(self.y_values))

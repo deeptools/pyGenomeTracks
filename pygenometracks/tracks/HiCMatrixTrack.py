@@ -21,8 +21,8 @@ class HiCMatrixTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.h5', '.cool', '.mcool']
     TRACK_TYPE = 'hic_matrix'
     OPTIONS_TXT = """
-title =
-# The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
+# The different options for color maps can be found here:
+# https://matplotlib.org/users/colormaps.html
 # the default color map is RdYlBu_r (_r) stands for reverse
 # If you want your own colormap you can put the values of the color you want
 # For example, colormap = ['blue', 'yellow', 'red']
@@ -32,7 +32,8 @@ title =
 # If it is more than 125% of the plotted region, it will
 # be adjsted to this maximum value.
 depth = 100000
-# height of track (in cm) can be given. Otherwise, the height is computed such that the proportions of the
+# height of track (in cm) can be given.
+# Otherwise, the height is computed such that the proportions of the
 # hic matrix are kept (e.g. the image does not appear shrink or extended)
 # height = 10
 # min_value and max_value refer to the contacts in the matrix.
@@ -45,8 +46,6 @@ transform = log1p
 # the default is to extend neighboring bins to
 # obtain an aesthetically pleasant output
 show_masked_bins = false
-# if you want to plot the track upside-down:
-# orientation = inverted
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
 # scale_factor = 1
@@ -124,19 +123,15 @@ file_type = {}
         # check that the matrix can be log transformed
         if self.properties['transform'] != 'no':
             if self.properties['transform'] == 'log1p':
-                if self.hic_ma.matrix.data.min() + 1 < 0:
-                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                if self.hic_ma.matrix.data.min() + 1 <= 0:
+                    raise Exception("\n*ERROR*\nMatrix contains values below - 1.\n"
                                     "log1p transformation can not be applied to \n"
                                     "values in matrix: {}".format(self.properties['file']))
 
-            elif self.properties['transform'] == '-log':
+            elif self.properties['transform'] in ['-log', 'log']:
                 if self.hic_ma.matrix.data.min() < 0:
-                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
-                                    "log(-1 * <values>) transformation can not be applied to \n"
-                                    "values in matrix: {}".format(self.properties['file']))
-
-            elif self.properties['transform'] == 'log':
-                if self.hic_ma.matrix.data.min() < 0:
+                    # For values not filled or equal to zero there will be a
+                    # mask, they will be replaced by the minimum value after 0.
                     raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
                                     "log transformation can not be applied to \n"
                                     "values in matrix: {}".format(self.properties['file']))
@@ -172,7 +167,8 @@ file_type = {}
 
         self.norm = None
 
-        self.properties['colormap'] = self.process_colormap()
+        self.process_color('colormap', colormap_possible=True,
+                           colormap_only=True, default_value_is_colormap=True)
 
         self.cmap = cm.get_cmap(self.properties['colormap'])
         self.cmap.set_bad('black')
@@ -236,6 +232,7 @@ file_type = {}
                         "to {}".format(self.properties['depth'], depth))
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
+        # Using todense will replace all nan values by 0.
         matrix = np.asarray(matrix.todense().astype(float))
 
         matrix = matrix * self.properties['scale_factor']
@@ -244,21 +241,17 @@ file_type = {}
             matrix += 1
             self.norm = colors.LogNorm()
 
-        elif self.properties['transform'] == '-log':
-            mask = matrix == 0
-            try:
-                matrix[mask] = matrix[mask == False].min()
-                matrix = -1 * np.log(matrix)
-            except ValueError:
-                self.log.info('All values are 0, no log applied.')
-
-        elif self.properties['transform'] == 'log':
+        elif self.properties['transform'] in ['-log', 'log']:
+            # We first replace 0 values by minimum values after 0
             mask = matrix == 0
             try:
                 matrix[mask] = matrix[mask == False].min()
                 matrix = np.log(matrix)
             except ValueError:
                 self.log.info('All values are 0, no log applied.')
+            else:
+                if self.properties['transform'] == '-log':
+                    matrix = - matrix
 
         if self.properties['max_value'] is not None:
             vmax = self.properties['max_value']
@@ -354,42 +347,3 @@ file_type = {}
         im = ax.pcolormesh(x, y, np.flipud(matrix_c),
                            vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
         return im
-
-    def process_colormap(self):
-        # If someone what to use its own colormap,
-        # he can specify the rgb values or color values:
-        # For example:
-        # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
-        if self.properties['colormap'][0] == '[':
-            try:
-                custom_colors = eval(self.properties['colormap'])
-            except SyntaxError as err:
-                self.log.warning("*WARNING* the list specified for colormap"
-                                 " ({}) is not valid: "
-                                 "{}.\nColormap has been set to "
-                                 "{}".format(self.properties['colormap'],
-                                             err,
-                                             DEFAULT_MATRIX_COLORMAP))
-                return(DEFAULT_MATRIX_COLORMAP)
-            else:
-                try:
-                    return(colors.LinearSegmentedColormap.from_list(
-                           'custom', custom_colors, N=100))
-                except ValueError:
-                    self.log.warning("*WARNING* the list specified for "
-                                     "colormap ({}) cannot be evaluated."
-                                     "\nColormap has been set to "
-                                     "{}".format(self.properties['colormap'],
-                                                 DEFAULT_MATRIX_COLORMAP))
-                    return(DEFAULT_MATRIX_COLORMAP)
-        else:
-            if self.properties['colormap'] not in cm.datad:
-                self.log.warning("*WARNING* colormap: '{}' for section {}"
-                                 " is not valid. Colormap has "
-                                 "been set to "
-                                 "{}".format(self.properties['colormap'],
-                                             self.properties['section_name'],
-                                             DEFAULT_MATRIX_COLORMAP))
-                return(DEFAULT_MATRIX_COLORMAP)
-            else:
-                return(self.properties['colormap'])

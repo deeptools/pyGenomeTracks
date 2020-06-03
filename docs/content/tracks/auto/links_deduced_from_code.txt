@@ -1,0 +1,34 @@
+Necessary:
+^^^^^^^^^^
+- **file**
+
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: `0.5` (default) or float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+
+- **orientation**: by default this option is not set but you can also put: inverted.
+
+- **links_type**: `arcs` (default) or triangles or loops.
+
+- **line_width**: by default this option is not set but you can also put: any float above 0
+
+- **line_style**: `solid` (default) or dashed, dotted or dashdot.
+
+- **color**: `blue` (default)
+
+- **alpha**: `0.8` (default) or any float above 0 below 1
+
+- **max_value**: by default this option is not set but you can also put: any float
+
+- **min_value**: by default this option is not set but you can also put: any float
+
+- **ylim**: by default this option is not set but you can also put: any float above 0
+
+- **compact_arcs_level**: `0` (default) or 1 or 2.
+
+- **use_middle**: `false` (default) or true.
+

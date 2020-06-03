@@ -1,0 +1,5 @@
+3.1.1
+=====
+
+* small bug fix for summit usage (@lldelisle)
+* I added a vertical bar in the narrowPeaks when plotted as box to be able to see the summits (@lldelisle)
