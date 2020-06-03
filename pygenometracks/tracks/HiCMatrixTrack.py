@@ -106,7 +106,7 @@ file_type = {}
         #    - the region goes over the chromosome size
         #   or
         #   - the chromosome is not part of the matrix
-        
+
         logging.getLogger('hicmatrix').setLevel(logging.CRITICAL)
         try:
             self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],

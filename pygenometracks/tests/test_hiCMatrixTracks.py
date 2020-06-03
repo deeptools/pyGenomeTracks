@@ -343,9 +343,9 @@ def test_plot_tracks_with_hic_rasterize_height_2chr_individual():
                "--trackLabelFraction 0.23 --width 38 "\
                "--dpi 10 --outFileName {2}" \
                "".format(os.path.join(ROOT,
-                                     'browser_tracks_hic_rasterize_height.ini'),
-                        region,
-                        outfile.name).split()
+                                      'browser_tracks_hic_rasterize_height.ini'),
+                         region,
+                         outfile.name).split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(os.path.join(ROOT,
                                           'master_plot_hic_rasterize_height_'
@@ -383,7 +383,7 @@ def test_plot_tracks_with_hic_small_test():
 # when the matrix is not empty
 
 def test_plot_tracks_with_hic_small_test_individual():
-    for region in ['chr1:0-500000']: #, 'chrX:2500000-2600000', 'chrY:-0-1000000']:
+    for region in ['chr1:0-500000']:  # , 'chrX:2500000-2600000', 'chrY:-0-1000000']:
 
         outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                      delete=False)
@@ -391,7 +391,7 @@ def test_plot_tracks_with_hic_small_test_individual():
                "--trackLabelFraction 0.23 --width 38 " \
                "--outFileName {}" \
                "".format(os.path.join(ROOT,
-                                     'browser_tracks_hic_small_test.ini'),
+                                      'browser_tracks_hic_small_test.ini'),
                          region,
                          outfile.name).split()
         pygenometracks.plotTracks.main(args)
@@ -407,7 +407,7 @@ def test_plot_tracks_with_hic_small_test_individual():
 def test_plot_tracks_with_hic_small_other_chr_name():
     region = '1:0-200000'
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                    delete=False)
+                                 delete=False)
     args = "--tracks {} --region {} "\
            "--trackLabelFraction 0.23 --width 38 " \
            "--outFileName {}" \
@@ -427,7 +427,7 @@ def test_plot_tracks_with_hic_small_other_chr_name():
 def test_plot_tracks_with_hic_small_above_chr_length():
     region = 'chrM:0-20000'
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                    delete=False)
+                                 delete=False)
     args = "--tracks {} --region {} "\
            "--trackLabelFraction 0.23 --width 38 " \
            "--outFileName {}" \
