@@ -102,7 +102,7 @@ install_requires_py = ["numpy >=1.16",
                        "pysam >=0.14",
                        "pytest",
                        "gffutils >=0.9",
-                       "pybedtools >=0.8.1"
+                       "pybedtools >=0.8.1",
                        "tqdm >=4.20"
                        ]
 
