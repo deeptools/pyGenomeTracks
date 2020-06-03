@@ -150,7 +150,7 @@ from pygenometracks._version import __version__
 from .utilities import InputError
 
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
-HUGE_NUMBER = 1e15  # also used in plotTracks
+HUGE_NUMBER = 1e15  # also used in HiCMatrix
 
 
 def parse_arguments(args=None):
