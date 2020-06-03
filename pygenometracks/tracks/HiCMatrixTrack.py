@@ -172,12 +172,15 @@ file_type = {}
 
         self.cmap = cm.get_cmap(self.properties['colormap'])
         self.cmap.set_bad('black')
+        # Put default img to None for y axis
+        self.img = None
 
     def plot(self, ax, chrom_region, region_start, region_end):
         if len(self.hic_ma.matrix.data) == 0:
             self.log.warning("*Warning*\nThere is no data for the region "
                              "considered on the matrix. "
                              "This will generate an empty track!!\n")
+            self.img = None
             return
 
         log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
@@ -190,6 +193,7 @@ file_type = {}
                                  + " nor " + chrom_region + " exists as a "
                                  "chromosome name on the matrix. "
                                  "This will generate an empty track!!\n")
+                self.img = None
                 return
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
@@ -291,6 +295,8 @@ file_type = {}
             ax.set_ylim(0, depth)
 
     def plot_y_axis(self, cbar_ax, plot_ax):
+        if self.img is None:
+            return
 
         if self.properties['transform'] in ['log', 'log1p']:
             # get a useful log scale
