@@ -359,26 +359,27 @@ def test_plot_tracks_with_hic_small_test():
 
 
 # The tests with individual chromosome does not give the same result:
-# For the moment there is an issue in chr1 it comes from HiCMatrix
-# For the others the problem is the colorbar which is different when you do not load all data.
+# For the empty the problem is the colorbar which is different
+# when you do not load all data and the transformation of nan to 0
+# when the matrix is not empty
 
-# def test_plot_tracks_with_hic_small_test_individual():
-#     for region in ['chrX:2500000-2600000', 'chrY:-0-1000000']:
+def test_plot_tracks_with_hic_small_test_individual():
+    for region in ['chr1:0-500000']: #, 'chrX:2500000-2600000', 'chrY:-0-1000000']:
 
-#         outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-#                                      delete=False)
-#         args = "--tracks {} --region {} "\
-#                "--trackLabelFraction 0.23 --width 38 " \
-#                "--outFileName {}" \
-#                "".format(os.path.join(ROOT,
-#                                      'browser_tracks_hic_small_test.ini'),
-#                          region,
-#                          outfile.name).split()
-#         pygenometracks.plotTracks.main(args)
-#         res = compare_images(os.path.join(ROOT,
-#                                           'master_plot_hic_small_test_'
-#                                           + region.replace(':', '-') + '.png'),
-#                              outfile.name, tolerance)
-#         assert res is None, res
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        args = "--tracks {} --region {} "\
+               "--trackLabelFraction 0.23 --width 38 " \
+               "--outFileName {}" \
+               "".format(os.path.join(ROOT,
+                                     'browser_tracks_hic_small_test.ini'),
+                         region,
+                         outfile.name).split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(os.path.join(ROOT,
+                                          'master_plot_hic_small_test_'
+                                          + region.replace(':', '-') + '.png'),
+                             outfile.name, tolerance)
+        assert res is None, res
 
-#         os.remove(outfile.name)
+        os.remove(outfile.name)
