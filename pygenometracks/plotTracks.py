@@ -143,7 +143,6 @@ type = vlines
 
 import sys
 import argparse
-import matplotlib
 import warnings
 
 from pygenometracks.tracksClass import PlotTracks
