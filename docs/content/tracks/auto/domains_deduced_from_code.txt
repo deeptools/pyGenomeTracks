@@ -10,8 +10,6 @@ Optional:
 
 - **overlay_previous**: `no` (default) or yes or share-y.
 
-- **fontsize**: `12` (default) or any float above 0
-
 - **orientation**: by default this option is not set but you can also put: inverted.
 
 - **line_width**: `0.5` (default) or any float above 0
