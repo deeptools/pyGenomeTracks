@@ -3,11 +3,15 @@ from . BedTrack import BedTrack
 from .. readGtf import ReadGtf
 from matplotlib import font_manager
 import numpy as np
+import pybedtools
+import sys
+import tempfile
 
 DEFAULT_BED_COLOR = '#1f78b4'
 DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
+AROUND_REGION = 100000
 
 
 class GtfTrack(BedTrack):
@@ -104,6 +108,7 @@ file_type = {}
                            'color_utr': 'grey',
                            'height_utr': 1,
                            'arrow_length': None,
+                           'region': None,  # Cannot be set manually but is set by tracksClass
                            'all_labels_inside': False,
                            'labels_in_margin': False}
     NECESSARY_PROPERTIES = ['file']
@@ -147,8 +152,32 @@ file_type = {}
         # to set the distance between rows
         self.row_scale = 2.3
 
-    def get_bed_handler(self):
-        bed_file_h = ReadGtf(self.properties['file'],
+    def get_bed_handler(self, pRegion=None):
+        file_to_open = self.properties['file']
+        # Check if we can restrict the interval tree to a region:
+        if pRegion is not None and not self.properties['global_max_row']:
+            # I increase the region to get the intervals:
+            pRegion[1] = max([0, pRegion[1] - AROUND_REGION])
+            pRegion[2] += AROUND_REGION
+            # We use pybedtools to overlap:
+            original_file = pybedtools.BedTool(file_to_open)
+            # We will overlap with both version of chromosome name:
+            chrom = self.change_chrom_names(pRegion[0])
+            bothRegions = ("{0} {1} {2}\n{3} {1} {2}"
+                           .format(*pRegion,
+                                   chrom))
+            region = pybedtools.BedTool(bothRegions, from_string=True)
+            # Bedtools will put a warning because we are using inconsistent
+            # nomenclature (with and without chr)
+            sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
+            try:
+                file_to_open = original_file.intersect(region, wa=True).fn
+            except pybedtools.helpers.BEDToolsError:
+                file_to_open = self.properties['file']
+            sys.stderr.close()
+            sys.stderr = sys.__stderr__
+
+        bed_file_h = ReadGtf(file_to_open,
                              self.properties['prefered_name'],
                              self.properties['merge_transcripts'])
         total_length = bed_file_h.length
