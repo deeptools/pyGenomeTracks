@@ -86,6 +86,8 @@ file_type = {}
 
     def set_properties_defaults(self):
         super(HiCMatrixTrack, self).set_properties_defaults()
+        # Put default img to None for y axis
+        self.img = None
         region = None
         if self.properties['region'] is not None:
             chrom = self.properties['region'][0]
@@ -213,8 +215,6 @@ file_type = {}
 
         self.cmap = cm.get_cmap(self.properties['colormap'])
         self.cmap.set_bad('black')
-        # Put default img to None for y axis
-        self.img = None
 
     def plot(self, ax, chrom_region, region_start, region_end):
         if len(self.hic_ma.matrix.data) == 0:
