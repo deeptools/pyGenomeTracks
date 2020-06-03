@@ -101,13 +101,54 @@ file_type = {}
             else:
                 region = None
         # open with end region +/- depth to avoid triangle effect in the plot
-        # This will exit the program if:
+        # Cooler and thus HiCMatrix will raise an error if:
         # - the file is a cool file and:
         #    - the region goes over the chromosome size
         #   or
         #   - the chromosome is not part of the matrix
-        self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
-                                          pChrnameList=region)
+        
+        logging.getLogger('hicmatrix').setLevel(logging.CRITICAL)
+        try:
+            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                              pChrnameList=region)
+        except ValueError as ve:
+            if region is not None:
+                if "Unknown sequence label" in str(ve):
+                    rs = region[0].split(':')
+                    chrom_region = rs[0]
+                    chrom_region_before = chrom_region
+                    chrom_region = self.change_chrom_names(chrom_region)
+                    if len(rs) == 2:
+                        region = ["{}:{}".format(chrom_region, rs[1])]
+                    else:
+                        region = [chrom_region]
+                    print(region)
+                    try:
+                        self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                                          pChrnameList=region)
+                    except ValueError as ve2:
+                        if "Unknown sequence label" in str(ve2):
+                            self.log.warning("*Warning*\nNeither " + chrom_region_before
+                                             + " nor " + chrom_region + " exists as a "
+                                             "chromosome name on the matrix. "
+                                             "This will generate an empty track!!\n")
+                            self.hic_ma = HiCMatrix.hiCMatrix()
+                            self.hic_ma.matrix = scipy.sparse.csr_matrix((0, 0))
+                        elif "Genomic region out of bounds" in str(ve2):
+                            region = [chrom_region]
+                            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                                              pChrnameList=region)
+                        else:
+                            raise ve2
+                elif "Genomic region out of bounds" in str(ve):
+                    region = [region[0].split(':')[0]]
+                    self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                                      pChrnameList=region)
+                else:
+                    raise ve
+            else:
+                raise ve
+        logging.getLogger('hicmatrix').setLevel(logging.WARNING)
 
         if len(self.hic_ma.matrix.data) == 0:
             if self.properties['region'] is None:
