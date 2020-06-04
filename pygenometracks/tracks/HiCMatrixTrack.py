@@ -243,7 +243,6 @@ file_type = {}
                              "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
                                                                           region_start, region_end))
 
-
         # expand region to plus depth on both sides
         # to avoid a 45 degree 'cut' on the edges
 
