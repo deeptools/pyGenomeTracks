@@ -5,6 +5,7 @@ import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Polygon
+from tqdm import tqdm
 
 DEFAULT_LINKS_COLOR = 'blue'
 
@@ -329,7 +330,7 @@ file_type = {}
         max_score = float('-inf')
         min_score = float('inf')
         with open(self.properties['file'], 'r') as file_h:
-            for line in file_h.readlines():
+            for line in tqdm(file_h.readlines()):
                 line_number += 1
                 if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
                     continue
