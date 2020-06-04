@@ -7,11 +7,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import LogFormatter
 from . GenomeTrack import GenomeTrack
+from .. utilities import change_chrom_names
 import logging
 import itertools
 
-# Used in case no end of a genomic interval was set:
-HUGE_NUMBER = 1e15  # also used in plotTracks
 DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -90,25 +89,25 @@ file_type = {}
         self.img = None
         region = None
         if self.properties['region'] is not None:
-            chrom = self.properties['region'][0]
-            if self.properties['region'][2] == HUGE_NUMBER:
-                region = [chrom]
-            elif len(self.properties['region']) == 3:
-                start = self.properties['region'][1] - self.properties['depth']
-                if start < 0:
-                    start = 0
-                end = self.properties['region'][2] + self.properties['depth']
-
+            # We need to restrict it to a single region because
+            # HiCMatrix does not accept more
+            # We check if everything is on a single chrom:
+            if len(set([r[0] for r in self.properties['region']])) == 1:
+                chrom = self.properties['region'][0][0]
+                start = min([r[1] for r in self.properties['region']])
+                end = max([r[2] for r in self.properties['region']])
+                # I extend of depth to avoid triangle effect in the plot
+                start = max(0, start - self.properties['depth'])
+                end += self.properties['depth']
                 region = ["{}:{}-{}".format(chrom, start, end)]
-            else:
-                region = None
-        # open with end region +/- depth to avoid triangle effect in the plot
-        # Cooler and thus HiCMatrix will raise an error if:
+        # Cooler and thus HiCMatrix with cool file will raise an error if:
         # - the file is a cool file and:
         #    - the region goes over the chromosome size
         #   or
         #   - the chromosome is not part of the matrix
 
+        # We need to change the log level because we don't want
+        # the user to see all the errors raised during the try except
         logging.getLogger('hicmatrix').setLevel(logging.CRITICAL)
         try:
             self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
@@ -119,12 +118,11 @@ file_type = {}
                     rs = region[0].split(':')
                     chrom_region = rs[0]
                     chrom_region_before = chrom_region
-                    chrom_region = self.change_chrom_names(chrom_region)
+                    chrom_region = change_chrom_names(chrom_region)
                     if len(rs) == 2:
                         region = ["{}:{}".format(chrom_region, rs[1])]
                     else:
                         region = [chrom_region]
-                    print(region)
                     try:
                         self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
                                                           pChrnameList=region)
@@ -150,14 +148,18 @@ file_type = {}
                     raise ve
             else:
                 raise ve
+        # We put back the log to warning
         logging.getLogger('hicmatrix').setLevel(logging.WARNING)
 
         if len(self.hic_ma.matrix.data) == 0:
-            if self.properties['region'] is None:
+            if region is None:
+                # This is not due to a restriction of the matrix
                 raise Exception("Matrix {} is empty".format(self.properties['file']))
             else:
                 return
-
+        # We need to get the size before masking bins because
+        # HiCMatrix v13 give smaller chromosome_sizes after:
+        self.chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if self.properties['show_masked_bins']:
             pass
         else:
@@ -225,11 +227,10 @@ file_type = {}
             return
 
         log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
-        chrom_sizes = self.hic_ma.get_chromosome_sizes()
-        if chrom_region not in chrom_sizes:
+        if chrom_region not in self.chrom_sizes:
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
-            if chrom_region not in chrom_sizes:
+            chrom_region = change_chrom_names(chrom_region)
+            if chrom_region not in self.chrom_sizes:
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
                                  + " nor " + chrom_region + " exists as a "
                                  "chromosome name on the matrix. "
@@ -237,11 +238,19 @@ file_type = {}
                 self.img = None
                 return
 
-        chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
-        if region_end > chrom_sizes[chrom_region]:
+        chrom_region = self.check_chrom_str_bytes(self.chrom_sizes, chrom_region)
+        if region_end > self.chrom_sizes[chrom_region]:
             self.log.warning("*Warning*\nThe region to plot extends beyond the chromosome size. Please check.\n"
-                             "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
+                             "{} size: {}. Region to plot {}-{}\n".format(chrom_region, self.chrom_sizes[chrom_region],
                                                                           region_start, region_end))
+
+        # A chromosome may disappear if it was full of Nan and nan bins were masked:
+        if chrom_region not in self.hic_ma.get_chromosome_sizes():
+            self.log.warning("*Warning*\nThere is no data for the region "
+                             "considered on the matrix. "
+                             "This will generate an empty track!!\n")
+            self.img = None
+            return
 
         # expand region to plus depth on both sides
         # to avoid a 45 degree 'cut' on the edges

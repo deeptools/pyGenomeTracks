@@ -2,6 +2,7 @@ from . GenomeTrack import GenomeTrack
 from . BedTrack import BedTrack
 from .. readGtf import ReadGtf
 from matplotlib import font_manager
+from .. utilities import temp_file_from_intersect
 import numpy as np
 import pybedtools
 import sys
@@ -152,30 +153,13 @@ file_type = {}
         # to set the distance between rows
         self.row_scale = 2.3
 
-    def get_bed_handler(self, pRegion=None):
-        file_to_open = self.properties['file']
-        # Check if we can restrict the interval tree to a region:
-        if pRegion is not None and not self.properties['global_max_row']:
-            # I increase the region to get the intervals:
-            pRegion[1] = max([0, pRegion[1] - AROUND_REGION])
-            pRegion[2] += AROUND_REGION
-            # We use pybedtools to overlap:
-            original_file = pybedtools.BedTool(file_to_open)
-            # We will overlap with both version of chromosome name:
-            chrom = self.change_chrom_names(pRegion[0])
-            bothRegions = ("{0} {1} {2}\n{3} {1} {2}"
-                           .format(*pRegion,
-                                   chrom))
-            region = pybedtools.BedTool(bothRegions, from_string=True)
-            # Bedtools will put a warning because we are using inconsistent
-            # nomenclature (with and without chr)
-            sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
-            try:
-                file_to_open = original_file.intersect(region, wa=True).fn
-            except pybedtools.helpers.BEDToolsError:
-                file_to_open = self.properties['file']
-            sys.stderr.close()
-            sys.stderr = sys.__stderr__
+    def get_bed_handler(self, plot_regions=None):
+        if not self.properties['global_max_row']:
+            # I do the intersection:
+            file_to_open = temp_file_from_intersect(self.properties['file'],
+                                                    plot_regions, AROUND_REGION)
+        else:
+            file_to_open = self.properties['file']
 
         bed_file_h = ReadGtf(file_to_open,
                              self.properties['prefered_name'],

@@ -5,12 +5,13 @@ import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Polygon
-from .. utilities import opener, to_string
+from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect
 import sys
 import tempfile
 import pybedtools
 
 DEFAULT_LINKS_COLOR = 'blue'
+HUGE_NUMBER = 1e15  # Which should be above any chromosome size
 
 
 class LinksTrack(GenomeTrack):
@@ -160,7 +161,7 @@ file_type = {}
 
         if chrom_region not in list(self.interval_tree):
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
+            chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in list(self.interval_tree):
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
                                  + " nor " + chrom_region + " existss as a "
@@ -322,34 +323,20 @@ file_type = {}
         if y2 > self.max_height:
             self.max_height = y2
 
-    def process_link_file(self, pRegion):
+    def process_link_file(self, plot_regions):
         # the file format expected is similar to file format of links in
         # circos:
         # chr1 100 200 chr1 250 300 0.5
         # where the last value is a score.
-        file_to_open = self.properties['file']
-        # Check if we can restrict the interval tree to a region:
-        if pRegion is not None:
-            # I will keep all links whose first member is in the chromosome:
-            pRegion[1] = 0
-            pRegion[2] = 1e15  # a huge number
-            # We use pybedtools to overlap:
-            original_file = pybedtools.BedTool(file_to_open)
-            # We will overlap with both version of chromosome name:
-            chrom = self.change_chrom_names(pRegion[0])
-            bothRegions = ("{0} {1} {2}\n{3} {1} {2}"
-                           .format(*pRegion,
-                                   chrom))
-            region = pybedtools.BedTool(bothRegions, from_string=True)
-            # Bedtools will put a warning because I am using inconsistent
-            # nomenclature (with and without chr)
-            sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
-            try:
-                file_to_open = original_file.intersect(region, wa=True).fn
-            except pybedtools.helpers.BEDToolsError:
-                file_to_open = self.properties['file']
-            sys.stderr.close()
-            sys.stderr = sys.__stderr__
+
+        if plot_regions is None:
+            file_to_open = self.properties['file']
+        else:
+            # To be sure we do not miss links we will intersect with bed with
+            # only chromosomes used in plot_regions
+            plot_regions_adapted = [(chrom, 0, HUGE_NUMBER) for chrom, __, __ in plot_regions]
+            file_to_open = temp_file_from_intersect(self.properties['file'],
+                                                    plot_regions_adapted)
 
         valid_intervals = 0
         interval_tree = {}

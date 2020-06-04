@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree, plot_coverage, InputError, transform
+from .. utilities import file_to_intervaltree, plot_coverage, InputError, transform, change_chrom_names
 import numpy as np
 import pyBigWig
 import tempfile
@@ -251,7 +251,7 @@ file_type = {}
         if tbx is not None:
             if chrom_region not in tbx.contigs:
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
+                chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in tbx.contigs:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
@@ -269,7 +269,7 @@ file_type = {}
             inttree = eval(inttree_var)
             if chrom_region not in list(inttree):
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
+                chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in list(inttree):
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "

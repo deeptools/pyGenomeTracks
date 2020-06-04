@@ -7,8 +7,6 @@ import pybedtools
 import tempfile
 import warnings
 
-AROUND_REGION = 100000
-
 
 class InputError(Exception):
     """Exception raised for errors in the input."""
@@ -60,44 +58,47 @@ def opener(filename):
         return f
 
 
-def file_to_intervaltree(file_name, pRegion=None):
+def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
     """
-    converts a BED like file into a bx python interval tree
+    intersect file_name with the plot_regions +/- around_region
     :param file_name: string file name
-    :param pRegion: a list [chrom, start, end] with the region to restrict
-                    the data to.
-    :return: interval tree dictionary. They key is the chromosome/contig name and the
-    value is an IntervalTree. Each of the intervals have as 'value' the fields[3:] if any.
+    :param plot_regions:a list of tuple [(chrom1, start1, end1), (chrom2, start2, end2)]
+                        with the region to restrict the data to.
+    :param around_region: integer with the bp to extend to plot_regions
+    :return: temporary file with the intersection
     """
     file_to_open = file_name
     # Check if we can restrict the interval tree to a region:
-    if pRegion is not None:
-        # I increase the region to get the intervals:
-        pRegion[1] = max([0, pRegion[1] - AROUND_REGION])
-        pRegion[2] += AROUND_REGION
+    if plot_regions is not None:
         # We use pybedtools to overlap:
         original_file = pybedtools.BedTool(file_name)
+        # We extend the start and end:
+        plot_regions_ext = [(chrom, max(0, start - around_region), end + around_region) for chrom, start, end in plot_regions]
         # We will overlap with both version of chromosome name:
-        chrom = pRegion[0]
-        if chrom.startswith('chr'):
-            # remove the chr part from chromosome name
-            chrom = chrom[3:]
-        else:
-            # prefix with 'chr' the chromosome name
-            chrom = 'chr' + chrom
-        bothRegions = ("{0} {1} {2}\n{3} {1} {2}"
-                       .format(*pRegion,
-                               chrom))
-        region = pybedtools.BedTool(bothRegions, from_string=True)
-        # Bedtools will put a warning because I am using inconsistent
+        plot_regions_as_bed = '\n'.join([f'{chrom} {start} {end}\n{change_chrom_names(chrom)} {start} {end}' for chrom, start, end in plot_regions_ext])
+        regions = pybedtools.BedTool(plot_regions_as_bed, from_string=True)
+        # Bedtools will put a warning because we are using inconsistent
         # nomenclature (with and without chr)
         sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
         try:
-            file_to_open = original_file.intersect(region, wa=True).fn
+            file_to_open = original_file.intersect(regions, wa=True, u=True).fn
         except pybedtools.helpers.BEDToolsError:
             file_to_open = file_name
         sys.stderr.close()
         sys.stderr = sys.__stderr__
+    return file_to_open
+
+
+def file_to_intervaltree(file_name, plot_regions=None):
+    """
+    converts a BED like file into a bx python interval tree
+    :param file_name: string file name
+    :param plot_regions:a list of tuple [(chrom1, start1, end1), (chrom2, start2, end2)]
+                        with the region to restrict the data to.
+    :return: interval tree dictionary. They key is the chromosome/contig name and the
+    value is an IntervalTree. Each of the intervals have as 'value' the fields[3:] if any.
+    """
+    file_to_open = temp_file_from_intersect(file_name, plot_regions, 0)
     # iterate over a BED like file
     # saving the data into an interval tree
     # for quick retrieval
@@ -297,3 +298,19 @@ def count_lines(file_h, asBed=False):
         n += 1
     file_h.close()
     return(n)
+
+
+def change_chrom_names(chrom):
+    """
+    Changes UCSC chromosome names to ensembl chromosome names
+    and vice versa.
+    """
+    # TODO: mapping from chromosome names like mithocondria is missing
+    if chrom.startswith('chr'):
+        # remove the chr part from chromosome name
+        chrom = chrom[3:]
+    else:
+        # prefix with 'chr' the chromosome name
+        chrom = 'chr' + chrom
+
+    return chrom

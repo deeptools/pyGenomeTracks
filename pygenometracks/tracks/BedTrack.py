@@ -3,7 +3,7 @@ from .. readBed import ReadBed
 # To remove next 1.0
 from .. readGtf import ReadGtf
 # End to remove
-from .. utilities import opener, get_length_w, count_lines
+from .. utilities import opener, get_length_w, count_lines, temp_file_from_intersect, change_chrom_names
 import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
@@ -222,31 +222,13 @@ file_type = {}
         # to set the distance between rows
         self.row_scale = 2.3
 
-    def get_bed_handler(self, pRegion=None):
-        file_to_open = self.properties['file']
-        # Check if we can restrict the interval tree to a region:
-        if pRegion is not None and not self.properties['global_max_row']:
-            # I increase the region to get the intervals:
-            pRegion[1] = max([0, pRegion[1] - AROUND_REGION])
-            pRegion[2] += AROUND_REGION
-            # We use pybedtools to overlap:
-            original_file = pybedtools.BedTool(file_to_open)
-            # We will overlap with both version of chromosome name:
-            chrom = self.change_chrom_names(pRegion[0])
-            bothRegions = ("{0} {1} {2}\n{3} {1} {2}"
-                           .format(*pRegion,
-                                   chrom))
-            region = pybedtools.BedTool(bothRegions, from_string=True)
-            # Bedtools will put a warning because we are using inconsistent
-            # nomenclature (with and without chr)
-            sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
-            try:
-                file_to_open = original_file.intersect(region, wa=True).fn
-            except pybedtools.helpers.BEDToolsError:
-                file_to_open = self.properties['file']
-            sys.stderr.close()
-            sys.stderr = sys.__stderr__
-
+    def get_bed_handler(self, plot_regions=None):
+        if not self.properties['global_max_row']:
+            # I do the intersection:
+            file_to_open = temp_file_from_intersect(self.properties['file'],
+                                                    plot_regions, AROUND_REGION)
+        else:
+            file_to_open = self.properties['file']
         # To remove in next 1.0
         if self.properties['file'].endswith('gtf') or \
            self.properties['file'].endswith('gtf.gz'):
@@ -269,9 +251,9 @@ file_type = {}
 
         return(bed_file_h, total_length)
 
-    def process_bed(self, pRegion=None):
+    def process_bed(self, plot_regions=None):
 
-        bed_file_h, total_length = self.get_bed_handler(pRegion)
+        bed_file_h, total_length = self.get_bed_handler(plot_regions)
         self.bed_type = bed_file_h.file_type
 
         if self.properties['color'] == 'bed_rgb' and \
@@ -380,7 +362,7 @@ file_type = {}
     def plot(self, ax, chrom_region, start_region, end_region):
         if chrom_region not in self.interval_tree.keys():
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
+            chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
                                  + " nor " + chrom_region + " existss as a "

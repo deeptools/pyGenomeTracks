@@ -150,7 +150,7 @@ from pygenometracks._version import __version__
 from .utilities import InputError
 
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
-HUGE_NUMBER = 1e15  # also used in HiCMatrix
+HUGE_NUMBER = 1e15  # Which should be above any chromosome size
 
 
 def parse_arguments(args=None):
@@ -298,19 +298,11 @@ def main(args=None):
     if len(regions) == 0:
         raise InputError("There is no valid regions to plot.")
 
-    # Try to find a region to get the data:
-    pRegion = None
-    if len(set([r[0] for r in regions])) == 1:
-        chrom = regions[0][0]
-        start = min([r[1] for r in regions])
-        end = max([r[2] for r in regions])
-        pRegion = [chrom, start, end]
-
     # Create all the tracks
     trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height,
                      fontsize=args.fontSize, dpi=args.dpi,
                      track_label_width=args.trackLabelFraction,
-                     pRegion=pRegion)
+                     plot_regions=regions)
 
     # Plot them
     if args.BED:
