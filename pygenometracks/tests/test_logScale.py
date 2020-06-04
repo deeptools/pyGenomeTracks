@@ -277,15 +277,16 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 
 def test_log1p_track():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='log1p_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "log1p.ini")
     region = "X:2700000-3100000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='log1p_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "log1p.ini"),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_log1p.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_log1p.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -293,15 +294,16 @@ def test_log1p_track():
 
 
 def test_log1p_grid():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='log1p_grid_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "log1p_grid.ini")
     region = "X:2700000-3100000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='log1p_grid_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "log1p_grid.ini"),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_log1p_grid.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_log1p_grid.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -310,15 +312,17 @@ def test_log1p_grid():
 
 def test_log_tracks():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_log_', delete=False)
-    args = "--tracks {0} --region chr2:73,800,000-75,744,000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, "log.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png',
+                                 prefix='pyGenomeTracks_test_log_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "log.ini")
+    region = "chr2:73,800,000-75,744,000"
+    expected_file = os.path.join(ROOT, 'master_log.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_log.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -327,15 +331,17 @@ def test_log_tracks():
 
 def test_log_grid():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_loggrid_', delete=False)
-    args = "--tracks {0} --region chr2:73,800,000-75,744,000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, "log_grid.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png',
+                                 prefix='pyGenomeTracks_test_loggrid_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "log_grid.ini")
+    region = "chr2:73,800,000-75,744,000"
+    expected_file = os.path.join(ROOT, 'master_log_grid.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_log_grid.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -344,12 +350,13 @@ def test_log_grid():
 
 class TestLogNegMethods(unittest.TestCase):
     def test_log_tracks_with_0values(self):
+        outfile = NamedTemporaryFile(suffix='.png', prefix='log_test_',
+                                     delete=False)
+        ini_file = os.path.join(ROOT, "log_neg.ini")
         region = "X:2700000-3100000"
-        outfile = NamedTemporaryFile(suffix='.png', prefix='log_test_', delete=False)
-        args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-            "--dpi 130 --outFileName {outfile}" \
-            "".format(ini=os.path.join(ROOT, "log_neg.ini"),
-                      outfile=outfile.name, region=region).split()
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
         with self.assertRaises(Exception) as context:
             pygenometracks.plotTracks.main(args)
 

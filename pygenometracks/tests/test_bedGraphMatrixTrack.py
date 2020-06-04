@@ -129,15 +129,16 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 
 def test_bedgraphmatrix_track():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bedgraph.ini")
     region = "X:2850000-3150000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "bedgraph.ini"),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_bedgraph.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_bedgraph.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 

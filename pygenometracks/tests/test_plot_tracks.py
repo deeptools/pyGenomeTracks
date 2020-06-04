@@ -230,14 +230,16 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 def test_plot_tracks():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "browser_tracks.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "browser_tracks.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_plot.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_plot.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -246,14 +248,16 @@ def test_plot_tracks():
 
 def test_plot_tracks_empty_files():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "empty.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "empty.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_empty.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_empty.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -262,14 +266,16 @@ def test_plot_tracks_empty_files():
 
 def test_plot_tracks_existing_chr_empty_tracks():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:0-1000000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "browser_tracks.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "browser_tracks.ini")
+    region = "X:0-1000000"
+    expected_file = os.path.join(ROOT, 'master_plot_2.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_plot_2.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -278,14 +284,16 @@ def test_plot_tracks_existing_chr_empty_tracks():
 
 def test_plot_tracks_missing_chr():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region Y:0-1000000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "browser_tracks.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "browser_tracks.ini")
+    region = "Y:0-1000000"
+    expected_file = os.path.join(ROOT, 'master_plot_3.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_plot_3.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -294,14 +302,17 @@ def test_plot_tracks_missing_chr():
 
 def test_plot_tracks_dec():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1} --decreasingXAxis" \
-           "".format(os.path.join(ROOT, "browser_tracks.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "browser_tracks.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_plot_dec.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--decreasingXAxis "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_plot_dec.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 

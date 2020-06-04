@@ -22,14 +22,16 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 def test_regular_width_label():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "title.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "title.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_title_0.2.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_title_0.2.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -38,14 +40,16 @@ def test_regular_width_label():
 
 def test_large_width_label():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.5" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "title.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "title.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_title_0.5.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_title_0.5.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -54,15 +58,17 @@ def test_large_width_label():
 
 def test_large_width_label_ral():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.5" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           " --trackLabelHAlign right" \
-           "".format(os.path.join(ROOT, "title.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "title.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_title_0.5_ral.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
+           "--trackLabelHAlign right "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_title_0.5_ral.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -71,15 +77,17 @@ def test_large_width_label_ral():
 
 def test_large_width_label_cal():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.5" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           " --trackLabelHAlign center" \
-           "".format(os.path.join(ROOT, "title.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "title.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_title_0.5_cal.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
+           "--trackLabelHAlign center "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_title_0.5_cal.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -88,15 +96,17 @@ def test_large_width_label_cal():
 
 def test_large_width_label_cal_dpi250():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.5" \
-           " --width 38 --dpi 250 --outFileName {1}" \
-           " --trackLabelHAlign center" \
-           "".format(os.path.join(ROOT, "title.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "title.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_title_0.5_cal_d250.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.5 --width 38 --dpi 250 "\
+           "--trackLabelHAlign center "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_title_0.5_cal_d250.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -105,14 +115,17 @@ def test_large_width_label_cal_dpi250():
 
 def test_large_width_label_big_font():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.5" \
-           " --width 38 --dpi 130 --outFileName {1} --fontSize 20" \
-           "".format(os.path.join(ROOT, "title.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "title.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_title_0.5_fs20.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
+           "--fontSize 20 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_title_0.5_fs20.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 

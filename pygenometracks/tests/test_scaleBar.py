@@ -76,14 +76,16 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 def test_scale_bar():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3300000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "scale_bar.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "scale_bar.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_scale_bar.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_scale_bar.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -92,14 +94,16 @@ def test_scale_bar():
 
 def test_scale_bar_zoom():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3200000-3300000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "scale_bar.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "scale_bar.ini")
+    region = "X:3200000-3300000"
+    expected_file = os.path.join(ROOT, 'master_scale_bar_zoom.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_scale_bar_zoom.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 

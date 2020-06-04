@@ -70,15 +70,16 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 
 def test_narrow_track():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='narrowTrack_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "narrow_peak.ini")
     region = "X:2760000-2802000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='narrowTrack_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, 'narrow_peak.ini'),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_narrowPeak.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_narrowPeak.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -86,15 +87,16 @@ def test_narrow_track():
 
 
 def test_narrow_track_2():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='narrowTrack2_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "narrow_peak2.ini")
     region = "X:2760000-2802000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='narrowTrack2_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, 'narrow_peak2.ini'),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_narrowPeak2.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print(f"saving test to {outfile.name}")
-    res = compare_images(os.path.join(ROOT, 'master_narrowPeak2.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 

@@ -11,14 +11,14 @@ relative_path = os.path.relpath(ROOT)
 
 
 def test_make_tracks():
-    outfile = NamedTemporaryFile(suffix='.ini', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--trackFiles {0} {1} {2} {3} --out {4}" \
-           "".format(os.path.join(relative_path, 'Li_et_al_2015.h5'),
-                     os.path.join(relative_path, 'bigwig_chrx_2e6_5e6.bw'),
-                     os.path.join(relative_path, 'tad_classification.bed'),
-                     os.path.join(relative_path, 'epilog.qcat.bgz'),
-                     outfile.name).split()
-    print(f"using args: {' '.join(args)}")
+    outfile = NamedTemporaryFile(suffix='.ini', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    all_paths = [os.path.join(relative_path, 'Li_et_al_2015.h5'),
+                 os.path.join(relative_path, 'bigwig_chrx_2e6_5e6.bw'),
+                 os.path.join(relative_path, 'tad_classification.bed'),
+                 os.path.join(relative_path, 'epilog.qcat.bgz')]
+    args = f"--trackFiles {all_paths[0]} {all_paths[1]} {all_paths[2]}"\
+           f" {all_paths[3]} --out {outfile.name}".split()
     pygenometracks.makeTracksFile.main(args)
 
     if filecmp.cmp(outfile.name,
