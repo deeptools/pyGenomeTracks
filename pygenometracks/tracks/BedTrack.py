@@ -11,9 +11,6 @@ from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from intervaltree import IntervalTree, Interval
 import numpy as np
-import pybedtools
-import sys
-import tempfile
 from tqdm import tqdm
 
 DEFAULT_BED_COLOR = '#1f78b4'

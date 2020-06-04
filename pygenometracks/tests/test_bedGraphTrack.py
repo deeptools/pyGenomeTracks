@@ -137,7 +137,7 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 def test_plot_bedgraph_tracks_with_bed():
     extension = '.png'
 
-    outfile = NamedTemporaryFile(suffix= extension, prefix='pyGenomeTracks_test_',
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
     args = "--tracks {0} --BED {1} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
@@ -150,8 +150,8 @@ def test_plot_bedgraph_tracks_with_bed():
         region_str = region.replace(':', '-')
         output_file = outfile.name[:-4] + '_' + region_str + extension
         res = compare_images(os.path.join(ROOT,
-                                          'master_bedgraph_useMid_' +
-                                          region_str + extension),
+                                          'master_bedgraph_useMid_'
+                                          + region_str + extension),
                              output_file, tolerance)
         assert res is None, res
 
@@ -162,7 +162,7 @@ def test_plot_bedgraph_tracks_individual():
     extension = '.png'
 
     for region in ['chr2:73800000-75744000', 'chr2:74000000-74800000']:
-        outfile = NamedTemporaryFile(suffix= extension, prefix='pyGenomeTracks_test_',
+        outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                      delete=False)
         args = "--tracks {0} --region {1} "\
             "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
@@ -173,8 +173,8 @@ def test_plot_bedgraph_tracks_individual():
         pygenometracks.plotTracks.main(args)
         region_str = region.replace(':', '-')
         res = compare_images(os.path.join(ROOT,
-                                          'master_bedgraph_useMid_' +
-                                          region_str + extension),
+                                          'master_bedgraph_useMid_'
+                                          + region_str + extension),
                              outfile.name, tolerance)
         assert res is None, res
 

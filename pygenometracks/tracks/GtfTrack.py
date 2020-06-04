@@ -4,9 +4,6 @@ from .. readGtf import ReadGtf
 from matplotlib import font_manager
 from .. utilities import temp_file_from_intersect
 import numpy as np
-import pybedtools
-import sys
-import tempfile
 
 DEFAULT_BED_COLOR = '#1f78b4'
 DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']

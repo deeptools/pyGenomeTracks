@@ -6,9 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Polygon
 from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect
-import sys
-import tempfile
-import pybedtools
 
 DEFAULT_LINKS_COLOR = 'blue'
 HUGE_NUMBER = 1e15  # Which should be above any chromosome size
