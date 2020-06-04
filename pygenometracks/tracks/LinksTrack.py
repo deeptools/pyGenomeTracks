@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Polygon
 from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect
+from tqdm import tqdm
 
 DEFAULT_LINKS_COLOR = 'blue'
 HUGE_NUMBER = 1e15  # Which should be above any chromosome size
@@ -342,7 +343,7 @@ file_type = {}
         max_score = float('-inf')
         min_score = float('inf')
         file_h = opener(file_to_open)
-        for line in file_h.readlines():
+        for line in tqdm(file_h.readlines()):
             line_number += 1
             line = to_string(line)
             if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
