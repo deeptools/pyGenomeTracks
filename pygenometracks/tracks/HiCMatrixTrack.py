@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 class HiCMatrixTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.h5', '.cool', '.mcool']
     TRACK_TYPE = 'hic_matrix'
-    OPTIONS_TXT = """
+    OPTIONS_TXT = f"""
 # The different options for color maps can be found here:
 # https://matplotlib.org/users/colormaps.html
 # the default color map is RdYlBu_r (_r) stands for reverse
@@ -50,8 +50,8 @@ show_masked_bins = false
 # You can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = false
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'region': None,
                            'depth': 100000,
                            'orientation': None,
@@ -116,7 +116,7 @@ file_type = {}
                 if self.hic_ma.matrix.data.min() + 1 <= 0:
                     raise Exception("\n*ERROR*\nMatrix contains values below - 1.\n"
                                     "log1p transformation can not be applied to \n"
-                                    "values in matrix: {}".format(self.properties['file']))
+                                    f"values in matrix: {self.properties['file']}")
 
             elif self.properties['transform'] in ['-log', 'log']:
                 if self.hic_ma.matrix.data.min() < 0:
@@ -124,7 +124,7 @@ file_type = {}
                     # mask, they will be replaced by the minimum value after 0.
                     raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
                                     "log transformation can not be applied to \n"
-                                    "values in matrix: {}".format(self.properties['file']))
+                                    f"values in matrix: {self.properties['file']}")
 
         new_intervals = hicmatrix.utilities.enlarge_bins(self.hic_ma.cut_intervals)
         self.hic_ma.interval_trees, self.hic_ma.chrBinBoundaries = \
@@ -179,9 +179,10 @@ file_type = {}
 
         chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
         if region_end > chrom_sizes[chrom_region]:
-            raise Exception("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n"
-                            "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
-                                                                         region_start, region_end))
+            raise Exception("*Error*\nThe region to plot extends beyond the"
+                            " chromosome size. Please check.\n"
+                            f"{chrom_region} size: {chrom_sizes[chrom_region]}"
+                            f". Region to plot {region_start}-{region_end}\n")
 
         # if self.properties['file'].endswith('.cool'):
         #     # load now the region to be plotted
@@ -211,9 +212,9 @@ file_type = {}
         depth_in_bins = int(1.5 * region_len / self.hic_ma.getBinSize())
 
         if depth < self.properties['depth']:
-            log.warning("The depth was set to {} which is more than 125%"
+            log.warning(f"The depth was set to {self.properties['depth']} which is more than 125%"
                         " of the region plotted. The depth will be set "
-                        "to {}".format(self.properties['depth'], depth))
+                        f"to {depth}")
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         # Using todense will replace all nan values by 0.
@@ -261,8 +262,9 @@ file_type = {}
 
             vmin = np.median(distant_diagonal_values)
 
-        self.log.info("setting min, max values for track {} to: {}, {}\n".
-                      format(self.properties['section_name'], vmin, vmax))
+        self.log.info("setting min, max values for track "
+                      f"{self.properties['section_name']} to: "
+                      f"{vmin}, {vmax}\n")
         self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
         if self.properties['rasterize']:
             self.img.set_rasterized(True)

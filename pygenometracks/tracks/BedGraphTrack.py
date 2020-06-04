@@ -15,7 +15,7 @@ class BedGraphTrack(GenomeTrack):
                          '.bedGraph', '.bedGraph.gz', '.bedGraph.bgz',
                          '.bdg', '.bdg.gz', '.bdg.bgz']
     TRACK_TYPE = 'bedgraph'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 color = green
 # To use a different color for negative values
 #negative_color = red
@@ -79,8 +79,8 @@ show_data_range = true
 #y_axis_values = original
 # If you want to have a grid on the y-axis
 #grid = true
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
                            'show_data_range': True,
@@ -135,9 +135,9 @@ file_type = {}
 
         if 'second_file' in self.properties['operation']:
             if self.properties['second_file'] is None:
-                raise InputError("operation: {} requires to set the parameter"
-                                 " second_file."
-                                 "".format(self.properties['operation']))
+                raise InputError(f"operation: {self.properties['operation']}"
+                                 " requires to set the parameter"
+                                 " second_file.")
             else:
                 if self.properties['second_file'].endswith(".bgz"):
                     # from the tabix file is not possible to know the
@@ -323,10 +323,9 @@ file_type = {}
                 new_score_list = eval('[' + operation + ' for file in score_list]')
                 new_score_list = np.array(new_score_list)
             except Exception as e:
-                raise Exception("The operation in section {} could not be"
-                                " computed: {}".
-                                format(self.properties['section_name'],
-                                       e))
+                raise Exception("The operation in section "
+                                f"{self.properties['section_name']} could not "
+                                f"be computed: {e}")
             else:
                 score_list = new_score_list
 
@@ -347,10 +346,9 @@ file_type = {}
                 new_score_list = eval('[' + operation + ' for file,second_file in zip(score_list, score_list2)]')
                 new_score_list = np.array(new_score_list)
             except Exception as e:
-                raise Exception("The operation in section {} could not be"
-                                " computed: {}".
-                                format(self.properties['section_name'],
-                                       e))
+                raise Exception("The operation in section "
+                                f"{self.properties['section_name']} could not"
+                                f" be computed: {e}")
             else:
                 score_list = new_score_list
 

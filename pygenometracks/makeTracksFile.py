@@ -58,8 +58,7 @@ height = 0.5
                 if file_h.name.endswith(ending):
                     default_values = track_class.OPTIONS_TXT
                     default_values = default_values.replace("title =", f"title = {label}")
-                    args.out.write("\n[{label}]\nfile = {file}\n{default_values}".
-                                   format(label=label, file=file_h.name, default_values=default_values))
+                    args.out.write(f"\n[{label}]\nfile = {file_h.name}\n{default_values}")
 
                     sys.stdout.write(f"Adding {track_type} file: {file_h.name}\n")
                     track_added = True

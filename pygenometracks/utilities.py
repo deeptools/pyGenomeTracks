@@ -91,15 +91,15 @@ def file_to_intervaltree(file_name):
         try:
             start = int(start)
         except ValueError as detail:
-            msg = "Error reading line: {}. The start field is not " \
-                  "an integer.\nError message: {}".format(line_number, detail)
+            msg = f"Error reading line: {line_number}. The start field is not " \
+                  f"an integer.\nError message: {detail}"
             raise InputError(msg)
 
         try:
             end = int(end)
         except ValueError as detail:
-            msg = "Error reading line: {}. The end field is not " \
-                  "an integer.\nError message: {}".format(line_number, detail)
+            msg = f"Error reading line: {line_number}. The end field is not " \
+                  f"an integer.\nError message: {detail}"
             raise InputError(msg)
 
         if prev_chrom == chrom:
@@ -204,10 +204,10 @@ def transform(score_list, transform, log_pseudocount, file):
     elif transform in ['log', 'log2', 'log10']:
         if np.nanmin(score_list) <= - log_pseudocount:
             msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
-                   " - {0}.\n"
-                   "{1}({0} + <values>) transformation can not be applied to "
-                   "values in file: {2}".format(log_pseudocount, transform,
-                                                file))
+                   f" - {log_pseudocount}.\n"
+                   f"{transform}({log_pseudocount} + <values>) transformation "
+                   "can not be applied to "
+                   f"values in file: {file}")
             raise Exception(msg)
         else:
             return(eval('np.' + transform + '(log_pseudocount + score_list)'))
@@ -215,23 +215,22 @@ def transform(score_list, transform, log_pseudocount, file):
         if np.nanmin(score_list) <= - 1:
             msg = ("\n*ERROR*\ncoverage contains values below or equal to - 1.\n"
                    "log1p(<values>) transformation can not be applied to "
-                   "values in file: {}".format(file))
+                   f"values in file: {file}")
             raise Exception(msg)
         else:
             return(np.log1p(score_list))
     elif transform == '-log':
         if np.nanmax(score_list.max) <= - log_pseudocount:
             msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
-                   " - {0}.\n"
-                   "- log( {0} + <values>) transformation can not be applied"
-                   " to values in file: {1}".format(log_pseudocount, file))
+                   f" - {log_pseudocount}.\n"
+                   f"- log( {log_pseudocount} + <values>) transformation can "
+                   f"not be applied to values in file: {file}")
             raise Exception(msg)
         else:
             return(- np.log(log_pseudocount + score_list))
     else:
-        warnings.warn('The transform: {} for file {} is not valid.'
-                      'will not use any transformation'.format(transform,
-                                                               file))
+        warnings.warn(f"The transform: {transform} for file {file} is not "
+                      "valid. Will not use any transformation")
         return(score_list)
 
 

@@ -8,7 +8,7 @@ DEFAULT_HLINES_COLOR = 'black'
 class HLinesTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = 'hlines'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # color of the lines
 color = black
 # To use transparency, you can use alpha
@@ -26,8 +26,8 @@ min_value = 0
 y_values = 10, 200
 # set show_data_range to false to hide the text on the upper-left showing the data range
 show_data_range = true
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
                            'show_data_range': True,
@@ -60,9 +60,8 @@ file_type = {}
         try:
             self.y_values = [float(x) for x in y_array]
         except Exception as detail:
-            raise InputError('y_values ({}) not valid. \nError: {}'
-                             ''.format(self.properties['y_values'],
-                                       detail))
+            raise InputError(f"y_values ({self.properties['y_values']}) not"
+                             f" valid. \nError: {detail}")
 
     def set_properties_defaults(self):
         super(HLinesTrack, self).set_properties_defaults()

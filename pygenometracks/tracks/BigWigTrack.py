@@ -9,7 +9,7 @@ DEFAULT_BIGWIG_COLOR = '#33a02c'
 class BigWigTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.bw', '.bigwig']
     TRACK_TYPE = 'bigwig'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 color = #666666
 # To use a different color for negative values
 #negative_color = red
@@ -66,8 +66,8 @@ show_data_range = true
 #y_axis_values = original
 # If you want to have a grid on the y-axis
 #grid = true
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
 
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
@@ -117,9 +117,9 @@ file_type = {}
         self.bw2 = None
         if 'second_file' in self.properties['operation']:
             if self.properties['second_file'] is None:
-                raise InputError("operation: {} requires to set the parameter"
-                                 " second_file."
-                                 "".format(self.properties['operation']))
+                raise InputError(f"operation: {self.properties['operation']}"
+                                 " requires to set the parameter"
+                                 " second_file.")
             else:
                 self.bw2 = pyBigWig.open(self.properties['second_file'])
 
@@ -159,9 +159,11 @@ file_type = {}
         chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
 
         if chrom_region not in self.bw.chroms().keys():
-            self.log.warning("Can not read region {} from bigwig file:\n\n"
-                             "{}\n\nPlease check that the chromosome name is part of the bigwig file "
-                             "and that the region is valid".format(formated_region, self.properties['file']))
+            self.log.warning(f"Can not read region {formated_region} from "
+                             f"bigwig file:\n\n{self.properties['file']}\n"
+                             "\nPlease check that the chromosome name is part"
+                             " of the bigwig file "
+                             "and that the region is valid")
 
         # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
         # of the memory. This only occurs when calling trackPlot from different
@@ -179,8 +181,9 @@ file_type = {}
             except Exception as e:
                 self.bw = pyBigWig.open(self.properties['file'])
 
-                self.log.warning("error found while reading bigwig scores ({}).\nTrying again. Iter num: {}".
-                                 format(e, num_tries))
+                self.log.warning("error found while reading bigwig scores "
+                                 f"({e}).\nTrying again."
+                                 f" Iter num: {num_tries}")
                 pass
             else:
                 if num_tries > 1:
@@ -199,10 +202,9 @@ file_type = {}
                 new_scores_per_bin = eval('[' + operation + ' for file in scores_per_bin]')
                 new_scores_per_bin = np.array(new_scores_per_bin)
             except Exception as e:
-                raise Exception("The operation in section {} could not be"
-                                " computed: {}".
-                                format(self.properties['section_name'],
-                                       e))
+                raise Exception("The operation in section "
+                                f"{self.properties['section_name']} could not "
+                                f"be computed: {e}")
             else:
                 scores_per_bin = new_scores_per_bin
         else:
@@ -238,8 +240,8 @@ file_type = {}
 
                     self.log.warning("error found while reading bigwig scores"
                                      " of second file"
-                                     " ({}).\nTrying again. Iter num: {}".
-                                     format(e, num_tries))
+                                     f" ({e}).\nTrying again."
+                                     " Iter num: {num_tries}")
                     pass
                 else:
                     if num_tries > 1:
@@ -253,11 +255,9 @@ file_type = {}
                                           ' scores_per_bin2)]')
                 new_scores_per_bin = np.array(new_scores_per_bin)
             except Exception as e:
-                raise Exception("The operation {}, in section {} could not be"
-                                " computed: {}".
-                                format(self.properties['operation'],
-                                       self.properties['section_name'],
-                                       e))
+                raise Exception("The operation in section "
+                                f"{self.properties['section_name']} could not "
+                                f"be computed: {e}")
             else:
                 scores_per_bin = new_scores_per_bin
 

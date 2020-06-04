@@ -66,13 +66,12 @@ height = 2
             possibles = self.POSSIBLE_PROPERTIES[prop]
             if self.properties[prop] not in possibles:
                 default_value = self.DEFAULTS_PROPERTIES[prop]
-                self.log.warning("*WARNING* {0}: '{1}' for section {2}"
-                                 " is not valid. {0} has "
+                self.log.warning(f"*WARNING* {prop}: '{self.properties[prop]}'"
+                                 " for section "
+                                 f"{self.properties['section_name']}"
+                                 f" is not valid. {prop} has "
                                  "been set to "
-                                 "{3}".format(prop,
-                                              self.properties[prop],
-                                              self.properties['section_name'],
-                                              default_value))
+                                 f"{default_value}")
                 self.properties[prop] = default_value
 
     def plot_y_axis(self, ax, plot_axis, transform='no', log_pseudocount=0,
@@ -260,20 +259,18 @@ height = 2
             try:
                 self.size = float(size)
             except ValueError:
-                self.log.warning("Invalid value: 'type = {}' in section: {}\n"
+                self.log.warning("Invalid value: 'type = "
+                                 f"{self.properties['type']}' in section:"
+                                 f" {self.properties['section_name']}\n"
                                  "A number was expected after ':' and found "
-                                 "'{}'. Will use default."
-                                 "".format(self.properties['type'],
-                                           self.properties['section_name'],
-                                           size))
+                                 f"'{size}'. Will use default.")
         else:
             self.plot_type = self.properties['type']
 
         if self.plot_type not in ['line', 'points', 'fill']:
-            self.log.warning("Invalid: 'type = {}' in section: {}\n"
-                             "Will use default."
-                             "".format(self.properties['type'],
-                                       self.properties['section_name']))
+            self.log.warning(f"Invalid: 'type = {self.properties['type']}' in"
+                             f" section: {self.properties['section_name']}\n"
+                             "Will use default.")
             self.plot_type = default_plot_type
 
     def process_color(self, param, colormap_possible=False,
@@ -303,35 +300,32 @@ height = 2
             try:
                 custom_color = eval(self.properties[param])
             except ValueError:
-                self.log.warning("*WARNING*: '{}' for section {}"
-                                 " is not valid. {} has "
+                self.log.warning(f"*WARNING*: '{param}' for section"
+                                 f" {self.properties[param]}"
+                                 " is not valid. "
+                                 f"{self.properties['section_name']} has "
                                  "been set to "
-                                 "{}".format(param,
-                                             self.properties[param],
-                                             self.properties['section_name'],
-                                             default_value))
+                                 f"{default_value}")
                 valid_color = default_value
             else:
                 if mc.is_color_like(custom_color):
                     valid_color = custom_color
                 else:
-                    self.log.warning("*WARNING*: '{}' for section {}"
-                                     " is not valid. {} has "
+                    self.log.warning(f"*WARNING*: '{param}' for section"
+                                     f" {self.properties[param]}"
+                                     " is not valid. "
+                                     f"{self.properties['section_name']} has "
                                      "been set to "
-                                     "{}".format(param,
-                                                 self.properties[param],
-                                                 self.properties['section_name'],
-                                                 default_value))
+                                     f"{default_value}")
                     valid_color = default_value
         if not colormap_possible:
             if valid_color is None:
-                self.log.warning("*WARNING* {}: '{}' for section {}"
-                                 " is not valid. It has "
+                self.log.warning(f"*WARNING*: '{param}' for section"
+                                 f" {self.properties[param]}"
+                                 " is not valid. "
+                                 f"{self.properties['section_name']} has "
                                  "been set to "
-                                 "{}".format(param,
-                                             self.properties[param],
-                                             self.properties['section_name'],
-                                             default_value))
+                                 f"{default_value}")
                 valid_color = default_value
             self.properties[param] = valid_color
             return False
@@ -347,23 +341,25 @@ height = 2
                     try:
                         custom_colors = eval(self.properties[param])
                     except (SyntaxError, NameError) as e:
-                        self.log.warning("Warning: section {}, {} was set as {} but "
-                                         "raises an error:\n{}\nIt will be ignored and"
-                                         " default value will be used."
-                                         "".format(self.properties['section_name'],
-                                                   param, self.properties[param],
-                                                   e))
+                        self.log.warning("Warning: section "
+                                         f"{self.properties['section_name']},"
+                                         f" {param} was set as "
+                                         f"{self.properties[param]} but "
+                                         f"raises an error:\n{e}\nIt will be "
+                                         "ignored and default value will be "
+                                         "used.")
                     else:
                         try:
                             valid_colormap = mc.LinearSegmentedColormap.from_list(
                                 'custom', custom_colors, N=100)
                         except ValueError as e:
-                            self.log.warning("Warning: section {}, {} was set as {} but "
-                                             "raises an error:\n{}\nIt will be ignored and"
-                                             " default value will be used."
-                                             "".format(self.properties['section_name'],
-                                                       param, self.properties[param],
-                                                       e))
+                            self.log.warning("Warning: section "
+                                             f"{self.properties['section_name']},"
+                                             f" {param} was set as "
+                                             f"{self.properties[param]} but "
+                                             f"raises an error:\n{e}\nIt will "
+                                             f"be ignored and"
+                                             " default value will be used.")
                 else:
                     if self.properties[param] in dir(plt.cm):
                         valid_colormap = self.properties[param]
@@ -371,26 +367,22 @@ height = 2
         # valid_color is None or a valid color or the default value
         # valid_colormap is None or a valid colormap
         if valid_color is None and valid_colormap is None:
-            self.log.warning("*WARNING* {}: '{}' for section {}"
+            self.log.warning(f"*WARNING* {param}: '{self.properties[param]}'"
+                             f" for section {self.properties['section_name']}"
                              " is not valid. It has "
                              "been set to "
-                             "{}".format(param,
-                                         self.properties[param],
-                                         self.properties['section_name'],
-                                         default_value))
+                             f"{default_value}")
             self.properties[param] = default_value
             return default_value_is_colormap
         if colormap_only:
             if valid_colormap is None:
                 # valid_color is not None
-                self.log.warning("*WARNING* {}: '{}' for section {}"
-                                 " is not valid: it is a color whereas"
-                                 " a colormap was expected. It has "
+                self.log.warning(f"*WARNING* {param}: "
+                                 f"'{self.properties[param]}' for section"
+                                 f" {self.properties['section_name']}"
+                                 " is not valid. It has "
                                  "been set to "
-                                 "{}".format(param,
-                                             self.properties[param],
-                                             self.properties['section_name'],
-                                             default_value))
+                                 f"{default_value}")
                 valid_colormap = default_value
             self.properties[param] = valid_colormap
             return True

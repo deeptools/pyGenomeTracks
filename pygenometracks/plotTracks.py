@@ -264,8 +264,8 @@ def get_region(region_string):
         if region_end <= region_start:
             raise InputError("Please check that the region end is larger "
                              "than the region start.\n"
-                             "Values given:\nstart: {}\nend: {}"
-                             "\n".format(region_start, region_end))
+                             f"Values given:\nstart: {region_start}\n"
+                             f"end: {region_end}\n")
 
         return chrom, region_start, region_end
 
@@ -302,7 +302,7 @@ def main(args=None):
                 # start = max(0, start)
                 # end += 100000
             sys.stderr.write(f"saving {file_name}\n")
-            # print("{} {} {}".format(chrom, start, end))
+            # print(f"{chrom} {start} {end}")
             trp.plot(file_name, chrom, start, end, title=args.title,
                      h_align_titles=args.trackLabelHAlign,
                      decreasing_x_axis=args.decreasingXAxis)

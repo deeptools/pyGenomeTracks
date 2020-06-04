@@ -8,7 +8,7 @@ DEFAULT_BED_COLOR = '#1f78b4'
 class TADsTrack(BedTrack):
     SUPPORTED_ENDINGS = ['.domain', '.domains', '.tad', '.tads']
     TRACK_TYPE = 'domains'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 #color = bed_rgb
@@ -26,8 +26,8 @@ color = darkblue
 # optional, default is black. To remove the border, simply set 'border_color' to none
 #border_color = black
 # optional. If not given it is guessed from the file ending.
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
 
     DEFAULTS_PROPERTIES = {'fontsize': 12,
                            'orientation': None,

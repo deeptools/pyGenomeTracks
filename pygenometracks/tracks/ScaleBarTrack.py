@@ -10,7 +10,7 @@ DEFAULT_SCALEBAR_COLOR = 'black'
 class ScaleBarTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = 'scalebar'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # color of the scalebar
 color = black
 # To use transparency, you can use alpha
@@ -32,8 +32,8 @@ color = black
 #where = right
 # fontsize: default is 12
 #fontsize = 10
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'fontsize': 12,
                            'color': DEFAULT_SCALEBAR_COLOR,
                            'alpha': 1,

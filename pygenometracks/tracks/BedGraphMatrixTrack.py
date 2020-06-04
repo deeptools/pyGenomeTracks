@@ -10,7 +10,7 @@ DEFAULT_BEDGRAPHMATRIX_COLORMAP = 'viridis'
 class BedGraphMatrixTrack(BedGraphTrack):
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz', '.bedgraphmatrix', '.bm.bgz']
     TRACK_TYPE = 'bedgraph_matrix'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # a bedgraph matrix file is like a bedgraph, except that per bin there
 # are more than one value separated by tab: E.g.
 # This file type is produced by HiCExplorer tool hicFindTads and contains
@@ -41,8 +41,8 @@ show_data_range = true
 
 # only when type lines is used. Adds horizontal lines
 plot_horizontal_lines = false
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
                            # In next 1.0 change matrix to lines
@@ -79,11 +79,11 @@ file_type = {}
     def set_properties_defaults(self):
         # To remove in next 1.0
         if 'type' not in self.properties:
-            self.log.warning("Deprecated Warning: The section {} did"
+            self.log.warning("Deprecated Warning: The section "
+                             f"{self.properties['section_name']} did"
                              " not specify the type. For the moment"
                              " the default type is matrix but in the"
-                             " next version it will be lines."
-                             "".format(self.properties['section_name']))
+                             " next version it will be lines.")
         # End to remove
         GenomeTrack.set_properties_defaults(self)
         if self.properties['type'] == 'matrix':

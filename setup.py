@@ -80,13 +80,10 @@ class install(_install):
         except EnvironmentError:
             # handle file not found error.
             # the config file is installed in:
-            msg = "\n**{0} not found. This " \
-                  "program is needed for the following "\
-                  "tools to work properly:\n"\
-                  " {1}\n"\
-                  "{0} can be downloaded from here:\n " \
-                  " {2}\n".format(program, affected_tools,
-                                  where_to_download)
+            msg = (f"\n**{program} not found. This program is needed"
+                   " for the following tools to work properly:\n"
+                   f"{affected_tools}\n{program} can be downloaded"
+                   f" from here:\n{where_to_download}\n")
             sys.stderr.write(msg)
 
         except Exception as e:

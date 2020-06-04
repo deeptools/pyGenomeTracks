@@ -13,7 +13,7 @@ DEFAULT_DISPLAY_BED = 'stacked'
 class GtfTrack(BedTrack):
     SUPPORTED_ENDINGS = ['gtf', 'gtf.gz']
     TRACK_TYPE = 'gtf'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # By default the transcript_name is used.
 # If you want to use the gene_name:
 # prefered_name = gene_name
@@ -83,8 +83,8 @@ fontsize = 10
 # the extremity of the interval use:
 # arrowhead_included = true
 # optional. If not given is guessed from the file ending.
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
 
     DEFAULTS_PROPERTIES = {'fontsize': 12,
                            'orientation': None,
