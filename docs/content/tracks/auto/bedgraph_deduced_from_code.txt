@@ -20,6 +20,8 @@ Optional:
 
 - **min_value**: by default this option is not set but you can also put: any float
 
+- **use_middle**: `false` (default) or true.
+
 - **show_data_range**: `true` (default) or false.
 
 - **type**: `fill` (default)

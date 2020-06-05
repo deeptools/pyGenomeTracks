@@ -5,6 +5,7 @@ import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Polygon
+from tqdm import tqdm
 
 DEFAULT_LINKS_COLOR = 'blue'
 
@@ -29,6 +30,9 @@ class LinksTrack(GenomeTrack):
 # Hi-C matrix to highlight the matrix pixel of the highlighted link
 # For these tracks do not hesitate to put large line_width like 5 or 10.
 links_type = arcs
+# For triangles and arcs, by default the extremities coordinates are used
+# To use the middle of start1 and end1 and the middle of start2 and end2
+#use_middle = true
 # color of the lines
 color = red
 # if color is a valid colormap name (like RdYlGn),
@@ -67,7 +71,8 @@ file_type = {TRACK_TYPE}
                            'max_value': None,
                            'min_value': None,
                            'ylim': None,
-                           'compact_arcs_level': '0'}
+                           'compact_arcs_level': '0',
+                           'use_middle': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -77,7 +82,7 @@ file_type = {TRACK_TYPE}
                            'line_style': ['solid', 'dashed',
                                           'dotted', 'dashdot'],
                            'compact_arcs_level': ['0', '1', '2']}
-    BOOLEAN_PROPERTIES = []
+    BOOLEAN_PROPERTIES = ['use_middle']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'links_type', 'line_style',
                          'title', 'color', 'compact_arcs_level']
@@ -323,7 +328,7 @@ file_type = {TRACK_TYPE}
         max_score = float('-inf')
         min_score = float('inf')
         with open(self.properties['file'], 'r') as file_h:
-            for line in file_h.readlines():
+            for line in tqdm(file_h.readlines()):
                 line_number += 1
                 if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
                     continue
@@ -380,8 +385,13 @@ file_type = {TRACK_TYPE}
                     start1, start2 = start2, start1
                     end1, end2 = end2, end1
 
-                # each interval spans from the smallest start to the largest end
-                interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
+                if self.properties['use_middle']:
+                    mid1 = (start1 + end1) / 2
+                    mid2 = (start2 + end2) / 2
+                    interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
+                else:
+                    # each interval spans from the smallest start to the largest end
+                    interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
                 valid_intervals += 1
 
         if valid_intervals == 0:

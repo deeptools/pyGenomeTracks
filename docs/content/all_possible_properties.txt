@@ -24,6 +24,10 @@
 
   - for *links*: 0, 1, 2
 
+- **use_middle**:
+
+  - for *links, bedgraph*: true, false
+
 - **merge_transcripts**:
 
   - for *domains, bed, gtf*: true, false
