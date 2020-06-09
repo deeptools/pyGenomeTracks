@@ -159,6 +159,29 @@ with open(os.path.join(ROOT, "browser_tracks_hic_rasterize_height.ini"), 'w') as
     fh.write(browser_tracks_with_hic)
 
 browser_tracks_with_hic = """
+[hic matrix]
+file = small_test2.cool
+title = cool with few interactions show_masked_bins = false (default)
+depth = 200000
+file_type = hic_matrix
+height = 5
+
+[spacer]
+
+[hic matrix]
+file = small_test2.cool
+title = cool with few interactions show_masked_bins = true
+depth = 200000
+file_type = hic_matrix
+height = 5
+show_masked_bins = true
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic)
+
+browser_tracks_with_hic = """
 [hic matrix log]
 file = Li_et_al_2015.h5
 title = depth = 200000; transform = log; show_masked_bins = true
@@ -305,6 +328,24 @@ def test_plot_hic_depth_smaller_binsize():
                      outfile.name).split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT, 'master_hic_small_test_2.png'),
+                         outfile.name, tolerance)
+    print("saving test to {}".format(outfile.name))
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_hic_plotting_region_smaller_binsize():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region chr1:0-5000 "\
+           "--trackLabelFraction 0.23 --width 38 " \
+           "--dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT, 'browser_tracks_hic_small_test.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_hic_small_test_small_region.png'),
                          outfile.name, tolerance)
     print("saving test to {}".format(outfile.name))
     assert res is None, res
