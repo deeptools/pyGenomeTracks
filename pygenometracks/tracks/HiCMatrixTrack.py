@@ -132,7 +132,9 @@ file_type = {}
 
         self.hic_ma.cut_intervals = new_intervals
         binsize = self.hic_ma.getBinSize()
-        max_depth_in_bins = int(self.properties['depth'] / binsize)
+        # Need to be sure that you keep at least one bin even if the depth is
+        # Smaller than the binsize
+        max_depth_in_bins = max(1, int(self.properties['depth'] / binsize))
 
         # work only with the lower matrix
         # and remove all pixels that are beyond
