@@ -234,7 +234,7 @@ class ReadBed(object):
                                          "The rgb field {} is not "
                                          "valid.\nOnly the first 8 fields"
                                          " will be used.\n"
-                                         "".format(self.line_number, r))
+                                         "".format(r))
                         self.file_type = 'bed8'
                         self.fields_to_read = 8
                         break
