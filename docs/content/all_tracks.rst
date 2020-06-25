@@ -1,31 +1,20 @@
 All available tracks
 ====================
 
+.. toctree::
+   :maxdepth: 1
 
-:doc:`tracks/bed`
-
-:doc:`tracks/bedgraph`
-
-:doc:`tracks/bedgraph_matrix`
-
-:doc:`tracks/bigwig`
-
-:doc:`tracks/domains`
-
-:doc:`tracks/epilogos`
-
-:doc:`tracks/gtf`
-
-:doc:`tracks/hic_matrix`
-
-:doc:`tracks/hlines`
-
-:doc:`tracks/links`
-
-:doc:`tracks/narrow_peak`
-
-:doc:`tracks/scalebar`
-
-:doc:`tracks/spacer`
-
-:doc:`tracks/x_axis`
+   tracks/bed
+   tracks/bedgraph
+   tracks/bedgraph_matrix
+   tracks/bigwig
+   tracks/domains
+   tracks/epilogos
+   tracks/gtf
+   tracks/hic_matrix
+   tracks/hlines
+   tracks/links
+   tracks/narrow_peak
+   tracks/scalebar
+   tracks/spacer
+   tracks/x_axis
