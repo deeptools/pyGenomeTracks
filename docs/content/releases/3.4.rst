@@ -2,12 +2,14 @@
 ===
 
 Improved documentation:
+^^^^^^^^^^^^^^^^^^^^^^^
 
 - fix url of test_data thanks to @sonnynguyen
 - Better documentation for pyGenomeTracks / makeTracksFile
 - Documentation of each track
 
 Enhancements:
+^^^^^^^^^^^^^^^^^^^^^^^
 
 - Different bed files format (BED3, BED4, BED5, BED6, BED8, BED9, BED12) is guessed based on the first line and rely not only on number of columns but on the type of each column (string/float etc.). This way, broadPeaks/gappedPeaks and other bed-like formats can be accepted as ``file_type = bed`` without preprocessing.
 
@@ -26,5 +28,6 @@ Enhancements:
 - Both ``type = line`` and ``type = lines`` are working in bedgraph_matrix
 
 Bugfix:
+^^^^^^^^^^^^^^^^^^^^^^^
 
 - In version 3.3, if you were using a colormap in bed the ``border_color`` and ``color_utr`` were ignored. Now each one can be set to different color/colormap/bed_rgb.
