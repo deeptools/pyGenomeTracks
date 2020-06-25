@@ -11,6 +11,7 @@ Releases
    releases/3.1.2  
    releases/3.1.1
    releases/3.1
+   releases/3.0
    releases/2.1
    releases/2.0
    releases/1.0
