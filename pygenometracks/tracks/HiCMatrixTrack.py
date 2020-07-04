@@ -211,7 +211,7 @@ file_type = {}
         region_len = region_end - region_start
         depth = min(self.properties['depth'], int(region_len * 1.25))
         # Need to be sure that you keep at least one bin even if the depth is
-        # Smaller than the binsize
+        # smaller than the binsize
         depth_in_bins = max(1, int(1.5 * region_len / self.hic_ma.getBinSize()))
 
         if depth < self.properties['depth']:
