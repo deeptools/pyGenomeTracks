@@ -132,7 +132,9 @@ file_type = {}
 
         self.hic_ma.cut_intervals = new_intervals
         binsize = self.hic_ma.getBinSize()
-        max_depth_in_bins = int(self.properties['depth'] / binsize)
+        # Need to be sure that you keep at least one bin even if the depth is
+        # smaller than the binsize
+        max_depth_in_bins = max(1, int(self.properties['depth'] / binsize))
 
         # work only with the lower matrix
         # and remove all pixels that are beyond
@@ -208,7 +210,9 @@ file_type = {}
 
         region_len = region_end - region_start
         depth = min(self.properties['depth'], int(region_len * 1.25))
-        depth_in_bins = int(1.5 * region_len / self.hic_ma.getBinSize())
+        # Need to be sure that you keep at least one bin even if the depth is
+        # smaller than the binsize
+        depth_in_bins = max(1, int(1.5 * region_len / self.hic_ma.getBinSize()))
 
         if depth < self.properties['depth']:
             log.warning("The depth was set to {} which is more than 125%"
@@ -248,12 +252,13 @@ file_type = {}
             vmin = self.properties['min_value']
         else:
             if depth_in_bins > matrix.shape[0]:
-                depth_in_bins = matrix.shape[0] - 5
+                # Make sure you keep one bin
+                depth_in_bins = max(1, matrix.shape[0] - 5)
 
             # if the region length is large with respect to the chromosome length, the diagonal may have
             # very few values or none. Thus, the following lines reduce the number of bins until the
-            # diagonal is at least length 5
-            num_bins_from_diagonal = int(region_len / self.hic_ma.getBinSize())
+            # diagonal is at least length 5 but make sure you have at least one value:
+            num_bins_from_diagonal = max(1, int(region_len / self.hic_ma.getBinSize()))
             for num_bins in range(0, num_bins_from_diagonal)[::-1]:
                 distant_diagonal_values = matrix.diagonal(num_bins)
                 if len(distant_diagonal_values) > 5:
