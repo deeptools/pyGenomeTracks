@@ -210,6 +210,20 @@ show_masked_bins = true
 with open(os.path.join(ROOT, "browser_tracks_hic_log-log.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic)
 
+browser_tracks_with_hic_small_2 = """
+[hic matrix]
+file = small_test2.cool
+title = cool with few interactions depth=10kb
+file_type = hic_matrix
+depth = 10000
+
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_2.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic_small_2)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -417,6 +431,42 @@ def test_plot_tracks_with_hic_small_above_chr_length():
     res = compare_images(os.path.join(ROOT,
                                       'master_plot_hic_small_test_chrM.png'),
                          outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_hic_depth_smaller_binsize():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region chr1:0-100000 "\
+           "--trackLabelFraction 0.23 --width 38 " \
+           "--dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT, 'browser_tracks_hic_small_test_2.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_hic_small_test_2.png'),
+                         outfile.name, tolerance)
+    print("saving test to {}".format(outfile.name))
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_hic_plotting_region_smaller_binsize():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region chr1:0-5000 "\
+           "--trackLabelFraction 0.23 --width 38 " \
+           "--dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT, 'browser_tracks_hic_small_test.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT, 'master_hic_small_test_small_region.png'),
+                         outfile.name, tolerance)
+    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)
