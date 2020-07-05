@@ -22,8 +22,6 @@ Optional:
 
 - **colormap**: `RdYlBu_r` (default)
 
-- **region**: by default this option is not set
-
 - **depth**: `100000` (default) or any integer above 1
 
 - **show_masked_bins**: `false` (default) or true.

@@ -43,6 +43,7 @@ file_type = {}
                            'use_summit': True,
                            'width_adjust': 1.5,
                            'type': 'peak',
+                           'region': None,  # Cannot be set manually but is set by tracksClass
                            'line_width': 1}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None}}

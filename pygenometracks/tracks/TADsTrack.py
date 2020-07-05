@@ -29,8 +29,7 @@ color = darkblue
 file_type = {}
     """.format(TRACK_TYPE)
 
-    DEFAULTS_PROPERTIES = {'fontsize': 12,
-                           'orientation': None,
+    DEFAULTS_PROPERTIES = {'orientation': None,
                            'color': DEFAULT_BED_COLOR,
                            'border_color': 'black',
                            'line_width': 0.5,
@@ -39,7 +38,8 @@ file_type = {}
                            'merge_transcripts': False,
                            # End to remove
                            'max_value': None,
-                           'min_value': None}
+                           'min_value': None,
+                           'region': None}  # Cannot be set manually but is set by tracksClass
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -63,3 +63,8 @@ file_type = {}
     def __init__(self, *args, **kwarg):
         super(TADsTrack, self).__init__(*args, **kwarg)
         self.properties['display'] = 'triangles'
+
+    def set_properties_defaults(self):
+        self.properties['fontsize'] = 12
+        super(TADsTrack, self).set_properties_defaults()
+        self.properties['global_max_row'] = False
