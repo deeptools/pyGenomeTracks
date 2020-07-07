@@ -274,13 +274,13 @@ file_type = {}
         else:
             ymax = transform(np.array([ymax]), self.properties['transform'],
                              self.properties['log_pseudocount'],
-                             'ymax')
+                             'ymax')[0]
         if ymin is None:
             ymin = plot_ymin
         else:
             ymin = transform(np.array([ymin]), self.properties['transform'],
                              self.properties['log_pseudocount'],
-                             'ymin')
+                             'ymin')[0]
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, ymin)
