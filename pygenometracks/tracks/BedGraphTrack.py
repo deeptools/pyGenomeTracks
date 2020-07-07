@@ -394,7 +394,7 @@ file_type = {}
         # the last position of the pos_list
         bw.addHeader([(chrom_region, pos_list[-1][1])])
         # The starts, ends, score are stored
-        bw.addEntries(np.repeat(chrom_region, len(pos_list)),
+        bw.addEntries([chrom_region] * len(pos_list),
                       [p[0] for p in pos_list],
                       ends=[p[1] for p in pos_list],
                       values=score_list)
