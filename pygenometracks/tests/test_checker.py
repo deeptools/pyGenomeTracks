@@ -11,7 +11,7 @@ from pygenometracks.utilities import InputError
 
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                    "test_data", "uncorrect_ini_files")
+                    "test_data")
 
 test_tracks_1 = """
 [vlines]

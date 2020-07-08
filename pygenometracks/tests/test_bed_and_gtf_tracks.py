@@ -486,25 +486,25 @@ with open(os.path.join(ROOT, "bed_unusual_formats.ini"), 'w') as fh:
 
 wrong_track = """
 [test gtf]
-file = ../dm3_subset_BDGP5.78_gtf.dat
+file = dm3_subset_BDGP5.78_gtf.dat
 height = 10
 title = gtf from ensembl (with dat extension)
 fontsize = 12
 file_type = bed
 """
-with open(os.path.join(ROOT, "uncorrect_ini_files", "gtf_as_bed.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "gtf_as_bed.ini"), 'w') as fh:
     fh.write(wrong_track)
 
 
 wrong_track = """
 [test bed]
-file = ../dm3_genes.bed.gz
+file = dm3_genes.bed.gz
 height = 10
 title = bed file
 fontsize = 12
 file_type = gtf
 """
-with open(os.path.join(ROOT, "uncorrect_ini_files", "bed_as_gtf.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "bed_as_gtf.ini"), 'w') as fh:
     fh.write(wrong_track)
 
 browser_tracks = """
@@ -773,9 +773,6 @@ def test_plot_tracks_bed_unusual_format():
 
 
 def test_gtf_as_bed():
-
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                 delete=False)
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
