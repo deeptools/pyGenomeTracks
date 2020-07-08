@@ -3,7 +3,7 @@ from .. readBed import ReadBed
 # To remove next 1.0
 from .. readGtf import ReadGtf
 # End to remove
-from .. utilities import opener, get_length_w, count_lines
+from .. utilities import opener, get_length_w, count_lines, temp_file_from_intersect, change_chrom_names
 import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
@@ -17,6 +17,7 @@ DEFAULT_BED_COLOR = '#1f78b4'
 DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
+AROUND_REGION = 100000
 
 
 class BedTrack(GenomeTrack):
@@ -124,6 +125,7 @@ file_type = {}
                            'arrowhead_included': False,
                            'color_utr': 'grey',
                            'height_utr': 1,
+                           'region': None,  # Cannot be set manually but is set by tracksClass
                            'arrow_length': None,
                            'all_labels_inside': False,
                            'labels_in_margin': False}
@@ -162,7 +164,7 @@ file_type = {}
         # this is bed3, bed4, bed5, bed6, bed8, bed9 or bed12
         self.len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions
-        self.interval_tree, min_score, max_score = self.process_bed()
+        self.interval_tree, min_score, max_score = self.process_bed(self.properties['region'])
         if self.colormap is not None:
             if self.properties['min_value'] is not None:
                 min_score = self.properties['min_value']
@@ -217,7 +219,13 @@ file_type = {}
         # to set the distance between rows
         self.row_scale = 2.3
 
-    def get_bed_handler(self):
+    def get_bed_handler(self, plot_regions=None):
+        if not self.properties['global_max_row']:
+            # I do the intersection:
+            file_to_open = temp_file_from_intersect(self.properties['file'],
+                                                    plot_regions, AROUND_REGION)
+        else:
+            file_to_open = self.properties['file']
         # To remove in next 1.0
         if self.properties['file'].endswith('gtf') or \
            self.properties['file'].endswith('gtf.gz'):
@@ -228,21 +236,21 @@ file_type = {}
                              " use file_type = gtf."
                              "".format(self.properties['section_name'],
                                        self.TRACK_TYPE))
-            bed_file_h = ReadGtf(self.properties['file'],
+            bed_file_h = ReadGtf(file_to_open,
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
             total_length = bed_file_h.length
         else:
             # end of remove
-            total_length = count_lines(opener(self.properties['file']),
+            total_length = count_lines(opener(file_to_open),
                                        asBed=True)
-            bed_file_h = ReadBed(opener(self.properties['file']))
+            bed_file_h = ReadBed(opener(file_to_open))
 
         return(bed_file_h, total_length)
 
-    def process_bed(self):
+    def process_bed(self, plot_regions=None):
 
-        bed_file_h, total_length = self.get_bed_handler()
+        bed_file_h, total_length = self.get_bed_handler(plot_regions)
         self.bed_type = bed_file_h.file_type
 
         if self.properties['color'] == 'bed_rgb' and \
@@ -277,7 +285,7 @@ file_type = {}
 
         if valid_intervals == 0:
             self.log.warning("No valid intervals were found in file "
-                             "{}".format(self.properties['file']))
+                             "{}\n".format(self.properties['file']))
 
         return interval_tree, min_score, max_score
 
@@ -351,7 +359,7 @@ file_type = {}
     def plot(self, ax, chrom_region, start_region, end_region):
         if chrom_region not in self.interval_tree.keys():
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
+            chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
                                  + " nor " + chrom_region + " existss as a "

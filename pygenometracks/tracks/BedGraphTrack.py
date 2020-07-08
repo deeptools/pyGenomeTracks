@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree, plot_coverage, InputError, transform
+from .. utilities import file_to_intervaltree, plot_coverage, InputError, transform, change_chrom_names
 import numpy as np
 import pyBigWig
 import tempfile
@@ -94,6 +94,7 @@ file_type = {}
                            'rasterize': False,
                            'number_of_bins': 700,
                            'type': 'fill',
+                           'region': None,  # Cannot be set manually but is set by tracksClass
                            'transform': 'no',
                            'log_pseudocount': 0,
                            'y_axis_values': 'transformed',
@@ -189,10 +190,13 @@ file_type = {}
             try:
                 self.tbx = pysam.TabixFile(self.properties['file'])
             except IOError:
-                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'])
+                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                                  self.properties['region'])
         # load the file as an interval tree
         else:
-            self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'])
+            self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                              self.properties['region'])
+
         self.num_fields = None
 
     def _get_row_data(self, row, tbx_var='self.tbx'):
@@ -247,7 +251,7 @@ file_type = {}
         if tbx is not None:
             if chrom_region not in tbx.contigs:
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
+                chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in tbx.contigs:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
@@ -265,7 +269,7 @@ file_type = {}
             inttree = eval(inttree_var)
             if chrom_region not in list(inttree):
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
+                chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in list(inttree):
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
@@ -295,7 +299,15 @@ file_type = {}
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         if pos_list == []:
             return
-        score_list = [float(x[0]) for x in score_list]
+        try:
+            score_list = [float(x[0]) for x in score_list]
+        except ValueError as ve:
+            if "could not convert string to float: 'NA'" in str(ve):
+                self.log.warning("*Warning*\nNA were found in the bedgraph"
+                                 " will be replaced by nan")
+                score_list = [float(x[0]) if x[0] != 'NA' else float('nan') for x in score_list]
+            else:
+                raise ve
         if self.properties['use_middle']:
             x_values = np.asarray([(t[0] + t[1]) / 2
                                    for i, t in enumerate(pos_list)

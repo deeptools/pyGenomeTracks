@@ -102,10 +102,6 @@
 
   - for *bigwig, bedgraph*: true, false
 
-- **use_middle**:
-
-  - for *bedgraph*: true, false
-
 - **rasterize**:
 
   - for *bedgraph, bedgraph_matrix, hic_matrix*: true, false

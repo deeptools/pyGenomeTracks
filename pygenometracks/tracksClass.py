@@ -12,7 +12,7 @@ import matplotlib.colors
 import matplotlib.gridspec
 import matplotlib.cm
 import mpl_toolkits.axisartist as axisartist
-from . utilities import file_to_intervaltree
+from . utilities import file_to_intervaltree, change_chrom_names
 from collections import OrderedDict
 from pygenometracks.tracks.GenomeTrack import GenomeTrack
 from pygenometracks.utilities import InputError
@@ -66,7 +66,7 @@ class PlotTracks(object):
     def __init__(self, tracks_file, fig_width=DEFAULT_FIGURE_WIDTH,
                  fig_height=None, fontsize=None, dpi=None,
                  track_label_width=None,
-                 pRegion=None):
+                 plot_regions=None):
         self.fig_width = fig_width
         self.fig_height = fig_height
         self.dpi = dpi
@@ -75,7 +75,7 @@ class PlotTracks(object):
         self.track_list = None
         start = self.print_elapsed(None)
         self.available_tracks = self.get_available_tracks()
-        self.parse_tracks(tracks_file)
+        self.parse_tracks(tracks_file, plot_regions=plot_regions)
         if fontsize:
             fontsize = fontsize
         else:
@@ -98,11 +98,8 @@ class PlotTracks(object):
             log.info("initialize {}".format(properties['section_name']))
             # the track_class is obtained from the available tracks
             track_class = self.available_tracks[properties['file_type']]
-            if properties['file_type'] == 'hic_matrix':
-                properties['region'] = pRegion
-                self.track_obj_list.append(track_class(properties))
-            else:
-                self.track_obj_list.append(track_class(properties))
+            properties['region'] = plot_regions
+            self.track_obj_list.append(track_class(properties))
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
@@ -139,6 +136,9 @@ class PlotTracks(object):
         """
         track_height = []
         for i, track_dict in enumerate(self.track_list):
+            if i == 0 and track_dict['overlay_previous'] != 'no':
+                log.warning("First track can not have the `overlay_previous` option")
+                self.track_list[i]['overlay_previous'] = 'no'
             # if overlay_previous is set to a value other than no
             # then, skip this track height
             if track_dict['overlay_previous'] != 'no':
@@ -230,9 +230,6 @@ class PlotTracks(object):
         plot_axis = None
         for idx, track in enumerate(self.track_obj_list):
             log.info("plotting {}".format(track.properties['section_name']))
-            if idx == 0 and track.properties['overlay_previous'] != 'no':
-                log.warning("First track can not have the `overlay_previous` option")
-                track.properties['overlay_previous'] = 'no'
 
             if track.properties['overlay_previous'] in ['yes', 'share-y']:
                 overlay = True
@@ -302,7 +299,7 @@ class PlotTracks(object):
 
         if chrom_region not in list(self.vlines_intval_tree):
             chrom_region_before = chrom_region
-            chrom_region = GenomeTrack.change_chrom_names(chrom_region)
+            chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in list(self.vlines_intval_tree):
                 log.warning("*Warning*\nNeither "
                             + chrom_region_before + " nor "
@@ -326,11 +323,14 @@ class PlotTracks(object):
 
         return
 
-    def parse_tracks(self, tracks_file):
+    def parse_tracks(self, tracks_file, plot_regions=None):
         """
         Parses a configuration file
 
         :param tracks_file: file path containing the track configuration
+        :param plot_regions: a list of tuple [(chrom1, start1, end1), (chrom2, start2, end2)]
+                             on which the data should be loaded
+                             here the vlines
         :return: array of dictionaries and vlines_file.
                  One dictionary per track
         """
@@ -523,7 +523,8 @@ class PlotTracks(object):
         self.track_list = track_list
         if self.vlines_properties:
             self.vlines_intval_tree, __, __ = \
-                file_to_intervaltree(self.vlines_properties['file'])
+                file_to_intervaltree(self.vlines_properties['file'],
+                                     plot_regions)
 
     def close_files(self):
         """

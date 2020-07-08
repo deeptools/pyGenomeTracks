@@ -5,9 +5,11 @@ import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Polygon
+from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect
 from tqdm import tqdm
 
 DEFAULT_LINKS_COLOR = 'blue'
+HUGE_NUMBER = 1e15  # Which should be above any chromosome size
 
 
 class LinksTrack(GenomeTrack):
@@ -70,6 +72,7 @@ file_type = {}
                            'alpha': 0.8,
                            'max_value': None,
                            'min_value': None,
+                           'region': None,  # Cannot be set manually but is set by tracksClass
                            'ylim': None,
                            'compact_arcs_level': '0',
                            'use_middle': False}
@@ -98,7 +101,7 @@ file_type = {}
     def set_properties_defaults(self):
         super(LinksTrack, self).set_properties_defaults()
         self.max_height = None
-        self.interval_tree, min_score, max_score, has_score = self.process_link_file()
+        self.interval_tree, min_score, max_score, has_score = self.process_link_file(self.properties['region'])
         if self.properties['line_width'] is None and not has_score:
             self.log.warning("*WARNING* for section {}"
                              " no line_width has been set but some "
@@ -156,7 +159,7 @@ file_type = {}
 
         if chrom_region not in list(self.interval_tree):
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
+            chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in list(self.interval_tree):
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
                                  + " nor " + chrom_region + " existss as a "
@@ -318,81 +321,92 @@ file_type = {}
         if y2 > self.max_height:
             self.max_height = y2
 
-    def process_link_file(self):
+    def process_link_file(self, plot_regions):
         # the file format expected is similar to file format of links in
         # circos:
         # chr1 100 200 chr1 250 300 0.5
         # where the last value is a score.
+
+        if plot_regions is None:
+            file_to_open = self.properties['file']
+        else:
+            # To be sure we do not miss links we will intersect with bed with
+            # only chromosomes used in plot_regions
+            plot_regions_adapted = [(chrom, 0, HUGE_NUMBER) for chrom, __, __ in plot_regions]
+            file_to_open = temp_file_from_intersect(self.properties['file'],
+                                                    plot_regions_adapted)
+
         valid_intervals = 0
         interval_tree = {}
         line_number = 0
         has_score = True
         max_score = float('-inf')
         min_score = float('inf')
-        with open(self.properties['file'], 'r') as file_h:
-            for line in tqdm(file_h.readlines()):
-                line_number += 1
-                if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
-                    continue
-                try:
-                    chrom1, start1, end1, chrom2, start2, end2 = line.strip().split('\t')[:6]
-                except Exception as detail:
-                    raise InputError('File not valid. The format is chrom1 start1, end1, '
-                                     'chrom2, start2, end2\nError: {}\n in line\n {}'.format(detail, line))
-                try:
-                    score = line.strip().split('\t')[6]
-                except IndexError:
-                    has_score = False
-                    score = np.nan
+        file_h = opener(file_to_open)
+        for line in tqdm(file_h.readlines()):
+            line_number += 1
+            line = to_string(line)
+            if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
+                continue
+            try:
+                chrom1, start1, end1, chrom2, start2, end2 = line.strip().split('\t')[:6]
+            except Exception as detail:
+                raise InputError('File not valid. The format is chrom1 start1, end1, '
+                                 'chrom2, start2, end2\nError: {}\n in line\n {}'.format(detail, line))
+            if chrom1 != chrom2:
+                self.log.warning("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
+                continue
 
+            try:
+                score = line.strip().split('\t')[6]
+            except IndexError:
+                has_score = False
+                score = np.nan
+
+            try:
+                start1 = int(start1)
+                end1 = int(end1)
+                start2 = int(start2)
+                end2 = int(end2)
+            except ValueError as detail:
+                raise InputError("Error reading line: {}. One of the fields is not "
+                                 "an integer.\nError message: {}".format(line_number, detail))
+
+            assert start1 <= end1, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
+            assert start2 <= end2, "Error in line #{}, end2 larger than start2 in {}".format(line_number, line)
+
+            if has_score:
                 try:
-                    start1 = int(start1)
-                    end1 = int(end1)
-                    start2 = int(start2)
-                    end2 = int(end2)
+                    score = float(score)
                 except ValueError as detail:
-                    raise InputError("Error reading line: {}. One of the fields is not "
-                                     "an integer.\nError message: {}".format(line_number, detail))
-
-                assert start1 <= end1, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
-                assert start2 <= end2, "Error in line #{}, end2 larger than start2 in {}".format(line_number, line)
-
-                if has_score:
-                    try:
-                        score = float(score)
-                    except ValueError as detail:
-                        self.log.warning("Warning: reading line: {}. The score is not valid {} will not be used. "
-                                         "\nError message: {}".format(line_number, score, detail))
-                        score = np.nan
-                        has_score = False
-                    else:
-                        if score < min_score:
-                            min_score = score
-                        if score > max_score:
-                            max_score = score
-
-                if chrom1 != chrom2:
-                    self.log.warning("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
-                    continue
-
-                if chrom1 not in interval_tree:
-                    interval_tree[chrom1] = IntervalTree()
-
-                if start2 < start1:
-                    start1, start2 = start2, start1
-                    end1, end2 = end2, end1
-
-                if self.properties['use_middle']:
-                    mid1 = (start1 + end1) / 2
-                    mid2 = (start2 + end2) / 2
-                    interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
+                    self.log.warning("Warning: reading line: {}. The score is not valid {} will not be used. "
+                                     "\nError message: {}".format(line_number, score, detail))
+                    score = np.nan
+                    has_score = False
                 else:
-                    # each interval spans from the smallest start to the largest end
-                    interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
-                valid_intervals += 1
+                    if score < min_score:
+                        min_score = score
+                    if score > max_score:
+                        max_score = score
+
+            if chrom1 not in interval_tree:
+                interval_tree[chrom1] = IntervalTree()
+
+            if start2 < start1:
+                start1, start2 = start2, start1
+                end1, end2 = end2, end1
+
+            if self.properties['use_middle']:
+                mid1 = (start1 + end1) / 2
+                mid2 = (start2 + end2) / 2
+                interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
+            else:
+                # each interval spans from the smallest start to the largest end
+                interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
+            valid_intervals += 1
 
         if valid_intervals == 0:
-            self.log.warning("No valid intervals were found in file {}".format(self.properties['file']))
+            self.log.warning("No valid intervals were found in file {}\n".format(self.properties['file']))
 
         file_h.close()
         return(interval_tree, min_score, max_score, has_score)

@@ -98,10 +98,11 @@ install_requires_py = ["numpy >=1.16",
                        "intervaltree >=2.1.0",
                        "pyBigWig >=0.3.16",
                        "future >=0.17.0",
-                       "hicmatrix >=12",
+                       "hicmatrix >=13",
                        "pysam >=0.14",
                        "pytest",
                        "gffutils >=0.9",
+                       "pybedtools >=0.8.1",
                        "tqdm >=4.20"
                        ]
 
