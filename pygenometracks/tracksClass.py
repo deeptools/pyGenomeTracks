@@ -494,7 +494,8 @@ class PlotTracks(object):
                          f"unused:{unused_keys}")
             # The track_options will be checked for the file paths:
             track_options = self.check_file_exists(track_options,
-                                                   tracks_file_path)
+                                                   tracks_file_path,
+                                                   track_options['file_type'] == 'hic_matrix')
             # The 'overlay_previous' is initialized:
             if 'overlay_previous' not in track_options:
                 track_options['overlay_previous'] = 'no'
@@ -527,7 +528,7 @@ class PlotTracks(object):
             track.__del__()
 
     @staticmethod
-    def check_file_exists(track_dict, tracks_path):
+    def check_file_exists(track_dict, tracks_path, is_hic=False):
         """
         Checks if a file or list of files exists. If the file does not exists
         tries to check if the file may be relative to the track_file path,
@@ -551,15 +552,21 @@ class PlotTracks(object):
                 file_names = [x for x in track_dict[file_field_name].split(" ") if x != '']
                 full_path_file_names = []
                 for file_name in file_names:
+                    if is_hic and not file_name.endswith('.h5'):
+                        file_name_to_check = file_name.split("::")[0]
+                    else:
+                        file_name_to_check = file_name
+
                     try:
-                        open(file_name, 'r').close()
+                        open(file_name_to_check, 'r').close()
                         full_path_file_names.append(file_name)
                     except IOError:
                         try:
                             # try to find the file in the same path as the
-                            # the path of the
+                            # track file
                             name_with_tracks_path = tracks_path + "/" + file_name
-                            open(name_with_tracks_path, 'r').close()
+                            name_with_tracks_path_to_check = tracks_path + "/" + file_name_to_check
+                            open(name_with_tracks_path_to_check, 'r').close()
                             full_path_file_names.append(name_with_tracks_path)
                         except IOError:
                             raise InputError(f"File in section [{track_dict['section_name']}] "
