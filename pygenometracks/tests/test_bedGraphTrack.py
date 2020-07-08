@@ -134,40 +134,48 @@ with open(os.path.join(ROOT, "operation_bdg.ini"), 'w') as fh:
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
-def test_plot_bedgraph_tracks():
+def test_plot_bedgraph_tracks_with_bed():
+    extension = '.png'
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "bedgraph_useMid.ini")
-    region = "chr2:73,800,000-75,744,000"
-    expected_file = os.path.join(ROOT, 'master_bedgraph_useMid.png')
-    args = f"--tracks {ini_file} --region {region} "\
+    bed_file = os.path.join(ROOT, 'regions_imbricated_chr2.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
+    for region in ['chr2:73800000-75744000', 'chr2:74000000-74800000']:
+        region_str = region.replace(':', '-')
+        output_file = outfile.name[:-4] + '_' + region_str + extension
+        expected_file = os.path.join(ROOT, 'master_bedgraph_useMid_'
+                                          + region_str + extension)
+        res = compare_images(expected_file,
+                             output_file, tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
+        os.remove(output_file)
 
 
-def test_plot_bedgraph_tracks_zoom():
+def test_plot_bedgraph_tracks_individual():
+    extension = '.png'
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                 delete=False)
-    ini_file = os.path.join(ROOT, "bedgraph_useMid.ini")
-    region = "chr2:74,000,000-74,800,000"
-    expected_file = os.path.join(ROOT, 'master_bedgraph_useMid_zoom.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
+    for region in ['chr2:73800000-75744000', 'chr2:74000000-74800000']:
+        outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        ini_file = os.path.join(ROOT, "bedgraph_useMid.ini")
+        region_str = region.replace(':', '-')
+        expected_file = os.path.join(ROOT, 'master_bedgraph_useMid_'
+                                          + region_str + extension)
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
+        os.remove(outfile.name)
 
 
 def test_plot_bedgraph_tracks_rasterize():

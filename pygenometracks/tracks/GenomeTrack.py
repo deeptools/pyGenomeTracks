@@ -395,22 +395,6 @@ height = 2
                 return True
 
     @staticmethod
-    def change_chrom_names(chrom):
-        """
-        Changes UCSC chromosome names to ensembl chromosome names
-        and vice versa.
-        """
-        # TODO: mapping from chromosome names like mithocondria is missing
-        if chrom.startswith('chr'):
-            # remove the chr part from chromosome name
-            chrom = chrom[3:]
-        else:
-            # prefix with 'chr' the chromosome name
-            chrom = 'chr' + chrom
-
-        return chrom
-
-    @staticmethod
     def check_chrom_str_bytes(iteratable_obj, p_obj):
         # determine type
         if isinstance(p_obj, list) and len(p_obj) > 0:

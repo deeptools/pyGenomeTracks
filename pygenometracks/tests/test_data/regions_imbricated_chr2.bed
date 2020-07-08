@@ -1,0 +1,3 @@
+track type=bed name=regions_to_plot
+chr2	73800000	75744000
+chr2	74000000	74800000

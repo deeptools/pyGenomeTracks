@@ -1,6 +1,6 @@
 from . GenomeTrack import GenomeTrack
 import numpy as np
-from .. utilities import plot_coverage, InputError, transform
+from .. utilities import plot_coverage, InputError, transform, change_chrom_names
 import pyBigWig
 
 DEFAULT_BIGWIG_COLOR = '#33a02c'
@@ -148,7 +148,7 @@ file_type = {TRACK_TYPE}
 
         if chrom_region not in self.bw.chroms().keys():
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
+            chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.bw.chroms().keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
                                  + " nor " + chrom_region + " existss as a "
@@ -212,7 +212,7 @@ file_type = {TRACK_TYPE}
             chrom_region2 = chrom_region
             if chrom_region2 not in self.bw2.chroms().keys():
                 chrom_region_before2 = chrom_region2
-                chrom_region2 = self.change_chrom_names(chrom_region2)
+                chrom_region2 = change_chrom_names(chrom_region2)
                 if chrom_region2 not in self.bw2.chroms().keys():
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before2 + " nor "

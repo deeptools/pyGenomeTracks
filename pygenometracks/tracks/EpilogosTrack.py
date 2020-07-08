@@ -39,7 +39,8 @@ categories_file = <path to json categories file>
 file_type = {TRACK_TYPE}
     """
     DEFAULTS_PROPERTIES = {'categories_file': None,
-                           'orientation': None}
+                           'orientation': None,
+                           'region': None}  # Cannot be set manually but is set by tracksClass
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}

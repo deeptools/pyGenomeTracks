@@ -2,12 +2,14 @@ from . GenomeTrack import GenomeTrack
 from . BedTrack import BedTrack
 from .. readGtf import ReadGtf
 from matplotlib import font_manager
+from .. utilities import temp_file_from_intersect
 import numpy as np
 
 DEFAULT_BED_COLOR = '#1f78b4'
 DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
+AROUND_REGION = 100000
 
 
 class GtfTrack(BedTrack):
@@ -104,6 +106,7 @@ file_type = {TRACK_TYPE}
                            'color_utr': 'grey',
                            'height_utr': 1,
                            'arrow_length': None,
+                           'region': None,  # Cannot be set manually but is set by tracksClass
                            'all_labels_inside': False,
                            'labels_in_margin': False}
     NECESSARY_PROPERTIES = ['file']
@@ -147,8 +150,15 @@ file_type = {TRACK_TYPE}
         # to set the distance between rows
         self.row_scale = 2.3
 
-    def get_bed_handler(self):
-        bed_file_h = ReadGtf(self.properties['file'],
+    def get_bed_handler(self, plot_regions=None):
+        if not self.properties['global_max_row']:
+            # I do the intersection:
+            file_to_open = temp_file_from_intersect(self.properties['file'],
+                                                    plot_regions, AROUND_REGION)
+        else:
+            file_to_open = self.properties['file']
+
+        bed_file_h = ReadGtf(file_to_open,
                              self.properties['prefered_name'],
                              self.properties['merge_transcripts'])
         total_length = bed_file_h.length

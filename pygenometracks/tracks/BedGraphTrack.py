@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree, plot_coverage, InputError, transform
+from .. utilities import file_to_intervaltree, plot_coverage, InputError, transform, change_chrom_names
 import numpy as np
 import pyBigWig
 import tempfile
@@ -94,6 +94,7 @@ file_type = {TRACK_TYPE}
                            'rasterize': False,
                            'number_of_bins': 700,
                            'type': 'fill',
+                           'region': None,  # Cannot be set manually but is set by tracksClass
                            'transform': 'no',
                            'log_pseudocount': 0,
                            'y_axis_values': 'transformed',
@@ -189,10 +190,13 @@ file_type = {TRACK_TYPE}
             try:
                 self.tbx = pysam.TabixFile(self.properties['file'])
             except IOError:
-                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'])
+                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                                  self.properties['region'])
         # load the file as an interval tree
         else:
-            self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'])
+            self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                              self.properties['region'])
+
         self.num_fields = None
 
     def _get_row_data(self, row, tbx_var='self.tbx'):
@@ -247,7 +251,7 @@ file_type = {TRACK_TYPE}
         if tbx is not None:
             if chrom_region not in tbx.contigs:
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
+                chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in tbx.contigs:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
@@ -265,7 +269,7 @@ file_type = {TRACK_TYPE}
             inttree = eval(inttree_var)
             if chrom_region not in list(inttree):
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
+                chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in list(inttree):
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "

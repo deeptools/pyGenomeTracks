@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import LogFormatter
 from . GenomeTrack import GenomeTrack
+from .. utilities import change_chrom_names
 import logging
 import itertools
 
@@ -52,7 +53,7 @@ show_masked_bins = false
 # rasterize = false
 file_type = {TRACK_TYPE}
     """
-    DEFAULTS_PROPERTIES = {'region': None,
+    DEFAULTS_PROPERTIES = {'region': None,  # Cannot be set manually but is set by tracksClass
                            'depth': 100000,
                            'orientation': None,
                            'show_masked_bins': False,
@@ -84,27 +85,81 @@ file_type = {TRACK_TYPE}
 
     def set_properties_defaults(self):
         super(HiCMatrixTrack, self).set_properties_defaults()
+        # Put default img to None for y axis
+        self.img = None
         region = None
         if self.properties['region'] is not None:
-            if self.properties['region'][2] == 1e15:
-                region = [str(self.properties['region'][0])]
-            elif len(self.properties['region']) == 3:
-                start = int(self.properties['region'][1]) - self.properties['depth']
-                if start < 0:
-                    start = 0
-                end = int(self.properties['region'][2]) + self.properties['depth']
+            # We need to restrict it to a single region because
+            # HiCMatrix does not accept more
+            # We check if everything is on a single chrom:
+            if len(set([r[0] for r in self.properties['region']])) == 1:
+                chrom = self.properties['region'][0][0]
+                start = min([r[1] for r in self.properties['region']])
+                end = max([r[2] for r in self.properties['region']])
+                # I extend of depth to avoid triangle effect in the plot
+                start = max(0, start - self.properties['depth'])
+                end += self.properties['depth']
+                region = ["{}:{}-{}".format(chrom, start, end)]
+        # Cooler and thus HiCMatrix with cool file will raise an error if:
+        # - the file is a cool file and:
+        #    - the region goes over the chromosome size
+        #   or
+        #   - the chromosome is not part of the matrix
 
-                region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(end)]
-        # try to open with end region + depth to avoid triangle effect in the plot
-        # if it fails open it with given end region.
+        # We need to change the log level because we don't want
+        # the user to see all the errors raised during the try except
+        logging.getLogger('hicmatrix').setLevel(logging.CRITICAL)
         try:
-            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
-        except Exception:
-            region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(self.properties['region'][2])]
-            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
+            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                              pChrnameList=region)
+        except ValueError as ve:
+            if region is not None:
+                if "Unknown sequence label" in str(ve):
+                    rs = region[0].split(':')
+                    chrom_region = rs[0]
+                    chrom_region_before = chrom_region
+                    chrom_region = change_chrom_names(chrom_region)
+                    if len(rs) == 2:
+                        region = ["{}:{}".format(chrom_region, rs[1])]
+                    else:
+                        region = [chrom_region]
+                    try:
+                        self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                                          pChrnameList=region)
+                    except ValueError as ve2:
+                        if "Unknown sequence label" in str(ve2):
+                            self.log.warning("*Warning*\nNeither " + chrom_region_before
+                                             + " nor " + chrom_region + " exists as a "
+                                             "chromosome name on the matrix. "
+                                             "This will generate an empty track!!\n")
+                            self.hic_ma = HiCMatrix.hiCMatrix()
+                            self.hic_ma.matrix = scipy.sparse.csr_matrix((0, 0))
+                        elif "Genomic region out of bounds" in str(ve2):
+                            region = [chrom_region]
+                            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                                              pChrnameList=region)
+                        else:
+                            raise ve2
+                elif "Genomic region out of bounds" in str(ve):
+                    region = [region[0].split(':')[0]]
+                    self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                                      pChrnameList=region)
+                else:
+                    raise ve
+            else:
+                raise ve
+        # We put back the log to warning
+        logging.getLogger('hicmatrix').setLevel(logging.WARNING)
 
         if len(self.hic_ma.matrix.data) == 0:
-            raise Exception(f"Matrix {self.properties['file']} is empty")
+            if region is None:
+                # This is not due to a restriction of the matrix
+                raise Exception(f"Matrix {self.properties['file']} is empty")
+            else:
+                return
+        # We need to get the size before masking bins because
+        # HiCMatrix v13 give smaller chromosome_sizes after:
+        self.chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if self.properties['show_masked_bins']:
             pass
         else:
@@ -132,7 +187,9 @@ file_type = {TRACK_TYPE}
 
         self.hic_ma.cut_intervals = new_intervals
         binsize = self.hic_ma.getBinSize()
-        max_depth_in_bins = int(self.properties['depth'] / binsize)
+        # Need to be sure that you keep at least one bin even if the depth is
+        # smaller than the binsize
+        max_depth_in_bins = max(1, int(self.properties['depth'] / binsize))
 
         # work only with the lower matrix
         # and remove all pixels that are beyond
@@ -164,29 +221,39 @@ file_type = {TRACK_TYPE}
         self.cmap.set_bad('black')
 
     def plot(self, ax, chrom_region, region_start, region_end):
+        if len(self.hic_ma.matrix.data) == 0:
+            self.log.warning("*Warning*\nThere is no data for the region "
+                             "considered on the matrix. "
+                             "This will generate an empty track!!\n")
+            self.img = None
+            return
 
         log.debug(f'chrom_region {chrom_region}, region_start {region_start}, region_end {region_end}')
-        chrom_sizes = self.hic_ma.get_chromosome_sizes()
-        if chrom_region not in chrom_sizes:
+        if chrom_region not in self.chrom_sizes:
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
-            if chrom_region not in chrom_sizes:
+            chrom_region = change_chrom_names(chrom_region)
+            if chrom_region not in self.chrom_sizes:
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
+                                 + " nor " + chrom_region + " exists as a "
                                  "chromosome name on the matrix. "
                                  "This will generate an empty track!!\n")
+                self.img = None
                 return
 
-        chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
-        if region_end > chrom_sizes[chrom_region]:
-            raise Exception("*Error*\nThe region to plot extends beyond the"
+        chrom_region = self.check_chrom_str_bytes(self.chrom_sizes, chrom_region)
+        if region_end > self.chrom_sizes[chrom_region]:
+            self.log.warning("*Warning*\nThe region to plot extends beyond the"
                             " chromosome size. Please check.\n"
                             f"{chrom_region} size: {chrom_sizes[chrom_region]}"
                             f". Region to plot {region_start}-{region_end}\n")
 
-        # if self.properties['file'].endswith('.cool'):
-        #     # load now the region to be plotted
-        #     pass
+        # A chromosome may disappear if it was full of Nan and nan bins were masked:
+        if chrom_region not in self.hic_ma.get_chromosome_sizes():
+            self.log.warning("*Warning*\nThere is no data for the region "
+                             "considered on the matrix. "
+                             "This will generate an empty track!!\n")
+            self.img = None
+            return
 
         # expand region to plus depth on both sides
         # to avoid a 45 degree 'cut' on the edges
@@ -209,7 +276,9 @@ file_type = {TRACK_TYPE}
 
         region_len = region_end - region_start
         depth = min(self.properties['depth'], int(region_len * 1.25))
-        depth_in_bins = int(1.5 * region_len / self.hic_ma.getBinSize())
+        # Need to be sure that you keep at least one bin even if the depth is
+        # smaller than the binsize
+        depth_in_bins = max(1, int(1.5 * region_len / self.hic_ma.getBinSize()))
 
         if depth < self.properties['depth']:
             log.warning(f"The depth was set to {self.properties['depth']} which is more than 125%"
@@ -243,18 +312,22 @@ file_type = {TRACK_TYPE}
 
         else:
             # try to use a 'aesthetically pleasant' max value
-            vmax = np.percentile(matrix.diagonal(1), 80)
+            try:
+                vmax = np.percentile(matrix.diagonal(1), 80)
+            except Exception:
+                vmax = None
 
         if self.properties['min_value'] is not None:
             vmin = self.properties['min_value']
         else:
             if depth_in_bins > matrix.shape[0]:
-                depth_in_bins = matrix.shape[0] - 5
+                # Make sure you keep one bin
+                depth_in_bins = max(1, matrix.shape[0] - 5)
 
             # if the region length is large with respect to the chromosome length, the diagonal may have
             # very few values or none. Thus, the following lines reduce the number of bins until the
-            # diagonal is at least length 5
-            num_bins_from_diagonal = int(region_len / self.hic_ma.getBinSize())
+            # diagonal is at least length 5 but make sure you have at least one value:
+            num_bins_from_diagonal = max(1, int(region_len / self.hic_ma.getBinSize()))
             for num_bins in range(0, num_bins_from_diagonal)[::-1]:
                 distant_diagonal_values = matrix.diagonal(num_bins)
                 if len(distant_diagonal_values) > 5:
@@ -274,6 +347,8 @@ file_type = {TRACK_TYPE}
             ax.set_ylim(0, depth)
 
     def plot_y_axis(self, cbar_ax, plot_ax):
+        if self.img is None:
+            return
 
         if self.properties['transform'] in ['log', 'log1p']:
             # get a useful log scale
