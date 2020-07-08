@@ -776,7 +776,7 @@ def test_gtf_as_bed():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, "uncorrect_ini_files", "gtf_as_bed.ini")
+    ini_file = os.path.join(ROOT, "gtf_as_bed.ini")
     region = "X:3100000-3200000"
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
@@ -793,7 +793,7 @@ def test_bed_as_gtf():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, "uncorrect_ini_files", "bed_as_gtf.ini")
+    ini_file = os.path.join(ROOT, "bed_as_gtf.ini")
     region = "X:3100000-3200000"
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
