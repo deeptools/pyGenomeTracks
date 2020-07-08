@@ -281,7 +281,7 @@ def test_first_track_overlay():
     assert res is None, res
 
     os.remove(outfile.name)
-    
+
 
 def test_plot_tracks_existing_chr_empty_tracks():
 
