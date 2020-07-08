@@ -289,7 +289,7 @@ def main(args=None):
             try:
                 start, end = map(int, [start, end])
             except ValueError as detail:
-                warnings.warn(f"Invalid value found at line\t{line}\t. {detail}\n"))
+                warnings.warn(f"Invalid value found at line\t{line}\t. {detail}\n")
                 continue
             regions.append((chrom, start, end))
     else:
