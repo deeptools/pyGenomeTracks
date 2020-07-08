@@ -136,6 +136,9 @@ class PlotTracks(object):
         """
         track_height = []
         for i, track_dict in enumerate(self.track_list):
+            if i == 0 and track_dict['overlay_previous'] != 'no':
+                log.warning("First track can not have the `overlay_previous` option")
+                self.track_list[i]['overlay_previous'] = 'no'
             # if overlay_previous is set to a value other than no
             # then, skip this track height
             if track_dict['overlay_previous'] != 'no':
@@ -227,9 +230,6 @@ class PlotTracks(object):
         plot_axis = None
         for idx, track in enumerate(self.track_obj_list):
             log.info("plotting {}".format(track.properties['section_name']))
-            if idx == 0 and track.properties['overlay_previous'] != 'no':
-                log.warning("First track can not have the `overlay_previous` option")
-                track.properties['overlay_previous'] = 'no'
 
             if track.properties['overlay_previous'] in ['yes', 'share-y']:
                 overlay = True

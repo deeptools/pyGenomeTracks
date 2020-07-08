@@ -63,6 +63,8 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks.ini --region Y:
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks.ini --region X:0-1000000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_plot_2.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/empty.ini --region X:3000000-3500000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_empty.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks.ini --region X:3000000-3500000 --trackLabelFraction 0.2 --width 38 --dpi 130  --decreasingXAxis -o ./pygenometracks/tests/test_data/master_plot_dec.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/firstTrackOverlay.ini --region X:3000000-3500000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_empty2.png
+
 
 # test_tracks_label:
 bin/pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3500000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_title_0.2.png
