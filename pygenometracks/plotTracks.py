@@ -310,7 +310,7 @@ def main(args=None):
         file_suffix = name[-1]
         file_prefix = ".".join(name[:-1])
         for chrom, start, end in regions:
-            file_name = f"{file_prefix}_{chrom}-{start}-{end}.{file_suffix}")
+            file_name = f"{file_prefix}_{chrom}-{start}-{end}.{file_suffix}"
             if end - start < 200000:
                 warnings.warn("A region shorter than 200kb has been "
                               "detected! This can be too small to return "
