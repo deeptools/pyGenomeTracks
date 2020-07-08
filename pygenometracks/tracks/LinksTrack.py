@@ -369,11 +369,11 @@ file_type = {TRACK_TYPE}
                 start2 = int(start2)
                 end2 = int(end2)
             except ValueError as detail:
-                raise InputError("Error reading line: {}. One of the fields is not "
-                                 "an integer.\nError message: {}".format(line_number, detail))
+                raise InputError(f"Error reading line: {line_number}. One of the fields is not "
+                                 f"an integer.\nError message: {detail}")
 
-            assert start1 <= end1, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
-            assert start2 <= end2, "Error in line #{}, end2 larger than start2 in {}".format(line_number, line)
+            assert start1 <= end1, f"Error in line #{line_number}, end1 larger than start1 in {line}"
+            assert start2 <= end2, f"Error in line #{line_number}, end2 larger than start2 in {line}"
 
             if has_score:
                 try:

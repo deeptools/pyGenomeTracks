@@ -99,7 +99,7 @@ file_type = {TRACK_TYPE}
                 # I extend of depth to avoid triangle effect in the plot
                 start = max(0, start - self.properties['depth'])
                 end += self.properties['depth']
-                region = ["{}:{}-{}".format(chrom, start, end)]
+                region = [f"{chrom}:{start}-{end}"]
         # Cooler and thus HiCMatrix with cool file will raise an error if:
         # - the file is a cool file and:
         #    - the region goes over the chromosome size
@@ -120,7 +120,7 @@ file_type = {TRACK_TYPE}
                     chrom_region_before = chrom_region
                     chrom_region = change_chrom_names(chrom_region)
                     if len(rs) == 2:
-                        region = ["{}:{}".format(chrom_region, rs[1])]
+                        region = [f"{chrom_region}:{rs[1]}"]
                     else:
                         region = [chrom_region]
                     try:

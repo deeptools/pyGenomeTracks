@@ -440,7 +440,6 @@ def test_plot_hic_depth_smaller_binsize():
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)
@@ -450,15 +449,15 @@ def test_plot_hic_plotting_region_smaller_binsize():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region chr1:0-5000 "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, 'browser_tracks_hic_small_test.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test.ini')
+    region = 'chr1:0-5000'
+    expected_file = os.path.join(ROOT, 'master_hic_small_test_small_region.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_hic_small_test_small_region.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)
