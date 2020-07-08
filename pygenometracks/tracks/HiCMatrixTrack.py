@@ -191,9 +191,9 @@ file_type = {TRACK_TYPE}
         max_depth_in_bins = int(self.properties['depth'] / binsize)
         # If the depth is smaller than the binsize. It will display an empty plot
         if max_depth_in_bins < 1:
-            self.log.warning("*Warning*\nThe depth({}) is smaller than binsize({})"
-                             "This will generate an empty track!!\n"
-                             .format(self.properties['depth'], binsize))
+            self.log.warning(f"*Warning*\nThe depth({self.properties['depth']})"
+                             f" is smaller than binsize({binsize})"
+                             "This will generate an empty track!!\n")
             self.hic_ma.matrix = scipy.sparse.csr_matrix((0, 0))
             return
 

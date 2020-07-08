@@ -273,14 +273,16 @@ def test_plot_tracks_empty_files():
 
 def test_first_track_overlay():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3500000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "firstTrackOverlay.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "firstTrackOverlay.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_empty2.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_empty2.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 

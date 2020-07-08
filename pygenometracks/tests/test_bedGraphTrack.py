@@ -224,15 +224,15 @@ def test_op_bdg():
 
 
 def test_bdg_withNA():
-    region = "X:2700000-3100000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bdg_NA_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "bedgraph_withNA.ini"),
-                     outfile=outfile.name, region=region).split()
+    ini_file = os.path.join(ROOT, "bedgraph_withNA.ini")
+    region = "X:2700000-3100000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_withNA.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_bedgraph_withNA.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
