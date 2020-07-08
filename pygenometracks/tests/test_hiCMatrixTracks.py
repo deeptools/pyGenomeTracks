@@ -210,6 +210,33 @@ show_masked_bins = true
 with open(os.path.join(ROOT, "browser_tracks_hic_log-log.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic)
 
+browser_tracks_with_mcool = """
+[x-axis]
+
+[mcool1]
+file = matrix.mcool::/0
+depth = 1000000
+file_type = hic_matrix
+
+[mcool2]
+file = matrix.mcool::/1
+depth = 1000000
+file_type = hic_matrix
+
+[mcool3]
+file = matrix.mcool::/2
+depth = 1000000
+file_type = hic_matrix
+
+[mcool4]
+file = matrix.mcool::/4
+depth = 1000000
+file_type = hic_matrix
+"""
+
+with open(os.path.join(ROOT, "mcool.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_mcool)
+
 browser_tracks_with_hic_small_2 = """
 [hic matrix]
 file = small_test2.cool
@@ -467,6 +494,25 @@ def test_plot_hic_plotting_region_smaller_binsize():
     res = compare_images(os.path.join(ROOT, 'master_hic_small_test_small_region.png'),
                          outfile.name, tolerance)
     print("saving test to {}".format(outfile.name))
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_with_mcool():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:2500000-3500000 "\
+           "--trackLabelFraction 0.23 --width 38 " \
+           "--dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT,
+                                  'mcool.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT,
+                                      'master_mcool.png'),
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
