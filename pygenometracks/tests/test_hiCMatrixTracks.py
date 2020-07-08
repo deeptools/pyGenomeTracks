@@ -435,7 +435,7 @@ def test_plot_hic_depth_smaller_binsize():
     region = 'chr1:0-100000'
     expected_file = os.path.join(ROOT, 'master_hic_small_test_2.png')
     args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.23 --width 38 "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
