@@ -249,9 +249,9 @@ file_type = {TRACK_TYPE}
         chrom_region = self.check_chrom_str_bytes(self.chrom_sizes, chrom_region)
         if region_end > self.chrom_sizes[chrom_region]:
             self.log.warning("*Warning*\nThe region to plot extends beyond the"
-                            " chromosome size. Please check.\n"
-                            f"{chrom_region} size: {self.chrom_sizes[chrom_region]}"
-                            f". Region to plot {region_start}-{region_end}\n")
+                             " chromosome size. Please check.\n"
+                             f"{chrom_region} size: {self.chrom_sizes[chrom_region]}"
+                             f". Region to plot {region_start}-{region_end}\n")
 
         # A chromosome may disappear if it was full of Nan and nan bins were masked:
         if chrom_region not in self.hic_ma.get_chromosome_sizes():

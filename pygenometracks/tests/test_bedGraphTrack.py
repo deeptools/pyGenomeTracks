@@ -159,7 +159,7 @@ def test_plot_bedgraph_tracks_with_bed():
         region_str = region.replace(':', '-')
         output_file = outfile.name[:-4] + '_' + region_str + extension
         expected_file = os.path.join(ROOT, 'master_bedgraph_useMid_'
-                                          + region_str + extension)
+                                     + region_str + extension)
         res = compare_images(expected_file,
                              output_file, tolerance)
         assert res is None, res
@@ -176,7 +176,7 @@ def test_plot_bedgraph_tracks_individual():
         ini_file = os.path.join(ROOT, "bedgraph_useMid.ini")
         region_str = region.replace(':', '-')
         expected_file = os.path.join(ROOT, 'master_bedgraph_useMid_'
-                                          + region_str + extension)
+                                     + region_str + extension)
         args = f"--tracks {ini_file} --region {region} "\
                "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
                f"--outFileName {outfile.name}".split()

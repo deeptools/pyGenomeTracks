@@ -350,9 +350,9 @@ file_type = {TRACK_TYPE}
                 chrom1, start1, end1, chrom2, start2, end2 = line.strip().split('\t')[:6]
             except Exception as detail:
                 raise InputError('File not valid. The format is chrom1'
-                                     ' start1, end1, '
-                                     f'chrom2, start2, end2\nError: {detail}\n'
-                                     f' in line\n {line}')
+                                 ' start1, end1, '
+                                 f'chrom2, start2, end2\nError: {detail}\n'
+                                 f' in line\n {line}')
             if chrom1 != chrom2:
                 self.log.warning(f"Only links in same chromosome are used. Skipping line\n{line}\n")
                 continue
