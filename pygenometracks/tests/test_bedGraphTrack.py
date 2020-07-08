@@ -130,6 +130,16 @@ height = 0.5
 with open(os.path.join(ROOT, "operation_bdg.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+bedgraph_withNA = """
+[test bedgraph withNA]
+file = bedgraph_withNA.bdg
+height = 3
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "bedgraph_withNA.ini"), 'w') as fh:
+    fh.write(bedgraph_withNA)
+
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -207,6 +217,22 @@ def test_op_bdg():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bdg_withNA():
+    region = "X:2700000-3100000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bdg_NA_', delete=False)
+    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName {outfile}" \
+           "".format(ini=os.path.join(ROOT, "bedgraph_withNA.ini"),
+                     outfile=outfile.name, region=region).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_bedgraph_withNA.png'),
                          outfile.name, tolerance)
     assert res is None, res
 

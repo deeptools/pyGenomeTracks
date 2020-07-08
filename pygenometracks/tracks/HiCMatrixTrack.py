@@ -187,9 +187,15 @@ file_type = {TRACK_TYPE}
 
         self.hic_ma.cut_intervals = new_intervals
         binsize = self.hic_ma.getBinSize()
-        # Need to be sure that you keep at least one bin even if the depth is
-        # smaller than the binsize
-        max_depth_in_bins = max(1, int(self.properties['depth'] / binsize))
+
+        max_depth_in_bins = int(self.properties['depth'] / binsize)
+        # If the depth is smaller than the binsize. It will display an empty plot
+        if max_depth_in_bins < 1:
+            self.log.warning("*Warning*\nThe depth({}) is smaller than binsize({})"
+                             "This will generate an empty track!!\n"
+                             .format(self.properties['depth'], binsize))
+            self.hic_ma.matrix = scipy.sparse.csr_matrix((0, 0))
+            return
 
         # work only with the lower matrix
         # and remove all pixels that are beyond

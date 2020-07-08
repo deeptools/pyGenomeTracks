@@ -299,7 +299,15 @@ file_type = {TRACK_TYPE}
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         if pos_list == []:
             return
-        score_list = [float(x[0]) for x in score_list]
+        try:
+            score_list = [float(x[0]) for x in score_list]
+        except ValueError as ve:
+            if "could not convert string to float: 'NA'" in str(ve):
+                self.log.warning("*Warning*\nNA were found in the bedgraph"
+                                 " will be replaced by nan")
+                score_list = [float(x[0]) if x[0] != 'NA' else float('nan') for x in score_list]
+            else:
+                raise ve
         if self.properties['use_middle']:
             x_values = np.asarray([(t[0] + t[1]) / 2
                                    for i, t in enumerate(pos_list)
