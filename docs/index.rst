@@ -47,4 +47,4 @@ Table of content
    content/possible-parameters
    content/adding-new-tracks
    content/releases
-
+   content/faq

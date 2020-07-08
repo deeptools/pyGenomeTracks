@@ -1,28 +1,20 @@
 Releases
 ========
 
-:doc:`releases/3.4`
-"""""""""""""""""""
-:doc:`releases/3.3`
-"""""""""""""""""""
-:doc:`releases/3.2.1`
-"""""""""""""""""""""
-:doc:`releases/3.2`
-"""""""""""""""""""
-:doc:`releases/3.1.2`
-"""""""""""""""""""""
-:doc:`releases/3.1.1`
-"""""""""""""""""""""
-:doc:`releases/3.1`
-"""""""""""""""""""
-:doc:`releases/3.0`
-"""""""""""""""""""
-:doc:`releases/2.1`
-"""""""""""""""""""
-:doc:`releases/2.0`
-"""""""""""""""""""
-:doc:`releases/1.0`
-"""""""""""""""""""
+.. toctree::
+   :maxdepth: 1
+
+   releases/3.4
+   releases/3.3
+   releases/3.2.1
+   releases/3.2
+   releases/3.1.2  
+   releases/3.1.1
+   releases/3.1
+   releases/3.0
+   releases/2.1
+   releases/2.0
+   releases/1.0
 
 Main changes in configuration files:
 Since v3.2: 

@@ -274,7 +274,7 @@ The configuration file for this image is:
 
 
 Log transform and Operation Examples
---------------------------
+------------------------------------
 
 With the parameter ``operation`` you can make operations between one or two files (here two bigwig files but this is also working with two bedgraph files). For example, difference, log ratio, scaling...
 
