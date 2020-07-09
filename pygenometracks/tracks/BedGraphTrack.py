@@ -384,13 +384,13 @@ file_type = {TRACK_TYPE}
         else:
             ymax = transform(np.array([ymax]), self.properties['transform'],
                              self.properties['log_pseudocount'],
-                             'ymax')
+                             'ymax')[0]
         if ymin is None:
             ymin = plot_ymin
         else:
             ymin = transform(np.array([ymin]), self.properties['transform'],
                              self.properties['log_pseudocount'],
-                             'ymin')
+                             'ymin')[0]
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, ymin)
@@ -410,7 +410,7 @@ file_type = {TRACK_TYPE}
         # the last position of the pos_list
         bw.addHeader([(chrom_region, pos_list[-1][1])])
         # The starts, ends, score are stored
-        bw.addEntries(np.repeat(chrom_region, len(pos_list)),
+        bw.addEntries([chrom_region] * len(pos_list),
                       [p[0] for p in pos_list],
                       ends=[p[1] for p in pos_list],
                       values=score_list)
