@@ -10,11 +10,13 @@ python pygenometracks/getAllDefaultsAndPossible.py
 # As well as a file in rst format for each track
 echo "All available tracks
 ====================
+
+.. toctree::
+   :maxdepth: 1
 " > docs/content/all_tracks.rst
 for f in docs/content/tracks/auto/*_deduced_from_code.txt; do
     track_name=`basename $f _deduced_from_code.txt`
-    echo "
-:doc:\`tracks/${track_name}\`" >> docs/content/all_tracks.rst
+    echo "   tracks/${track_name}" >> docs/content/all_tracks.rst
     if [ ! -e docs/content/tracks/${track_name}.rst ]; then
         echo "$track_name
 ==========
