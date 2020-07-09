@@ -1,0 +1,30 @@
+Necessary:
+^^^^^^^^^^
+- **file**
+
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: If you do not set it, the height will be adjusted so that each bin is a square, else you can choose any float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+
+- **orientation**: by default this option is not set but you can also put: inverted.
+
+- **max_value**: by default this option is not set but you can also put: any float
+
+- **min_value**: by default this option is not set but you can also put: any float
+
+- **transform**: `no` (default) or log, log1p or -log.
+
+- **rasterize**: `true` (default) or false.
+
+- **colormap**: `RdYlBu_r` (default)
+
+- **depth**: `100000` (default) or any integer above 1
+
+- **show_masked_bins**: `false` (default) or true.
+
+- **scale_factor**: `1` (default) or any float
+

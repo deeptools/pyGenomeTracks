@@ -1,7 +1,11 @@
 import sys
 import gzip
 import numpy as np
+from tqdm import tqdm
 from intervaltree import IntervalTree, Interval
+import pybedtools
+import tempfile
+import warnings
 
 
 class InputError(Exception):
@@ -54,17 +58,51 @@ def opener(filename):
         return f
 
 
-def file_to_intervaltree(file_name):
+def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
+    """
+    intersect file_name with the plot_regions +/- around_region
+    :param file_name: string file name
+    :param plot_regions:a list of tuple [(chrom1, start1, end1), (chrom2, start2, end2)]
+                        with the region to restrict the data to.
+    :param around_region: integer with the bp to extend to plot_regions
+    :return: temporary file with the intersection
+    """
+    file_to_open = file_name
+    # Check if we can restrict the interval tree to a region:
+    if plot_regions is not None:
+        # We use pybedtools to overlap:
+        original_file = pybedtools.BedTool(file_name)
+        # We extend the start and end:
+        plot_regions_ext = [(chrom, max(0, start - around_region), end + around_region) for chrom, start, end in plot_regions]
+        # We will overlap with both version of chromosome name:
+        plot_regions_as_bed = '\n'.join([f'{chrom} {start} {end}\n{change_chrom_names(chrom)} {start} {end}' for chrom, start, end in plot_regions_ext])
+        regions = pybedtools.BedTool(plot_regions_as_bed, from_string=True)
+        # Bedtools will put a warning because we are using inconsistent
+        # nomenclature (with and without chr)
+        sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
+        try:
+            file_to_open = original_file.intersect(regions, wa=True, u=True).fn
+        except pybedtools.helpers.BEDToolsError:
+            file_to_open = file_name
+        sys.stderr.close()
+        sys.stderr = sys.__stderr__
+    return file_to_open
+
+
+def file_to_intervaltree(file_name, plot_regions=None):
     """
     converts a BED like file into a bx python interval tree
     :param file_name: string file name
+    :param plot_regions:a list of tuple [(chrom1, start1, end1), (chrom2, start2, end2)]
+                        with the region to restrict the data to.
     :return: interval tree dictionary. They key is the chromosome/contig name and the
     value is an IntervalTree. Each of the intervals have as 'value' the fields[3:] if any.
     """
+    file_to_open = temp_file_from_intersect(file_name, plot_regions, 0)
     # iterate over a BED like file
     # saving the data into an interval tree
     # for quick retrieval
-    file_h = opener(file_name)
+    file_h = opener(file_to_open)
     line_number = 0
     valid_intervals = 0
     prev_chrom = None
@@ -74,7 +112,7 @@ def file_to_intervaltree(file_name):
     min_value = float('Inf')
     max_value = -float('Inf')
 
-    for line in file_h.readlines():
+    for line in tqdm(file_h.readlines()):
         line_number += 1
         line = to_string(line)
         if line.startswith('browser') or line.startswith('track') or line.startswith('#'):
@@ -83,26 +121,26 @@ def file_to_intervaltree(file_name):
         try:
             chrom, start, end = fields[0:3]
         except Exception as detail:
-            msg = "Error reading line: {}\nError message: {}".format(line_number, detail)
+            msg = f"Error reading line: {line_number}\nError message: {detail}"
             raise InputError(msg)
 
         try:
             start = int(start)
         except ValueError as detail:
-            msg = "Error reading line: {}. The start field is not " \
-                  "an integer.\nError message: {}".format(line_number, detail)
+            msg = f"Error reading line: {line_number}. The start field is not " \
+                  f"an integer.\nError message: {detail}"
             raise InputError(msg)
 
         try:
             end = int(end)
         except ValueError as detail:
-            msg = "Error reading line: {}. The end field is not " \
-                  "an integer.\nError message: {}".format(line_number, detail)
+            msg = f"Error reading line: {line_number}. The end field is not " \
+                  f"an integer.\nError message: {detail}"
             raise InputError(msg)
 
         if prev_chrom == chrom:
             assert prev_start <= start, \
-                "Bed file not sorted. Please use a sorted bed file.\n{}{} ".format(prev_line, line)
+                f"Bed file not sorted. Please use a sorted bed file.\n{prev_line}{line} "
 
         if chrom not in interval_tree:
             interval_tree[chrom] = IntervalTree()
@@ -122,26 +160,27 @@ def file_to_intervaltree(file_name):
             except ValueError:
                 pass
 
-        assert end > start, "Start position larger or equal than end for line\n{} ".format(line)
+        assert end > start, f"Start position larger or equal than end for line\n{line} "
 
         interval_tree[chrom].add(Interval(start, end, value))
         valid_intervals += 1
 
     if valid_intervals == 0:
-        sys.stderr.write("No valid intervals were found in file {}".format(file_name))
+        sys.stderr.write(f"No valid intervals were found in file {file_name}")
     file_h.close()
 
     return interval_tree, min_value, max_value
 
 
 def plot_coverage(ax, x_values, score_list, plot_type, size, color,
-                  negative_color, alpha):
+                  negative_color, alpha, grid):
+    if grid:
+        ax.grid(axis='y', zorder=0)
     if plot_type == 'line':
         if color == negative_color:
             ax.plot(x_values, score_list, '-', linewidth=size, color=color,
                     alpha=alpha)
         else:
-            import warnings
             warnings.warn('Line plots with a different negative color might not look pretty')
             pos_x_values = x_values.copy()
             pos_x_values[score_list < 0] = np.nan
@@ -173,7 +212,6 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                     alpha=alpha)
     else:
         if plot_type != 'fill':
-            import warnings
             warnings.warn('The plot type was not part of known types '
                           '(fill, line, points) will be fill.')
         if color == negative_color:
@@ -189,8 +227,89 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
                             facecolor=color,
                             alpha=alpha)
             neg_x_values = x_values.copy()
-            neg_x_values[score_list >= 0] = np.nan
+            neg_x_values[score_list > 0] = np.nan
             ax.fill_between(neg_x_values, score_list, linewidth=0.1,
                             color=negative_color,
                             facecolor=negative_color,
                             alpha=alpha)
+
+
+def transform(score_list, transform, log_pseudocount, file):
+    if transform == 'no':
+        return(score_list)
+    elif transform in ['log', 'log2', 'log10']:
+        if np.nanmin(score_list) <= - log_pseudocount:
+            msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
+                   f" - {log_pseudocount}.\n"
+                   f"{transform}({log_pseudocount} + <values>) transformation "
+                   "can not be applied to "
+                   f"values in file: {file}")
+            raise Exception(msg)
+        else:
+            return(eval('np.' + transform + '(log_pseudocount + score_list)'))
+    elif transform == 'log1p':
+        if np.nanmin(score_list) <= - 1:
+            msg = ("\n*ERROR*\ncoverage contains values below or equal to - 1.\n"
+                   "log1p(<values>) transformation can not be applied to "
+                   f"values in file: {file}")
+            raise Exception(msg)
+        else:
+            return(np.log1p(score_list))
+    elif transform == '-log':
+        if np.nanmax(score_list.max) <= - log_pseudocount:
+            msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
+                   f" - {log_pseudocount}.\n"
+                   f"- log( {log_pseudocount} + <values>) transformation can "
+                   f"not be applied to values in file: {file}")
+            raise Exception(msg)
+        else:
+            return(- np.log(log_pseudocount + score_list))
+    else:
+        warnings.warn(f"The transform: {transform} for file {file} is not "
+                      "valid. Will not use any transformation")
+        return(score_list)
+
+
+def get_length_w(fig_width, region_start, region_end, fontsize):
+    """
+    to improve the visualization of the labels
+    it is good to have an estimation of their length
+    in base pairs. In the following code I try to get the
+    length of a 'W' in base pairs.
+    """
+    # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
+    inches_per_pt = 1.0 / 72.27
+    font_in_inches = fontsize * inches_per_pt
+    region_len = region_end - region_start
+    bp_per_inch = region_len / fig_width
+    font_in_bp = font_in_inches * bp_per_inch
+    return font_in_bp
+
+
+def count_lines(file_h, asBed=False):
+    n = 0
+    for line in file_h:
+        if asBed:
+            line = to_string(line)
+            if line.startswith("#") or line.startswith("track") or \
+               line.startswith("browser") or line.strip() == '':
+                continue
+        n += 1
+    file_h.close()
+    return(n)
+
+
+def change_chrom_names(chrom):
+    """
+    Changes UCSC chromosome names to ensembl chromosome names
+    and vice versa.
+    """
+    # TODO: mapping from chromosome names like mithocondria is missing
+    if chrom.startswith('chr'):
+        # remove the chr part from chromosome name
+        chrom = chrom[3:]
+    else:
+        # prefix with 'chr' the chromosome name
+        chrom = 'chr' + chrom
+
+    return chrom

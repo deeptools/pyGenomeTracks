@@ -1,0 +1,60 @@
+
+# title of track (plotted on the right side)
+title =
+# height of track in cm (ignored if the track is overlay on top the previous track)
+height = 2
+# if you want to plot the track upside-down:
+# orientation = inverted
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'.
+# For the 'share-y' option the y axis values is shared between this plot and the overlay plot.
+# Otherwise, each plot use its own scale
+#overlay_previous = yes
+
+# the file format for links is (tab separated)
+#   chr1 start1 end1 chr2 start2 end2 (score ...)
+# The score field is optional
+# The fields after the score field will be ignored
+# for example:
+#   chr1 100 200 chr1 250 300 0.5
+# depending on the value of links_type either 'arcs' or 'triangles' or 'loops' can be plotted.
+# If arcs, a line will be drawn from the center of the first region (chr1: 150),
+# to the center of the other region (chr1: 275).
+# if triangles, the vertix of the triangle will be drawn at the center between the two points
+# (also the extremity of each position is used)
+# if loops, a rectangle highlighting the intersection between the 2 regions will be shown
+# the triangles, and loops options are convenient to overlay over a
+# Hi-C matrix to highlight the matrix pixel of the highlighted link
+# For these tracks do not hesitate to put large line_width like 5 or 10.
+links_type = arcs
+# For triangles and arcs, by default the extremities coordinates are used
+# To use the middle of start1 and end1 and the middle of start2 and end2
+#use_middle = true
+# color of the lines
+color = red
+# if color is a valid colormap name (like RdYlGn),
+# then the score is mapped to the colormap.
+#color = RdYlGn
+# To set the minimum and maximum value of the colormap:
+#min_value = 0
+#max_value = 1.2
+# To use transparency, you can use alpha
+# default is 0.8
+# alpha = 0.5
+# if line_width is not given, the score is used to set the line width
+# using the following formula (0.5 * square root(score)
+#line_width = 0.5
+# options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
+line_style = solid
+# If you want to compact the arcs (when you have both long and short arcs)
+# You can choose a compact level of
+# 1 (the height is proportional to the square root of the distance)
+# 2 (the height is the same for all distances)
+# (default is 0 proportional to distance)
+#compact_arcs_level = 2
+# To be able to see small arcs when big arcs exists, you can set
+# the upper y limit.
+# The unit is bp. This corresponds to the longest arc you will see.
+# This option is incompatible with compact_arcs_level = 2
+#ylim = 100000
+file_type = links
+    

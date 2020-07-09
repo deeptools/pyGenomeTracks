@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import LogFormatter
 from . GenomeTrack import GenomeTrack
+from .. utilities import change_chrom_names
 import logging
 import itertools
 
@@ -18,9 +19,9 @@ log = logging.getLogger(__name__)
 class HiCMatrixTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.h5', '.cool', '.mcool']
     TRACK_TYPE = 'hic_matrix'
-    OPTIONS_TXT = """
-title =
-# The different options for color maps can be found here: https://matplotlib.org/users/colormaps.html
+    OPTIONS_TXT = f"""
+# The different options for color maps can be found here:
+# https://matplotlib.org/users/colormaps.html
 # the default color map is RdYlBu_r (_r) stands for reverse
 # If you want your own colormap you can put the values of the color you want
 # For example, colormap = ['blue', 'yellow', 'red']
@@ -30,7 +31,8 @@ title =
 # If it is more than 125% of the plotted region, it will
 # be adjsted to this maximum value.
 depth = 100000
-# height of track (in cm) can be given. Otherwise, the height is computed such that the proportions of the
+# height of track (in cm) can be given.
+# Otherwise, the height is computed such that the proportions of the
 # hic matrix are kept (e.g. the image does not appear shrink or extended)
 # height = 10
 # min_value and max_value refer to the contacts in the matrix.
@@ -43,17 +45,15 @@ transform = log1p
 # the default is to extend neighboring bins to
 # obtain an aesthetically pleasant output
 show_masked_bins = false
-# if you want to plot the track upside-down:
-# orientation = inverted
 # optional if the values in the matrix need to be scaled the
 # following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
 # scale_factor = 1
 # You can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = false
-file_type = {}
-    """.format(TRACK_TYPE)
-    DEFAULTS_PROPERTIES = {'region': None,
+file_type = {TRACK_TYPE}
+    """
+    DEFAULTS_PROPERTIES = {'region': None,  # Cannot be set manually but is set by tracksClass
                            'depth': 100000,
                            'orientation': None,
                            'show_masked_bins': False,
@@ -81,31 +81,85 @@ file_type = {}
 
     def __init__(self, *args, **kwargs):
         super(HiCMatrixTrack, self).__init__(*args, **kwargs)
-        log.debug('FILE {}'.format(self.properties))
+        log.debug(f'FILE {self.properties}')
 
     def set_properties_defaults(self):
         super(HiCMatrixTrack, self).set_properties_defaults()
+        # Put default img to None for y axis
+        self.img = None
         region = None
         if self.properties['region'] is not None:
-            if self.properties['region'][2] == 1e15:
-                region = [str(self.properties['region'][0])]
-            elif len(self.properties['region']) == 3:
-                start = int(self.properties['region'][1]) - self.properties['depth']
-                if start < 0:
-                    start = 0
-                end = int(self.properties['region'][2]) + self.properties['depth']
+            # We need to restrict it to a single region because
+            # HiCMatrix does not accept more
+            # We check if everything is on a single chrom:
+            if len(set([r[0] for r in self.properties['region']])) == 1:
+                chrom = self.properties['region'][0][0]
+                start = min([r[1] for r in self.properties['region']])
+                end = max([r[2] for r in self.properties['region']])
+                # I extend of depth to avoid triangle effect in the plot
+                start = max(0, start - self.properties['depth'])
+                end += self.properties['depth']
+                region = [f"{chrom}:{start}-{end}"]
+        # Cooler and thus HiCMatrix with cool file will raise an error if:
+        # - the file is a cool file and:
+        #    - the region goes over the chromosome size
+        #   or
+        #   - the chromosome is not part of the matrix
 
-                region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(end)]
-        # try to open with end region + depth to avoid triangle effect in the plot
-        # if it fails open it with given end region.
+        # We need to change the log level because we don't want
+        # the user to see all the errors raised during the try except
+        logging.getLogger('hicmatrix').setLevel(logging.CRITICAL)
         try:
-            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
-        except Exception:
-            region = [str(self.properties['region'][0]) + ':' + str(start) + '-' + str(self.properties['region'][2])]
-            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'], pChrnameList=region)
+            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                              pChrnameList=region)
+        except ValueError as ve:
+            if region is not None:
+                if "Unknown sequence label" in str(ve):
+                    rs = region[0].split(':')
+                    chrom_region = rs[0]
+                    chrom_region_before = chrom_region
+                    chrom_region = change_chrom_names(chrom_region)
+                    if len(rs) == 2:
+                        region = [f"{chrom_region}:{rs[1]}"]
+                    else:
+                        region = [chrom_region]
+                    try:
+                        self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                                          pChrnameList=region)
+                    except ValueError as ve2:
+                        if "Unknown sequence label" in str(ve2):
+                            self.log.warning("*Warning*\nNeither " + chrom_region_before
+                                             + " nor " + chrom_region + " exists as a "
+                                             "chromosome name on the matrix. "
+                                             "This will generate an empty track!!\n")
+                            self.hic_ma = HiCMatrix.hiCMatrix()
+                            self.hic_ma.matrix = scipy.sparse.csr_matrix((0, 0))
+                        elif "Genomic region out of bounds" in str(ve2):
+                            region = [chrom_region]
+                            self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                                              pChrnameList=region)
+                        else:
+                            raise ve2
+                elif "Genomic region out of bounds" in str(ve):
+                    region = [region[0].split(':')[0]]
+                    self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
+                                                      pChrnameList=region)
+                else:
+                    raise ve
+            else:
+                raise ve
+        # We put back the log to warning
+        logging.getLogger('hicmatrix').setLevel(logging.WARNING)
 
         if len(self.hic_ma.matrix.data) == 0:
-            raise Exception("Matrix {} is empty".format(self.properties['file']))
+            if region is None:
+                # This is not due to a restriction of the matrix
+                raise Exception(f"Matrix {self.properties['file']} is empty")
+            else:
+                return
+        # We need to get the size before masking bins because
+        # HiCMatrix v13 give smaller chromosome_sizes after:
+        self.chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if self.properties['show_masked_bins']:
             pass
         else:
@@ -114,22 +168,18 @@ file_type = {}
         # check that the matrix can be log transformed
         if self.properties['transform'] != 'no':
             if self.properties['transform'] == 'log1p':
-                if self.hic_ma.matrix.data.min() + 1 < 0:
-                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
+                if self.hic_ma.matrix.data.min() + 1 <= 0:
+                    raise Exception("\n*ERROR*\nMatrix contains values below - 1.\n"
                                     "log1p transformation can not be applied to \n"
-                                    "values in matrix: {}".format(self.properties['file']))
+                                    f"values in matrix: {self.properties['file']}")
 
-            elif self.properties['transform'] == '-log':
+            elif self.properties['transform'] in ['-log', 'log']:
                 if self.hic_ma.matrix.data.min() < 0:
-                    raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
-                                    "log(-1 * <values>) transformation can not be applied to \n"
-                                    "values in matrix: {}".format(self.properties['file']))
-
-            elif self.properties['transform'] == 'log':
-                if self.hic_ma.matrix.data.min() < 0:
+                    # For values not filled or equal to zero there will be a
+                    # mask, they will be replaced by the minimum value after 0.
                     raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
                                     "log transformation can not be applied to \n"
-                                    "values in matrix: {}".format(self.properties['file']))
+                                    f"values in matrix: {self.properties['file']}")
 
         new_intervals = hicmatrix.utilities.enlarge_bins(self.hic_ma.cut_intervals)
         self.hic_ma.interval_trees, self.hic_ma.chrBinBoundaries = \
@@ -137,7 +187,15 @@ file_type = {}
 
         self.hic_ma.cut_intervals = new_intervals
         binsize = self.hic_ma.getBinSize()
+
         max_depth_in_bins = int(self.properties['depth'] / binsize)
+        # If the depth is smaller than the binsize. It will display an empty plot
+        if max_depth_in_bins < 1:
+            self.log.warning(f"*Warning*\nThe depth({self.properties['depth']})"
+                             f" is smaller than binsize({binsize})"
+                             "This will generate an empty track!!\n")
+            self.hic_ma.matrix = scipy.sparse.csr_matrix((0, 0))
+            return
 
         # work only with the lower matrix
         # and remove all pixels that are beyond
@@ -162,34 +220,46 @@ file_type = {}
 
         self.norm = None
 
-        self.properties['colormap'] = self.process_colormap()
+        self.process_color('colormap', colormap_possible=True,
+                           colormap_only=True, default_value_is_colormap=True)
 
         self.cmap = cm.get_cmap(self.properties['colormap'])
         self.cmap.set_bad('black')
 
     def plot(self, ax, chrom_region, region_start, region_end):
+        if len(self.hic_ma.matrix.data) == 0:
+            self.log.warning("*Warning*\nThere is no data for the region "
+                             "considered on the matrix. "
+                             "This will generate an empty track!!\n")
+            self.img = None
+            return
 
-        log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
-        chrom_sizes = self.hic_ma.get_chromosome_sizes()
-        if chrom_region not in chrom_sizes:
+        log.debug(f'chrom_region {chrom_region}, region_start {region_start}, region_end {region_end}')
+        if chrom_region not in self.chrom_sizes:
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
-            if chrom_region not in chrom_sizes:
+            chrom_region = change_chrom_names(chrom_region)
+            if chrom_region not in self.chrom_sizes:
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
+                                 + " nor " + chrom_region + " exists as a "
                                  "chromosome name on the matrix. "
                                  "This will generate an empty track!!\n")
+                self.img = None
                 return
 
-        chrom_region = self.check_chrom_str_bytes(chrom_sizes, chrom_region)
-        if region_end > chrom_sizes[chrom_region]:
-            raise Exception("*Error*\nThe region to plot extends beyond the chromosome size. Please check.\n"
-                            "{} size: {}. Region to plot {}-{}\n".format(chrom_region, chrom_sizes[chrom_region],
-                                                                         region_start, region_end))
+        chrom_region = self.check_chrom_str_bytes(self.chrom_sizes, chrom_region)
+        if region_end > self.chrom_sizes[chrom_region]:
+            self.log.warning("*Warning*\nThe region to plot extends beyond the"
+                             " chromosome size. Please check.\n"
+                             f"{chrom_region} size: {self.chrom_sizes[chrom_region]}"
+                             f". Region to plot {region_start}-{region_end}\n")
 
-        # if self.properties['file'].endswith('.cool'):
-        #     # load now the region to be plotted
-        #     pass
+        # A chromosome may disappear if it was full of Nan and nan bins were masked:
+        if chrom_region not in self.hic_ma.get_chromosome_sizes():
+            self.log.warning("*Warning*\nThere is no data for the region "
+                             "considered on the matrix. "
+                             "This will generate an empty track!!\n")
+            self.img = None
+            return
 
         # expand region to plus depth on both sides
         # to avoid a 45 degree 'cut' on the edges
@@ -197,29 +267,32 @@ file_type = {}
         # get bin id of start and end of region in given chromosome
         chr_start_id, chr_end_id = self.hic_ma.getChrBinRange(chrom_region)
         chr_start = self.hic_ma.cut_intervals[chr_start_id][1]
-        chr_end = self.hic_ma.cut_intervals[chr_end_id - 1][1]
+        chr_end = self.hic_ma.cut_intervals[chr_end_id - 1][2]
         start_bp = max(chr_start, region_start - self.properties['depth'])
         end_bp = min(chr_end, region_end + self.properties['depth'])
 
         idx, start_pos = list(zip(*[(idx, x[1]) for idx, x in
                                     enumerate(self.hic_ma.cut_intervals)
                                     if x[0] == chrom_region and x[1] >= start_bp and x[2] <= end_bp]))
-
-        idx = idx[0:-1]
         # select only relevant matrix part
         matrix = self.hic_ma.matrix[idx, :][:, idx]
+        # update the start_pos to add the last end:
+        start_pos = tuple(list(start_pos) + [self.hic_ma.cut_intervals[idx[-1]][2]])
         # limit the 'depth' based on the length of the region being viewed
 
         region_len = region_end - region_start
         depth = min(self.properties['depth'], int(region_len * 1.25))
-        depth_in_bins = int(1.5 * region_len / self.hic_ma.getBinSize())
+        # Need to be sure that you keep at least one bin even if the depth is
+        # smaller than the binsize
+        depth_in_bins = max(1, int(1.5 * region_len / self.hic_ma.getBinSize()))
 
         if depth < self.properties['depth']:
-            log.warning("The depth was set to {} which is more than 125%"
+            log.warning(f"The depth was set to {self.properties['depth']} which is more than 125%"
                         " of the region plotted. The depth will be set "
-                        "to {}".format(self.properties['depth'], depth))
+                        f"to {depth}")
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
+        # Using todense will replace all nan values by 0.
         matrix = np.asarray(matrix.todense().astype(float))
 
         matrix = matrix * self.properties['scale_factor']
@@ -228,39 +301,39 @@ file_type = {}
             matrix += 1
             self.norm = colors.LogNorm()
 
-        elif self.properties['transform'] == '-log':
-            mask = matrix == 0
-            try:
-                matrix[mask] = matrix[mask == False].min()
-                matrix = -1 * np.log(matrix)
-            except ValueError:
-                self.log.info('All values are 0, no log applied.')
-
-        elif self.properties['transform'] == 'log':
+        elif self.properties['transform'] in ['-log', 'log']:
+            # We first replace 0 values by minimum values after 0
             mask = matrix == 0
             try:
                 matrix[mask] = matrix[mask == False].min()
                 matrix = np.log(matrix)
             except ValueError:
                 self.log.info('All values are 0, no log applied.')
+            else:
+                if self.properties['transform'] == '-log':
+                    matrix = - matrix
 
         if self.properties['max_value'] is not None:
             vmax = self.properties['max_value']
 
         else:
             # try to use a 'aesthetically pleasant' max value
-            vmax = np.percentile(matrix.diagonal(1), 80)
+            try:
+                vmax = np.percentile(matrix.diagonal(1), 80)
+            except Exception:
+                vmax = None
 
         if self.properties['min_value'] is not None:
             vmin = self.properties['min_value']
         else:
             if depth_in_bins > matrix.shape[0]:
-                depth_in_bins = matrix.shape[0] - 5
+                # Make sure you keep one bin
+                depth_in_bins = max(1, matrix.shape[0] - 5)
 
             # if the region length is large with respect to the chromosome length, the diagonal may have
             # very few values or none. Thus, the following lines reduce the number of bins until the
-            # diagonal is at least length 5
-            num_bins_from_diagonal = int(region_len / self.hic_ma.getBinSize())
+            # diagonal is at least length 5 but make sure you have at least one value:
+            num_bins_from_diagonal = max(1, int(region_len / self.hic_ma.getBinSize()))
             for num_bins in range(0, num_bins_from_diagonal)[::-1]:
                 distant_diagonal_values = matrix.diagonal(num_bins)
                 if len(distant_diagonal_values) > 5:
@@ -268,8 +341,9 @@ file_type = {}
 
             vmin = np.median(distant_diagonal_values)
 
-        self.log.info("setting min, max values for track {} to: {}, {}\n".
-                      format(self.properties['section_name'], vmin, vmax))
+        self.log.info("setting min, max values for track "
+                      f"{self.properties['section_name']} to: "
+                      f"{vmin}, {vmax}\n")
         self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
         if self.properties['rasterize']:
             self.img.set_rasterized(True)
@@ -279,6 +353,8 @@ file_type = {}
             ax.set_ylim(0, depth)
 
     def plot_y_axis(self, cbar_ax, plot_ax):
+        if self.img is None:
+            return
 
         if self.properties['transform'] in ['log', 'log1p']:
             # get a useful log scale
@@ -335,42 +411,3 @@ file_type = {}
         im = ax.pcolormesh(x, y, np.flipud(matrix_c),
                            vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
         return im
-
-    def process_colormap(self):
-        # If someone what to use its own colormap,
-        # he can specify the rgb values or color values:
-        # For example:
-        # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
-        if self.properties['colormap'][0] == '[':
-            try:
-                custom_colors = eval(self.properties['colormap'])
-            except SyntaxError as err:
-                self.log.warning("*WARNING* the list specified for colormap"
-                                 " ({}) is not valid: "
-                                 "{}.\nColormap has been set to "
-                                 "{}".format(self.properties['colormap'],
-                                             err,
-                                             DEFAULT_MATRIX_COLORMAP))
-                return(DEFAULT_MATRIX_COLORMAP)
-            else:
-                try:
-                    return(colors.LinearSegmentedColormap.from_list(
-                           'custom', custom_colors, N=100))
-                except ValueError:
-                    self.log.warning("*WARNING* the list specified for "
-                                     "colormap ({}) cannot be evaluated."
-                                     "\nColormap has been set to "
-                                     "{}".format(self.properties['colormap'],
-                                                 DEFAULT_MATRIX_COLORMAP))
-                    return(DEFAULT_MATRIX_COLORMAP)
-        else:
-            if self.properties['colormap'] not in cm.datad:
-                self.log.warning("*WARNING* colormap: '{}' for section {}"
-                                 " is not valid. Colormap has "
-                                 "been set to "
-                                 "{}".format(self.properties['colormap'],
-                                             self.properties['section_name'],
-                                             DEFAULT_MATRIX_COLORMAP))
-                return(DEFAULT_MATRIX_COLORMAP)
-            else:
-                return(self.properties['colormap'])

@@ -143,22 +143,14 @@ type = vlines
 
 import sys
 import argparse
-import matplotlib
-matplotlib.use('Agg')
+import warnings
 
 from pygenometracks.tracksClass import PlotTracks
 from pygenometracks._version import __version__
 from .utilities import InputError
 
-DEFAULT_BED_COLOR = '#1f78b4'
-DEFAULT_BIGWIG_COLOR = '#33a02c'
-DEFAULT_BEDGRAPH_COLOR = '#a6cee3'
-DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
-DEFAULT_TRACK_HEIGHT = 3  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
-# proportion of width dedicated to (figure, legends)
-# DEFAULT_WIDTH_RATIOS = (0.95, 0.05)
-DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.12, 'top': 0.9}
+HUGE_NUMBER = 1e15  # Which should be above any chromosome size
 
 
 def parse_arguments(args=None):
@@ -189,7 +181,7 @@ def parse_arguments(args=None):
                        )
 
     parser.add_argument('--width',
-                        help='figure width in centimeters',
+                        help=f'figure width in centimeters (default is {DEFAULT_FIGURE_WIDTH})',
                         type=float,
                         default=DEFAULT_FIGURE_WIDTH)
 
@@ -209,13 +201,12 @@ def parse_arguments(args=None):
                         required=True)
 
     parser.add_argument('--fontSize',
-                        help='Font size for the labels of the plot',
-                        type=float,
-                        )
+                        help='Font size for the labels of the plot (default is 0.3 * figure width)',
+                        type=float)
 
     parser.add_argument('--dpi',
                         help='Resolution for the image in case the'
-                             ' ouput is a raster graphics image (e.g png, jpg)',
+                             ' ouput is a raster graphics image (e.g png, jpg) (default is 72)',
                         type=int,
                         default=72
                         )
@@ -226,8 +217,21 @@ def parse_arguments(args=None):
                         default=0.05,
                         type=float)
 
+    parser.add_argument('--trackLabelHAlign',
+                        help='By default, the horizontal alignment of the track '
+                             'labels is left. This alignemnt can be changed to '
+                             'right or center.',
+                        default='left',
+                        choices=['left', 'right', 'center'])
+
+    parser.add_argument('--decreasingXAxis',
+                        help='By default, the x-axis is increasing. '
+                             'Use this option if you want to see all tracks'
+                             ' with a decreasing x-axis.',
+                        action='store_true')
+
     parser.add_argument('--version', action='version',
-                        version='%(prog)s {}'.format(__version__))
+                        version=f'%(prog)s {__version__}')
 
     return parser
 
@@ -240,7 +244,11 @@ def get_region(region_string):
     """
     if region_string:
         # separate the chromosome name and the location using the ':' character
-        chrom, position = region_string.strip().split(":")
+        try:
+            chrom, position = region_string.strip().split(":")
+        except ValueError:
+            # It can be a full chromosome:
+            return region_string.strip(), 0, HUGE_NUMBER
 
         # clean up the position
         for char in ",.;|!{}()":
@@ -254,14 +262,14 @@ def get_region(region_string):
         try:
             region_end = int(position_list[1])
         except IndexError:
-            region_end = 1e15  # a huge number
+            region_end = HUGE_NUMBER
         if region_start < 0:
             region_start = 0
         if region_end <= region_start:
             raise InputError("Please check that the region end is larger "
                              "than the region start.\n"
-                             "Values given:\nstart: {}\nend: {}"
-                             "\n".format(region_start, region_end))
+                             f"Values given:\nstart: {region_start}\n"
+                             f"end: {region_end}\n")
 
         return chrom, region_start, region_end
 
@@ -269,12 +277,11 @@ def get_region(region_string):
 def main(args=None):
 
     args = parse_arguments().parse_args(args)
-    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height, fontsize=args.fontSize, dpi=args.dpi, track_label_width=args.trackLabelFraction)
 
+    # Identify the regions to plot:
     if args.BED:
-        count = 0
+        regions = []
         for line in args.BED.readlines():
-            count += 1
             try:
                 chrom, start, end = line.strip().split('\t')[0:3]
             except ValueError:
@@ -282,22 +289,38 @@ def main(args=None):
             try:
                 start, end = map(int, [start, end])
             except ValueError as detail:
-                sys.stderr.write("Invalid value found at line\t{}\t. {}\n".format(line, detail))
-            name = args.outFileName.split(".")
-            file_suffix = name[-1]
-            file_prefix = ".".join(name[:-1])
-
-            file_name = "{}_{}-{}-{}.{}".format(file_prefix, chrom, start, end, file_suffix)
-            if end - start < 200000:
-                sys.stderr.write("A region shorter than 200kb has been "
-                                 "detected! This can be too small to return "
-                                 "a proper TAD plot!\n")
-                # start -= 100000
-                # start = max(0, start)
-                # end += 100000
-            sys.stderr.write("saving {}\n".format(file_name))
-            # print("{} {} {}".format(chrom, start, end))
-            trp.plot(file_name, chrom, start, end, title=args.title)
+                warnings.warn(f"Invalid value found at line\t{line}\t. {detail}\n")
+                continue
+            regions.append((chrom, start, end))
     else:
-        region = get_region(args.region)
-        trp.plot(args.outFileName, *region, title=args.title)
+        regions = [get_region(args.region)]
+
+    if len(regions) == 0:
+        raise InputError("There is no valid regions to plot.")
+
+    # Create all the tracks
+    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height,
+                     fontsize=args.fontSize, dpi=args.dpi,
+                     track_label_width=args.trackLabelFraction,
+                     plot_regions=regions)
+
+    # Plot them
+    if args.BED:
+        name = args.outFileName.split(".")
+        file_suffix = name[-1]
+        file_prefix = ".".join(name[:-1])
+        for chrom, start, end in regions:
+            file_name = f"{file_prefix}_{chrom}-{start}-{end}.{file_suffix}"
+            if end - start < 200000:
+                warnings.warn("A region shorter than 200kb has been "
+                              "detected! This can be too small to return "
+                              "a proper TAD plot!\n")
+            sys.stderr.write(f"saving {file_name}\n")
+            trp.plot(file_name, chrom, start, end, title=args.title,
+                     h_align_titles=args.trackLabelHAlign,
+                     decreasing_x_axis=args.decreasingXAxis)
+    else:
+        trp.plot(args.outFileName, *regions[0], title=args.title,
+                 h_align_titles=args.trackLabelHAlign,
+                 decreasing_x_axis=args.decreasingXAxis)
+    trp.close_files()

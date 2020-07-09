@@ -22,7 +22,7 @@ class EpilogosTrack(BedGraphTrack):
     """
     SUPPORTED_ENDINGS = ['.qcat', '.qcat.bgz']
     TRACK_TYPE = 'epilogos'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # The categories file should contain the color information for each category id
 # A categories file should look like:
 # {{
@@ -36,10 +36,11 @@ class EpilogosTrack(BedGraphTrack):
 #}}
 categories_file = <path to json categories file>
 # optional. If not given, it is guessed from the file ending.
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'categories_file': None,
-                           'orientation': None}
+                           'orientation': None,
+                           'region': None}  # Cannot be set manually but is set by tracksClass
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
@@ -50,8 +51,10 @@ file_type = {}
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
-    def __init__(self, *args, **kwarg):
-        super(EpilogosTrack, self).__init__(*args, **kwarg)
+    def __init__(self, properties_dict):
+        GenomeTrack.__init__(self, properties_dict)
+
+        self.load_file()
 
     def set_properties_defaults(self):
         GenomeTrack.set_properties_defaults(self)
@@ -133,3 +136,10 @@ file_type = {}
         if self.properties['orientation'] == 'inverted':
             ymin, ymax = ax.get_ylim()
             ax.set_ylim(ymax, ymin)
+
+    def plot_y_axis(self, ax, plot_axis):
+        GenomeTrack.plot_y_axis(self, ax, plot_axis)
+
+    def __del__(self):
+        if self.tbx is not None:
+            self.tbx.close()

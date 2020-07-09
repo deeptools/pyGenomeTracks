@@ -1,0 +1,30 @@
+Necessary:
+^^^^^^^^^^
+- **file**
+
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: `0.5` (default) or float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+
+- **orientation**: by default this option is not set but you can also put: inverted.
+
+- **line_width**: `1` (default) or any float above 0
+
+- **color**: `#FF000080` (default)
+
+- **max_value**: by default this option is not set but you can also put: any float
+
+- **show_data_range**: `true` (default) or false.
+
+- **show_labels**: `true` (default) or false.
+
+- **use_summit**: `true` (default) or false.
+
+- **width_adjust**: `1.5` (default) or any float above 0
+
+- **type**: `peak` (default) or box.
+
