@@ -49,6 +49,18 @@ file = invalid_strand.bed
 with open(os.path.join(ROOT, "invalid_strand.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[invalid_rgb]
+file = invalid_rgb.bed
+color = bed_rgb
+
+[invalid_rgb2]
+file = invalid_rgb2.bed
+color = bed_rgb
+"""
+with open(os.path.join(ROOT, "invalid_rgb.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -108,3 +120,22 @@ def test_plot_tracks_bed_invalid_strand():
 
     os.remove(outfile.name)
     os.remove(ini_file)
+
+# For the moment this is failing but it should not
+# def test_plot_tracks_bed_invalid_rgb():
+
+#     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+#                                  delete=False)
+#     ini_file = os.path.join(ROOT, "invalid_rgb.ini")
+#     region = "chr1:0-500"
+#     expected_file = os.path.join(ROOT, 'master_invalid_rgb.png')
+#     args = f"--tracks {ini_file} --region {region} "\
+#            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+#            f"--outFileName {outfile.name}".split()
+#     pygenometracks.plotTracks.main(args)
+#     res = compare_images(expected_file,
+#                          outfile.name, tolerance)
+#     assert res is None, res
+
+#     os.remove(outfile.name)
+
