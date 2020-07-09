@@ -52,7 +52,7 @@ with open(os.path.join(ROOT, "invalid_strand.ini"), 'w') as fh:
 browser_tracks = """
 [invalid_rgb]
 file = invalid_rgb.bed
-title = first line valid but no_strand invalid
+title = first line valid but neg invalid
 color = bed_rgb
 
 [invalid_rgb2]
