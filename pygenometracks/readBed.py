@@ -74,25 +74,6 @@ class ReadBed(object):
         self.line_number += 1
         return line
 
-    def next(self):
-        """
-        :return: bedInterval object
-        """
-        line = self.get_no_comment_line()
-
-        bed = self.get_bed_interval(line)
-        if self.prev_chrom == bed.chromosome:
-            assert self.prev_start <= bed.start, \
-                "Bed file not sorted. Please use a sorted bed file.\n" \
-                f"File: {self.file_handle.name}\n" \
-                f"Previous line: {self.prev_line}\n Current line{line} "
-
-        self.prev_chrom = bed.chromosome
-        self.prev_start = bed.start
-        self.prev_line = line
-
-        return bed
-
     def __next__(self):
         """
         :return: bedInterval object
