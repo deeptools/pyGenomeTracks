@@ -17,6 +17,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/bed_colormap_genes.ini --regio
 bin/pgt --tracks pygenometracks/tests/test_data/bed_unusual_formats.ini --region X:20000-40000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_bed_unusual_formats.png
 bin/pgt --tracks pygenometracks/tests/test_data/strange_strand.ini --region chr1:0-500 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_strange_strand.png
 bin/pgt --tracks pygenometracks/tests/test_data/invalid_rgb.ini --region chr1:0-500 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_invalid_rgb.png
+bin/pgt --tracks pygenometracks/tests/test_data/invalid_blockCount.ini --region chr1:0-500 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_invalid_blockCount.png
 
 # test_bedGraphMatrixTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region X:2850000-3150000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph.png
