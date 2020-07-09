@@ -585,7 +585,8 @@ def test_plot_tracks_bed_arrow():
                          outfile.name, tolerance)
     assert res is None, res
 
-    os.remove(first_file)
+    os.remove(outfile.name)
+
 
 def test_plot_tracks_bed_arrow_zoom():
 
@@ -603,7 +604,7 @@ def test_plot_tracks_bed_arrow_zoom():
                          outfile.name, tolerance)
     assert res is None, res
 
-    os.remove(second_file)
+    os.remove(outfile.name)
 
 
 def test_plot_tracks_flybase():
