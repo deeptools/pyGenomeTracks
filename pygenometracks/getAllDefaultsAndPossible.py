@@ -65,9 +65,10 @@ def main():
             all_default_parameters[p][track_type] = value
         has_default = False
         for p, value in track_class.DEFAULTS_PROPERTIES.items():
-            all_default_parameters[p] = all_default_parameters.get(p, {})
-            all_default_parameters[p][track_type] = value
-            has_default = True
+            if p != 'region':
+                all_default_parameters[p] = all_default_parameters.get(p, {})
+                all_default_parameters[p][track_type] = value
+                has_default = True
         if has_default:
             all_tracks_with_default += [track_type]
 
@@ -112,7 +113,7 @@ def main():
     max_char = max([len(mat[i, j]) for i in range(mat.shape[0]) for j in range(mat.shape[1])])
     mat[1, :] = ['=' * max_char] * mat.shape[1]
     np.savetxt(os.path.join("docs", "content", "all_default_properties_rst.txt"),
-               mat, fmt='%-{}s'.format(max_char), delimiter="  ",
+               mat, fmt=f'%-{max_char}s', delimiter="  ",
                header='  '.join(mat[1, :]), footer='  '.join(mat[1, :]),
                comments='')
     if starPut:

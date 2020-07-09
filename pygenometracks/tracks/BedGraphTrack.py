@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import file_to_intervaltree, plot_coverage, InputError, transform
+from .. utilities import file_to_intervaltree, plot_coverage, InputError, transform, change_chrom_names
 import numpy as np
 import pyBigWig
 import tempfile
@@ -15,13 +15,15 @@ class BedGraphTrack(GenomeTrack):
                          '.bedGraph', '.bedGraph.gz', '.bedGraph.bgz',
                          '.bdg', '.bdg.gz', '.bdg.bgz']
     TRACK_TYPE = 'bedgraph'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 color = green
+# To use a different color for negative values
+#negative_color = red
 # To use transparency, you can use alpha
 # default is 1
 # alpha = 0.5
 # the default for min_value and max_value is 'auto' which means that the scale will go
-# from the minimum value found in the region plotted to the maximum value found.
+# roughly from the minimum value found in the region plotted to the maximum value found.
 min_value = 0
 #max_value = auto
 # to convert missing data (NaNs) into zeros. Otherwise, missing data is not plotted.
@@ -75,8 +77,10 @@ show_data_range = true
 # gives the transformed values, if you prefer to see
 # the original values:
 #y_axis_values = original
-file_type = {}
-    """.format(TRACK_TYPE)
+# If you want to have a grid on the y-axis
+#grid = true
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
                            'show_data_range': True,
@@ -90,11 +94,13 @@ file_type = {}
                            'rasterize': False,
                            'number_of_bins': 700,
                            'type': 'fill',
+                           'region': None,  # Cannot be set manually but is set by tracksClass
                            'transform': 'no',
                            'log_pseudocount': 0,
                            'y_axis_values': 'transformed',
                            'second_file': None,
-                           'operation': 'file'}
+                           'operation': 'file',
+                           'grid': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -106,7 +112,7 @@ file_type = {}
                                          'log10'],
                            'y_axis_values': ['original', 'transformed']}
     BOOLEAN_PROPERTIES = ['show_data_range', 'nans_to_zeros',
-                          'use_middle', 'rasterize']
+                          'use_middle', 'rasterize', 'grid']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
@@ -130,9 +136,9 @@ file_type = {}
 
         if 'second_file' in self.properties['operation']:
             if self.properties['second_file'] is None:
-                raise InputError("operation: {} requires to set the parameter"
-                                 " second_file."
-                                 "".format(self.properties['operation']))
+                raise InputError(f"operation: {self.properties['operation']}"
+                                 " requires to set the parameter"
+                                 " second_file.")
             else:
                 if self.properties['second_file'].endswith(".bgz"):
                     # from the tabix file is not possible to know the
@@ -184,10 +190,13 @@ file_type = {}
             try:
                 self.tbx = pysam.TabixFile(self.properties['file'])
             except IOError:
-                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'])
+                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                                  self.properties['region'])
         # load the file as an interval tree
         else:
-            self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'])
+            self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                              self.properties['region'])
+
         self.num_fields = None
 
     def _get_row_data(self, row, tbx_var='self.tbx'):
@@ -242,7 +251,7 @@ file_type = {}
         if tbx is not None:
             if chrom_region not in tbx.contigs:
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
+                chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in tbx.contigs:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
@@ -260,7 +269,7 @@ file_type = {}
             inttree = eval(inttree_var)
             if chrom_region not in list(inttree):
                 chrom_region_before = chrom_region
-                chrom_region = self.change_chrom_names(chrom_region)
+                chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in list(inttree):
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
@@ -290,7 +299,15 @@ file_type = {}
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         if pos_list == []:
             return
-        score_list = [float(x[0]) for x in score_list]
+        try:
+            score_list = [float(x[0]) for x in score_list]
+        except ValueError as ve:
+            if "could not convert string to float: 'NA'" in str(ve):
+                self.log.warning("*Warning*\nNA were found in the bedgraph"
+                                 " will be replaced by nan")
+                score_list = [float(x[0]) if x[0] != 'NA' else float('nan') for x in score_list]
+            else:
+                raise ve
         if self.properties['use_middle']:
             x_values = np.asarray([(t[0] + t[1]) / 2
                                    for i, t in enumerate(pos_list)
@@ -318,10 +335,9 @@ file_type = {}
                 new_score_list = eval('[' + operation + ' for file in score_list]')
                 new_score_list = np.array(new_score_list)
             except Exception as e:
-                raise Exception("The operation in section {} could not be"
-                                " computed: {}".
-                                format(self.properties['section_name'],
-                                       e))
+                raise Exception("The operation in section "
+                                f"{self.properties['section_name']} could not "
+                                f"be computed: {e}")
             else:
                 score_list = new_score_list
 
@@ -342,10 +358,9 @@ file_type = {}
                 new_score_list = eval('[' + operation + ' for file,second_file in zip(score_list, score_list2)]')
                 new_score_list = np.array(new_score_list)
             except Exception as e:
-                raise Exception("The operation in section {} could not be"
-                                " computed: {}".
-                                format(self.properties['section_name'],
-                                       e))
+                raise Exception("The operation in section "
+                                f"{self.properties['section_name']} could not"
+                                f" be computed: {e}")
             else:
                 score_list = new_score_list
 
@@ -358,7 +373,8 @@ file_type = {}
                       self.size,
                       self.properties['color'],
                       self.properties['negative_color'],
-                      self.properties['alpha'])
+                      self.properties['alpha'],
+                      self.properties['grid'])
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
@@ -436,7 +452,8 @@ file_type = {}
         super(BedGraphTrack, self).plot_y_axis(ax, plot_axis,
                                                self.properties['transform'],
                                                self.properties['log_pseudocount'],
-                                               self.properties['y_axis_values'])
+                                               self.properties['y_axis_values'],
+                                               self.properties['grid'])
 
     def __del__(self):
         if self.tbx is not None:

@@ -1,5 +1,5 @@
 narrow_peak
-==========
+===========
 
 Description
 -----------

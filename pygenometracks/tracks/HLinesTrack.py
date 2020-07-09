@@ -8,12 +8,16 @@ DEFAULT_HLINES_COLOR = 'black'
 class HLinesTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = 'hlines'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # color of the lines
 color = black
 # To use transparency, you can use alpha
 # default is 1
 # alpha = 0.5
+# the default for min_value and max_value is 'auto' which means that the scale will go
+# roughly from the minimum value found in the region plotted to the maximum value found.
+min_value = 0
+#max_value = auto
 # line width:
 # line_width = 0.5
 # options for line_style are 'solid', 'dashed', 'dotted', and 'dashdot'
@@ -22,8 +26,8 @@ color = black
 y_values = 10, 200
 # set show_data_range to false to hide the text on the upper-left showing the data range
 show_data_range = true
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
                            'show_data_range': True,
@@ -56,18 +60,17 @@ file_type = {}
         try:
             self.y_values = [float(x) for x in y_array]
         except Exception as detail:
-            raise InputError('y_values ({}) not valid. \nError: {}'
-                             ''.format(self.properties['y_values'],
-                                       detail))
+            raise InputError(f"y_values ({self.properties['y_values']}) not"
+                             f" valid. \nError: {detail}")
 
     def set_properties_defaults(self):
         super(HLinesTrack, self).set_properties_defaults()
         self.process_color('color')
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        self.log.debug("y_values: {}".format(self.y_values))
+        self.log.debug(f"y_values: {self.y_values}")
         for y_value in self.y_values:
-            self.log.debug("y_value: {}".format(y_value))
+            self.log.debug(f"y_value: {y_value}")
             ax.axhline(y=y_value,
                        linewidth=self.properties['line_width'],
                        color=self.properties['color'],

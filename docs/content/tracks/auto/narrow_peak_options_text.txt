@@ -5,8 +5,9 @@ title =
 height = 2
 # if you want to plot the track upside-down:
 # orientation = inverted
-# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
-# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'.
+# For the 'share-y' option the y axis values is shared between this plot and the overlay plot.
+# Otherwise, each plot use its own scale
 #overlay_previous = yes
 
 color = #FF000080

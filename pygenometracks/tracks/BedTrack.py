@@ -3,7 +3,7 @@ from .. readBed import ReadBed
 # To remove next 1.0
 from .. readGtf import ReadGtf
 # End to remove
-from .. utilities import opener, get_length_w, count_lines
+from .. utilities import opener, get_length_w, count_lines, temp_file_from_intersect, change_chrom_names
 import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
@@ -17,6 +17,7 @@ DEFAULT_BED_COLOR = '#1f78b4'
 DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
+AROUND_REGION = 100000
 
 
 class BedTrack(GenomeTrack):
@@ -25,14 +26,14 @@ class BedTrack(GenomeTrack):
                          'bed.gz', 'bed3.gz', 'bed4.gz', 'bed5.gz', 'bed6.gz',
                          'bed9.gz', 'bed12.gz']
     TRACK_TYPE = 'bed'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # If the bed file contains the exon
 # structure (bed 12) then this is plotted. Otherwise
 # a region **with direction** is plotted.
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
-# color = bed_rgb
-#if color is a valid colormap name (like RbBlGn), then the score is mapped
+#color = bed_rgb
+# if color is a valid colormap name (like RbBlGn), then the score (column 5) is mapped
 # to the colormap.
 # In this case, the the min_value and max_value for the score can be provided, otherwise
 # the maximum score and minimum score found are used.
@@ -41,8 +42,6 @@ class BedTrack(GenomeTrack):
 #max_value=100
 # If the color is simply a color name, then this color is used and the score is not considered.
 color = darkblue
-# height of track in cm
-height = 5
 # whether printing the labels
 labels = false
 # optional:
@@ -54,21 +53,24 @@ fontsize = 10
 # optional: line_width
 #line_width = 0.5
 # the display parameter defines how the bed file is plotted.
-# The options are ['collapsed', 'interleaved', 'triangles'] These options asume that the regions do not overlap.
+# Default is 'stacked' where regions are plotted on different lines so
+# we can see all regions and all labels.
+# The other options are ['collapsed', 'interleaved', 'triangles']
+# These options assume that the regions do not overlap.
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
-# if display is not given, then each region is plotted using the gene style
 # optional, default is black. To remove the border, simply set 'border_color' to none
 # Not used in tssarrow style
 #border_color = black
-# style to plot the genes when they have exon information
+# style to plot the genes when the display is not triangles
 #style = UCSC
 #style = flybase
 #style = tssarrow
 # maximum number of gene rows to be plotted. This
 # field is useful to limit large number of close genes
 # to be printed over many rows. When several images want
-# to be combined this must be set to get equal size, otherwise, on each image the height of each gene changes
+# to be combined this must be set to get equal size
+# otherwise, on each image the height of each gene changes
 #gene_rows = 10
 # by default the ymax is the number of
 # rows occupied by the genes in the region plotted. However,
@@ -98,12 +100,9 @@ fontsize = 10
 # If you want that the tip of the arrow correspond to
 # the extremity of the interval use:
 # arrowhead_included = true
-# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
-# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
-#overlay_previous = yes
 # optional. If not given is guessed from the file ending.
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
 
     DEFAULTS_PROPERTIES = {'fontsize': 12,
                            'orientation': None,
@@ -126,6 +125,7 @@ file_type = {}
                            'arrowhead_included': False,
                            'color_utr': 'grey',
                            'height_utr': 1,
+                           'region': None,  # Cannot be set manually but is set by tracksClass
                            'arrow_length': None,
                            'all_labels_inside': False,
                            'labels_in_margin': False}
@@ -164,7 +164,7 @@ file_type = {}
         # this is bed3, bed4, bed5, bed6, bed8, bed9 or bed12
         self.len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions
-        self.interval_tree, min_score, max_score = self.process_bed()
+        self.interval_tree, min_score, max_score = self.process_bed(self.properties['region'])
         if self.colormap is not None:
             if self.properties['min_value'] is not None:
                 min_score = self.properties['min_value']
@@ -205,53 +205,58 @@ file_type = {}
                     if self.colormap == self.properties[param]:
                         self.parametersUsingColormap.append(param)
                     else:
-                        self.log.warning("*WARNING* section {0}: {1} was set to {2}, "
-                                         "but {3} was set to {4}. "
+                        self.log.warning("*WARNING* section "
+                                         f"{self.properties['section_name']}: "
+                                         f"{param} was set to "
+                                         f"{self.properties[param]}, but "
+                                         f"{self.parametersUsingColormap[0]}"
+                                         f" was set to {self.colormap}. "
                                          "It is not possible to have multiple"
-                                         " colormap. {1} set to {5}"
-                                         "".format(self.properties['section_name'],
-                                                   param, self.properties[param],
-                                                   self.parametersUsingColormap[0],
-                                                   self.colormap,
-                                                   self.DEFAULTS_PROPERTIES[param]))
+                                         f" colormap. {param} set to "
+                                         f"{self.DEFAULTS_PROPERTIES[param]}")
                         self.properties[param] = self.DEFAULTS_PROPERTIES[param]
 
         # to set the distance between rows
         self.row_scale = 2.3
 
-    def get_bed_handler(self):
+    def get_bed_handler(self, plot_regions=None):
+        if not self.properties['global_max_row']:
+            # I do the intersection:
+            file_to_open = temp_file_from_intersect(self.properties['file'],
+                                                    plot_regions, AROUND_REGION)
+        else:
+            file_to_open = self.properties['file']
         # To remove in next 1.0
         if self.properties['file'].endswith('gtf') or \
            self.properties['file'].endswith('gtf.gz'):
             self.log.warning("Deprecation Warning: "
-                             "In section {}, file_type was set to {}"
+                             f"In section {self.properties['section_name']},"
+                             f" file_type was set to {self.TRACK_TYPE}"
                              " whereas it is a gtf file. In the future"
                              " only bed files will be accepted, please"
-                             " use file_type = gtf."
-                             "".format(self.properties['section_name'],
-                                       self.TRACK_TYPE))
-            bed_file_h = ReadGtf(self.properties['file'],
+                             " use file_type = gtf.")
+            bed_file_h = ReadGtf(file_to_open,
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
             total_length = bed_file_h.length
         else:
             # end of remove
-            total_length = count_lines(opener(self.properties['file']),
+            total_length = count_lines(opener(file_to_open),
                                        asBed=True)
-            bed_file_h = ReadBed(opener(self.properties['file']))
+            bed_file_h = ReadBed(opener(file_to_open))
 
         return(bed_file_h, total_length)
 
-    def process_bed(self):
+    def process_bed(self, plot_regions=None):
 
-        bed_file_h, total_length = self.get_bed_handler()
+        bed_file_h, total_length = self.get_bed_handler(plot_regions)
         self.bed_type = bed_file_h.file_type
 
         if self.properties['color'] == 'bed_rgb' and \
            self.bed_type not in ['bed12', 'bed9']:
             self.log.warning("*WARNING* Color set to 'bed_rgb', "
                              "but bed file does not have the rgb field. "
-                             "The color has been set to {}".format(DEFAULT_BED_COLOR))
+                             f"The color has been set to {DEFAULT_BED_COLOR}")
             self.properties['color'] = DEFAULT_BED_COLOR
 
         valid_intervals = 0
@@ -279,7 +284,7 @@ file_type = {}
 
         if valid_intervals == 0:
             self.log.warning("No valid intervals were found in file "
-                             "{}".format(self.properties['file']))
+                             f"{self.properties['file']}")
 
         return interval_tree, min_score, max_score
 
@@ -318,7 +323,7 @@ file_type = {}
                 if free_row > self.max_num_row[bed.chromosome]:
                     self.max_num_row[bed.chromosome] = free_row
 
-        self.log.debug("max number of rows set to {}".format(self.max_num_row))
+        self.log.debug(f"max number of rows set to {self.max_num_row}")
         return self.max_num_row
 
     def get_y_pos(self, free_row):
@@ -353,7 +358,7 @@ file_type = {}
     def plot(self, ax, chrom_region, start_region, end_region):
         if chrom_region not in self.interval_tree.keys():
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
+            chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
                                  + " nor " + chrom_region + " existss as a "
@@ -549,12 +554,11 @@ file_type = {}
                             verticalalignment='center', fontproperties=self.fp)
 
             if self.counter == 0:
-                self.log.warning("*Warning* No intervals were found for file {} "
-                                 "in section '{}' for the interval plotted"
-                                 " ({}:{}-{}).\n".
-                                 format(self.properties['file'],
-                                        self.properties['section_name'],
-                                        chrom_region, start_region, end_region))
+                self.log.warning("*Warning* No intervals were found for file"
+                                 f" {self.properties['file']} in "
+                                 f"section '{self.properties['section_name']}'"
+                                 " for the interval plotted"
+                                 f" ({chrom_region}:{start_region}-{end_region}).\n")
 
             epsilon = 0.08
             ymax = - epsilon
@@ -568,7 +572,7 @@ file_type = {}
             else:
                 ymin = max_ypos + (1 + epsilon)
 
-            self.log.debug("ylim {},{}".format(ymin, ymax))
+            self.log.debug(f"ylim {ymin},{ymax}")
             # the axis is inverted (thus, ymax < ymin)
             ax.set_ylim(ymin, ymax)
 
@@ -1017,7 +1021,7 @@ file_type = {}
                 ymax = y2
 
         if valid_regions == 0:
-            self.log.warning("No regions found for section {}.".format(self.properties['section_name']))
+            self.log.warning(f"No regions found for section {self.properties['section_name']}.")
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, 0)

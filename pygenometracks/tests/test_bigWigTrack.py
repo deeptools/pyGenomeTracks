@@ -332,19 +332,74 @@ overlay_previous = share-y
 with open(os.path.join(ROOT, "alpha.ini"), 'w') as fh:
     fh.write(tracks)
 
+tracks = """
+[test bigwig fill]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = black
+height = 2
+type = fill
+title = bigwig: black fill (height = 2)
+
+[test bigwig fill with grid]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = black
+height = 2
+type = fill
+grid = true
+title = bigwig: black fill with grid (height = 2)
+
+[spacer]
+
+[test bigwig fill with grid]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = black
+height = 5
+type = fill
+grid = true
+title = bigwig: black fill with grid (height = 5)
+
+[spacer]
+
+[test bigwig fill with grid]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = black
+height = 5
+type = fill
+grid = true
+max_value = 50
+title = bigwig: black fill with grid (height = 5 max_value = 50)
+
+[spacer]
+
+[test bigwig fill with grid]
+file = bigwig2_X_2.5e6_3.5e6.bw
+color = black
+height = 15
+type = fill
+grid = true
+max_value = 50
+title = bigwig: black fill with grid (height = 15 max_value = 50)
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "grid.ini"), 'w') as fh:
+    fh.write(tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
 def test_bigwig_track():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bigwig.ini")
     region = "X:2700000-3100000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "bigwig.ini"),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_bigwig.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_bigwig.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -352,15 +407,16 @@ def test_bigwig_track():
 
 
 def test_alpha():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_alpha_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "alpha.ini")
     region = "X:2700000-3100000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_alpha_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "alpha.ini"),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_alpha.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_alpha.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -368,15 +424,33 @@ def test_alpha():
 
 
 def test_hlines():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_hlines_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "hlines.ini")
     region = "X:2700000-3100000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_hlines_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "hlines.ini"),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_hlines.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_hlines.png'),
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_grid():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_grid_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "grid.ini")
+    region = "X:2700000-3100000"
+    expected_file = os.path.join(ROOT, 'master_grid.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -384,15 +458,16 @@ def test_hlines():
 
 
 def test_op():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "operation.ini")
     region = "X:2700000-3100000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "operation.ini"),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_operation.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_operation.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
