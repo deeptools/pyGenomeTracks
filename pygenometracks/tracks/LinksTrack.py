@@ -15,7 +15,7 @@ HUGE_NUMBER = 1e15  # Which should be above any chromosome size
 class LinksTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.arcs', '.arc', '.link', '.links', '.bedpe']
     TRACK_TYPE = 'links'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # the file format for links is (tab separated)
 #   chr1 start1 end1 chr2 start2 end2 (score ...)
 # The score field is optional
@@ -62,8 +62,8 @@ line_style = solid
 # The unit is bp. This corresponds to the longest arc you will see.
 # This option is incompatible with compact_arcs_level = 2
 #ylim = 100000
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'links_type': 'arcs',
                            'line_width': None,
                            'line_style': 'solid',
@@ -103,11 +103,12 @@ file_type = {}
         self.max_height = None
         self.interval_tree, min_score, max_score, has_score = self.process_link_file(self.properties['region'])
         if self.properties['line_width'] is None and not has_score:
-            self.log.warning("*WARNING* for section {}"
+            self.log.warning("*WARNING* for section "
+                             f"{self.properties['section_name']}"
                              " no line_width has been set but some "
                              "lines do not have scores."
                              "line_width has been set to "
-                             "0.5".format(self.properties['section_name']))
+                             "0.5")
             self.properties['line_width'] = 0.5
 
         self.colormap = None
@@ -116,12 +117,12 @@ file_type = {}
                                          default_value_is_colormap=False)
         if is_colormap:
             if not has_score:
-                self.log.warning("*WARNING* for section {}"
+                self.log.warning("*WARNING* for section "
+                                 f"{self.properties['section_name']}"
                                  " a colormap was chosen but some "
                                  "lines do not have scores."
                                  "Color has been set to "
-                                 "{}".format(self.properties['section_name'],
-                                             DEFAULT_LINKS_COLOR))
+                                 f"{DEFAULT_LINKS_COLOR}")
                 self.properties['color'] = DEFAULT_LINKS_COLOR
             else:
                 self.colormap = self.properties['color']
@@ -140,11 +141,11 @@ file_type = {}
 
         if self.properties['compact_arcs_level'] == '2' and \
            self.properties['ylim'] is not None:
-            self.log.warning("*WARNING* for section {}"
+            self.log.warning("*WARNING* for section "
+                             f"{self.properties['section_name']}"
                              " a ylim was set but "
                              "compact_arcs_level was set to 2."
-                             "ylim will be ignore."
-                             "".format(self.properties['section_name']))
+                             "ylim will be ignore.")
             self.properties['ylim'] = None
 
     def plot(self, ax, chrom_region, region_start, region_end):
@@ -200,14 +201,11 @@ file_type = {}
                 ymax = np.sqrt(self.properties['ylim'])
             else:
                 ymax = self.properties['ylim']
-        self.log.debug("{} were links plotted".format(count))
+        self.log.debug(f"{count} were links plotted")
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, -1)
         else:
             ax.set_ylim(-1, ymax)
-
-        # I guess this was forgotten
-        # self.log.debug('title is {}'.format(self.properties['title']))
 
     def plot_y_axis(self, ax, plot_ax):
         if self.colormap is not None and self.properties['overlay_previous'] == 'no':
@@ -351,10 +349,12 @@ file_type = {}
             try:
                 chrom1, start1, end1, chrom2, start2, end2 = line.strip().split('\t')[:6]
             except Exception as detail:
-                raise InputError('File not valid. The format is chrom1 start1, end1, '
-                                 'chrom2, start2, end2\nError: {}\n in line\n {}'.format(detail, line))
+                raise InputError('File not valid. The format is chrom1'
+                                 ' start1, end1, '
+                                 f'chrom2, start2, end2\nError: {detail}\n'
+                                 f' in line\n {line}')
             if chrom1 != chrom2:
-                self.log.warning("Only links in same chromosome are used. Skipping line\n{}\n".format(line))
+                self.log.warning(f"Only links in same chromosome are used. Skipping line\n{line}\n")
                 continue
 
             try:
@@ -369,18 +369,18 @@ file_type = {}
                 start2 = int(start2)
                 end2 = int(end2)
             except ValueError as detail:
-                raise InputError("Error reading line: {}. One of the fields is not "
-                                 "an integer.\nError message: {}".format(line_number, detail))
+                raise InputError(f"Error reading line: {line_number}. One of the fields is not "
+                                 f"an integer.\nError message: {detail}")
 
-            assert start1 <= end1, "Error in line #{}, end1 larger than start1 in {}".format(line_number, line)
-            assert start2 <= end2, "Error in line #{}, end2 larger than start2 in {}".format(line_number, line)
+            assert start1 <= end1, f"Error in line #{line_number}, end1 larger than start1 in {line}"
+            assert start2 <= end2, f"Error in line #{line_number}, end2 larger than start2 in {line}"
 
             if has_score:
                 try:
                     score = float(score)
                 except ValueError as detail:
-                    self.log.warning("Warning: reading line: {}. The score is not valid {} will not be used. "
-                                     "\nError message: {}".format(line_number, score, detail))
+                    self.log.warning(f"Warning: reading line: {line}. The score is not valid {score} will not be used. "
+                                     f"\nError message: {detail}")
                     score = np.nan
                     has_score = False
                 else:
@@ -406,7 +406,7 @@ file_type = {}
             valid_intervals += 1
 
         if valid_intervals == 0:
-            self.log.warning("No valid intervals were found in file {}\n".format(self.properties['file']))
+            self.log.warning(f"No valid intervals were found in file {self.properties['file']}.\n")
 
         file_h.close()
         return(interval_tree, min_score, max_score, has_score)

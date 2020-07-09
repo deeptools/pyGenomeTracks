@@ -181,7 +181,7 @@ def parse_arguments(args=None):
                        )
 
     parser.add_argument('--width',
-                        help='figure width in centimeters (default is {})'.format(DEFAULT_FIGURE_WIDTH),
+                        help=f'figure width in centimeters (default is {DEFAULT_FIGURE_WIDTH})',
                         type=float,
                         default=DEFAULT_FIGURE_WIDTH)
 
@@ -231,7 +231,7 @@ def parse_arguments(args=None):
                         action='store_true')
 
     parser.add_argument('--version', action='version',
-                        version='%(prog)s {}'.format(__version__))
+                        version=f'%(prog)s {__version__}')
 
     return parser
 
@@ -268,8 +268,8 @@ def get_region(region_string):
         if region_end <= region_start:
             raise InputError("Please check that the region end is larger "
                              "than the region start.\n"
-                             "Values given:\nstart: {}\nend: {}"
-                             "\n".format(region_start, region_end))
+                             f"Values given:\nstart: {region_start}\n"
+                             f"end: {region_end}\n")
 
         return chrom, region_start, region_end
 
@@ -289,7 +289,7 @@ def main(args=None):
             try:
                 start, end = map(int, [start, end])
             except ValueError as detail:
-                warnings.warn("Invalid value found at line\t{}\t. {}\n".format(line, detail))
+                warnings.warn(f"Invalid value found at line\t{line}\t. {detail}\n")
                 continue
             regions.append((chrom, start, end))
     else:
@@ -310,12 +310,12 @@ def main(args=None):
         file_suffix = name[-1]
         file_prefix = ".".join(name[:-1])
         for chrom, start, end in regions:
-            file_name = "{}_{}-{}-{}.{}".format(file_prefix, chrom, start, end, file_suffix)
+            file_name = f"{file_prefix}_{chrom}-{start}-{end}.{file_suffix}"
             if end - start < 200000:
                 warnings.warn("A region shorter than 200kb has been "
                               "detected! This can be too small to return "
                               "a proper TAD plot!\n")
-            sys.stderr.write("saving {}\n".format(file_name))
+            sys.stderr.write(f"saving {file_name}\n")
             trp.plot(file_name, chrom, start, end, title=args.title,
                      h_align_titles=args.trackLabelHAlign,
                      decreasing_x_axis=args.decreasingXAxis)

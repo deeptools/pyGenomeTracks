@@ -149,19 +149,18 @@ def test_plot_bedgraph_tracks_with_bed():
 
     outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --BED {1} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName {2}" \
-           "".format(os.path.join(ROOT, "bedgraph_useMid.ini"),
-                     os.path.join(ROOT, 'regions_imbricated_chr2.bed'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "bedgraph_useMid.ini")
+    bed_file = os.path.join(ROOT, 'regions_imbricated_chr2.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     for region in ['chr2:73800000-75744000', 'chr2:74000000-74800000']:
         region_str = region.replace(':', '-')
         output_file = outfile.name[:-4] + '_' + region_str + extension
-        res = compare_images(os.path.join(ROOT,
-                                          'master_bedgraph_useMid_'
-                                          + region_str + extension),
+        expected_file = os.path.join(ROOT, 'master_bedgraph_useMid_'
+                                     + region_str + extension)
+        res = compare_images(expected_file,
                              output_file, tolerance)
         assert res is None, res
 
@@ -174,17 +173,15 @@ def test_plot_bedgraph_tracks_individual():
     for region in ['chr2:73800000-75744000', 'chr2:74000000-74800000']:
         outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                      delete=False)
-        args = "--tracks {0} --region {1} "\
-            "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-            "--outFileName {2}" \
-            "".format(os.path.join(ROOT, "bedgraph_useMid.ini"),
-                      region,
-                      outfile.name).split()
-        pygenometracks.plotTracks.main(args)
+        ini_file = os.path.join(ROOT, "bedgraph_useMid.ini")
         region_str = region.replace(':', '-')
-        res = compare_images(os.path.join(ROOT,
-                                          'master_bedgraph_useMid_'
-                                          + region_str + extension),
+        expected_file = os.path.join(ROOT, 'master_bedgraph_useMid_'
+                                     + region_str + extension)
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
                              outfile.name, tolerance)
         assert res is None, res
 
@@ -193,15 +190,16 @@ def test_plot_bedgraph_tracks_individual():
 
 def test_plot_bedgraph_tracks_rasterize():
 
-    outfile = NamedTemporaryFile(suffix='.pdf', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region chr2:73,800,000-75,744,000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bedgraph_useMid.ini'),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.pdf', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bedgraph_useMid.ini")
+    region = "chr2:73,800,000-75,744,000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_useMid.pdf')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_bedgraph_useMid.pdf'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -209,15 +207,16 @@ def test_plot_bedgraph_tracks_rasterize():
 
 
 def test_op_bdg():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bdg_op_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "operation_bdg.ini")
     region = "X:2700000-3100000"
-    outfile = NamedTemporaryFile(suffix='.png', prefix='bdg_op_test_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "operation_bdg.ini"),
-                     outfile=outfile.name, region=region).split()
+    expected_file = os.path.join(ROOT, 'master_operation_bdg.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_operation_bdg.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -225,15 +224,15 @@ def test_op_bdg():
 
 
 def test_bdg_withNA():
-    region = "X:2700000-3100000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bdg_NA_', delete=False)
-    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
-           "--dpi 130 --outFileName {outfile}" \
-           "".format(ini=os.path.join(ROOT, "bedgraph_withNA.ini"),
-                     outfile=outfile.name, region=region).split()
+    ini_file = os.path.join(ROOT, "bedgraph_withNA.ini")
+    region = "X:2700000-3100000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_withNA.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_bedgraph_withNA.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 

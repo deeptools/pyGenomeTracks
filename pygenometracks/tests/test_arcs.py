@@ -165,14 +165,16 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 def test_short_long_arcs():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region chr11:40000000-46000000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "short_long_arcs.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "short_long_arcs.ini")
+    region = "chr11:40000000-46000000"
+    expected_file = os.path.join(ROOT, 'master_short_long_arcs.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_short_long_arcs.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -181,14 +183,16 @@ def test_short_long_arcs():
 
 def test_use_middle_arcs():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_', delete=False)
-    args = "--tracks {0} --region X:3000000-3300000 --trackLabelFraction 0.2" \
-           " --width 38 --dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, "arcs_use_middle.ini"),
-                     outfile.name).split()
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "arcs_use_middle.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_arcs_use_middle.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    print("saving test to {}".format(outfile.name))
-    res = compare_images(os.path.join(ROOT, 'master_arcs_use_middle.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 

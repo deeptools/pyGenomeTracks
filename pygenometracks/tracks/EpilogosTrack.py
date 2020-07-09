@@ -22,7 +22,7 @@ class EpilogosTrack(BedGraphTrack):
     """
     SUPPORTED_ENDINGS = ['.qcat', '.qcat.bgz']
     TRACK_TYPE = 'epilogos'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # The categories file should contain the color information for each category id
 # A categories file should look like:
 # {{
@@ -36,8 +36,8 @@ class EpilogosTrack(BedGraphTrack):
 #}}
 categories_file = <path to json categories file>
 # optional. If not given, it is guessed from the file ending.
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'categories_file': None,
                            'orientation': None,
                            'region': None}  # Cannot be set manually but is set by tracksClass

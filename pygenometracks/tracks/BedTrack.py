@@ -26,7 +26,7 @@ class BedTrack(GenomeTrack):
                          'bed.gz', 'bed3.gz', 'bed4.gz', 'bed5.gz', 'bed6.gz',
                          'bed9.gz', 'bed12.gz']
     TRACK_TYPE = 'bed'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # If the bed file contains the exon
 # structure (bed 12) then this is plotted. Otherwise
 # a region **with direction** is plotted.
@@ -101,8 +101,8 @@ fontsize = 10
 # the extremity of the interval use:
 # arrowhead_included = true
 # optional. If not given is guessed from the file ending.
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
 
     DEFAULTS_PROPERTIES = {'fontsize': 12,
                            'orientation': None,
@@ -205,15 +205,15 @@ file_type = {}
                     if self.colormap == self.properties[param]:
                         self.parametersUsingColormap.append(param)
                     else:
-                        self.log.warning("*WARNING* section {0}: {1} was set to {2}, "
-                                         "but {3} was set to {4}. "
+                        self.log.warning("*WARNING* section "
+                                         f"{self.properties['section_name']}: "
+                                         f"{param} was set to "
+                                         f"{self.properties[param]}, but "
+                                         f"{self.parametersUsingColormap[0]}"
+                                         f" was set to {self.colormap}. "
                                          "It is not possible to have multiple"
-                                         " colormap. {1} set to {5}"
-                                         "".format(self.properties['section_name'],
-                                                   param, self.properties[param],
-                                                   self.parametersUsingColormap[0],
-                                                   self.colormap,
-                                                   self.DEFAULTS_PROPERTIES[param]))
+                                         f" colormap. {param} set to "
+                                         f"{self.DEFAULTS_PROPERTIES[param]}")
                         self.properties[param] = self.DEFAULTS_PROPERTIES[param]
 
         # to set the distance between rows
@@ -230,12 +230,11 @@ file_type = {}
         if self.properties['file'].endswith('gtf') or \
            self.properties['file'].endswith('gtf.gz'):
             self.log.warning("Deprecation Warning: "
-                             "In section {}, file_type was set to {}"
+                             f"In section {self.properties['section_name']},"
+                             f" file_type was set to {self.TRACK_TYPE}"
                              " whereas it is a gtf file. In the future"
                              " only bed files will be accepted, please"
-                             " use file_type = gtf."
-                             "".format(self.properties['section_name'],
-                                       self.TRACK_TYPE))
+                             " use file_type = gtf.")
             bed_file_h = ReadGtf(file_to_open,
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
@@ -257,7 +256,7 @@ file_type = {}
            self.bed_type not in ['bed12', 'bed9']:
             self.log.warning("*WARNING* Color set to 'bed_rgb', "
                              "but bed file does not have the rgb field. "
-                             "The color has been set to {}".format(DEFAULT_BED_COLOR))
+                             f"The color has been set to {DEFAULT_BED_COLOR}")
             self.properties['color'] = DEFAULT_BED_COLOR
 
         valid_intervals = 0
@@ -285,7 +284,7 @@ file_type = {}
 
         if valid_intervals == 0:
             self.log.warning("No valid intervals were found in file "
-                             "{}\n".format(self.properties['file']))
+                             f"{self.properties['file']}")
 
         return interval_tree, min_score, max_score
 
@@ -324,7 +323,7 @@ file_type = {}
                 if free_row > self.max_num_row[bed.chromosome]:
                     self.max_num_row[bed.chromosome] = free_row
 
-        self.log.debug("max number of rows set to {}".format(self.max_num_row))
+        self.log.debug(f"max number of rows set to {self.max_num_row}")
         return self.max_num_row
 
     def get_y_pos(self, free_row):
@@ -555,12 +554,11 @@ file_type = {}
                             verticalalignment='center', fontproperties=self.fp)
 
             if self.counter == 0:
-                self.log.warning("*Warning* No intervals were found for file {} "
-                                 "in section '{}' for the interval plotted"
-                                 " ({}:{}-{}).\n".
-                                 format(self.properties['file'],
-                                        self.properties['section_name'],
-                                        chrom_region, start_region, end_region))
+                self.log.warning("*Warning* No intervals were found for file"
+                                 f" {self.properties['file']} in "
+                                 f"section '{self.properties['section_name']}'"
+                                 " for the interval plotted"
+                                 f" ({chrom_region}:{start_region}-{end_region}).\n")
 
             epsilon = 0.08
             ymax = - epsilon
@@ -574,7 +572,7 @@ file_type = {}
             else:
                 ymin = max_ypos + (1 + epsilon)
 
-            self.log.debug("ylim {},{}".format(ymin, ymax))
+            self.log.debug(f"ylim {ymin},{ymax}")
             # the axis is inverted (thus, ymax < ymin)
             ax.set_ylim(ymin, ymax)
 
@@ -1023,7 +1021,7 @@ file_type = {}
                 ymax = y2
 
         if valid_regions == 0:
-            self.log.warning("No regions found for section {}.".format(self.properties['section_name']))
+            self.log.warning(f"No regions found for section {self.properties['section_name']}.")
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, 0)

@@ -112,10 +112,10 @@ class TestCheckerMethods(unittest.TestCase):
         there is no file
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_1.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_1.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -129,10 +129,10 @@ class TestCheckerMethods(unittest.TestCase):
         file_type ... does not exists
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_2.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_2.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -147,10 +147,10 @@ class TestCheckerMethods(unittest.TestCase):
          there is no file_type nor file
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_3.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_3.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -167,10 +167,10 @@ class TestCheckerMethods(unittest.TestCase):
         the necessary property
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_4.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_4.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -184,10 +184,10 @@ class TestCheckerMethods(unittest.TestCase):
         boolean
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_5.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_5.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -201,10 +201,10 @@ class TestCheckerMethods(unittest.TestCase):
         float
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_6.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_6.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -219,10 +219,10 @@ class TestCheckerMethods(unittest.TestCase):
         whereas it should be between
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_7.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_7.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -236,10 +236,10 @@ class TestCheckerMethods(unittest.TestCase):
         integer
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_8.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_8.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -254,10 +254,10 @@ class TestCheckerMethods(unittest.TestCase):
         whereas it should be between
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_9.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_9.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -271,10 +271,10 @@ class TestCheckerMethods(unittest.TestCase):
         File in section ... not found
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_10.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_10.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
@@ -291,10 +291,10 @@ class TestCheckerMethods(unittest.TestCase):
         can not identify file type
         """
         outfile_name = "test.png"
-        args = "--tracks {0} --region X:3000000-3300000 " \
-            "--outFileName {1}" \
-            "".format(os.path.join(ROOT, "test_tracks_11.ini"),
-                      outfile_name).split()
+        ini_file = os.path.join(ROOT, "test_tracks_11.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 

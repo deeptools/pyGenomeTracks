@@ -10,18 +10,18 @@ class BedGraphMatrixTrack(BedGraphTrack):
     # we can re-use the code for reading a bedgraph file
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz']
     TRACK_TYPE = 'bedgraph_matrix'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
-        # a bedgraph matrix file is like a bedgraph, except that per bin there
-        # are more than one value (separated by tab). This file type is
-        # produced by the HiCExplorer tool hicFindTads and contains
-        # the TAD-separation score at different window sizes.
-        # E.g.
-        # chrX	18279	40131	0.399113	0.364118	0.320857	0.274307
-        # chrX	40132	54262	0.479340	0.425471	0.366541	0.324736
-        #min_value = 0.10
-        #max_value = 0.70
-        file_type = {}
-        """.format(TRACK_TYPE)
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
+# a bedgraph matrix file is like a bedgraph, except that per bin there
+# are more than one value (separated by tab). This file type is
+# produced by the HiCExplorer tool hicFindTads and contains
+# the TAD-separation score at different window sizes.
+# E.g.
+# chrX	18279	40131	0.399113	0.364118	0.320857	0.274307
+# chrX	40132	54262	0.479340	0.425471	0.366541	0.324736
+#min_value = 0.10
+#max_value = 0.70
+file_type = {TRACK_TYPE}
+"""
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
                            'show_data_range': True,

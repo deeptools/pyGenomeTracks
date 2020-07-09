@@ -258,15 +258,15 @@ def test_plot_tracks_with_hic():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:2500000-3500000 "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, 'browser_tracks_hic.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "browser_tracks_hic.ini")
+    region = "X:2500000-3500000"
+    expected_file = os.path.join(ROOT, 'master_plot_hic.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_plot_hic.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)
@@ -276,15 +276,16 @@ def test_plot_tracks_with_hic_dec():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:2500000-3500000 "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--dpi 130 --outFileName {1} --decreasingXAxis" \
-           "".format(os.path.join(ROOT, 'browser_tracks_hic.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "browser_tracks_hic.ini")
+    region = "X:2500000-3500000"
+    expected_file = os.path.join(ROOT, 'master_plot_hic_dec.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
+           "--decreasingXAxis "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_plot_hic_dec.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)
@@ -294,13 +295,14 @@ def test_plot_tracks_with_cool_region():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:2500000-3500000 "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, 'browser_tracks_cool.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "browser_tracks_cool.ini")
+    region = "X:2500000-3500000"
+    expected_file = os.path.join(ROOT, 'master_plot_hic.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_plot_hic.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -311,15 +313,15 @@ def test_plot_hic_logmlog():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:2500000-3500000 "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, 'browser_tracks_hic_log-log.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "browser_tracks_hic_log-log.ini")
+    region = "X:2500000-3500000"
+    expected_file = os.path.join(ROOT, 'master_plot_hic_log-log.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_plot_hic_log-log.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)
@@ -330,20 +332,18 @@ def test_plot_tracks_with_hic_rasterize_height_2chr():
 
     outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --BED {1} "\
-           "--trackLabelFraction 0.23 --width 38 "\
-           "--dpi 10 --outFileName {2}" \
-           "".format(os.path.join(ROOT,
-                                  'browser_tracks_hic_rasterize_height.ini'),
-                     os.path.join(ROOT, 'regions_XY.bed'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "browser_tracks_hic_rasterize_height.ini")
+    bed_file = os.path.join(ROOT, 'regions_XY.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 10 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     for region in ['X:2500000-2600000', 'Y:0-1000000']:
         region_str = region.replace(':', '-')
         output_file = outfile.name[:-4] + '_' + region_str + extension
-        res = compare_images(os.path.join(ROOT,
-                                          'master_plot_hic_rasterize_height_'
-                                          + region_str + extension),
+        expected_file = os.path.join(ROOT, 'master_plot_hic_rasterize_height_'
+                                     + region_str + extension)
+        res = compare_images(expected_file,
                              output_file, tolerance)
         assert res is None, res
 
@@ -351,20 +351,19 @@ def test_plot_tracks_with_hic_rasterize_height_2chr():
 
 
 def test_plot_tracks_with_hic_rasterize_height_2chr_individual():
+    extension = '.pdf'
+    ini_file = os.path.join(ROOT, "browser_tracks_hic_rasterize_height.ini")
     for region in ['X:2500000-2600000', 'Y:0-1000000']:
-        outfile = NamedTemporaryFile(suffix='.pdf', prefix='pyGenomeTracks_test_',
+        outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                      delete=False)
-        args = "--tracks {0} --region {1} "\
-               "--trackLabelFraction 0.23 --width 38 "\
-               "--dpi 10 --outFileName {2}" \
-               "".format(os.path.join(ROOT,
-                                      'browser_tracks_hic_rasterize_height.ini'),
-                         region,
-                         outfile.name).split()
+        expected_file = os.path.join(ROOT, 'master_plot_hic_rasterize_height_'
+                                     + region.replace(':', '-') + extension)
+
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.23 --width 38 --dpi 10 "\
+               f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
-        res = compare_images(os.path.join(ROOT,
-                                          'master_plot_hic_rasterize_height_'
-                                          + region.replace(':', '-') + '.pdf'),
+        res = compare_images(expected_file,
                              outfile.name, tolerance)
     assert res is None, res
 
@@ -374,20 +373,18 @@ def test_plot_tracks_with_hic_small_test():
 
     outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {} --BED {} "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--outFileName {}" \
-           "".format(os.path.join(ROOT,
-                                  'browser_tracks_hic_small_test.ini'),
-                     os.path.join(ROOT, 'regions_chr1XY.bed'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "browser_tracks_hic_small_test.ini")
+    bed_file = os.path.join(ROOT, 'regions_chr1XY.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     for region in ['chr1:0-500000', 'chrX:2500000-2600000', 'chrY:0-1000000']:
         region_str = region.replace(':', '-')
         output_file = outfile.name[:-4] + '_' + region_str + extension
-        res = compare_images(os.path.join(ROOT,
-                                          'master_plot_hic_small_test_'
-                                          + region_str + extension),
+        expected_file = os.path.join(ROOT, 'master_plot_hic_small_test_'
+                                     + region_str + extension)
+        res = compare_images(expected_file,
                              output_file, tolerance)
         assert res is None, res
 
@@ -401,22 +398,19 @@ def test_plot_tracks_with_hic_small_test():
 
 def test_plot_tracks_with_hic_small_test_individual():
     extension = '.png'
+    ini_file = os.path.join(ROOT, "browser_tracks_hic_small_test.ini")
     for region in ['chr1:0-500000']:  # , 'chrX:2500000-2600000', 'chrY:-0-1000000']:
 
         outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                      delete=False)
-        args = "--tracks {} --region {} "\
-               "--trackLabelFraction 0.23 --width 38 " \
-               "--outFileName {}" \
-               "".format(os.path.join(ROOT,
-                                      'browser_tracks_hic_small_test.ini'),
-                         region,
-                         outfile.name).split()
+        expected_file = os.path.join(ROOT, 'master_plot_hic_small_test_'
+                                     + region.replace(':', '-') + extension)
+
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.23 --width 38 "\
+               f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
-        region_str = region.replace(':', '-')
-        res = compare_images(os.path.join(ROOT,
-                                          'master_plot_hic_small_test_'
-                                          + region_str + extension),
+        res = compare_images(expected_file,
                              outfile.name, tolerance)
         assert res is None, res
 
@@ -424,19 +418,17 @@ def test_plot_tracks_with_hic_small_test_individual():
 
 
 def test_plot_tracks_with_hic_small_other_chr_name():
-    region = '1:0-200000'
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {} --region {} "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--outFileName {}" \
-           "".format(os.path.join(ROOT,
-                                  'browser_tracks_hic_small_test.ini'),
-                     region,
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test.ini')
+    region = '1:0-200000'
+    expected_file = os.path.join(ROOT, 'master_plot_hic_small_test.png')
+
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT,
-                                      'master_plot_hic_small_test.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -444,19 +436,16 @@ def test_plot_tracks_with_hic_small_other_chr_name():
 
 
 def test_plot_tracks_with_hic_small_above_chr_length():
-    region = 'chrM:0-20000'
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {} --region {} "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--outFileName {}" \
-           "".format(os.path.join(ROOT,
-                                  'browser_tracks_hic_small_test.ini'),
-                     region,
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test.ini')
+    region = 'chrM:0-20000'
+    expected_file = os.path.join(ROOT, 'master_plot_hic_small_test_chrM.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT,
-                                      'master_plot_hic_small_test_chrM.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -467,15 +456,15 @@ def test_plot_hic_depth_smaller_binsize():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region chr1:0-100000 "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, 'browser_tracks_hic_small_test_2.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test_2.ini')
+    region = 'chr1:0-100000'
+    expected_file = os.path.join(ROOT, 'master_hic_small_test_2.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_hic_small_test_2.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)
@@ -485,15 +474,15 @@ def test_plot_hic_plotting_region_smaller_binsize():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region chr1:0-5000 "\
-           "--trackLabelFraction 0.23 --width 38 " \
-           "--dpi 130 --outFileName {1}" \
-           "".format(os.path.join(ROOT, 'browser_tracks_hic_small_test.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test.ini')
+    region = 'chr1:0-5000'
+    expected_file = os.path.join(ROOT, 'master_hic_small_test_small_region.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_hic_small_test_small_region.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
-    print("saving test to {}".format(outfile.name))
     assert res is None, res
 
     os.remove(outfile.name)

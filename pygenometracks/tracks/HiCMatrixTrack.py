@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 class HiCMatrixTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.h5', '.cool', '.mcool']
     TRACK_TYPE = 'hic_matrix'
-    OPTIONS_TXT = """
+    OPTIONS_TXT = f"""
 # The different options for color maps can be found here:
 # https://matplotlib.org/users/colormaps.html
 # the default color map is RdYlBu_r (_r) stands for reverse
@@ -51,8 +51,8 @@ show_masked_bins = false
 # You can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = false
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'region': None,  # Cannot be set manually but is set by tracksClass
                            'depth': 100000,
                            'orientation': None,
@@ -81,7 +81,7 @@ file_type = {}
 
     def __init__(self, *args, **kwargs):
         super(HiCMatrixTrack, self).__init__(*args, **kwargs)
-        log.debug('FILE {}'.format(self.properties))
+        log.debug(f'FILE {self.properties}')
 
     def set_properties_defaults(self):
         super(HiCMatrixTrack, self).set_properties_defaults()
@@ -99,7 +99,7 @@ file_type = {}
                 # I extend of depth to avoid triangle effect in the plot
                 start = max(0, start - self.properties['depth'])
                 end += self.properties['depth']
-                region = ["{}:{}-{}".format(chrom, start, end)]
+                region = [f"{chrom}:{start}-{end}"]
         # Cooler and thus HiCMatrix with cool file will raise an error if:
         # - the file is a cool file and:
         #    - the region goes over the chromosome size
@@ -120,7 +120,7 @@ file_type = {}
                     chrom_region_before = chrom_region
                     chrom_region = change_chrom_names(chrom_region)
                     if len(rs) == 2:
-                        region = ["{}:{}".format(chrom_region, rs[1])]
+                        region = [f"{chrom_region}:{rs[1]}"]
                     else:
                         region = [chrom_region]
                     try:
@@ -154,7 +154,7 @@ file_type = {}
         if len(self.hic_ma.matrix.data) == 0:
             if region is None:
                 # This is not due to a restriction of the matrix
-                raise Exception("Matrix {} is empty".format(self.properties['file']))
+                raise Exception(f"Matrix {self.properties['file']} is empty")
             else:
                 return
         # We need to get the size before masking bins because
@@ -171,7 +171,7 @@ file_type = {}
                 if self.hic_ma.matrix.data.min() + 1 <= 0:
                     raise Exception("\n*ERROR*\nMatrix contains values below - 1.\n"
                                     "log1p transformation can not be applied to \n"
-                                    "values in matrix: {}".format(self.properties['file']))
+                                    f"values in matrix: {self.properties['file']}")
 
             elif self.properties['transform'] in ['-log', 'log']:
                 if self.hic_ma.matrix.data.min() < 0:
@@ -179,7 +179,7 @@ file_type = {}
                     # mask, they will be replaced by the minimum value after 0.
                     raise Exception("\n*ERROR*\nMatrix contains negative values.\n"
                                     "log transformation can not be applied to \n"
-                                    "values in matrix: {}".format(self.properties['file']))
+                                    f"values in matrix: {self.properties['file']}")
 
         new_intervals = hicmatrix.utilities.enlarge_bins(self.hic_ma.cut_intervals)
         self.hic_ma.interval_trees, self.hic_ma.chrBinBoundaries = \
@@ -191,9 +191,9 @@ file_type = {}
         max_depth_in_bins = int(self.properties['depth'] / binsize)
         # If the depth is smaller than the binsize. It will display an empty plot
         if max_depth_in_bins < 1:
-            self.log.warning("*Warning*\nThe depth({}) is smaller than binsize({})"
-                             "This will generate an empty track!!\n"
-                             .format(self.properties['depth'], binsize))
+            self.log.warning(f"*Warning*\nThe depth({self.properties['depth']})"
+                             f" is smaller than binsize({binsize})"
+                             "This will generate an empty track!!\n")
             self.hic_ma.matrix = scipy.sparse.csr_matrix((0, 0))
             return
 
@@ -234,7 +234,7 @@ file_type = {}
             self.img = None
             return
 
-        log.debug('chrom_region {}, region_start {}, region_end {}'.format(chrom_region, region_start, region_end))
+        log.debug(f'chrom_region {chrom_region}, region_start {region_start}, region_end {region_end}')
         if chrom_region not in self.chrom_sizes:
             chrom_region_before = chrom_region
             chrom_region = change_chrom_names(chrom_region)
@@ -248,9 +248,10 @@ file_type = {}
 
         chrom_region = self.check_chrom_str_bytes(self.chrom_sizes, chrom_region)
         if region_end > self.chrom_sizes[chrom_region]:
-            self.log.warning("*Warning*\nThe region to plot extends beyond the chromosome size. Please check.\n"
-                             "{} size: {}. Region to plot {}-{}\n".format(chrom_region, self.chrom_sizes[chrom_region],
-                                                                          region_start, region_end))
+            self.log.warning("*Warning*\nThe region to plot extends beyond the"
+                             " chromosome size. Please check.\n"
+                             f"{chrom_region} size: {self.chrom_sizes[chrom_region]}"
+                             f". Region to plot {region_start}-{region_end}\n")
 
         # A chromosome may disappear if it was full of Nan and nan bins were masked:
         if chrom_region not in self.hic_ma.get_chromosome_sizes():
@@ -286,9 +287,9 @@ file_type = {}
         depth_in_bins = max(1, int(1.5 * region_len / self.hic_ma.getBinSize()))
 
         if depth < self.properties['depth']:
-            log.warning("The depth was set to {} which is more than 125%"
+            log.warning(f"The depth was set to {self.properties['depth']} which is more than 125%"
                         " of the region plotted. The depth will be set "
-                        "to {}".format(self.properties['depth'], depth))
+                        f"to {depth}")
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         # Using todense will replace all nan values by 0.
@@ -340,8 +341,9 @@ file_type = {}
 
             vmin = np.median(distant_diagonal_values)
 
-        self.log.info("setting min, max values for track {} to: {}, {}\n".
-                      format(self.properties['section_name'], vmin, vmax))
+        self.log.info("setting min, max values for track "
+                      f"{self.properties['section_name']} to: "
+                      f"{vmin}, {vmax}\n")
         self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
         if self.properties['rasterize']:
             self.img.set_rasterized(True)
