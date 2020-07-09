@@ -189,8 +189,8 @@ class ReadBed(object):
                 except ValueError:
                     if is_first_line:
                         if idx == 9:
-                            self.file_type = 'bed8'
-                            self.fields_to_read = 8
+                            self.file_type = 'bed9'
+                            self.fields_to_read = 9
                         else:
                             self.file_type = 'bed6'
                             self.fields_to_read = 6
