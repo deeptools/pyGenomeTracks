@@ -163,7 +163,7 @@ file_type = {TRACK_TYPE}
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in list(self.interval_tree):
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
+                                 + " nor " + chrom_region + " exists as a "
                                  "chromosome name inside the link file. "
                                  "This will generate an empty track!!\n")
                 return

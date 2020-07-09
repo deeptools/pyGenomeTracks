@@ -255,7 +255,7 @@ file_type = {TRACK_TYPE}
                 if chrom_region not in tbx.contigs:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
-                                     + chrom_region + " existss as a "
+                                     + chrom_region + " exists as a "
                                      "chromosome name inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")
@@ -273,7 +273,7 @@ file_type = {TRACK_TYPE}
                 if chrom_region not in list(inttree):
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
-                                     + chrom_region + " existss as a "
+                                     + chrom_region + " exists as a "
                                      "chromosome name inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")

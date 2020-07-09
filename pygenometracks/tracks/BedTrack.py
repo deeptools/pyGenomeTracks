@@ -361,7 +361,7 @@ file_type = {TRACK_TYPE}
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
+                                 + " nor " + chrom_region + " exists as a "
                                  "chromosome name inside the bed file. "
                                  "This will generate an empty track!!\n")
                 return
