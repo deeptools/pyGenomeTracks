@@ -1,11 +1,6 @@
 3.5
 ===
 
-Improved documentation:
-^^^^^^^^^^^^^^^^^^^^^^^
-
-- The color for negative values in coverage tracks (bigwig and bedgraph) is now part of the output of ``make_tracks_file``.
-
 Enhancements:
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -32,12 +27,14 @@ Minor enhancements:
 
 - For Hi-C matrices, 
 
-    - mcool files are now supported.
-
     - there is no error when the plot goes over the chromosome size provided by the matrix.
 
     - if the depth is smaller than binsize it makes an empty plot instead of raising errors.
 
 - When the ``overlay_previous`` is set in the first track it is ignored and a warning is given instead of giving an error with a not meaningful error message.
+
+- The color for negative values in coverage tracks (bigwig and bedgraph) is now part of the output of ``make_tracks_file``.
+
+- Others output of ``make_tracks_file`` have been modified for better clarity.
 
 - Others code related enhancements which are transparent to the users.
