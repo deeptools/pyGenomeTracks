@@ -210,7 +210,8 @@ class ReadBed(object):
             elif idx == 8:
                 passed = True
                 try:
-                    line_values.append(int(r))
+                    # This is what happens in UCSC browser:
+                    line_values.append([0, 0, int(r)])
                 except ValueError:
                     r = to_string(r)
                     rgb = r.split(",")
@@ -236,9 +237,9 @@ class ReadBed(object):
                         sys.stderr.write("Warning: reading line: "
                                          f"#{self.line_number}. "
                                          f"The rgb field {r} is not "
-                                         "valid.\n0"
+                                         "valid.\n0,0,0"
                                          " will be used.\n")
-                        line_values.append(0)
+                        line_values.append([0, 0, 0])
 
             elif idx in [10, 11]:
                 # this are the block sizes and block start positions
