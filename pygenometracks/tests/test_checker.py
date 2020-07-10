@@ -413,4 +413,3 @@ class TestCheckerMethods(unittest.TestCase):
         assert("could not be computed"
                in str(context.exception))
         os.remove(ini_file)
-

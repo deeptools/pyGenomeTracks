@@ -230,7 +230,7 @@ with open(os.path.join(ROOT, "arcs_no_score_invalid_score2.ini"), 'w') as fh:
 for suf in ['', '2']:
     browser_tracks = f"""
 [arcs]
-file = arcs_invalid{suf}.arcs    
+file = arcs_invalid{suf}.arcs
 """
     with open(os.path.join(ROOT, f"arcs_invalid{suf}.ini"), 'w') as fh:
         fh.write(browser_tracks)
@@ -251,7 +251,7 @@ def test_short_long_arcs():
                f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                             outfile.name, tolerance)
         assert res is None, res
 
         os.remove(outfile.name)
@@ -290,7 +290,7 @@ def test_arcs_no_score():
             f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                             outfile.name, tolerance)
         assert res is None, res
 
         os.remove(outfile.name)

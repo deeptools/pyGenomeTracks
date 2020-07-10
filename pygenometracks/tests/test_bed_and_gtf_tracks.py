@@ -690,12 +690,13 @@ def test_plot_tracks_genes_rgb():
                f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                             outfile.name, tolerance)
         assert res is None, res
 
         os.remove(outfile.name)
     # remove the incorrect ini file
     os.remove(ini_file)
+
 
 def test_plot_tracks_bed_all_label_inside():
 
