@@ -360,9 +360,11 @@ file_type = {TRACK_TYPE}
             chrom_region_before = chrom_region
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
-                self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
-                                 "chromosome name inside the bed file. "
+                self.log.warning("*Warning*\nNo interval was found when "
+                                 "overlapping with both "
+                                 f"{chrom_region_before}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                 f" and {chrom_region}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                 " inside the bed file. "
                                  "This will generate an empty track!!\n")
                 return
         chrom_region = self.check_chrom_str_bytes(self.interval_tree,

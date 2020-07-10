@@ -271,10 +271,11 @@ file_type = {TRACK_TYPE}
                 chrom_region_before = chrom_region
                 chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in list(inttree):
-                    self.log.warning("*Warning*\nNeither "
-                                     + chrom_region_before + " nor "
-                                     + chrom_region + " existss as a "
-                                     "chromosome name inside the bedgraph "
+                    self.log.warning("*Warning*\nNo interval was found when "
+                                     "overlapping with both "
+                                     f"{chrom_region_before}:{start_region}-{end_region}"
+                                     f" and {chrom_region}:{start_region}-{end_region}"
+                                     " inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")
                     return score_list, pos_list

@@ -301,10 +301,9 @@ class PlotTracks(object):
             chrom_region_before = chrom_region
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in list(self.vlines_intval_tree):
-                log.warning("*Warning*\nNeither "
-                            + chrom_region_before + " nor "
-                            + chrom_region + " existss as a "
-                            "chromosome name inside the "
+                log.warning("*Warning*\nNo interval was found when "
+                            f"overlapping with both {chrom_region_before}:{start_region}-{end_region}"
+                            f" and {chrom_region}:{start_region}-{end_region} inside the "
                             "file with vertical lines. "
                             "No vertical lines will be "
                             "plotted!!\n")
