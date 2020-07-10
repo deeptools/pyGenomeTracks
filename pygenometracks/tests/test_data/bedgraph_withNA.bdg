@@ -1,3 +1,12 @@
+browser position chrX:2000000-3500000
+browser hide all
+browser pack refGene encodeRegions
+browser full altGraph
+#	300 base wide bar graph, autoScale is on by default == graphing
+#	limits will dynamically change to always show full range of data
+#	in viewing window, priority = 20 positions this as the second graph
+#	Note, zero-relative, half-open coordinate system in use for bedGraph format
+track type=bedGraph name="BedGraph Format" description="BedGraph format" visibility=full color=200,100,0 altColor=0,100,200 priority=20
 chrX	2000000	3000000	1
 chrX	3000000	3070000	NA
 chrX	3080750	4000800	2
