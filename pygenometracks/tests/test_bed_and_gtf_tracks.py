@@ -747,6 +747,7 @@ def test_gtf_as_bed():
         assert 'This is probably not a bed file.' in str(e)
     else:
         raise Exception("The gtf as bed should fail.")
+    os.remove(ini_file)
 
 
 def test_bed_as_gtf():
@@ -764,6 +765,7 @@ def test_bed_as_gtf():
         assert 'This is not a gtf file.' in str(e)
     else:
         raise Exception("The bed as gtf should fail.")
+    os.remove(ini_file)
 
 
 def test_plot_tracks_bed_scores():
