@@ -461,6 +461,8 @@ display = collapsed
 with open(os.path.join(ROOT, "bed_genes_rgb.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+with open(os.path.join(ROOT, "bed_genes_rgb_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace('style = flybase', 'style = inexisting'))
 
 wrong_track = """
 [test gtf]
@@ -680,19 +682,20 @@ def test_plot_tracks_genes_rgb():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, "bed_genes_rgb.ini")
-    region = "chr2:74,650,000-74,710,000"
-    expected_file = os.path.join(ROOT, 'master_bed_genes_rgb.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
+    for ini_file in [os.path.join(ROOT, "bed_genes_rgb.ini"), os.path.join(ROOT, "bed_genes_rgb_incorrect.ini")]:
+        region = "chr2:74,650,000-74,710,000"
+        expected_file = os.path.join(ROOT, 'master_bed_genes_rgb.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                            outfile.name, tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
-
+        os.remove(outfile.name)
+    # remove the incorrect ini file
+    os.remove(ini_file)
 
 def test_plot_tracks_bed_all_label_inside():
 
