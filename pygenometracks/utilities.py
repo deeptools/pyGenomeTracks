@@ -105,9 +105,6 @@ def file_to_intervaltree(file_name, plot_regions=None):
     file_h = opener(file_to_open)
     line_number = 0
     valid_intervals = 0
-    prev_chrom = None
-    prev_start = -1
-    prev_line = None
     interval_tree = {}
     min_value = float('Inf')
     max_value = -float('Inf')
@@ -137,10 +134,6 @@ def file_to_intervaltree(file_name, plot_regions=None):
             msg = f"Error reading line: {line_number}. The end field is not " \
                   f"an integer.\nError message: {detail}"
             raise InputError(msg)
-
-        if prev_chrom == chrom:
-            assert prev_start <= start, \
-                f"Bed file not sorted. Please use a sorted bed file.\n{prev_line}{line} "
 
         if chrom not in interval_tree:
             interval_tree[chrom] = IntervalTree()
@@ -256,7 +249,7 @@ def transform(score_list, transform, log_pseudocount, file):
         else:
             return(np.log1p(score_list))
     elif transform == '-log':
-        if np.nanmax(score_list.max) <= - log_pseudocount:
+        if np.nanmax(score_list) <= - log_pseudocount:
             msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
                    f" - {log_pseudocount}.\n"
                    f"- log( {log_pseudocount} + <values>) transformation can "
