@@ -315,7 +315,7 @@ def test_arcs_invalid():
         assert 'not enough values to unpack (expected 6, got 5)' in str(e)
     else:
         raise Exception("The arcs_invalid should fail.")
-    # os.remove(ini_file)
+    os.remove(ini_file)
 
 
 def test_arcs_invalid2():
@@ -333,4 +333,4 @@ def test_arcs_invalid2():
         assert 'One of the fields is not an integer.' in str(e)
     else:
         raise Exception("The arcs_invalid2 should fail.")
-    # os.remove(ini_file)
+    os.remove(ini_file)
