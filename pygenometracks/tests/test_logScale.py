@@ -273,6 +273,47 @@ y_axis_values = original
 with open(os.path.join(ROOT, "log_grid.ini"), 'w') as fh:
     fh.write(tracks)
 
+tracks = """
+[x-axis]
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = blue
+height = 5
+title = bedgraph color = blue transform = log
+transform = log
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = blue
+height = 5
+title = bedgraph color = blue transform = log y_axis_values = original
+transform = log
+y_axis_values = original
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = blue
+height = 5
+title = bedgraph color = blue transform = log10 y_axis_values = original
+transform = log10
+y_axis_values = original
+
+[test bedgraph]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = blue
+height = 5
+title = bedgraph color = blue transform = -log y_axis_values = original
+transform = -log
+y_axis_values = original
+"""
+
+with open(os.path.join(ROOT, "log_more.ini"), 'w') as fh:
+    fh.write(tracks)
+
+with open(os.path.join(ROOT, "log_more_incorrect.ini"), 'w') as fh:
+    fh.write(tracks + 'type = invalid:a\n')
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -361,3 +402,25 @@ class TestLogNegMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("coverage contains values smaller or equal to" in str(context.exception))
+
+
+def test_log_more():
+
+    outfile = NamedTemporaryFile(suffix='.png',
+                                 prefix='pyGenomeTracks_test_log_',
+                                 delete=False)
+    for suf in ['', '_incorrect']:
+        ini_file = os.path.join(ROOT, f"log_more{suf}.ini")
+        region = "chr2:73,800,000-75,744,000"
+        expected_file = os.path.join(ROOT, 'master_log_more.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
+
+        os.remove(outfile.name)
+    # I remove the incorrect ini file
+    os.remove(ini_file)
