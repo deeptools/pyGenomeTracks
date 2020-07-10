@@ -160,6 +160,47 @@ orientation = inverted
 with open(os.path.join(ROOT, "arcs_use_middle.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+
+browser_tracks = """
+[arcs]
+title = arcs with scores
+file = test_high_score.arcs
+color = cividis
+height = 2
+min_value = 0
+max_value = 80
+
+[arcs]
+title = arcs without scores
+file = test_noscore.arcs
+color = blue
+line_width = 0.5
+height = 2
+
+"""
+with open(os.path.join(ROOT, "arcs_no_score.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+
+browser_tracks = """
+[arcs]
+title = arcs with scores
+file = test_high_score.arcs
+color = cividis
+height = 2
+min_value = 0
+max_value = 80
+
+[arcs]
+title = arcs without scores
+file = test_noscore.arcs
+color = cividis
+height = 2
+
+"""
+with open(os.path.join(ROOT, "arcs_no_score_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -197,3 +238,24 @@ def test_use_middle_arcs():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_arcs_no_score():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    for suf in ['', '_incorrect']:
+        ini_file = os.path.join(ROOT, f"arcs_no_score{suf}.ini")
+        region = "X:3000000-3300000"
+        expected_file = os.path.join(ROOT, 'master_arcs_no_score.png')
+        args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+            f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                            outfile.name, tolerance)
+        assert res is None, res
+
+        os.remove(outfile.name)
+    # Remove the incorrect ini file
+    os.remove(ini_file)
