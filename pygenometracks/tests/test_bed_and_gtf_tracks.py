@@ -521,10 +521,12 @@ height = 10.0
 
 [scores in cod+utr 2]
 file = dm3_genes_withrgbandscore.bed.gz
-title = genes with scores both in coding and utr as Reds
+title = genes with scores both in coding and utr as Reds min_value = 0.2 max_value = 2
 color = Reds
 color_utr = Reds
 height = 10.0
+min_value = 0.2
+max_value = 2
 """
 with open(os.path.join(ROOT, "bed_colormap_genes.ini"), 'w') as fh:
     fh.write(browser_tracks)
