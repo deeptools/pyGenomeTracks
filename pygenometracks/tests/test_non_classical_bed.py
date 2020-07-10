@@ -66,7 +66,16 @@ with open(os.path.join(ROOT, "invalid_rgb.ini"), 'w') as fh:
 browser_tracks = """
 [invalid_blockCount]
 file = invalid_blockCount.bed
+title = invalid block count in first line
 color = bed_rgb
+
+[spacer]
+
+[invalid_blockCount]
+file = invalid_blockCount2.bed
+title = invalid block count in not first line -> bedtools raised an error
+style = UCSC
+height = 2
 """
 with open(os.path.join(ROOT, "invalid_blockCount.ini"), 'w') as fh:
     fh.write(browser_tracks)
@@ -136,7 +145,7 @@ def test_plot_tracks_bed_invalid_blockCount():
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "invalid_blockCount.ini")
-    region = "chr1:0-500"
+    region = "chrX:15000-24000"
     expected_file = os.path.join(ROOT, 'master_invalid_blockCount.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
