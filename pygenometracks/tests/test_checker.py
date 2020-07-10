@@ -299,3 +299,85 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("can not identify file type" in str(context.exception))
+
+
+class TestInputRegionMethods(unittest.TestCase):
+
+    def test_region_format_onlychr(self):
+        """
+        This test check that you get an error
+        if the region format is not good
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "empty.ini")
+        region = "X"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("is not valid, it should be chr:start-end" in
+               str(context.exception))
+
+    def test_region_format_chr_only_start(self):
+        """
+        This test check that you get an error
+        if the region format is not good
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "empty.ini")
+        region = "X:12"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
+        with self.assertRaises(Exception) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("is not valid, it should be chr:start-end" in
+               str(context.exception))
+
+    def test_region_format_invalid_start(self):
+        """
+        This test check that you get an error
+        if the region format is not good
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "empty.ini")
+        for region in ['X:a-12', 'X:-3']:
+            args = f"--tracks {ini_file} --region {region} "\
+                   f"--outFileName {outfile_name}".split()
+            with self.assertRaises(InputError) as context:
+                pygenometracks.plotTracks.main(args)
+
+            assert("is not valid, it should be chr:start-end" in
+                   str(context.exception))
+
+    def test_region_format_invalid_end(self):
+        """
+        This test check that you get an error
+        if the region format is not good
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "empty.ini")
+        region = "X:12-1d"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("is not valid, it should be chr:start-end" in
+               str(context.exception))
+
+    def test_region_format_start_smaller_end(self):
+        """
+        This test check that you get an error
+        if the region format is not good
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "empty.ini")
+        region = "X:12-1"
+        args = f"--tracks {ini_file} --region {region} "\
+            f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("end is larger" in str(context.exception))
