@@ -122,6 +122,24 @@ height = 4
 """
 with open(os.path.join(ROOT, "invalid_blocks.ini"), 'w') as fh:
     fh.write(browser_tracks)
+
+browser_tracks = """
+[invalid_score]
+file = invalid_score.bed
+title = invalid score in first line strand and rgb is ignored
+color = bed_rgb
+
+[spacer]
+
+[invalid_score2]
+file = invalid_score2.bed
+title = invalid score in not first line strand and rgb can be used
+color = bed_rgb
+height = 2
+"""
+with open(os.path.join(ROOT, "invalid_score.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -243,6 +261,24 @@ def test_plot_tracks_bed_invalid_blocks():
     ini_file = os.path.join(ROOT, "invalid_blocks.ini")
     region = "chrX:15000-24000"
     expected_file = os.path.join(ROOT, 'master_invalid_blocks.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_invalid_score():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "invalid_score.ini")
+    region = "chrX:15000-24000"
+    expected_file = os.path.join(ROOT, 'master_invalid_score.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
