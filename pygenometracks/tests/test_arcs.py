@@ -166,6 +166,13 @@ with open(os.path.join(ROOT, "arcs_use_middle.ini"), 'w') as fh:
 
 browser_tracks = """
 [arcs]
+title = loop with scores
+file = test_high_score.arcs
+color = cividis
+height = 2
+links_type = loops
+
+[arcs]
 title = arcs with scores
 file = test_high_score.arcs
 color = cividis
@@ -186,6 +193,13 @@ with open(os.path.join(ROOT, "arcs_no_score.ini"), 'w') as fh:
 
 
 browser_tracks = """
+[arcs]
+title = loop with scores
+file = test_high_score.arcs
+color = cividis
+height = 2
+links_type = loops
+
 [arcs]
 title = arcs with scores
 file = test_high_score.arcs
