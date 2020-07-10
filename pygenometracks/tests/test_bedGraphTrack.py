@@ -3,8 +3,9 @@ import matplotlib as mpl
 mpl.use('agg')
 from matplotlib.testing.compare import compare_images
 from tempfile import NamedTemporaryFile
-import os.path
+import os
 import pygenometracks.plotTracks
+from pygenometracks.utilities import InputError
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                     "test_data")
@@ -171,6 +172,26 @@ height = 3
 with open(os.path.join(ROOT, "bedgraph_withNA.ini"), 'w') as fh:
     fh.write(bedgraph_withNA)
 
+for suff in ["", "2", "3"]:
+    invalid_bedgraph = f"""
+[invalid_bedgraph{suff}]
+file = invalid_bedgraph{suff}.bdg
+height = 3
+
+[x-axis]
+"""
+    with open(os.path.join(ROOT, f"invalid_bedgraph{suff}.ini"), 'w') as fh:
+        fh.write(invalid_bedgraph)
+
+unsorted_bedgraph = """
+[unsorted_bedgraph]
+file = unsorted_bedgraph.bdg
+height = 3
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "unsorted_bedgraph.ini"), 'w') as fh:
+    fh.write(unsorted_bedgraph)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -270,6 +291,22 @@ def test_bdg_withNA():
     os.remove(outfile.name)
 
 
+def test_bdg_unsorted():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pgt_test_', delete=False)
+    ini_file = os.path.join(ROOT, "unsorted_bedgraph.ini")
+    region = "X:2700000-3100000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_withNA.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_negative():
     region = "X:2700000-3100000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_negative_test_', delete=False)
@@ -284,3 +321,57 @@ def test_negative():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_invalid_bedgraph():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pgt_test_', delete=True)
+    ini_file = os.path.join(ROOT, "invalid_bedgraph.ini")
+    region = "X:2700000-3100000"
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    try:
+        pygenometracks.plotTracks.main(args)
+    except InputError as e:
+        assert 'not enough values to unpack (expected 3, got 1)' in str(e)
+    else:
+        raise Exception("The invalid_bedgraph should fail.")
+
+    os.remove(ini_file)
+
+
+def test_invalid_bedgraph2():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pgt_test_', delete=True)
+    ini_file = os.path.join(ROOT, "invalid_bedgraph2.ini")
+    region = "X:2700000-3100000"
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    try:
+        pygenometracks.plotTracks.main(args)
+    except InputError as e:
+        assert 'The start field is not an integer.' in str(e)
+    else:
+        raise Exception("The invalid_bedgraph2 should fail.")
+
+    os.remove(ini_file)
+
+
+def test_invalid_bedgraph3():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pgt_test_', delete=True)
+    ini_file = os.path.join(ROOT, "invalid_bedgraph3.ini")
+    region = "X:2700000-3100000"
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    try:
+        pygenometracks.plotTracks.main(args)
+    except InputError as e:
+        assert 'The end field is not an integer.' in str(e)
+    else:
+        raise Exception("The invalid_bedgraph3 should fail.")
+
+    os.remove(ini_file)
