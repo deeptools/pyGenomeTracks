@@ -99,6 +99,9 @@ where = bottom
 with open(os.path.join(ROOT, "short_long_arcs.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+with open(os.path.join(ROOT, "short_long_arcs_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace('compact_arcs_level = 2', 'compact_arcs_level = 2\nylim=1000000'))
+
 browser_tracks = """
 [x-axis]
 where = top
@@ -208,18 +211,21 @@ def test_short_long_arcs():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, "short_long_arcs.ini")
-    region = "chr11:40000000-46000000"
-    expected_file = os.path.join(ROOT, 'master_short_long_arcs.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
+    for suf in ['', '_incorrect']:
+        ini_file = os.path.join(ROOT, f"short_long_arcs{suf}.ini")
+        region = "chr11:40000000-46000000"
+        expected_file = os.path.join(ROOT, 'master_short_long_arcs.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                            outfile.name, tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
+        os.remove(outfile.name)
+    # Remove incorrect ini file
+    os.remove(ini_file)
 
 
 def test_use_middle_arcs():
