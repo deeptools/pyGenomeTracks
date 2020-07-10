@@ -1,4 +1,5 @@
 import sys
+import os
 import gzip
 import numpy as np
 from tqdm import tqdm
@@ -79,13 +80,24 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
         regions = pybedtools.BedTool(plot_regions_as_bed, from_string=True)
         # Bedtools will put a warning because we are using inconsistent
         # nomenclature (with and without chr)
-        sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
+        temporary_file = tempfile.NamedTemporaryFile(delete=False)
+        sys.stderr = open(temporary_file.name, 'w')
         try:
             file_to_open = original_file.intersect(regions, wa=True, u=True).fn
         except pybedtools.helpers.BEDToolsError:
             file_to_open = file_name
         sys.stderr.close()
         sys.stderr = sys.__stderr__
+        with open(temporary_file.name, 'r') as f:
+            temp_std_error = f.readlines()
+        os.remove(temporary_file.name)
+        error_lines = [l for l in temp_std_error if 'error' in l.lower()]
+        if len(error_lines) > 0:
+            error_lines_printable = '\n'.join(error_lines)
+            sys.stderr.write("Bedtools intersect raised an error:\n"
+                             f"{error_lines_printable}\n"
+                             "Will not use bedtools.\n")
+            file_to_open = file_name
     return file_to_open
 
 
