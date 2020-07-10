@@ -91,7 +91,7 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
         with open(temporary_file.name, 'r') as f:
             temp_std_error = f.readlines()
         os.remove(temporary_file.name)
-        error_lines = [l for l in temp_std_error if 'error' in l.lower()]
+        error_lines = [line for line in temp_std_error if 'error' in line.lower()]
         if len(error_lines) > 0:
             error_lines_printable = '\n'.join(error_lines)
             sys.stderr.write("Bedtools intersect raised an error:\n"

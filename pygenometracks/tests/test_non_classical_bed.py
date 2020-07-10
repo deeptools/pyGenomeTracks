@@ -5,7 +5,6 @@ from matplotlib.testing.compare import compare_images
 from tempfile import NamedTemporaryFile
 import os.path
 import pygenometracks.plotTracks
-from pygenometracks.utilities import InputError
 
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
