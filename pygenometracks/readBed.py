@@ -138,6 +138,11 @@ class ReadBed(object):
         line_data = bed_line.strip()
         line_data = to_string(line_data)
         line_data = line_data.split("\t")
+        if is_first_line:
+            assert len(line_data) != 1, \
+                "Only one field detected, you may use" \
+                " a bed delimited by space. This format " \
+                "is not supported by pyGenomeTracks."
 
         if not is_first_line:
             if self.file_type != 'bed6':
