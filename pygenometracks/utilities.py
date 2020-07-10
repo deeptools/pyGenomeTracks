@@ -138,10 +138,6 @@ def file_to_intervaltree(file_name, plot_regions=None):
                   f"an integer.\nError message: {detail}"
             raise InputError(msg)
 
-        if prev_chrom == chrom:
-            assert prev_start <= start, \
-                f"Bed file not sorted. Please use a sorted bed file.\n{prev_line}{line} "
-
         if chrom not in interval_tree:
             interval_tree[chrom] = IntervalTree()
 
