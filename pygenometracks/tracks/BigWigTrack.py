@@ -140,7 +140,7 @@ file_type = {TRACK_TYPE}
                                  "'y_axis_values' was set to 'original'. "
                                  "'y_axis_values' can only be set to "
                                  "'original' when 'transform' is used.\n"
-                                 " It will be set as 'transformed'.")
+                                 " It will be set as 'transformed'.\n")
                 self.properties['y_axis_values'] = 'transformed'
 
     def plot(self, ax, chrom_region, start_region, end_region):
@@ -163,7 +163,7 @@ file_type = {TRACK_TYPE}
                              f"bigwig file:\n\n{self.properties['file']}\n"
                              "\nPlease check that the chromosome name is part"
                              " of the bigwig file "
-                             "and that the region is valid")
+                             "and that the region is valid.\n")
 
         # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
         # of the memory. This only occurs when calling trackPlot from different
@@ -183,11 +183,11 @@ file_type = {TRACK_TYPE}
 
                 self.log.warning("error found while reading bigwig scores "
                                  f"({e}).\nTrying again."
-                                 f" Iter num: {num_tries}")
+                                 f" Iter num: {num_tries}.\n")
                 pass
             else:
                 if num_tries > 1:
-                    self.log.warning(f"After {num_tries} the scores could be computed")
+                    self.log.warning(f"After {num_tries} the scores could be computed.\n")
                 break
 
         x_values = np.linspace(start_region, end_region, self.properties['number_of_bins'])
@@ -241,11 +241,11 @@ file_type = {TRACK_TYPE}
                     self.log.warning("error found while reading bigwig scores"
                                      " of second file"
                                      f" ({e}).\nTrying again."
-                                     " Iter num: {num_tries}")
+                                     " Iter num: {num_tries}.\n")
                     pass
                 else:
                     if num_tries > 1:
-                        self.log.warning(f"After {num_tries} the scores could be computed")
+                        self.log.warning(f"After {num_tries} the scores could be computed.\n")
                     break
             # compute the operation
             try:

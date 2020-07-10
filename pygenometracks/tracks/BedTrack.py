@@ -213,7 +213,7 @@ file_type = {TRACK_TYPE}
                                          f" was set to {self.colormap}. "
                                          "It is not possible to have multiple"
                                          f" colormap. {param} set to "
-                                         f"{self.DEFAULTS_PROPERTIES[param]}")
+                                         f"{self.DEFAULTS_PROPERTIES[param]}.\n")
                         self.properties[param] = self.DEFAULTS_PROPERTIES[param]
 
         # to set the distance between rows
@@ -234,7 +234,7 @@ file_type = {TRACK_TYPE}
                              f" file_type was set to {self.TRACK_TYPE}"
                              " whereas it is a gtf file. In the future"
                              " only bed files will be accepted, please"
-                             " use file_type = gtf.")
+                             " use file_type = gtf.\n")
             bed_file_h = ReadGtf(file_to_open,
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
@@ -256,7 +256,7 @@ file_type = {TRACK_TYPE}
            self.bed_type not in ['bed12', 'bed9']:
             self.log.warning("*WARNING* Color set to 'bed_rgb', "
                              "but bed file does not have the rgb field. "
-                             f"The color has been set to {DEFAULT_BED_COLOR}")
+                             f"The color has been set to {DEFAULT_BED_COLOR}.\n")
             self.properties['color'] = DEFAULT_BED_COLOR
 
         valid_intervals = 0
@@ -284,7 +284,7 @@ file_type = {TRACK_TYPE}
 
         if valid_intervals == 0:
             self.log.warning("No valid intervals were found in file "
-                             f"{self.properties['file']}")
+                             f"{self.properties['file']}.\n")
 
         return interval_tree, min_score, max_score
 
@@ -1021,7 +1021,7 @@ file_type = {TRACK_TYPE}
                 ymax = y2
 
         if valid_regions == 0:
-            self.log.warning(f"No regions found for section {self.properties['section_name']}.")
+            self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, 0)

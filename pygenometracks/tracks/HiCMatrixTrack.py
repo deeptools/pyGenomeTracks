@@ -289,7 +289,7 @@ file_type = {TRACK_TYPE}
         if depth < self.properties['depth']:
             log.warning(f"The depth was set to {self.properties['depth']} which is more than 125%"
                         " of the region plotted. The depth will be set "
-                        f"to {depth}")
+                        f"to {depth}.\n")
             # remove from matrix all data points that are not visible.
             matrix = matrix - scipy.sparse.triu(matrix, k=depth_in_bins, format='csr')
         # Using todense will replace all nan values by 0.

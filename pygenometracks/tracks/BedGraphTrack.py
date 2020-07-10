@@ -166,7 +166,7 @@ file_type = {TRACK_TYPE}
             self.log.warning("When an operation is computed"
                              " between 2 files"
                              " a summary_method needs to be"
-                             " used. Will use mean.")
+                             " used. Will use mean.\n")
             self.properties['summary_method'] = 'mean'
 
         if self.properties['operation'] != 'file':
@@ -178,7 +178,7 @@ file_type = {TRACK_TYPE}
                                  "'y_axis_values' was set to 'original'. "
                                  "'y_axis_values' can only be set to "
                                  "'original' when 'transform' is used.\n"
-                                 " It will be set as 'transformed'.")
+                                 " It will be set as 'transformed'.\n")
                 self.properties['y_axis_values'] = 'transformed'
 
     def load_file(self):
@@ -304,7 +304,7 @@ file_type = {TRACK_TYPE}
         except ValueError as ve:
             if "could not convert string to float: 'NA'" in str(ve):
                 self.log.warning("*Warning*\nNA were found in the bedgraph"
-                                 " will be replaced by nan")
+                                 " will be replaced by nan.\n")
                 score_list = [float(x[0]) if x[0] != 'NA' else float('nan') for x in score_list]
             else:
                 raise ve

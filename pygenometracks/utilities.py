@@ -181,7 +181,7 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
             ax.plot(x_values, score_list, '-', linewidth=size, color=color,
                     alpha=alpha)
         else:
-            warnings.warn('Line plots with a different negative color might not look pretty')
+            warnings.warn('Line plots with a different negative color might not look pretty.\n')
             pos_x_values = x_values.copy()
             pos_x_values[score_list < 0] = np.nan
             ax.plot(pos_x_values, score_list, '-', linewidth=size, color=color,
@@ -213,7 +213,7 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
     else:
         if plot_type != 'fill':
             warnings.warn('The plot type was not part of known types '
-                          '(fill, line, points) will be fill.')
+                          '(fill, line, points) will be fill.\n')
         if color == negative_color:
             ax.fill_between(x_values, score_list, linewidth=0.1,
                             color=color,
@@ -266,7 +266,7 @@ def transform(score_list, transform, log_pseudocount, file):
             return(- np.log(log_pseudocount + score_list))
     else:
         warnings.warn(f"The transform: {transform} for file {file} is not "
-                      "valid. Will not use any transformation")
+                      "valid. Will not use any transformation.\n")
         return(score_list)
 
 
