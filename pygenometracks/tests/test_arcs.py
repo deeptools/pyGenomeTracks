@@ -4,6 +4,7 @@ from matplotlib.testing.compare import compare_images
 from tempfile import NamedTemporaryFile
 import os.path
 import pygenometracks.plotTracks
+from pygenometracks.utilities import InputError
 mpl.use('agg')
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -218,6 +219,22 @@ height = 2
 with open(os.path.join(ROOT, "arcs_no_score_incorrect.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+with open(os.path.join(ROOT, "arcs_no_score_invalid_score.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace('test_noscore.arcs',
+                                    'arcs_invalid_score.arcs'))
+
+with open(os.path.join(ROOT, "arcs_no_score_invalid_score2.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace('test_noscore.arcs',
+                                    'arcs_invalid_score2.arcs'))
+
+for suf in ['', '2']:
+    browser_tracks = f"""
+[arcs]
+file = arcs_invalid{suf}.arcs    
+"""
+    with open(os.path.join(ROOT, f"arcs_invalid{suf}.ini"), 'w') as fh:
+        fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -264,7 +281,7 @@ def test_arcs_no_score():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    for suf in ['', '_incorrect']:
+    for suf in ['', '_incorrect', '_invalid_score', '_invalid_score2']:
         ini_file = os.path.join(ROOT, f"arcs_no_score{suf}.ini")
         region = "X:3000000-3300000"
         expected_file = os.path.join(ROOT, 'master_arcs_no_score.png')
@@ -277,5 +294,43 @@ def test_arcs_no_score():
         assert res is None, res
 
         os.remove(outfile.name)
-    # Remove the incorrect ini file
-    os.remove(ini_file)
+    # Remove the incorrect ini files
+    for suf in ['_incorrect', '_invalid_score', '_invalid_score2']:
+        ini_file = os.path.join(ROOT, f"arcs_no_score{suf}.ini")
+        os.remove(ini_file)
+
+
+def test_arcs_invalid():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=True)
+    ini_file = os.path.join(ROOT, "arcs_invalid.ini")
+    region = "X:3000000-3300000"
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    try:
+        pygenometracks.plotTracks.main(args)
+    except InputError as e:
+        assert 'not enough values to unpack (expected 6, got 5)' in str(e)
+    else:
+        raise Exception("The arcs_invalid should fail.")
+    # os.remove(ini_file)
+
+
+def test_arcs_invalid2():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=True)
+    ini_file = os.path.join(ROOT, "arcs_invalid2.ini")
+    region = "X:3000000-3300000"
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    try:
+        pygenometracks.plotTracks.main(args)
+    except InputError as e:
+        assert 'One of the fields is not an integer.' in str(e)
+    else:
+        raise Exception("The arcs_invalid2 should fail.")
+    # os.remove(ini_file)
