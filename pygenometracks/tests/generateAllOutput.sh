@@ -20,6 +20,7 @@ bin/pgt --tracks pygenometracks/tests/test_data/invalid_rgb.ini --region chr1:0-
 bin/pgt --tracks pygenometracks/tests/test_data/invalid_blockCount.ini --region chrX:15000-24000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_invalid_blockCount.png
 bin/pgt --tracks pygenometracks/tests/test_data/invalid_CDScoo.ini --region chrX:15000-24000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_invalid_CDScoo.png
 bin/pgt --tracks pygenometracks/tests/test_data/invalid_blocks.ini --region chrX:15000-24000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_invalid_blocks.png
+bin/pgt --tracks pygenometracks/tests/test_data/invalid_score.ini --region chrX:15000-24000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_invalid_score.png
 
 # test_bedGraphMatrixTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region X:2850000-3150000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph.png
