@@ -12,6 +12,8 @@ Enhancements:
 
     - Unfortunately, it is not possible to speed the process with h5 matrices so you may want to convert them to cool with `hicConvertFormat <https://hicexplorer.readthedocs.io/en/latest/content/tools/hicConvertFormat.html>`_.
 
+- pyGenomeTracks does not require sorted bed anymore.
+
 - For coverage tracks (bedgraph and bigwig), there is a new parameter: ``grid`` which allows to display horizontal lines.
 
 - For links, you can choose to use the middle of start1 and end1 and the middle of start2 and end2 thanks to ``use_middle`` instead of the extremities coordinates.
@@ -38,3 +40,11 @@ Minor enhancements:
 - Others output of ``make_tracks_file`` have been modified for better clarity.
 
 - Others code related enhancements which are transparent to the users.
+
+
+Bugfixes:
+^^^^^^^^^^^^^^^^^^^^^^^
+
+- For bed tracks when ``gene_rows`` or ``global_max_row`` was set the last row was very close to the bottom (sometimes even overlaying the next track). Now it is vertically centered and do not go over the track height.
+
+- Solve some bugs how non conventional bed files are handle.
