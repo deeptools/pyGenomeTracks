@@ -38,9 +38,6 @@ class ReadBed(object):
         else:
             self.get_bed_interval(fields, is_first_line=True)
         self.file_handle.seek(0)
-        self.prev_chrom = None
-        self.prev_start = -1
-        self.prev_line = None
 
         # list of bed fields
         self.fields = ['chromosome', 'start', 'end',
@@ -81,15 +78,6 @@ class ReadBed(object):
         line = self.get_no_comment_line()
 
         bed = self.get_bed_interval(line)
-        if self.prev_chrom == bed.chromosome:
-            assert self.prev_start <= bed.start, \
-                "Bed file not sorted. Please use a sorted bed file.\n" \
-                f"File: {self.file_handle.name}\n" \
-                f"Previous line: {self.prev_line}\n Current line{line}"
-
-        self.prev_chrom = bed.chromosome
-        self.prev_start = bed.start
-        self.prev_line = line
 
         return bed
 

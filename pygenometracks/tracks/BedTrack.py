@@ -360,9 +360,11 @@ file_type = {TRACK_TYPE}
             chrom_region_before = chrom_region
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
-                self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
-                                 "chromosome name inside the bed file. "
+                self.log.warning("*Warning*\nNo interval was found when "
+                                 "overlapping with both "
+                                 f"{chrom_region_before}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                 f" and {chrom_region}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                 " inside the bed file. "
                                  "This will generate an empty track!!\n")
                 return
         chrom_region = self.check_chrom_str_bytes(self.interval_tree,
@@ -563,14 +565,15 @@ file_type = {TRACK_TYPE}
             epsilon = 0.08
             ymax = - epsilon
 
+            # We set ymin and ymax to have genes centered epsilon from the border
+
             if self.properties['global_max_row']:
-                ymin = self.max_num_row[chrom_region] * self.row_scale
+                max_ypos = self.max_num_row[chrom_region] * self.row_scale
 
             elif self.properties['gene_rows'] is not None:
-                ymin = self.properties['gene_rows'] * self.row_scale
+                max_ypos = self.properties['gene_rows'] * self.row_scale
 
-            else:
-                ymin = max_ypos + (1 + epsilon)
+            ymin = max_ypos + (1 + epsilon)
 
             self.log.debug(f"ylim {ymin},{ymax}")
             # the axis is inverted (thus, ymax < ymin)
