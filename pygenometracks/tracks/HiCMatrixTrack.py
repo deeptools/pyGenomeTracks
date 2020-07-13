@@ -119,10 +119,7 @@ file_type = {TRACK_TYPE}
                     chrom_region = rs[0]
                     chrom_region_before = chrom_region
                     chrom_region = change_chrom_names(chrom_region)
-                    if len(rs) == 2:
-                        region = [f"{chrom_region}:{rs[1]}"]
-                    else:
-                        region = [chrom_region]
+                    region = [f"{chrom_region}:{rs[1]}"]
                     try:
                         self.hic_ma = HiCMatrix.hiCMatrix(self.properties['file'],
                                                           pChrnameList=region)
