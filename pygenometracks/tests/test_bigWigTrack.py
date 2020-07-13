@@ -388,6 +388,33 @@ title = bigwig: black fill with grid (height = 15 max_value = 50)
 with open(os.path.join(ROOT, "grid.ini"), 'w') as fh:
     fh.write(tracks)
 
+tracks = """
+[bigwig file test]
+file = bigwig_chrx_2e6_5e6.bw
+# height of the track in cm (optional value)
+height = 4
+title = bigwig
+min_value = 0
+max_value = 30
+"""
+
+with open(os.path.join(ROOT, "example_bigwig.ini"), 'w') as fh:
+    fh.write(tracks)
+
+with open(os.path.join(ROOT, "example_bigwig_invalid_custom_color.ini"), 'w') as fh:
+    fh.write(tracks + 'color = (a')
+
+with open(os.path.join(ROOT, "example_bigwig_invalid_custom_color2.ini"), 'w') as fh:
+    fh.write(tracks + 'color = (1)')
+
+with open(os.path.join(ROOT, "example_bigwig_invalid_custom_color3.ini"), 'w') as fh:
+    fh.write(tracks + 'color = Reds')
+
+with open(os.path.join(ROOT, "example_bigwig_invalid_transform.ini"), 'w') as fh:
+    fh.write(tracks + 'transform = myfunction')
+
+
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -474,3 +501,23 @@ def test_op():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_defaults():
+    region = "X:2,500,000-3,000,000"
+    for suf in [''] + ['_invalid_custom_color' + s for s in ['2', '3']] + \
+            ['_invalid_transform']:
+        outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
+                                     delete=False)
+        ini_file = os.path.join(ROOT, f"example_bigwig{suf}.ini")
+        expected_file = os.path.join(ROOT, 'master_example_bigwig.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                            outfile.name, tolerance)
+        assert res is None, res
+
+        os.remove(outfile.name)
+        if 'invalid' in ini_file:
+            os.remove(ini_file)
