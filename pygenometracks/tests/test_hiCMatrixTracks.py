@@ -251,6 +251,50 @@ depth = 10000
 with open(os.path.join(ROOT, "browser_tracks_hic_small_test_2.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic_small_2)
 
+browser_tracks_with_one_interaction = """
+[hic matrix]
+file = one_interaction_4chr.cool
+title = cool with one interaction show_masked_bins = false
+depth = 200000
+file_type = hic_matrix
+height = 5
+show_masked_bins = false
+
+[spacer]
+
+[hic matrix]
+file = one_interaction_4chr.cool
+title = cool with one interaction show_masked_bins = true
+depth = 200000
+file_type = hic_matrix
+height = 5
+show_masked_bins = true
+
+[spacer]
+
+[hic matrix]
+file = one_interaction_4chr.cool
+title = cool with one interaction show_masked_bins = true transform = log
+depth = 200000
+file_type = hic_matrix
+height = 5
+show_masked_bins = true
+transform = log
+
+[newtrack]
+file_type = x_axis
+"""
+
+with open(os.path.join(ROOT, "browser_tracks_hic_one_interaction_cool.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_one_interaction)
+
+# I keep cool in the title but I use the h5 matrix
+with open(os.path.join(ROOT, "browser_tracks_hic_one_interaction_h5.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_one_interaction.replace('one_interaction_4chr.cool', 'one_interaction_4chr.h5'))
+# I keep cool in the title but I use the h5 matrix
+with open(os.path.join(ROOT, "browser_tracks_hic_one_interaction_diag_h5.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_one_interaction.replace('one_interaction_4chr.cool', 'one_interaction_diag_4chr.h5'))
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -459,7 +503,7 @@ def test_plot_tracks_with_hic_small_above_chr_length_other_chrName():
     region = 'Y:90000000-100000000'
     expected_file = os.path.join(ROOT, 'master_hic_small_test_above_chrY.png')
     args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.23 --width 38 "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
@@ -518,6 +562,112 @@ def test_plot_tracks_with_mcool():
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT,
                                       'master_mcool.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_with_hic_one_interaction_cool():
+    extension = '.png'
+
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "browser_tracks_hic_one_interaction_cool.ini")
+    bed_file = os.path.join(ROOT, 'regions_chr1XY.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    for region in ['chr1:0-500000', 'chrX:2500000-2600000', 'chrY:0-1000000']:
+        region_str = region.replace(':', '-')
+        output_file = outfile.name[:-4] + '_' + region_str + extension
+        expected_file = os.path.join(ROOT, 'master_plot_hic_one_interaction_withBED_'
+                                     + region_str + extension)
+        res = compare_images(expected_file,
+                             output_file, tolerance)
+        assert res is None, res
+
+        os.remove(output_file)
+
+
+def test_plot_tracks_with_hic_one_interaction_h5():
+    extension = '.png'
+
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "browser_tracks_hic_one_interaction_h5.ini")
+    bed_file = os.path.join(ROOT, 'regions_chr1XY.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    for region in ['chr1:0-500000', 'chrX:2500000-2600000', 'chrY:0-1000000']:
+        region_str = region.replace(':', '-')
+        output_file = outfile.name[:-4] + '_' + region_str + extension
+        expected_file = os.path.join(ROOT, 'master_plot_hic_one_interaction_withBED_'
+                                     + region_str + extension)
+        res = compare_images(expected_file,
+                             output_file, tolerance)
+        assert res is None, res
+
+        os.remove(output_file)
+
+
+def test_plot_tracks_with_hic_one_interaction_h5_individual():
+    extension = '.png'
+    ini_file = os.path.join(ROOT, "browser_tracks_hic_one_interaction_h5.ini")
+    for region in ['chr1:0-500000', 'chrX:2500000-2600000', 'chrY:0-1000000']:
+
+        outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        expected_file = os.path.join(ROOT, 'master_plot_hic_one_interaction_withBED_'
+                                     + region.replace(':', '-') + extension)
+
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.23 --width 38 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
+
+        os.remove(outfile.name)
+
+
+# The tests with individual chromosome with cool does not give the same result:
+# For the empty the problem is the colorbar which is different
+# when you do not load all data and the transformation of nan to 0
+# when the matrix is not empty
+# In addition here because there was no data on diagonal it has been modified.
+# When you load only one empty chromosome it is not empty anymore
+def test_plot_tracks_with_hic_one_interaction_individual():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_one_interaction.ini')
+    region = 'chr1:0-500000'
+    expected_file = os.path.join(ROOT, f"master_plot_hic_one_interaction_withBED_{region.replace(':', '-')}.png")
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_one_interaction.ini')
+    region = 'chrY:0-1000000'
+    expected_file = os.path.join(ROOT, 'master_plot_hic_one_interaction_withRegion_chrY-0-1000000.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
