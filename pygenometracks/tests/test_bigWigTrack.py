@@ -414,7 +414,6 @@ with open(os.path.join(ROOT, "example_bigwig_invalid_transform.ini"), 'w') as fh
     fh.write(tracks + 'transform = myfunction')
 
 
-
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -515,7 +514,7 @@ def test_defaults():
                f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                             outfile.name, tolerance)
         assert res is None, res
 
         os.remove(outfile.name)

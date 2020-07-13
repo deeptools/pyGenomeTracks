@@ -581,7 +581,6 @@ with open(os.path.join(ROOT, "bed_vlines.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 
-
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
