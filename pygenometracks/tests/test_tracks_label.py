@@ -130,3 +130,21 @@ def test_large_width_label_big_font():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_fixed_height():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "title.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_title_force_height.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--height 10 --title 'force height' "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
