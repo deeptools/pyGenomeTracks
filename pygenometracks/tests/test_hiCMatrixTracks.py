@@ -645,7 +645,7 @@ def test_plot_tracks_with_hic_one_interaction_individual():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, 'browser_tracks_hic_one_interaction.ini')
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_one_interaction_cool.ini')
     region = 'chr1:0-500000'
     expected_file = os.path.join(ROOT, f"master_plot_hic_one_interaction_withBED_{region.replace(':', '-')}.png")
     args = f"--tracks {ini_file} --region {region} "\
@@ -660,7 +660,7 @@ def test_plot_tracks_with_hic_one_interaction_individual():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, 'browser_tracks_hic_one_interaction.ini')
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_one_interaction_cool.ini')
     region = 'chrY:0-1000000'
     expected_file = os.path.join(ROOT, 'master_plot_hic_one_interaction_withRegion_chrY-0-1000000.png')
     args = f"--tracks {ini_file} --region {region} "\
