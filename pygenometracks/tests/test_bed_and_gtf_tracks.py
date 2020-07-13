@@ -560,6 +560,28 @@ height = 4
 with open(os.path.join(ROOT, "bed_shuffle.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+title = bed global_max_row = true labels = false
+labels = false
+height = 4
+
+[spacer]
+
+[x-axis]
+title = centered title
+
+[vlines]
+file = tad_classification.bed
+type = vlines
+line_width = 3
+"""
+with open(os.path.join(ROOT, "bed_vlines.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -842,3 +864,22 @@ def test_bed_shuffle():
         assert res is None, res
 
         os.remove(output_file)
+
+
+def test_plot_tracks_bed_vlines():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bed_vlines.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_bed_vlines.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
+           "--trackLabelHAlign center "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
