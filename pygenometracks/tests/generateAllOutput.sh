@@ -52,6 +52,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test.
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test.ini --region 1:0-200000 --trackLabelFraction 0.23 --width 38 -o ./pygenometracks/tests/test_data/master_plot_hic_small_test.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test.ini --region chrM:0-20000 --trackLabelFraction 0.23 --width 38 -o ./pygenometracks/tests/test_data/master_plot_hic_small_test_chrM.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test.ini --region chr1:0-5000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_small_region.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test.ini --region Y:90000000-100000000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_above_chrY.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_2.ini --region chr1:0-100000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_2.png
 
 # test_logScale:

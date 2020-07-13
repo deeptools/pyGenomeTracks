@@ -452,6 +452,23 @@ def test_plot_tracks_with_hic_small_above_chr_length():
     os.remove(outfile.name)
 
 
+def test_plot_tracks_with_hic_small_above_chr_length_other_chrName():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test.ini')
+    region = 'Y:90000000-100000000'
+    expected_file = os.path.join(ROOT, 'master_hic_small_test_above_chrY.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_plot_hic_depth_smaller_binsize():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
