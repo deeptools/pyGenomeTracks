@@ -65,7 +65,7 @@ height = 2
                                  f"{self.properties['section_name']}"
                                  f" is not valid. {prop} has "
                                  "been set to "
-                                 f"{default_value}")
+                                 f"{default_value}.\n")
                 self.properties[prop] = default_value
 
     def plot_y_axis(self, ax, plot_axis, transform='no', log_pseudocount=0,
@@ -257,14 +257,14 @@ height = 2
                                  f"{self.properties['type']}' in section:"
                                  f" {self.properties['section_name']}\n"
                                  "A number was expected after ':' and found "
-                                 f"'{size}'. Will use default.")
+                                 f"'{size}'. Will use default.\n")
         else:
             self.plot_type = self.properties['type']
 
         if self.plot_type not in ['line', 'points', 'fill']:
             self.log.warning(f"Invalid: 'type = {self.properties['type']}' in"
                              f" section: {self.properties['section_name']}\n"
-                             "Will use default.")
+                             "Will use default.\n")
             self.plot_type = default_plot_type
 
     def process_color(self, param, colormap_possible=False,
@@ -299,7 +299,7 @@ height = 2
                                  " is not valid. "
                                  f"{self.properties['section_name']} has "
                                  "been set to "
-                                 f"{default_value}")
+                                 f"{default_value}.\n")
                 valid_color = default_value
             else:
                 if mc.is_color_like(custom_color):
@@ -310,7 +310,7 @@ height = 2
                                      " is not valid. "
                                      f"{self.properties['section_name']} has "
                                      "been set to "
-                                     f"{default_value}")
+                                     f"{default_value}.\n")
                     valid_color = default_value
         if not colormap_possible:
             if valid_color is None:
@@ -319,7 +319,7 @@ height = 2
                                  " is not valid. "
                                  f"{self.properties['section_name']} has "
                                  "been set to "
-                                 f"{default_value}")
+                                 f"{default_value}.\n")
                 valid_color = default_value
             self.properties[param] = valid_color
             return False
@@ -341,7 +341,7 @@ height = 2
                                          f"{self.properties[param]} but "
                                          f"raises an error:\n{e}\nIt will be "
                                          "ignored and default value will be "
-                                         "used.")
+                                         "used.\n")
                     else:
                         try:
                             valid_colormap = mc.LinearSegmentedColormap.from_list(
@@ -353,7 +353,7 @@ height = 2
                                              f"{self.properties[param]} but "
                                              f"raises an error:\n{e}\nIt will "
                                              f"be ignored and"
-                                             " default value will be used.")
+                                             " default value will be used.\n")
                 else:
                     if self.properties[param] in dir(plt.cm):
                         valid_colormap = self.properties[param]
@@ -365,7 +365,7 @@ height = 2
                              f" for section {self.properties['section_name']}"
                              " is not valid. It has "
                              "been set to "
-                             f"{default_value}")
+                             f"{default_value}.\n")
             self.properties[param] = default_value
             return default_value_is_colormap
         if colormap_only:
@@ -376,7 +376,7 @@ height = 2
                                  f" {self.properties['section_name']}"
                                  " is not valid. It has "
                                  "been set to "
-                                 f"{default_value}")
+                                 f"{default_value}.\n")
                 valid_colormap = default_value
             self.properties[param] = valid_colormap
             return True

@@ -79,6 +79,66 @@ height = 2
 with open(os.path.join(ROOT, "invalid_blockCount.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[invalid_CDScoo]
+file = invalid_CDScoo.bed
+title = invalid CDS coordinate in first line rgb is ignored
+color = bed_rgb
+
+[spacer]
+
+[invalid_CDScoo2]
+file = invalid_CDScoo2.bed
+title = invalid CDS coordinate in not first line rgb can be used
+color = bed_rgb
+height = 2
+
+[spacer]
+
+[invalid_CDScoo3]
+file = invalid_CDScoo3.bed
+title = invalid CDS coordinate in not first line bed12 can be used
+color = bed_rgb
+style = UCSC
+height = 2
+"""
+with open(os.path.join(ROOT, "invalid_CDScoo.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[invalid_blocks]
+file = invalid_blocks.bed
+title = block_length is not integer in first line, block info is ignored
+style = UCSC
+
+[spacer]
+
+[invalid_blocks2]
+file = invalid_blocks2.bed
+title = block_length is not integer in not first line blocks are used
+style = UCSC
+height = 4
+"""
+with open(os.path.join(ROOT, "invalid_blocks.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[invalid_score]
+file = invalid_score.bed
+title = invalid score in first line strand and rgb is ignored
+color = bed_rgb
+
+[spacer]
+
+[invalid_score2]
+file = invalid_score2.bed
+title = invalid score in not first line strand and rgb can be used
+color = bed_rgb
+height = 2
+"""
+with open(os.path.join(ROOT, "invalid_score.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -139,37 +199,91 @@ def test_plot_tracks_bed_invalid_strand():
     os.remove(ini_file)
 
 
-# For the moment this is failing but it should not
-# def test_plot_tracks_bed_invalid_blockCount():
+def test_plot_tracks_bed_invalid_rgb():
 
-#     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-#                                  delete=False)
-#     ini_file = os.path.join(ROOT, "invalid_blockCount.ini")
-#     region = "chrX:15000-24000"
-#     expected_file = os.path.join(ROOT, 'master_invalid_blockCount.png')
-#     args = f"--tracks {ini_file} --region {region} "\
-#            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-#            f"--outFileName {outfile.name}".split()
-#     pygenometracks.plotTracks.main(args)
-#     res = compare_images(expected_file,
-#                          outfile.name, tolerance)
-#     assert res is None, res
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "invalid_rgb.ini")
+    region = "chr1:0-500"
+    expected_file = os.path.join(ROOT, 'master_invalid_rgb.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
 
-#     os.remove(outfile.name)
+    os.remove(outfile.name)
 
-# def test_plot_tracks_bed_invalid_rgb():
 
-#     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-#                                  delete=False)
-#     ini_file = os.path.join(ROOT, "invalid_rgb.ini")
-#     region = "chr1:0-500"
-#     expected_file = os.path.join(ROOT, 'master_invalid_rgb.png')
-#     args = f"--tracks {ini_file} --region {region} "\
-#            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-#            f"--outFileName {outfile.name}".split()
-#     pygenometracks.plotTracks.main(args)
-#     res = compare_images(expected_file,
-#                          outfile.name, tolerance)
-#     assert res is None, res
+def test_plot_tracks_bed_invalid_blockCount():
 
-#     os.remove(outfile.name)
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "invalid_blockCount.ini")
+    region = "chrX:15000-24000"
+    expected_file = os.path.join(ROOT, 'master_invalid_blockCount.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_invalid_CDScoo():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "invalid_CDScoo.ini")
+    region = "chrX:15000-24000"
+    expected_file = os.path.join(ROOT, 'master_invalid_CDScoo.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_invalid_blocks():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "invalid_blocks.ini")
+    region = "chrX:15000-24000"
+    expected_file = os.path.join(ROOT, 'master_invalid_blocks.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_invalid_score():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "invalid_score.ini")
+    region = "chrX:15000-24000"
+    expected_file = os.path.join(ROOT, 'master_invalid_score.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
