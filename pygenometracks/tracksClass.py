@@ -359,7 +359,7 @@ class PlotTracks(object):
                 if 'line_width' in all_keywords:
                     track_options['line_width'] = parser.get(section_name, 'line_width')
                 extra_keywords = [k for k in all_keywords
-                                    if k not in ['file', 'type', 'line_width']]
+                                  if k not in ['file', 'type', 'line_width']]
                 if len(extra_keywords) > 0:
                     log.warn("These parameters were specified but will not"
                              f" be used {' '.join(extra_keywords)}.\n")
