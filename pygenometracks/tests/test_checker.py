@@ -181,6 +181,17 @@ with open(os.path.join(ROOT, "test_tracks_16.ini"), 'w') as fh:
     fh.write(test_tracks_16)
 
 
+test_tracks_17 = """
+[x-axis]
+
+[vlines]
+file = tad_classification.bed
+type = vlines
+line_width = a
+"""
+with open(os.path.join(ROOT, "test_tracks_17.ini"), 'w') as fh:
+    fh.write(test_tracks_17)
+
 class TestCheckerMethods(unittest.TestCase):
 
     def test_vline_without_file(self):
@@ -479,6 +490,24 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("Possible options are no, yes, share-y" in str(context.exception))
+        os.remove(ini_file)
+
+    def test_wrong_line_width_vlines(self):
+        """
+        This test check that if you provide
+        an line_width which is not float
+        you will have an error with a message containing
+        whereas we should have a float
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_17.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("whereas we should have a float" in str(context.exception))
         os.remove(ini_file)
 
 
