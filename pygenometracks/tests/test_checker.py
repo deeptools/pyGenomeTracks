@@ -170,6 +170,17 @@ with open(os.path.join(ROOT, "test_tracks_15b.ini"), 'w') as fh:
     fh.write(test_tracks_15b)
 
 
+test_tracks_16 = """
+[x-axis]
+
+[bedgraph]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+overlay_previous = anything
+"""
+with open(os.path.join(ROOT, "test_tracks_16.ini"), 'w') as fh:
+    fh.write(test_tracks_16)
+
+
 class TestCheckerMethods(unittest.TestCase):
 
     def test_vline_without_file(self):
@@ -451,6 +462,24 @@ class TestCheckerMethods(unittest.TestCase):
             assert("could not be computed"
                    in str(context.exception))
             os.remove(ini_file)
+
+    def test_wrong_overlay_previous(self):
+        """
+        This test check that if you provide
+        an overlay_previous which is not no, yes, share-y
+        you will have an error with a message containing
+        Possible options are no, yes, share-y
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_16.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("Possible options are no, yes, share-y" in str(context.exception))
+        os.remove(ini_file)
 
 
 class TestInputRegionMethods(unittest.TestCase):
