@@ -251,6 +251,62 @@ depth = 10000
 with open(os.path.join(ROOT, "browser_tracks_hic_small_test_2.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic_small_2)
 
+# >>> from HiCMatrix import hicmatrix
+# >>> hic_ma = HiCMatrix.hiCMatrix(os.path.join(ROOT, 'small_test2.cool'))
+# >>> instances, features = hic_ma.matrix.nonzero()
+# >>> instances
+# array([   0,    0,    1,    1,    2,    3,    3,    3, 9166], dtype=int32)
+# >>> features
+# array([   0,    3,    2,    3,    1,    0,    1,    3, 9166], dtype=int32)
+# >>> hic_ma.matrix.data
+# array([1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=int32)
+# >>> import numpy as np
+# >>> hic_ma.matrix.data = np.array([10, 5, 2, 1, 2, 5, 1, 100, -20])
+# >>> hic_ma.save('pygenometracks/tests/test_data/small_test3.cool')
+
+browser_tracks_with_hic_small_3 = """
+[hic matrix]
+file = small_test3.cool
+title = cool with few interactions transform = no
+depth = 200000
+file_type = hic_matrix
+min_value = 0
+max_value = 50
+
+[hic matrix]
+file = small_test3.cool
+title = cool with few interactions transform = log
+transform = log
+depth = 200000
+file_type = hic_matrix
+min_value = 0
+max_value = 5
+
+[hic matrix]
+file = small_test3.cool
+title = cool with few interactions transform = -log
+transform = -log
+depth = 200000
+file_type = hic_matrix
+min_value = 0
+max_value = -5
+
+[hic matrix]
+file = small_test3.cool
+title = cool with few interactions transform = log1p
+transform = log1p
+depth = 200000
+file_type = hic_matrix
+min_value = 0.1
+max_value = 50
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_3.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic_small_3)
+
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -501,6 +557,24 @@ def test_plot_tracks_with_mcool():
     pygenometracks.plotTracks.main(args)
     res = compare_images(os.path.join(ROOT,
                                       'master_mcool.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_with_hic_small3():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test_3.ini')
+    region = 'chr1:0-200000'
+    expected_file = os.path.join(ROOT, 'master_plot_hic_small_test_3.png')
+
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
