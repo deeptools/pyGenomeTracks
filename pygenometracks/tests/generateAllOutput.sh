@@ -63,6 +63,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_one_interaction_cool.ini --BED ./pygenometracks/tests/test_data/regions_chr1XY.bed --trackLabelFraction 0.23 --width 38 -o ./pygenometracks/tests/test_data/master_plot_hic_one_interaction_withBED.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_one_interaction_cool.ini --region chrY:0-1000000 --trackLabelFraction 0.23 --width 38 -o ./pygenometracks/tests/test_data/master_plot_hic_one_interaction_withRegion_chrY-0-1000000.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_one_interaction_diag_h5.ini --region chrY:0-1000000 --trackLabelFraction 0.23 --width 38 -o ./pygenometracks/tests/test_data/master_plot_hic_one_interaction_diag_chrY-0-1000000.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_3.ini --region chr1:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_3.png
 
 # test_logScale:
 bin/pgt --tracks ./pygenometracks/tests/test_data/log1p.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_log1p.png
