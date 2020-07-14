@@ -502,6 +502,22 @@ def test_op():
     os.remove(outfile.name)
 
 
+def test_op_fakeChr():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "operation.ini")
+    region = "fakeChr:2700000-3100000"
+    expected_file = os.path.join(ROOT, 'master_operation_fakeChr.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
 def test_defaults():
     region = "X:2,500,000-3,000,000"
     for suf in [''] + ['_invalid_custom_color' + s for s in ['2', '3']] + \
