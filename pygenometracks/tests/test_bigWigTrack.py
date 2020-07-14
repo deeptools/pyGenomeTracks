@@ -243,7 +243,7 @@ height = 0.5
 with open(os.path.join(ROOT, "operation.ini"), 'w') as fh:
     fh.write(tracks)
 
-with open(os.path.join(ROOT, "operation_invalid.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "invalid_operation.ini"), 'w') as fh:
     fh.write(tracks.replace('operation = min(file, second_file)\n', 'operation = min(file, second_file)\ny_axis_values = original\n'))
 
 tracks = """
