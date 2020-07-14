@@ -398,6 +398,8 @@ def test_plot_tracks_with_hic_rasterize_height_2chr():
         assert res is None, res
 
         os.remove(output_file)
+        if extension == '.pdf':
+            os.remove(expected_file.replace(extension, '_pdf.png'))
 
 
 def test_plot_tracks_with_hic_rasterize_height_2chr_individual():
