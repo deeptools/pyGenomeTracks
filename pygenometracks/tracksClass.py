@@ -630,7 +630,7 @@ class SpacerTrack(GenomeTrack):
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['overlay_previous',
-                         'title']
+                         'title', 'file_type']
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
@@ -651,7 +651,7 @@ class XAxisTrack(GenomeTrack):
     POSSIBLE_PROPERTIES = {'where': ['top', 'bottom']}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['overlay_previous',
-                         'title', 'where']
+                         'title', 'where', 'file_type']
     FLOAT_PROPERTIES = {'fontsize': [0, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
