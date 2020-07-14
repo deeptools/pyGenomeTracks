@@ -527,7 +527,7 @@ def test_op_fakeChr():
 
 def test_defaults():
     region = "X:2,500,000-3,000,000"
-    for suf in [''] + ['_invalid_custom_color' + s for s in ['2', '3']] + \
+    for suf in [''] + ['_invalid_custom_color' + s for s in ['', '2', '3']] + \
             ['_invalid_transform']:
         outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
                                      delete=False)
