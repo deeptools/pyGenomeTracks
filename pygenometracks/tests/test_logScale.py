@@ -395,7 +395,7 @@ class TestLogNegMethods(unittest.TestCase):
     def test_log_tracks_with_0values(self):
         outfile = NamedTemporaryFile(suffix='.png', prefix='log_test_',
                                      delete=False)
-        for pref in ['']:  # should work, 'm']:
+        for pref in ['', 'm']:
             ini_file = os.path.join(ROOT, f"{pref}log_neg.ini")
             region = "X:2700000-3100000"
             args = f"--tracks {ini_file} --region {region} "\
