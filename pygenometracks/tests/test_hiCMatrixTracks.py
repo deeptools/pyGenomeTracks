@@ -180,6 +180,12 @@ show_masked_bins = true
 """
 with open(os.path.join(ROOT, "browser_tracks_hic_small_test.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic)
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_invalid1.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic.replace('[x-axis]', 'colormap = [\n[x-axis]'))
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_invalid2.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic.replace('[x-axis]', "colormap = ['a']\n[x-axis]"))
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_invalid3.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic.replace('[x-axis]', "colormap = fakeColormap\n[x-axis]"))
 
 browser_tracks_with_hic = """
 [hic matrix log]
@@ -464,19 +470,23 @@ def test_plot_tracks_with_hic_small_test_individual():
 def test_plot_tracks_with_hic_small_other_chr_name():
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test.ini')
     region = '1:0-200000'
     expected_file = os.path.join(ROOT, 'master_plot_hic_small_test.png')
 
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.23 --width 38 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
+    for suf in [''] + ['_invalid' + s for s in ['1', '2', '3']]:
+        ini_file = os.path.join(ROOT, f'browser_tracks_hic_small_test{suf}.ini')
 
-    os.remove(outfile.name)
+        args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.23 --width 38 "\
+            f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                            outfile.name, tolerance)
+        assert res is None, res
+
+        os.remove(outfile.name)
+        if 'invalid' in ini_file:
+            os.remove(ini_file)
 
 
 def test_plot_tracks_with_hic_small_above_chr_length():
