@@ -104,7 +104,7 @@ class ReadBed(object):
         >>> bed.chromosome
         'chr1'
         >>> bed.block_starts
-        [20, 200, 700]
+        [0, 200, 700]
 
         >>> bed_line="chr2\t0\t1000\tgene_1\t0.5\t-\n"
         >>> with open('/tmp/test.bed', 'w') as fh:
