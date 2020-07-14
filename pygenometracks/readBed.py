@@ -96,7 +96,7 @@ class ReadBed(object):
         Processes each bed line from a bed file, casts the values and returns
         a namedtuple object
 
-        >>> bed_line="chr1\t0\t1000\tgene_1\t0.5\t-\t0\t1000\t0\t3\t10,20,100\t20,200,700"
+        >>> bed_line="chr1\t0\t1000\tgene_1\t0.5\t-\t0\t1000\t0\t3\t10,20,300\t0,200,700"
         >>> with open('/tmp/test.bed', 'w') as fh:
         ...     foo = fh.write(bed_line)
         >>> bed_f = ReadBed(open('/tmp/test.bed','r'))
