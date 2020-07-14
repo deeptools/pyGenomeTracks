@@ -568,7 +568,7 @@ def test_plot_tracks_with_hic_small3():
                                  delete=False)
     ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test_3.ini')
     region = 'chr1:0-200000'
-    expected_file = os.path.join(ROOT, 'master_plot_hic_small_test_3.png')
+    expected_file = os.path.join(ROOT, 'master_hic_small_test_3.png')
 
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
