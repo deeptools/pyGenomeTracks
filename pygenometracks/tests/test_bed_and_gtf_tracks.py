@@ -896,22 +896,26 @@ def test_bed_shuffle():
 
 
 def test_plot_tracks_bed_vlines():
-
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+    extension = '.png'
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "bed_vlines.ini")
-    region = "X:3000000-3300000"
-    expected_file = os.path.join(ROOT, 'master_bed_vlines.png')
-    args = f"--tracks {ini_file} --region {region} "\
+    bed_file = os.path.join(ROOT, 'regionsXfakeChr.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
            "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
            "--trackLabelHAlign center "\
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
+    for region in ['X:3000000-3300000', 'fakeChr:0-100']:
+        region_str = region.replace(':', '-')
+        output_file = outfile.name[:-4] + '_' + region_str + extension
+        expected_file = os.path.join(ROOT, 'master_bed_vlines_'
+                                     + region_str + extension)
+        res = compare_images(expected_file,
+                             output_file, tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
+        os.remove(output_file)
 
 
 def test_plot_tracks_bed_different_UTR():
