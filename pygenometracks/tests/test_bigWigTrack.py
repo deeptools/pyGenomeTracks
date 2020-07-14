@@ -243,6 +243,9 @@ height = 0.5
 with open(os.path.join(ROOT, "operation.ini"), 'w') as fh:
     fh.write(tracks)
 
+with open(os.path.join(ROOT, "operation_invalid.ini"), 'w') as fh:
+    fh.write(tracks.replace('operation = min(file, second_file)\n', 'operation = min(file, second_file)\ny_axis_values = original\n'))
+
 tracks = """
 [test bigwig]
 file = bigwig2_X_2.5e6_3.5e6.bw
@@ -488,18 +491,21 @@ def test_grid():
 def test_op():
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, "operation.ini")
-    region = "X:2700000-3100000"
-    expected_file = os.path.join(ROOT, 'master_operation.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
+    for pref in ['', 'invalid_']:    
+        ini_file = os.path.join(ROOT, f"{pref}operation.ini")
+        region = "X:2700000-3100000"
+        expected_file = os.path.join(ROOT, 'master_operation.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
+        os.remove(outfile.name)
+        if 'invalid' in ini_file:
+            os.remove(ini_file)
 
 
 def test_op_fakeChr():
