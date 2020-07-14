@@ -56,9 +56,12 @@ file_type = {TRACK_TYPE}
     # The color can only be a color
 
     def plot(self, ax, chrom_region, start_region, end_region):
+        # Get the center from the properties
         x_center = self.properties['x_center']
         if x_center is None:
+            # Else put it in the middle
             x_center = (end_region + start_region) / 2
+        # Get the size form the properties
         size = self.properties['size']
         if size is None:
             # We put the size that is less than half the plotted region
@@ -72,6 +75,11 @@ file_type = {TRACK_TYPE}
             else:
                 first_char = 1
             size = first_char * 10**(len(str(half_plotted_region)) - 1)
+        # We only plot if it will be visible
+        if x_center - size / 2 > end_region or x_center + size / 2 < start_region:
+            return
+
+        # We adjust the unit to make it pretty
         if size < 1e3:
             size_label = f"{size} bases"
         elif size < 1e6:
