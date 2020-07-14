@@ -106,6 +106,32 @@ number of bins = 300
 with open(os.path.join(ROOT, "bigwig_dep.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+
+browser_tracks_with_hic = """
+[hic matrix]
+file = small_test2.cool
+title = cool with few interactions show_masked_bins = false (default)
+depth = 200000
+file_type = hic_matrix
+boudaries_file = tad_classification.bed
+height = 5
+
+[spacer]
+
+[hic matrix]
+file = small_test2.cool
+title = cool with few interactions show_masked_bins = true
+depth = 200000
+file_type = hic_matrix
+height = 5
+show_masked_bins = true
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_boundaries_file.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic)
+
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -145,3 +171,22 @@ def test_bigwig_track_dep():
     os.remove(outfile.name)
     os.remove(ini_file)
 
+
+def test_plot_tracks_with_hic_small_file_boundaries():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    region = '1:0-200000'
+    expected_file = os.path.join(ROOT, 'master_plot_hic_small_test.png')
+
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_small_test_boundaries_file.ini')
+
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                        outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+    os.remove(ini_file)
