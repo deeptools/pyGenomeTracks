@@ -123,6 +123,22 @@ with open(os.path.join(ROOT, "invalid_blocks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 browser_tracks = """
+[invalid_blocks3]
+file = invalid_blocks3.bed
+title = block_count_inconsistent between block count and others
+"""
+with open(os.path.join(ROOT, "invalid_blocks3.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[invalid_blocks4]
+file = invalid_blocks4.bed
+title = block_count_inconsistent between lengths and others
+"""
+with open(os.path.join(ROOT, "invalid_blocks4.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
 [invalid_score]
 file = invalid_score.bed
 title = invalid score in first line strand and rgb is ignored
@@ -287,3 +303,23 @@ def test_plot_tracks_bed_invalid_score():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_invalid_block_count():
+
+    region = "chrX:15000-24000"
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    for suf in ['3', '4']:
+        ini_file = os.path.join(ROOT, f"invalid_blocks{suf}.ini")
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        try:
+            pygenometracks.plotTracks.main(args)
+        except Exception as e:
+            assert 'The number of blocks:' in str(e)
+        else:
+            raise Exception(f"bed_invalid_block{suf} should fail.")
+        os.remove(ini_file)
