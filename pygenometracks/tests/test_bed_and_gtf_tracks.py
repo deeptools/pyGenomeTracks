@@ -565,6 +565,7 @@ browser_tracks = """
 file = dm3_genes_withrgbandscore.bed.gz
 title = bed global_max_row = true labels = false
 labels = false
+global_max_row = true
 height = 4
 
 [spacer]
