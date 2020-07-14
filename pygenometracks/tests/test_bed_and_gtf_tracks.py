@@ -581,6 +581,35 @@ line_width = 3
 with open(os.path.join(ROOT, "bed_vlines.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[genes1]
+file = example.bed
+title = bed style = flybase
+style = flybase
+height = 4
+
+[spacer]
+
+[genes2]
+file = example.bed
+title = bed style = UCSC
+style = UCSC
+height = 4
+
+[spacer]
+
+[genes1]
+file = example.bed
+title = bed style = tssarrow
+style = tssarrow
+height = 4
+
+[spacer]
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "bed_different_UTR.ini"), 'w') as fh:
+    fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -876,6 +905,24 @@ def test_plot_tracks_bed_vlines():
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
            "--trackLabelHAlign center "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_different_UTR():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bed_different_UTR.ini")
+    region = "chr1:0-500"
+    expected_file = os.path.join(ROOT, 'master_different_UTR.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
