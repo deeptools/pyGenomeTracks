@@ -357,7 +357,13 @@ class PlotTracks(object):
                                      " but there is no file.")
                 track_options['file'] = parser.get(section_name, 'file')
                 if 'line_width' in all_keywords:
-                    track_options['line_width'] = parser.get(section_name, 'line_width')
+                    try:
+                        track_options['line_width'] = float(parser.get(section_name, 'line_width'))
+                    except ValueError:
+                        raise InputError(f"In section {section_name}, line_width "
+                                         f"was set to {parser.get(section_name, 'line_width')}"
+                                         " whereas we should have a float "
+                                         "value.")
                 extra_keywords = [k for k in all_keywords
                                   if k not in ['file', 'type', 'line_width']]
                 if len(extra_keywords) > 0:
