@@ -355,6 +355,26 @@ max_value = 50
 with open(os.path.join(ROOT, "browser_tracks_hic_small_test_3.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic_small_3)
 
+browser_tracks_with_hic_small_3b = """
+[hic matrix]
+file = small_test3.cool
+title = cool with few interactions
+depth = 200000
+file_type = hic_matrix
+transform = log1p
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_3_invalid.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic_small_3b)
+
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_3_invalid2.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic_small_3b.replace('log1p', 'log'))
+
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_3_invalid3.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic_small_3b.replace('log1p', '-log'))
+
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -739,6 +759,8 @@ def test_plot_tracks_with_hic_one_interaction_individual():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
 def test_plot_tracks_with_hic_small3():
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
@@ -755,3 +777,20 @@ def test_plot_tracks_with_hic_small3():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_plot_tracks_with_hic_small3_invalid():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    region = "chrM:0-20000"
+    for suf in ['', '2', '3']:
+        ini_file = os.path.join(ROOT, f"browser_tracks_hic_small_test_3_invalid{suf}.ini")
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile.name}".split()
+        try:
+            pygenometracks.plotTracks.main(args)
+        except Exception as e:
+            assert 'transformation can not be applied to' in str(e)
+        else:
+            raise Exception("The plot_tracks_with_hic_small3_invalid should fail.")
+        os.remove(ini_file)
