@@ -109,6 +109,14 @@ operation = file - second_file
 with open(os.path.join(ROOT, "test_tracks_12.ini"), 'w') as fh:
     fh.write(test_tracks_12)
 
+test_tracks_12b = """
+[operation without second_file]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+operation = file - second_file
+"""
+with open(os.path.join(ROOT, "test_tracks_12b.ini"), 'w') as fh:
+    fh.write(test_tracks_12)
+
 test_tracks_13 = """
 [operation with transform]
 file = bigwig_chrx_2e6_5e6.bw
@@ -118,6 +126,15 @@ transform = log
 with open(os.path.join(ROOT, "test_tracks_13.ini"), 'w') as fh:
     fh.write(test_tracks_13)
 
+test_tracks_13b = """
+[operation with transform]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+operation = file + 1
+transform = log
+"""
+with open(os.path.join(ROOT, "test_tracks_13b.ini"), 'w') as fh:
+    fh.write(test_tracks_13b)
+
 test_tracks_14 = """
 [invalid operation]
 file = bigwig_chrx_2e6_5e6.bw
@@ -125,6 +142,14 @@ operation = file + a
 """
 with open(os.path.join(ROOT, "test_tracks_14.ini"), 'w') as fh:
     fh.write(test_tracks_14)
+
+test_tracks_14b = """
+[invalid operation]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+operation = file + a
+"""
+with open(os.path.join(ROOT, "test_tracks_14b.ini"), 'w') as fh:
+    fh.write(test_tracks_14b)
 
 test_tracks_15 = """
 [invalid operation with 2 files]
@@ -134,6 +159,15 @@ operation = file + a * second_file
 """
 with open(os.path.join(ROOT, "test_tracks_15.ini"), 'w') as fh:
     fh.write(test_tracks_15)
+
+test_tracks_15b = """
+[invalid operation with 2 files]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+second_file = bedgraph2_X_2.5e6_3.5e6.bdg
+operation = file + a * second_file
+"""
+with open(os.path.join(ROOT, "test_tracks_15b.ini"), 'w') as fh:
+    fh.write(test_tracks_15b)
 
 
 class TestCheckerMethods(unittest.TestCase):
@@ -352,16 +386,17 @@ class TestCheckerMethods(unittest.TestCase):
         operation.
         """
         outfile_name = "test.png"
-        ini_file = os.path.join(ROOT, "test_tracks_12.ini")
-        region = "X:3000000-3300000"
-        args = f"--tracks {ini_file} --region {region} "\
-            f"--outFileName {outfile_name}".split()
-        with self.assertRaises(InputError) as context:
-            pygenometracks.plotTracks.main(args)
+        for suf in ['', 'b']:
+            ini_file = os.path.join(ROOT, f"test_tracks_12{suf}.ini")
+            region = "X:3000000-3300000"
+            args = f"--tracks {ini_file} --region {region} "\
+                   f"--outFileName {outfile_name}".split()
+            with self.assertRaises(InputError) as context:
+                pygenometracks.plotTracks.main(args)
 
-        assert("requires to set the parameter second_file" in
-               str(context.exception))
-        os.remove(ini_file)
+            assert("requires to set the parameter second_file" in
+                str(context.exception))
+            os.remove(ini_file)
 
     def test_operation_with_transform(self):
         """
@@ -369,16 +404,17 @@ class TestCheckerMethods(unittest.TestCase):
         both an operation and a transform.
         """
         outfile_name = "test.png"
-        ini_file = os.path.join(ROOT, "test_tracks_13.ini")
-        region = "X:3000000-3300000"
-        args = f"--tracks {ini_file} --region {region} "\
-            f"--outFileName {outfile_name}".split()
-        with self.assertRaises(InputError) as context:
-            pygenometracks.plotTracks.main(args)
+        for suf in ['', 'b']:
+            ini_file = os.path.join(ROOT, f"test_tracks_13{suf}.ini")
+            region = "X:3000000-3300000"
+            args = f"--tracks {ini_file} --region {region} "\
+                   f"--outFileName {outfile_name}".split()
+            with self.assertRaises(InputError) as context:
+                pygenometracks.plotTracks.main(args)
 
-        assert("'operation' and 'transform' cannot be set at the same time."
-               in str(context.exception))
-        os.remove(ini_file)
+            assert("'operation' and 'transform' cannot be set at the same time."
+                in str(context.exception))
+            os.remove(ini_file)
 
     def test_invalid_operation(self):
         """
@@ -386,16 +422,17 @@ class TestCheckerMethods(unittest.TestCase):
         it will fail.
         """
         outfile_name = "test.png"
-        ini_file = os.path.join(ROOT, "test_tracks_14.ini")
-        region = "X:3000000-3300000"
-        args = f"--tracks {ini_file} --region {region} "\
-            f"--outFileName {outfile_name}".split()
-        with self.assertRaises(Exception) as context:
-            pygenometracks.plotTracks.main(args)
+        for suf in ['', 'b']:
+            ini_file = os.path.join(ROOT, f"test_tracks_14{suf}.ini")
+            region = "X:3000000-3300000"
+            args = f"--tracks {ini_file} --region {region} "\
+                   f"--outFileName {outfile_name}".split()
+            with self.assertRaises(Exception) as context:
+                pygenometracks.plotTracks.main(args)
 
-        assert("could not be computed"
-               in str(context.exception))
-        os.remove(ini_file)
+            assert("could not be computed"
+                in str(context.exception))
+            os.remove(ini_file)
 
     def test_invalid_operation2(self):
         """
@@ -403,16 +440,17 @@ class TestCheckerMethods(unittest.TestCase):
         it will fail.
         """
         outfile_name = "test.png"
-        ini_file = os.path.join(ROOT, "test_tracks_15.ini")
-        region = "X:3000000-3300000"
-        args = f"--tracks {ini_file} --region {region} "\
-            f"--outFileName {outfile_name}".split()
-        with self.assertRaises(Exception) as context:
-            pygenometracks.plotTracks.main(args)
+        for suf in ['', 'b']:
+            ini_file = os.path.join(ROOT, f"test_tracks_15{suf}.ini")
+            region = "X:3000000-3300000"
+            args = f"--tracks {ini_file} --region {region} "\
+                   f"--outFileName {outfile_name}".split()
+            with self.assertRaises(Exception) as context:
+                pygenometracks.plotTracks.main(args)
 
-        assert("could not be computed"
-               in str(context.exception))
-        os.remove(ini_file)
+            assert("could not be computed"
+                   in str(context.exception))
+            os.remove(ini_file)
 
 
 class TestInputRegionMethods(unittest.TestCase):
