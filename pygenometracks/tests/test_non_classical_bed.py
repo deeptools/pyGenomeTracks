@@ -139,6 +139,14 @@ with open(os.path.join(ROOT, "invalid_blocks4.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 browser_tracks = """
+[bed with 0 block]
+file = example_zeroBlock.bed
+title = example with number of block = 0 will fail
+"""
+with open(os.path.join(ROOT, "invalid_zero_block.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
 [invalid_score]
 file = invalid_score.bed
 title = invalid score in first line strand and rgb is ignored
@@ -323,3 +331,22 @@ def test_plot_tracks_bed_invalid_block_count():
         else:
             raise Exception(f"bed_invalid_block{suf} should fail.")
         os.remove(ini_file)
+
+
+def test_plot_tracks_bed_invalid_zero_block():
+
+    region = "chr1:0-500"
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "invalid_zero_block.ini")
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    try:
+        pygenometracks.plotTracks.main(args)
+    except Exception as e:
+        assert 'File type detected is bed12 but line' in str(e)
+    else:
+        raise Exception("invalid_zero_block should fail.")
+    os.remove(ini_file)
