@@ -193,6 +193,25 @@ height = 3
 with open(os.path.join(ROOT, "unsorted_bedgraph.ini"), 'w') as fh:
     fh.write(unsorted_bedgraph)
 
+# Write a bedgraph with negative values:
+with open(os.path.join(ROOT, "bedgraph_chrx_2e6_5e6.bg"), 'r') as f:
+    with open(os.path.join(ROOT, "bedgraph_chrx_2e6_5e6_m.bg"), 'w') as fo:
+        for line in f:
+            ls = line.split('\t')
+            ls[3] = '-' + ls[3]
+            fo.write('\t'.join(ls))
+
+log1p_with_neg = """
+[m_bedgraph]
+file = bedgraph_chrx_2e6_5e6_m.bg
+transform = log1p
+height = 3
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "log1pm_bedgraph.ini"), 'w') as fh:
+    fh.write(log1p_with_neg)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -375,3 +394,22 @@ def test_invalid_bedgraph3():
         raise Exception("The invalid_bedgraph3 should fail.")
 
     os.remove(ini_file)
+
+
+def test_bedgraph_neg_log1p():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pgt_test_', delete=True)
+    ini_file = os.path.join(ROOT, "log1pm_bedgraph.ini")
+    region = "X:2700000-3100000"
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    try:
+        pygenometracks.plotTracks.main(args)
+    except Exception as e:
+        assert 'coverage contains values below or equal to - 1' in str(e)
+    else:
+        raise Exception("The bedgraph_neg_log1p should fail.")
+
+    os.remove(ini_file)
+    os.remove(os.path.join(ROOT, "bedgraph_chrx_2e6_5e6_m.bg"))
