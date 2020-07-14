@@ -291,7 +291,7 @@ def test_op_bdg():
                f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                             outfile.name, tolerance)
         assert res is None, res
 
         os.remove(outfile.name)

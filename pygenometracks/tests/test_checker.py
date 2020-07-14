@@ -406,7 +406,7 @@ class TestCheckerMethods(unittest.TestCase):
                 pygenometracks.plotTracks.main(args)
 
             assert("requires to set the parameter second_file" in
-                str(context.exception))
+                   str(context.exception))
             os.remove(ini_file)
 
     def test_operation_with_transform(self):
@@ -424,7 +424,7 @@ class TestCheckerMethods(unittest.TestCase):
                 pygenometracks.plotTracks.main(args)
 
             assert("'operation' and 'transform' cannot be set at the same time."
-                in str(context.exception))
+                   in str(context.exception))
             os.remove(ini_file)
 
     def test_invalid_operation(self):
@@ -442,7 +442,7 @@ class TestCheckerMethods(unittest.TestCase):
                 pygenometracks.plotTracks.main(args)
 
             assert("could not be computed"
-                in str(context.exception))
+                   in str(context.exception))
             os.remove(ini_file)
 
     def test_invalid_operation2(self):

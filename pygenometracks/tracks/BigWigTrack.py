@@ -144,7 +144,6 @@ file_type = {TRACK_TYPE}
                 self.properties['y_axis_values'] = 'transformed'
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        formated_region = f"{chrom_region}:{start_region}-{end_region}"
 
         if chrom_region not in self.bw.chroms().keys():
             chrom_region_before = chrom_region

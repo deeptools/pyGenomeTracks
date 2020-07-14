@@ -491,7 +491,7 @@ def test_grid():
 def test_op():
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_',
                                  delete=False)
-    for pref in ['', 'invalid_']:    
+    for pref in ['', 'invalid_']:
         ini_file = os.path.join(ROOT, f"{pref}operation.ini")
         region = "X:2700000-3100000"
         expected_file = os.path.join(ROOT, 'master_operation.png')
@@ -523,6 +523,7 @@ def test_op_fakeChr():
     assert res is None, res
 
     os.remove(outfile.name)
+
 
 def test_defaults():
     region = "X:2,500,000-3,000,000"

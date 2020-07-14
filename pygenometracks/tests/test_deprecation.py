@@ -185,7 +185,7 @@ def test_plot_tracks_with_hic_small_file_boundaries():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                        outfile.name, tolerance)
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
