@@ -192,6 +192,7 @@ line_width = a
 with open(os.path.join(ROOT, "test_tracks_17.ini"), 'w') as fh:
     fh.write(test_tracks_17)
 
+
 class TestCheckerMethods(unittest.TestCase):
 
     def test_vline_without_file(self):

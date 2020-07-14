@@ -922,6 +922,7 @@ def test_plot_tracks_bed_vlines():
         if 'incorrect' in ini_file:
             os.remove(ini_file)
 
+
 def test_plot_tracks_bed_different_UTR():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
