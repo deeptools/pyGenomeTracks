@@ -158,13 +158,6 @@ file_type = {TRACK_TYPE}
 
         chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
 
-        if chrom_region not in self.bw.chroms().keys():
-            self.log.warning(f"Can not read region {formated_region} from "
-                             f"bigwig file:\n\n{self.properties['file']}\n"
-                             "\nPlease check that the chromosome name is part"
-                             " of the bigwig file "
-                             "and that the region is valid.\n")
-
         # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
         # of the memory. This only occurs when calling trackPlot from different
         # processors. Reloading the file solves the problem.
