@@ -38,9 +38,6 @@ class ReadBed(object):
         else:
             self.get_bed_interval(fields, is_first_line=True)
         self.file_handle.seek(0)
-        self.prev_chrom = None
-        self.prev_start = -1
-        self.prev_line = None
 
         # list of bed fields
         self.fields = ['chromosome', 'start', 'end',
@@ -81,15 +78,6 @@ class ReadBed(object):
         line = self.get_no_comment_line()
 
         bed = self.get_bed_interval(line)
-        if self.prev_chrom == bed.chromosome:
-            assert self.prev_start <= bed.start, \
-                "Bed file not sorted. Please use a sorted bed file.\n" \
-                f"File: {self.file_handle.name}\n" \
-                f"Previous line: {self.prev_line}\n Current line{line} "
-
-        self.prev_chrom = bed.chromosome
-        self.prev_start = bed.start
-        self.prev_line = line
 
         return bed
 
@@ -100,15 +88,6 @@ class ReadBed(object):
         line = self.get_no_comment_line()
 
         bed = self.get_bed_interval(line)
-        if self.prev_chrom == bed.chromosome:
-            assert self.prev_start <= bed.start, \
-                "Bed file not sorted. Please use a sorted bed file.\n" \
-                f"File: {self.file_handle.name}\n" \
-                f"Previous line: {self.prev_line}\n Current line{line}"
-
-        self.prev_chrom = bed.chromosome
-        self.prev_start = bed.start
-        self.prev_line = line
 
         return bed
 
@@ -138,6 +117,11 @@ class ReadBed(object):
         line_data = bed_line.strip()
         line_data = to_string(line_data)
         line_data = line_data.split("\t")
+        if is_first_line:
+            assert len(line_data) != 1, \
+                "Only one field detected, you may use" \
+                " a bed delimited by space. This format " \
+                "is not supported by pyGenomeTracks."
 
         if not is_first_line:
             if self.file_type != 'bed6':
@@ -181,19 +165,15 @@ class ReadBed(object):
                                      " is not an integer. This is "
                                      "probably not a bed file."
                                      "\n")
-            elif idx in [6, 7, 9]:
-                # thichStart(6), thickEnd(7) and blockCount(9) fields
+            elif idx in [6, 7]:
+                # thichStart(6) and thickEnd(7) fields
                 # Should be integer, if they are not we change the bed type
                 try:
                     line_values.append(int(r))
                 except ValueError:
                     if is_first_line:
-                        if idx == 9:
-                            self.file_type = 'bed8'
-                            self.fields_to_read = 8
-                        else:
-                            self.file_type = 'bed6'
-                            self.fields_to_read = 6
+                        self.file_type = 'bed6'
+                        self.fields_to_read = 6
                         sys.stderr.write(f"Value: {r} in field {idx + 1}"
                                          " is not an integer"
                                          "\n Only the first "
@@ -201,16 +181,45 @@ class ReadBed(object):
                                          " be used.\n")
                         break
                     else:
-                        default_value = 0 if (idx == 9) else line_values[1]
+                        if idx == 6:
+                            default_value = line_values[1]
+                        else:  # idx is 7
+                            default_value = line_values[6]
+                        line_values.append(default_value)
                         sys.stderr.write(f"Value: {r} in field {idx + 1} at"
                                          f" line {self.line_number}"
                                          " is not an integer"
                                          f"\n {default_value} will be used.\n")
+            elif idx == 9:
+                # blockCount(9) field
+                # Should be integer, if they are not we change the bed type
+                try:
+                    line_values.append(int(r))
+                except ValueError:
+                    if is_first_line:
+                        self.file_type = 'bed8'
+                        self.fields_to_read = 8
+                        sys.stderr.write(f"Value: {r} in field {idx + 1}"
+                                         " is not an integer"
+                                         "\n Only the first "
+                                         f"{self.fields_to_read} fields will"
+                                         " be used.\n")
+                        break
+                    else:
+                        sys.stderr.write("Warning: reading line "
+                                         f"#{self.line_number}, "
+                                         f"the block number {r} is not "
+                                         "valid.\nNo block will be used.\n")
+                        line_values.append(1)
+                        line_values.append([line_values[2] - line_values[1]])
+                        line_values.append([0])
+                        break
             # check item rgb
             elif idx == 8:
                 passed = True
                 try:
-                    line_values.append(int(r))
+                    # This is what happens in UCSC browser:
+                    line_values.append([0, 0, int(r)])
                 except ValueError:
                     r = to_string(r)
                     rgb = r.split(",")
@@ -236,9 +245,9 @@ class ReadBed(object):
                         sys.stderr.write("Warning: reading line: "
                                          f"#{self.line_number}. "
                                          f"The rgb field {r} is not "
-                                         "valid.\n0"
+                                         "valid.\n0,0,0"
                                          " will be used.\n")
-                        line_values.append(0)
+                        line_values.append([0, 0, 0])
 
             elif idx in [10, 11]:
                 # this are the block sizes and block start positions
@@ -262,9 +271,10 @@ class ReadBed(object):
                                          f"the block field {r} is not "
                                          f"valid.\nError message: {detail}"
                                          "\nNo block will be used.\n")
-                        line_values[9] = 1
-                        line_values[10] = line_values[1]
-                        line_values[11] = line_values[2] - line_values[1]
+                        line_values = line_values[:9]
+                        line_values.append(1)
+                        line_values.append([line_values[2] - line_values[1]])
+                        line_values.append([0])
                         break
                 else:
                     line_values.append(r)

@@ -108,7 +108,7 @@ file_type = {TRACK_TYPE}
                              " no line_width has been set but some "
                              "lines do not have scores."
                              "line_width has been set to "
-                             "0.5")
+                             "0.5.\n")
             self.properties['line_width'] = 0.5
 
         self.colormap = None
@@ -122,7 +122,7 @@ file_type = {TRACK_TYPE}
                                  " a colormap was chosen but some "
                                  "lines do not have scores."
                                  "Color has been set to "
-                                 f"{DEFAULT_LINKS_COLOR}")
+                                 f"{DEFAULT_LINKS_COLOR}.\n")
                 self.properties['color'] = DEFAULT_LINKS_COLOR
             else:
                 self.colormap = self.properties['color']
@@ -145,7 +145,7 @@ file_type = {TRACK_TYPE}
                              f"{self.properties['section_name']}"
                              " a ylim was set but "
                              "compact_arcs_level was set to 2."
-                             "ylim will be ignore.")
+                             "ylim will be ignore.\n")
             self.properties['ylim'] = None
 
     def plot(self, ax, chrom_region, region_start, region_end):
@@ -163,7 +163,7 @@ file_type = {TRACK_TYPE}
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in list(self.interval_tree):
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
+                                 + " nor " + chrom_region + " exists as a "
                                  "chromosome name inside the link file. "
                                  "This will generate an empty track!!\n")
                 return
@@ -380,7 +380,7 @@ file_type = {TRACK_TYPE}
                     score = float(score)
                 except ValueError as detail:
                     self.log.warning(f"Warning: reading line: {line}. The score is not valid {score} will not be used. "
-                                     f"\nError message: {detail}")
+                                     f"\nError message: {detail}\n")
                     score = np.nan
                     has_score = False
                 else:

@@ -1,4 +1,5 @@
 import sys
+import os
 import gzip
 import numpy as np
 from tqdm import tqdm
@@ -79,13 +80,24 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
         regions = pybedtools.BedTool(plot_regions_as_bed, from_string=True)
         # Bedtools will put a warning because we are using inconsistent
         # nomenclature (with and without chr)
-        sys.stderr = open(tempfile.NamedTemporaryFile().name, 'w')
+        temporary_file = tempfile.NamedTemporaryFile(delete=False)
+        sys.stderr = open(temporary_file.name, 'w')
         try:
             file_to_open = original_file.intersect(regions, wa=True, u=True).fn
         except pybedtools.helpers.BEDToolsError:
             file_to_open = file_name
         sys.stderr.close()
         sys.stderr = sys.__stderr__
+        with open(temporary_file.name, 'r') as f:
+            temp_std_error = f.readlines()
+        os.remove(temporary_file.name)
+        error_lines = [line for line in temp_std_error if 'error' in line.lower()]
+        if len(error_lines) > 0:
+            error_lines_printable = '\n'.join(error_lines)
+            sys.stderr.write("Bedtools intersect raised an error:\n"
+                             f"{error_lines_printable}\n"
+                             "Will not use bedtools.\n")
+            file_to_open = file_name
     return file_to_open
 
 
@@ -105,9 +117,6 @@ def file_to_intervaltree(file_name, plot_regions=None):
     file_h = opener(file_to_open)
     line_number = 0
     valid_intervals = 0
-    prev_chrom = None
-    prev_start = -1
-    prev_line = None
     interval_tree = {}
     min_value = float('Inf')
     max_value = -float('Inf')
@@ -137,10 +146,6 @@ def file_to_intervaltree(file_name, plot_regions=None):
             msg = f"Error reading line: {line_number}. The end field is not " \
                   f"an integer.\nError message: {detail}"
             raise InputError(msg)
-
-        if prev_chrom == chrom:
-            assert prev_start <= start, \
-                f"Bed file not sorted. Please use a sorted bed file.\n{prev_line}{line} "
 
         if chrom not in interval_tree:
             interval_tree[chrom] = IntervalTree()
@@ -181,7 +186,7 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
             ax.plot(x_values, score_list, '-', linewidth=size, color=color,
                     alpha=alpha)
         else:
-            warnings.warn('Line plots with a different negative color might not look pretty')
+            warnings.warn('Line plots with a different negative color might not look pretty.\n')
             pos_x_values = x_values.copy()
             pos_x_values[score_list < 0] = np.nan
             ax.plot(pos_x_values, score_list, '-', linewidth=size, color=color,
@@ -213,7 +218,7 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
     else:
         if plot_type != 'fill':
             warnings.warn('The plot type was not part of known types '
-                          '(fill, line, points) will be fill.')
+                          '(fill, line, points) will be fill.\n')
         if color == negative_color:
             ax.fill_between(x_values, score_list, linewidth=0.1,
                             color=color,
@@ -256,7 +261,7 @@ def transform(score_list, transform, log_pseudocount, file):
         else:
             return(np.log1p(score_list))
     elif transform == '-log':
-        if np.nanmax(score_list.max) <= - log_pseudocount:
+        if np.nanmax(score_list) <= - log_pseudocount:
             msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
                    f" - {log_pseudocount}.\n"
                    f"- log( {log_pseudocount} + <values>) transformation can "
@@ -266,7 +271,7 @@ def transform(score_list, transform, log_pseudocount, file):
             return(- np.log(log_pseudocount + score_list))
     else:
         warnings.warn(f"The transform: {transform} for file {file} is not "
-                      "valid. Will not use any transformation")
+                      "valid. Will not use any transformation.\n")
         return(score_list)
 
 

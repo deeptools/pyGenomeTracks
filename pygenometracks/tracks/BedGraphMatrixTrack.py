@@ -84,7 +84,7 @@ file_type = {TRACK_TYPE}
                              f"{self.properties['section_name']} did"
                              " not specify the type. For the moment"
                              " the default type is matrix but in the"
-                             " next version it will be lines.")
+                             " next version it will be lines.\n")
         # End to remove
         GenomeTrack.set_properties_defaults(self)
         if self.properties['type'] == 'matrix':

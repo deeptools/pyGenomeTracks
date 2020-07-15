@@ -213,7 +213,7 @@ file_type = {TRACK_TYPE}
                                          f" was set to {self.colormap}. "
                                          "It is not possible to have multiple"
                                          f" colormap. {param} set to "
-                                         f"{self.DEFAULTS_PROPERTIES[param]}")
+                                         f"{self.DEFAULTS_PROPERTIES[param]}.\n")
                         self.properties[param] = self.DEFAULTS_PROPERTIES[param]
 
         # to set the distance between rows
@@ -234,7 +234,7 @@ file_type = {TRACK_TYPE}
                              f" file_type was set to {self.TRACK_TYPE}"
                              " whereas it is a gtf file. In the future"
                              " only bed files will be accepted, please"
-                             " use file_type = gtf.")
+                             " use file_type = gtf.\n")
             bed_file_h = ReadGtf(file_to_open,
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'])
@@ -256,7 +256,7 @@ file_type = {TRACK_TYPE}
            self.bed_type not in ['bed12', 'bed9']:
             self.log.warning("*WARNING* Color set to 'bed_rgb', "
                              "but bed file does not have the rgb field. "
-                             f"The color has been set to {DEFAULT_BED_COLOR}")
+                             f"The color has been set to {DEFAULT_BED_COLOR}.\n")
             self.properties['color'] = DEFAULT_BED_COLOR
 
         valid_intervals = 0
@@ -284,7 +284,7 @@ file_type = {TRACK_TYPE}
 
         if valid_intervals == 0:
             self.log.warning("No valid intervals were found in file "
-                             f"{self.properties['file']}")
+                             f"{self.properties['file']}.\n")
 
         return interval_tree, min_score, max_score
 
@@ -360,9 +360,11 @@ file_type = {TRACK_TYPE}
             chrom_region_before = chrom_region
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
-                self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
-                                 "chromosome name inside the bed file. "
+                self.log.warning("*Warning*\nNo interval was found when "
+                                 "overlapping with both "
+                                 f"{chrom_region_before}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                 f" and {chrom_region}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                 " inside the bed file. "
                                  "This will generate an empty track!!\n")
                 return
         chrom_region = self.check_chrom_str_bytes(self.interval_tree,
@@ -563,14 +565,15 @@ file_type = {TRACK_TYPE}
             epsilon = 0.08
             ymax = - epsilon
 
+            # We set ymin and ymax to have genes centered epsilon from the border
+
             if self.properties['global_max_row']:
-                ymin = self.max_num_row[chrom_region] * self.row_scale
+                max_ypos = self.max_num_row[chrom_region] * self.row_scale
 
             elif self.properties['gene_rows'] is not None:
-                ymin = self.properties['gene_rows'] * self.row_scale
+                max_ypos = self.properties['gene_rows'] * self.row_scale
 
-            else:
-                ymin = max_ypos + (1 + epsilon)
+            ymin = max_ypos + (1 + epsilon)
 
             self.log.debug(f"ylim {ymin},{ymax}")
             # the axis is inverted (thus, ymax < ymin)
@@ -1021,7 +1024,7 @@ file_type = {TRACK_TYPE}
                 ymax = y2
 
         if valid_regions == 0:
-            self.log.warning(f"No regions found for section {self.properties['section_name']}.")
+            self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, 0)

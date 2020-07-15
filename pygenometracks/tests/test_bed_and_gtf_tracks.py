@@ -549,6 +549,35 @@ height = 10.0
 with open(os.path.join(ROOT, "bed_colormap_genes.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+title = bed color = Reds
+color = Reds
+height = 4
+
+[spacer]
+
+[genes]
+file = dm3_genes_withrgbandscore_shuffled.bed.gz
+title = bed color = Reds bed is not sorted
+color = Reds
+height = 4
+
+[spacer]
+
+[genes]
+file = dm3_genes_withrgbandscore_shuffled.bed.gz
+title = bed color = Reds global_max_row = true and bed is not sorted
+color = Reds
+global_max_row = true
+height = 4
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "bed_shuffle.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -822,3 +851,26 @@ def test_plot_tracks_bed_scores():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_bed_shuffle():
+    extension = '.png'
+
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bed_shuffle.ini")
+    bed_file = os.path.join(ROOT, 'regions_chr1XY.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    for region in ['chr1:0-500000', 'chrX:2500000-2600000', 'chrY:0-1000000']:
+        region_str = region.replace(':', '-')
+        output_file = outfile.name[:-4] + '_' + region_str + extension
+        expected_file = os.path.join(ROOT, 'master_bed_shuffle_'
+                                     + region_str + extension)
+        res = compare_images(expected_file,
+                             output_file, tolerance)
+        assert res is None, res
+
+        os.remove(output_file)

@@ -137,7 +137,7 @@ class PlotTracks(object):
         track_height = []
         for i, track_dict in enumerate(self.track_list):
             if i == 0 and track_dict['overlay_previous'] != 'no':
-                log.warning("First track can not have the `overlay_previous` option")
+                log.warning("First track can not have the `overlay_previous` option.\n")
                 self.track_list[i]['overlay_previous'] = 'no'
             # if overlay_previous is set to a value other than no
             # then, skip this track height
@@ -301,10 +301,9 @@ class PlotTracks(object):
             chrom_region_before = chrom_region
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in list(self.vlines_intval_tree):
-                log.warning("*Warning*\nNeither "
-                            + chrom_region_before + " nor "
-                            + chrom_region + " existss as a "
-                            "chromosome name inside the "
+                log.warning("*Warning*\nNo interval was found when "
+                            f"overlapping with both {chrom_region_before}:{start_region}-{end_region}"
+                            f" and {chrom_region}:{start_region}-{end_region} inside the "
                             "file with vertical lines. "
                             "No vertical lines will be "
                             "plotted!!\n")
@@ -361,7 +360,7 @@ class PlotTracks(object):
                     extra_keywords = [k for k in all_keywords
                                       if k not in ['file', 'type']]
                     log.warn("These parameters were specified but will not"
-                             f" be used {' '.join(extra_keywords)}")
+                             f" be used {' '.join(extra_keywords)}.\n")
                 self.vlines_properties = \
                     self.check_file_exists(track_options, tracks_file_path)
                 continue
@@ -422,7 +421,7 @@ class PlotTracks(object):
                     log.warn(f"Deprecated Warning: The section {section_name} "
                              f"uses parameter {old_name} but there is no more "
                              "parameter with space in name. "
-                             f"Will be substituted by {name}.")
+                             f"Will be substituted by {name}.\n")
                 else:
                     old_name = name
                 # end
@@ -455,7 +454,7 @@ class PlotTracks(object):
                                     f"set to {value}"
                                     " whereas in the future only"
                                     " true and false value will be"
-                                    " accepted")
+                                    " accepted.\n")
                 elif name in track_class.FLOAT_PROPERTIES:
                     try:
                         track_options[name] = float(value)
@@ -491,7 +490,7 @@ class PlotTracks(object):
             # If there are unused keys they are printed in a warning.
             if len(unused_keys) > 0:
                 log.warn(f"In section {section_name}, these parameters are "
-                         f"unused:{unused_keys}")
+                         f"unused:{unused_keys}.\n")
             # The track_options will be checked for the file paths:
             track_options = self.check_file_exists(track_options,
                                                    tracks_file_path,
@@ -547,7 +546,7 @@ class PlotTracks(object):
                 if file_field_name == 'boundaries_file':
                     log.warn("The boundaries_file is not used anymore"
                              " please use another track with the"
-                             " `overlay_previous` option")
+                             " `overlay_previous` option.\n")
                 # # END
                 file_names = [x for x in track_dict[file_field_name].split(" ") if x != '']
                 full_path_file_names = []

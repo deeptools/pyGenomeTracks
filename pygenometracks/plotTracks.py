@@ -150,7 +150,6 @@ from pygenometracks._version import __version__
 from .utilities import InputError
 
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
-HUGE_NUMBER = 1e15  # Which should be above any chromosome size
 
 
 def parse_arguments(args=None):
@@ -247,29 +246,38 @@ def get_region(region_string):
         try:
             chrom, position = region_string.strip().split(":")
         except ValueError:
-            # It can be a full chromosome:
-            return region_string.strip(), 0, HUGE_NUMBER
+            raise InputError(f"The region provided ({region_string})"
+                             " is not valid, it should be chr:start-end.\n")
 
         # clean up the position
         for char in ",.;|!{}()":
             position = position.replace(char, '')
 
         position_list = position.split("-")
+        assert len(position_list) == 2, \
+            f"The region provided ({region_string})" \
+            " is not valid, it should be chr:start-end.\n"
+
         try:
             region_start = int(position_list[0])
-        except IndexError:
-            region_start = 0
+        except ValueError:
+            raise InputError(f"The start value ({position_list[0]}) in the"
+                             " region provided"
+                             " is not valid, it should be chr:start-end.\n")
         try:
             region_end = int(position_list[1])
-        except IndexError:
-            region_end = HUGE_NUMBER
-        if region_start < 0:
-            region_start = 0
+        except ValueError:
+            raise InputError(f"The start value ({position_list[0]}) in the"
+                             " region provided"
+                             " is not valid, it should be chr:start-end.\n")
+
         if region_end <= region_start:
             raise InputError("Please check that the region end is larger "
                              "than the region start.\n"
                              f"Values given:\nstart: {region_start}\n"
-                             f"end: {region_end}\n")
+                             f"end: {region_end}\n"
+                             "To plot tracks with a decreasing axis "
+                             "consider using `--decreasingXAxis`.")
 
         return chrom, region_start, region_end
 

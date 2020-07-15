@@ -166,7 +166,7 @@ file_type = {TRACK_TYPE}
             self.log.warning("When an operation is computed"
                              " between 2 files"
                              " a summary_method needs to be"
-                             " used. Will use mean.")
+                             " used. Will use mean.\n")
             self.properties['summary_method'] = 'mean'
 
         if self.properties['operation'] != 'file':
@@ -178,7 +178,7 @@ file_type = {TRACK_TYPE}
                                  "'y_axis_values' was set to 'original'. "
                                  "'y_axis_values' can only be set to "
                                  "'original' when 'transform' is used.\n"
-                                 " It will be set as 'transformed'.")
+                                 " It will be set as 'transformed'.\n")
                 self.properties['y_axis_values'] = 'transformed'
 
     def load_file(self):
@@ -255,7 +255,7 @@ file_type = {TRACK_TYPE}
                 if chrom_region not in tbx.contigs:
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before + " nor "
-                                     + chrom_region + " existss as a "
+                                     + chrom_region + " exists as a "
                                      "chromosome name inside the bedgraph "
                                      "file. This will generate an empty "
                                      "track!!\n")
@@ -271,11 +271,12 @@ file_type = {TRACK_TYPE}
                 chrom_region_before = chrom_region
                 chrom_region = change_chrom_names(chrom_region)
                 if chrom_region not in list(inttree):
-                    self.log.warning("*Warning*\nNeither "
-                                     + chrom_region_before + " nor "
-                                     + chrom_region + " existss as a "
-                                     "chromosome name inside the bedgraph "
-                                     "file. This will generate an empty "
+                    self.log.warning("*Warning*\nNo interval was found when "
+                                     "overlapping with both "
+                                     f"{chrom_region_before}:{start_region}-{end_region}"
+                                     f" and {chrom_region}:{start_region}-{end_region}"
+                                     " inside the bedgraph file. "
+                                     "This will generate an empty "
                                      "track!!\n")
                     return score_list, pos_list
             chrom_region = self.check_chrom_str_bytes(inttree, chrom_region)
@@ -304,7 +305,7 @@ file_type = {TRACK_TYPE}
         except ValueError as ve:
             if "could not convert string to float: 'NA'" in str(ve):
                 self.log.warning("*Warning*\nNA were found in the bedgraph"
-                                 " will be replaced by nan")
+                                 " will be replaced by nan.\n")
                 score_list = [float(x[0]) if x[0] != 'NA' else float('nan') for x in score_list]
             else:
                 raise ve
