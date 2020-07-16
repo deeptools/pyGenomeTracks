@@ -299,10 +299,10 @@ height = 2
         elif self.properties[param][0] == '(':
             try:
                 custom_color = eval(self.properties[param])
-            except ValueError:
+            except (SyntaxError, NameError) as e:
                 self.log.warning(f"*WARNING*: '{param}' for section"
                                  f" {self.properties[param]}"
-                                 " is not valid. "
+                                 f" raised an error:\n{e}\n"
                                  f"{self.properties['section_name']} has "
                                  "been set to "
                                  f"{default_value}.\n")
