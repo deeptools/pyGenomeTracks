@@ -45,6 +45,8 @@ Minor enhancements:
 
 - The format of bed12 is more stringent (the blocks must span the chromStart and chromEnd).
 
+- Improve the documentation regarding the installation. We highly recommand to use conda.
+
 Bugfixes:
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -57,3 +59,5 @@ Bugfixes:
 - Only plot scale bar when in the region of plot.
 
 - Do not show a warning when file_type is set for ``x_axis`` or ``spacer``.
+
+- Solve some incompatibilities with python 3.8.
