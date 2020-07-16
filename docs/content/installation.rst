@@ -26,7 +26,13 @@ We encourage users to use ``conda`` installation to install pygenometracks. All 
 
 .. code:: bash
 
-    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks
+    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks pyhon=3.7
+
+To get a specific version, one can specify it. For example:
+
+.. code:: bash
+
+    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks=3.5 pyhon=3.7
 
 Command line installation using ``pip``
 -----------------------------------------
@@ -43,7 +49,6 @@ If you need to specify a specific path for the installation of the tools, make u
 .. code:: bash
 
     $ pip install --install-option="--prefix=/MyPath/Tools/pyGenomeTracks" git+https://github.com/deeptools/pyGenomeTracks.git
-
 
 Command line installation without ``pip``
 -------------------------------------------

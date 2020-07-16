@@ -39,10 +39,15 @@ Installation
 ------------
 pyGenomeTracks works with python >=3.6.
 
-Currently, the best way to install pyGenomeTracks is with anaconda
+The recommended way to install pyGenomeTracks is via conda
 
 ```bash
-$ conda install -c bioconda -c conda-forge pygenometracks
+$ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks pyhon=3.7
+```
+To get a specific version, one can specify it. For example:
+
+```bash
+$ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks=3.5 pyhon=3.7
 ```
 
 Also, pyGenomeTracks can be installed using pip
@@ -130,7 +135,7 @@ Documentation
 
 Our [documentation](http://pygenometracks.readthedocs.io/) provide [examples](http://pygenometracks.readthedocs.org/en/latest/content/examples.html), as well as the [full list of possible parameters](http://pygenometracks.readthedocs.org/en/latest/content/possible-parameters.html) and [guidelines for developers who would like to add a new track type](http://pygenometracks.readthedocs.org/en/latest/content/adding-new-tracks.html).
 
-<!-- I do not know what to do with that, is it External users? 
+<!-- I do not know what to do with that, is it External users?
 pyGenomeTracks is used by [HiCExporer](https://hicexplorer.readthedocs.io/) and [HiCBrowser](https://github.com/maxplanck-ie/HiCBrowser) (See e.g. [Chorogenome navigator](http://chorogenome.ie-freiburg.mpg.de/) which is made with HiCBrowser)
  -->
 External users
