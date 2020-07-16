@@ -356,9 +356,17 @@ class PlotTracks(object):
                     raise InputError(f"The section {section_name} is supposed to be a vline"
                                      " but there is no file.")
                 track_options['file'] = parser.get(section_name, 'file')
-                if len(all_keywords) > 2:
-                    extra_keywords = [k for k in all_keywords
-                                      if k not in ['file', 'type']]
+                if 'line_width' in all_keywords:
+                    try:
+                        track_options['line_width'] = float(parser.get(section_name, 'line_width'))
+                    except ValueError:
+                        raise InputError(f"In section {section_name}, line_width "
+                                         f"was set to {parser.get(section_name, 'line_width')}"
+                                         " whereas we should have a float "
+                                         "value.")
+                extra_keywords = [k for k in all_keywords
+                                  if k not in ['file', 'type', 'line_width']]
+                if len(extra_keywords) > 0:
                     log.warn("These parameters were specified but will not"
                              f" be used {' '.join(extra_keywords)}.\n")
                 self.vlines_properties = \
@@ -628,7 +636,7 @@ class SpacerTrack(GenomeTrack):
     POSSIBLE_PROPERTIES = {}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['overlay_previous',
-                         'title']
+                         'title', 'file_type']
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
@@ -649,7 +657,7 @@ class XAxisTrack(GenomeTrack):
     POSSIBLE_PROPERTIES = {'where': ['top', 'bottom']}
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['overlay_previous',
-                         'title', 'where']
+                         'title', 'where', 'file_type']
     FLOAT_PROPERTIES = {'fontsize': [0, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}

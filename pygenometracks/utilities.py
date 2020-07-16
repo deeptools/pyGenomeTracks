@@ -261,7 +261,7 @@ def transform(score_list, transform, log_pseudocount, file):
         else:
             return(np.log1p(score_list))
     elif transform == '-log':
-        if np.nanmax(score_list) <= - log_pseudocount:
+        if np.nanmin(score_list) <= - log_pseudocount:
             msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
                    f" - {log_pseudocount}.\n"
                    f"- log( {log_pseudocount} + <values>) transformation can "

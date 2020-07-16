@@ -86,7 +86,7 @@ class ReadBed(object):
         Processes each bed line from a bed file, casts the values and returns
         a namedtuple object
 
-        >>> bed_line="chr1\t0\t1000\tgene_1\t0.5\t-\t0\t1000\t0\t3\t10,20,100\t20,200,700"
+        >>> bed_line="chr1\t0\t1000\tgene_1\t0.5\t-\t0\t1000\t0\t3\t10,20,300\t0,200,700"
         >>> with open('/tmp/test.bed', 'w') as fh:
         ...     foo = fh.write(bed_line)
         >>> bed_f = ReadBed(open('/tmp/test.bed','r'))
@@ -94,7 +94,7 @@ class ReadBed(object):
         >>> bed.chromosome
         'chr1'
         >>> bed.block_starts
-        [20, 200, 700]
+        [0, 200, 700]
 
         >>> bed_line="chr2\t0\t1000\tgene_1\t0.5\t-\n"
         >>> with open('/tmp/test.bed', 'w') as fh:
@@ -260,7 +260,7 @@ class ReadBed(object):
                                          f"#{self.line_number}, "
                                          f"the block field {r} is not "
                                          f"valid.\nError message: {detail}"
-                                         "\nNo block will be used.\n")
+                                         "\nOne block will be used.\n")
                         line_values = line_values[:9]
                         line_values.append(1)
                         line_values.append([line_values[2] - line_values[1]])
@@ -349,3 +349,11 @@ def check_bed12(line_values, line_number, bed_line):
             " 12th field of a bed12 should contains relative start" \
             " positions of blocks and the 11th field should contains" \
             " the length of each block."
+    assert min(block_relative_starts) == 0, \
+        f"The blocks relative_starts of line\n{bed_line}\n" \
+        "does not contain 0. BED blocks must span chromStart" \
+        " to chromEnd."
+    assert max([bstart + bsize for bstart, bsize in zip(block_relative_starts, block_sizes)]) == line_values[2] - line_values[1], \
+        f"The blocks described in line\n{bed_line}\n" \
+        "does not cover chromEnd. BED blocks must span chromStart" \
+        " to chromEnd."
