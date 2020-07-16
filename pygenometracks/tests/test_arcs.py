@@ -255,7 +255,7 @@ def test_short_long_arcs():
         assert res is None, res
 
         os.remove(outfile.name)
-        
+
         # Remove incorrect ini file
         if 'incorrect' in ini_file:
             os.remove(ini_file)
