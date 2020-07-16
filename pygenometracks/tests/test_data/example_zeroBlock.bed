@@ -1,0 +1,10 @@
+chr1	0	100	pos_two_blocks_no_5p_UTR	0	+	0	80	0,0,255	2	20,30	0,70
+chr1	0	100	pos_two_blocks_no_3p_UTR	0	+	15	100	0,0,255	2	20,30	0,70
+chr1	0	100	pos_zero_block	0	+	20	50	255,0,255	0		
+chr1	0	100	pos_zero_block_CDS_at_start	0	+	0	0	0,0,255	0		
+chr1	0	100	pos_zero_block_CDS_full	0	+	0	100	255,0,255	0		
+chr1	200	300	neg_zero_block_CDS_full	0	-	200	300	255,0,255	0		
+chr1	200	300	neg_two_blocks_no_5p_UTR	0	-	200	280	0,0,255	2	20,30	0,70
+chr1	200	300	neg_two_blocks_no_3p_UTR	0	-	215	300	0,0,255	2	20,30	0,70
+chr1	350	400	no_strand_two_blocks	0	.	360	390	0,0,255	2	20,20	0,30
+

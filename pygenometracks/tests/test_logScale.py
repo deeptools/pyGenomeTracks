@@ -117,6 +117,8 @@ title = bigwig transform = log
 
 with open(os.path.join(ROOT, "log_neg.ini"), 'w') as fh:
     fh.write(tracks)
+with open(os.path.join(ROOT, "mlog_neg.ini"), 'w') as fh:
+    fh.write(tracks.replace('log', '-log'))
 
 
 tracks = """
@@ -393,15 +395,17 @@ class TestLogNegMethods(unittest.TestCase):
     def test_log_tracks_with_0values(self):
         outfile = NamedTemporaryFile(suffix='.png', prefix='log_test_',
                                      delete=False)
-        ini_file = os.path.join(ROOT, "log_neg.ini")
-        region = "X:2700000-3100000"
-        args = f"--tracks {ini_file} --region {region} "\
-               "--trackLabelFraction 0.2 --dpi 130 "\
-               f"--outFileName {outfile.name}".split()
-        with self.assertRaises(Exception) as context:
-            pygenometracks.plotTracks.main(args)
+        for pref in ['', 'm']:
+            ini_file = os.path.join(ROOT, f"{pref}log_neg.ini")
+            region = "X:2700000-3100000"
+            args = f"--tracks {ini_file} --region {region} "\
+                   "--trackLabelFraction 0.2 --dpi 130 "\
+                   f"--outFileName {outfile.name}".split()
+            with self.assertRaises(Exception) as context:
+                pygenometracks.plotTracks.main(args)
 
-        assert("coverage contains values smaller or equal to" in str(context.exception))
+            assert("coverage contains values smaller or equal to" in str(context.exception))
+            os.remove(ini_file)
 
 
 def test_log_more():

@@ -55,12 +55,6 @@ height = 2
         for prop in self.DEFAULTS_PROPERTIES:
             if prop not in self.properties:
                 self.properties[prop] = self.DEFAULTS_PROPERTIES[prop]
-        # use synonymous:
-        for prop in self.SYNONYMOUS_PROPERTIES:
-            synonymous = self.SYNONYMOUS_PROPERTIES[prop]
-            if prop in self.properties and \
-               self.properties[prop] in synonymous:
-                self.properties[prop] = synonymous[self.properties[prop]]
         # check if properties are possible:
         for prop in self.POSSIBLE_PROPERTIES:
             possibles = self.POSSIBLE_PROPERTIES[prop]

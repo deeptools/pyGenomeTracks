@@ -71,16 +71,6 @@ class ReadBed(object):
         self.line_number += 1
         return line
 
-    def next(self):
-        """
-        :return: bedInterval object
-        """
-        line = self.get_no_comment_line()
-
-        bed = self.get_bed_interval(line)
-
-        return bed
-
     def __next__(self):
         """
         :return: bedInterval object

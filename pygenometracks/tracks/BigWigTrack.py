@@ -144,7 +144,6 @@ file_type = {TRACK_TYPE}
                 self.properties['y_axis_values'] = 'transformed'
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        formated_region = f"{chrom_region}:{start_region}-{end_region}"
 
         if chrom_region not in self.bw.chroms().keys():
             chrom_region_before = chrom_region
@@ -157,13 +156,6 @@ file_type = {TRACK_TYPE}
                 return
 
         chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
-
-        if chrom_region not in self.bw.chroms().keys():
-            self.log.warning(f"Can not read region {formated_region} from "
-                             f"bigwig file:\n\n{self.properties['file']}\n"
-                             "\nPlease check that the chromosome name is part"
-                             " of the bigwig file "
-                             "and that the region is valid.\n")
 
         # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
         # of the memory. This only occurs when calling trackPlot from different

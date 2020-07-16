@@ -101,6 +101,97 @@ file = FileWhichDoesNotExists.unknownextension
 with open(os.path.join(ROOT, "test_tracks_11.ini"), 'w') as fh:
     fh.write(test_tracks_11)
 
+test_tracks_12 = """
+[operation without second_file]
+file = bigwig_chrx_2e6_5e6.bw
+operation = file - second_file
+"""
+with open(os.path.join(ROOT, "test_tracks_12.ini"), 'w') as fh:
+    fh.write(test_tracks_12)
+
+test_tracks_12b = """
+[operation without second_file]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+operation = file - second_file
+"""
+with open(os.path.join(ROOT, "test_tracks_12b.ini"), 'w') as fh:
+    fh.write(test_tracks_12)
+
+test_tracks_13 = """
+[operation with transform]
+file = bigwig_chrx_2e6_5e6.bw
+operation = file + 1
+transform = log
+"""
+with open(os.path.join(ROOT, "test_tracks_13.ini"), 'w') as fh:
+    fh.write(test_tracks_13)
+
+test_tracks_13b = """
+[operation with transform]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+operation = file + 1
+transform = log
+"""
+with open(os.path.join(ROOT, "test_tracks_13b.ini"), 'w') as fh:
+    fh.write(test_tracks_13b)
+
+test_tracks_14 = """
+[invalid operation]
+file = bigwig_chrx_2e6_5e6.bw
+operation = file + a
+"""
+with open(os.path.join(ROOT, "test_tracks_14.ini"), 'w') as fh:
+    fh.write(test_tracks_14)
+
+test_tracks_14b = """
+[invalid operation]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+operation = file + a
+"""
+with open(os.path.join(ROOT, "test_tracks_14b.ini"), 'w') as fh:
+    fh.write(test_tracks_14b)
+
+test_tracks_15 = """
+[invalid operation with 2 files]
+file = bigwig_chrx_2e6_5e6.bw
+second_file = bigwig_chrx_2e6_5e6.bw
+operation = file + a * second_file
+"""
+with open(os.path.join(ROOT, "test_tracks_15.ini"), 'w') as fh:
+    fh.write(test_tracks_15)
+
+test_tracks_15b = """
+[invalid operation with 2 files]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+second_file = bedgraph2_X_2.5e6_3.5e6.bdg
+operation = file + a * second_file
+"""
+with open(os.path.join(ROOT, "test_tracks_15b.ini"), 'w') as fh:
+    fh.write(test_tracks_15b)
+
+
+test_tracks_16 = """
+[x-axis]
+
+[bedgraph]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+overlay_previous = anything
+"""
+with open(os.path.join(ROOT, "test_tracks_16.ini"), 'w') as fh:
+    fh.write(test_tracks_16)
+
+
+test_tracks_17 = """
+[x-axis]
+
+[vlines]
+file = tad_classification.bed
+type = vlines
+line_width = a
+"""
+with open(os.path.join(ROOT, "test_tracks_17.ini"), 'w') as fh:
+    fh.write(test_tracks_17)
+
 
 class TestCheckerMethods(unittest.TestCase):
 
@@ -120,6 +211,7 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("there is no file" in str(context.exception))
+        os.remove(ini_file)
 
     def test_missing_file_type(self):
         """
@@ -138,6 +230,7 @@ class TestCheckerMethods(unittest.TestCase):
 
         assert("file_type newFileTypeIJustInvented does not exists" in
                str(context.exception))
+        os.remove(ini_file)
 
     def test_unguessable_file_type_no_file(self):
         """
@@ -156,6 +249,7 @@ class TestCheckerMethods(unittest.TestCase):
 
         assert(" there is no file_type nor file " in
                str(context.exception))
+        os.remove(ini_file)
 
     def test_missing_necessary_option(self):
         """
@@ -175,6 +269,7 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("the necessary property" in str(context.exception))
+        os.remove(ini_file)
 
     def test_boolean(self):
         """
@@ -192,6 +287,7 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("boolean" in str(context.exception))
+        os.remove(ini_file)
 
     def test_float(self):
         """
@@ -209,6 +305,7 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("float" in str(context.exception))
+        os.remove(ini_file)
 
     def test_float_limit(self):
         """
@@ -227,6 +324,7 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("whereas it should be between" in str(context.exception))
+        os.remove(ini_file)
 
     def test_integer(self):
         """
@@ -244,6 +342,7 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("integer" in str(context.exception))
+        os.remove(ini_file)
 
     def test_integer_limit(self):
         """
@@ -262,6 +361,7 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("whereas it should be between" in str(context.exception))
+        os.remove(ini_file)
 
     def test_file_missing(self):
         """
@@ -280,6 +380,7 @@ class TestCheckerMethods(unittest.TestCase):
 
         assert("File in section [1. [inexisting file]] not found" in
                str(context.exception))
+        os.remove(ini_file)
 
     def test_unguessable_file_type(self):
         """
@@ -299,6 +400,116 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("can not identify file type" in str(context.exception))
+        os.remove(ini_file)
+
+    def test_operation_bw_without_second_file(self):
+        """
+        This test check that if you provide
+        a second_file if second_file is part of the
+        operation.
+        """
+        outfile_name = "test.png"
+        for suf in ['', 'b']:
+            ini_file = os.path.join(ROOT, f"test_tracks_12{suf}.ini")
+            region = "X:3000000-3300000"
+            args = f"--tracks {ini_file} --region {region} "\
+                   f"--outFileName {outfile_name}".split()
+            with self.assertRaises(InputError) as context:
+                pygenometracks.plotTracks.main(args)
+
+            assert("requires to set the parameter second_file" in
+                   str(context.exception))
+            os.remove(ini_file)
+
+    def test_operation_with_transform(self):
+        """
+        This test check that if you do not provide
+        both an operation and a transform.
+        """
+        outfile_name = "test.png"
+        for suf in ['', 'b']:
+            ini_file = os.path.join(ROOT, f"test_tracks_13{suf}.ini")
+            region = "X:3000000-3300000"
+            args = f"--tracks {ini_file} --region {region} "\
+                   f"--outFileName {outfile_name}".split()
+            with self.assertRaises(InputError) as context:
+                pygenometracks.plotTracks.main(args)
+
+            assert("'operation' and 'transform' cannot be set at the same time."
+                   in str(context.exception))
+            os.remove(ini_file)
+
+    def test_invalid_operation(self):
+        """
+        This test check that if you give an invalid operation
+        it will fail.
+        """
+        outfile_name = "test.png"
+        for suf in ['', 'b']:
+            ini_file = os.path.join(ROOT, f"test_tracks_14{suf}.ini")
+            region = "X:3000000-3300000"
+            args = f"--tracks {ini_file} --region {region} "\
+                   f"--outFileName {outfile_name}".split()
+            with self.assertRaises(Exception) as context:
+                pygenometracks.plotTracks.main(args)
+
+            assert("could not be computed"
+                   in str(context.exception))
+            os.remove(ini_file)
+
+    def test_invalid_operation2(self):
+        """
+        This test check that if you give an invalid operation
+        it will fail.
+        """
+        outfile_name = "test.png"
+        for suf in ['', 'b']:
+            ini_file = os.path.join(ROOT, f"test_tracks_15{suf}.ini")
+            region = "X:3000000-3300000"
+            args = f"--tracks {ini_file} --region {region} "\
+                   f"--outFileName {outfile_name}".split()
+            with self.assertRaises(Exception) as context:
+                pygenometracks.plotTracks.main(args)
+
+            assert("could not be computed"
+                   in str(context.exception))
+            os.remove(ini_file)
+
+    def test_wrong_overlay_previous(self):
+        """
+        This test check that if you provide
+        an overlay_previous which is not no, yes, share-y
+        you will have an error with a message containing
+        Possible options are no, yes, share-y
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_16.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("Possible options are no, yes, share-y" in str(context.exception))
+        os.remove(ini_file)
+
+    def test_wrong_line_width_vlines(self):
+        """
+        This test check that if you provide
+        an line_width which is not float
+        you will have an error with a message containing
+        whereas we should have a float
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_17.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("whereas we should have a float" in str(context.exception))
+        os.remove(ini_file)
 
 
 class TestInputRegionMethods(unittest.TestCase):

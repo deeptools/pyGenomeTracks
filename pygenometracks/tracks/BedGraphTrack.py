@@ -129,9 +129,9 @@ file_type = {TRACK_TYPE}
 
     def __init__(self, properties_dict):
         super(BedGraphTrack, self).__init__(properties_dict)
+        self.tbx2 = None
         self.load_file()
 
-        self.tbx2 = None
         self.interval_tree2 = None
 
         if 'second_file' in self.properties['operation']:
