@@ -20,6 +20,8 @@ Enhancements:
 
 - For Hi-C matrices, mcool files are now supported.
 
+- For vlines, the line_width can now be set.
+
 Minor enhancements:
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -41,6 +43,7 @@ Minor enhancements:
 
 - Others code related enhancements which are transparent to the users.
 
+- The format of bed12 is more stringent (the blocks must span the chromStart and chromEnd).
 
 Bugfixes:
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -48,3 +51,9 @@ Bugfixes:
 - For bed tracks when ``gene_rows`` or ``global_max_row`` was set the last row was very close to the bottom (sometimes even overlaying the next track). Now it is vertically centered and do not go over the track height.
 
 - Solve some bugs how non conventional bed files are handle.
+
+- Display more meaningful error messages.
+
+- Only plot scale bar when in the region of plot.
+
+- Do not show a warning when file_type is set for ``x_axis`` or ``spacer``.
