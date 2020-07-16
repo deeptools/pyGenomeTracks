@@ -492,6 +492,8 @@ def test_plot_tracks_with_hic_rasterize_height_2chr_individual():
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
                              outfile.name, tolerance)
+        if extension == '.pdf':
+            os.remove(expected_file.replace(extension, '_pdf.png'))
     assert res is None, res
 
 

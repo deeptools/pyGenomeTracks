@@ -277,6 +277,7 @@ def test_plot_bedgraph_tracks_rasterize():
     assert res is None, res
 
     os.remove(outfile.name)
+    os.remove(expected_file.replace('.pdf', '_pdf.png'))
 
 
 def test_op_bdg():
