@@ -161,7 +161,7 @@ height = 0.5
 """
 with open(os.path.join(ROOT, "operation_bdg.ini"), 'w') as fh:
     fh.write(browser_tracks)
-with open(os.path.join(ROOT, "invalid_operation_bdg.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "incorrect_operation_bdg.ini"), 'w') as fh:
     fh.write(browser_tracks.replace('operation = log1p(file)\n', 'operation = log1p(file)\ny_axis_values = original\n'))
 
 bedgraph_withNA = """
@@ -282,7 +282,7 @@ def test_plot_bedgraph_tracks_rasterize():
 def test_op_bdg():
     outfile = NamedTemporaryFile(suffix='.png', prefix='bdg_op_test_',
                                  delete=False)
-    for pref in ['', 'invalid_']:
+    for pref in ['', 'incorrect_']:
         ini_file = os.path.join(ROOT, f"{pref}operation_bdg.ini")
         region = "X:2700000-3100000"
         expected_file = os.path.join(ROOT, 'master_operation_bdg.png')
@@ -295,7 +295,7 @@ def test_op_bdg():
         assert res is None, res
 
         os.remove(outfile.name)
-        if 'invalid' in ini_file:
+        if 'incorrect' in ini_file:
             os.remove(ini_file)
 
 

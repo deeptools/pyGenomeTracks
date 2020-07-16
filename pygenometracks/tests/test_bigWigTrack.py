@@ -243,7 +243,7 @@ height = 0.5
 with open(os.path.join(ROOT, "operation.ini"), 'w') as fh:
     fh.write(tracks)
 
-with open(os.path.join(ROOT, "invalid_operation.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "incorrect_operation.ini"), 'w') as fh:
     fh.write(tracks.replace('operation = min(file, second_file)\n', 'operation = min(file, second_file)\ny_axis_values = original\n'))
 
 tracks = """
@@ -503,7 +503,7 @@ def test_grid():
 def test_op():
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_',
                                  delete=False)
-    for pref in ['', 'invalid_']:
+    for pref in ['', 'incorrect_']:
         ini_file = os.path.join(ROOT, f"{pref}operation.ini")
         region = "X:2700000-3100000"
         expected_file = os.path.join(ROOT, 'master_operation.png')
@@ -516,7 +516,7 @@ def test_op():
         assert res is None, res
 
         os.remove(outfile.name)
-        if 'invalid' in ini_file:
+        if 'incorrect' in ini_file:
             os.remove(ini_file)
 
 

@@ -255,8 +255,10 @@ def test_short_long_arcs():
         assert res is None, res
 
         os.remove(outfile.name)
-    # Remove incorrect ini file
-    os.remove(ini_file)
+        
+        # Remove incorrect ini file
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
 
 
 def test_use_middle_arcs():
@@ -294,10 +296,9 @@ def test_arcs_no_score():
         assert res is None, res
 
         os.remove(outfile.name)
-    # Remove the incorrect ini files
-    for suf in ['_incorrect', '_invalid_score', '_invalid_score2']:
-        ini_file = os.path.join(ROOT, f"arcs_no_score{suf}.ini")
-        os.remove(ini_file)
+        # Remove the incorrect ini files or using invalid files
+        if 'incorrect' in ini_file or 'invalid' in ini_file:
+            os.remove(ini_file)
 
 
 def test_arcs_invalid():

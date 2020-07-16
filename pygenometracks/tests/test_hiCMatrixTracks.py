@@ -180,11 +180,11 @@ show_masked_bins = true
 """
 with open(os.path.join(ROOT, "browser_tracks_hic_small_test.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic)
-with open(os.path.join(ROOT, "browser_tracks_hic_small_test_invalid1.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_invalid_colormap1.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic.replace('[x-axis]', 'colormap = [\n[x-axis]'))
-with open(os.path.join(ROOT, "browser_tracks_hic_small_test_invalid2.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_invalid_colormap2.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic.replace('[x-axis]', "colormap = ['a']\n[x-axis]"))
-with open(os.path.join(ROOT, "browser_tracks_hic_small_test_invalid3.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "browser_tracks_hic_small_test_invalid_colormap3.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic.replace('[x-axis]', "colormap = fakeColormap\n[x-axis]"))
 
 browser_tracks_with_hic = """
@@ -550,7 +550,7 @@ def test_plot_tracks_with_hic_small_other_chr_name():
     region = '1:0-200000'
     expected_file = os.path.join(ROOT, 'master_plot_hic_small_test.png')
 
-    for suf in [''] + ['_invalid' + s for s in ['1', '2', '3']]:
+    for suf in [''] + ['_invalid_colormap' + s for s in ['1', '2', '3']]:
         ini_file = os.path.join(ROOT, f'browser_tracks_hic_small_test{suf}.ini')
 
         args = f"--tracks {ini_file} --region {region} "\

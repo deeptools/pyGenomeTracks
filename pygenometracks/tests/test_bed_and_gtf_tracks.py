@@ -766,7 +766,8 @@ def test_plot_tracks_genes_rgb():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    for ini_file in [os.path.join(ROOT, "bed_genes_rgb.ini"), os.path.join(ROOT, "bed_genes_rgb_incorrect.ini")]:
+    for suf in ['', '_incorrect']:
+        ini_file = os.path.join(ROOT, f"bed_genes_rgb{suf}.ini")
         region = "chr2:74,650,000-74,710,000"
         expected_file = os.path.join(ROOT, 'master_bed_genes_rgb.png')
         args = f"--tracks {ini_file} --region {region} "\
@@ -778,8 +779,9 @@ def test_plot_tracks_genes_rgb():
         assert res is None, res
 
         os.remove(outfile.name)
-    # remove the incorrect ini file
-    os.remove(ini_file)
+        # remove the incorrect ini file
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
 
 
 def test_plot_tracks_bed_all_label_inside():
