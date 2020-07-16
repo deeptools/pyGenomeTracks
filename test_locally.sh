@@ -7,11 +7,12 @@ for TRAVIS_PYTHON_VERSION in 3.6 3.7; do
     conda activate pgt_test_${TRAVIS_PYTHON_VERSION}
     # Keeping libopenblas=0.3.10 gives me segmentation fault
     conda install --yes -c conda-forge -c bioconda libopenblas=0.3.9
-    conda install --yes -c conda-forge -c bioconda pytest ghostscript
+    conda install --yes -c conda-forge -c bioconda pytest ghostscript coverage coverage-badge
     python setup.py install
-    py.test pygenometracks --doctest-modules
+    coverage run -m py.test
+    coverage html
+    coverage-badge -f -o docs/coverage.svg
     conda deactivate
-    rm pygenometracks/tests/test_data/*_pdf.png
 done
 
 TRAVIS_PYTHON_VERSION=3.8
