@@ -580,6 +580,8 @@ line_width = 3
 """
 with open(os.path.join(ROOT, "bed_vlines.ini"), 'w') as fh:
     fh.write(browser_tracks)
+with open(os.path.join(ROOT, "bed_vlines_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks + 'line_style = dashed\n')
 
 browser_tracks = """
 [genes1]
@@ -899,23 +901,26 @@ def test_plot_tracks_bed_vlines():
     extension = '.png'
     outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, "bed_vlines.ini")
     bed_file = os.path.join(ROOT, 'regionsXfakeChr.bed')
-    args = f"--tracks {ini_file} --BED {bed_file} "\
-           "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
-           "--trackLabelHAlign center "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    for region in ['X:3000000-3300000', 'fakeChr:0-100']:
-        region_str = region.replace(':', '-')
-        output_file = outfile.name[:-4] + '_' + region_str + extension
-        expected_file = os.path.join(ROOT, 'master_bed_vlines_'
-                                     + region_str + extension)
-        res = compare_images(expected_file,
-                             output_file, tolerance)
-        assert res is None, res
+    for suf in ['', '_incorrect']:
+        ini_file = os.path.join(ROOT, f"bed_vlines{suf}.ini")
+        args = f"--tracks {ini_file} --BED {bed_file} "\
+               "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
+               "--trackLabelHAlign center "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        for region in ['X:3000000-3300000', 'fakeChr:0-100']:
+            region_str = region.replace(':', '-')
+            output_file = outfile.name[:-4] + '_' + region_str + extension
+            expected_file = os.path.join(ROOT, 'master_bed_vlines_'
+                                         + region_str + extension)
+            res = compare_images(expected_file,
+                                 output_file, tolerance)
+            assert res is None, res
 
-        os.remove(output_file)
+            os.remove(output_file)
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
 
 
 def test_plot_tracks_bed_different_UTR():

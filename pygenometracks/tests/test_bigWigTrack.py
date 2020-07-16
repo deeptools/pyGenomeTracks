@@ -416,6 +416,18 @@ with open(os.path.join(ROOT, "example_bigwig_invalid_custom_color3.ini"), 'w') a
 with open(os.path.join(ROOT, "example_bigwig_invalid_transform.ini"), 'w') as fh:
     fh.write(tracks + 'transform = myfunction')
 
+tracks = """
+[bigwig op test]
+file = bigwig3_X_2.5e6_3.5e6.bw
+second_file = bigwig_chrx_2e6_5e6.bw
+# height of the track in cm (optional value)
+operation = file - second_file
+height = 4
+title = file - second_file
+"""
+
+with open(os.path.join(ROOT, "example_op.ini"), 'w') as fh:
+    fh.write(tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -527,7 +539,7 @@ def test_op_fakeChr():
 
 def test_defaults():
     region = "X:2,500,000-3,000,000"
-    for suf in [''] + ['_invalid_custom_color' + s for s in ['2', '3']] + \
+    for suf in [''] + ['_invalid_custom_color' + s for s in ['', '2', '3']] + \
             ['_invalid_transform']:
         outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
                                      delete=False)
@@ -543,3 +555,19 @@ def test_defaults():
         os.remove(outfile.name)
         if 'invalid' in ini_file:
             os.remove(ini_file)
+
+
+def test_op_chr_in_only_one_bw():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "example_op.ini")
+    region = "2L:0-1000"
+    expected_file = os.path.join(ROOT, 'master_operation_2L.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
