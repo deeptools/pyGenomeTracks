@@ -4,7 +4,7 @@ Installation
 Remember -- pyGenomeTracks is available for **command line usage** as well as for
 **integration into Galaxy servers**!
 
-.. contents:: 
+.. contents::
     :local:
 
 Requirements
@@ -19,15 +19,20 @@ Requirements
 * matplotlib >= 3.1.1
 * gffutils >=0.9
 
-The fastest way to obtain **Python 3.6 together with numpy** is
-via the `Anaconda Scientific Python
-Distribution <https://store.continuum.io/cshop/anaconda/>`_.
-Just download the version that's suitable for your operating system and
-follow the directions for its installation. All of the requirements for pyGenomeTracks can be installed in Anaconda with:
+Command line installation using ``conda``
+-----------------------------------------
+
+We encourage users to use ``conda`` installation to install pygenometracks. All of the requirements for pyGenomeTracks can be installed via Anaconda with:
 
 .. code:: bash
 
-    $ conda install -c bioconda -c conda-forge pygenometracks
+    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks python=3.7
+
+To get a specific version, one can specify it. For example:
+
+.. code:: bash
+
+    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks=3.5 python=3.7
 
 Command line installation using ``pip``
 -----------------------------------------
@@ -45,11 +50,10 @@ If you need to specify a specific path for the installation of the tools, make u
 
     $ pip install --install-option="--prefix=/MyPath/Tools/pyGenomeTracks" git+https://github.com/deeptools/pyGenomeTracks.git
 
-
 Command line installation without ``pip``
 -------------------------------------------
 
-You are highly recommended to use `pip` rather than these more complicated steps.
+You are highly recommended to use `conda install` rather than the following complicated steps.
 
 1. Install the requirements listed above in the "requirements" section. This is done automatically by `pip`.
 

@@ -36,7 +36,7 @@ def update_version_py():
     f = open(os.path.join("pygenometracks", "_version.py"), "w")
     f.write(VERSION_PY % ver)
     f.close()
-    print("set pygenometracks/_version.py to '%s'" % ver)
+    print(f"set pygenometracks/_version.py to '{ver}'")
 
 
 def get_version():
@@ -80,17 +80,14 @@ class install(_install):
         except EnvironmentError:
             # handle file not found error.
             # the config file is installed in:
-            msg = "\n**{0} not found. This " \
-                  "program is needed for the following "\
-                  "tools to work properly:\n"\
-                  " {1}\n"\
-                  "{0} can be downloaded from here:\n " \
-                  " {2}\n".format(program, affected_tools,
-                                  where_to_download)
+            msg = (f"\n**{program} not found. This program is needed"
+                   " for the following tools to work properly:\n"
+                   f"{affected_tools}\n{program} can be downloaded"
+                   f" from here:\n{where_to_download}\n")
             sys.stderr.write(msg)
 
         except Exception as e:
-            sys.stderr.write("Error: {}".format(e))
+            sys.stderr.write(f"Error: {e}")
 
 
 install_requires_py = ["numpy >=1.16",
@@ -98,10 +95,11 @@ install_requires_py = ["numpy >=1.16",
                        "intervaltree >=2.1.0",
                        "pyBigWig >=0.3.16",
                        "future >=0.17.0",
-                       "hicmatrix >=12",
+                       "hicmatrix >=13",
                        "pysam >=0.14",
                        "pytest",
                        "gffutils >=0.9",
+                       "pybedtools >=0.8.1",
                        "tqdm >=4.20"
                        ]
 

@@ -1,0 +1,63 @@
+3.5
+===
+
+Enhancements:
+^^^^^^^^^^^^^
+
+- pyGenomeTracks goes much faster:
+
+    - We now use bedtools to load only a portion of bed, gtf, bedgraph, narrowPeak, bedgraphMatrix, Epilogos, links. This speeds up the process dramatically especially for gtf files.
+
+    - When you use a cool matrix, only the plotted region is loaded, this speeds up the process. If multiple regions on different chromosomes are provided in a BED this option is not used.
+
+    - Unfortunately, it is not possible to speed the process with h5 matrices so you may want to convert them to cool with `hicConvertFormat <https://hicexplorer.readthedocs.io/en/latest/content/tools/hicConvertFormat.html>`_.
+
+- pyGenomeTracks does not require sorted bed anymore.
+
+- For coverage tracks (bedgraph and bigwig), there is a new parameter: ``grid`` which allows to display horizontal lines.
+
+- For links, you can choose to use the middle of start1 and end1 and the middle of start2 and end2 thanks to ``use_middle`` instead of the extremities coordinates.
+
+- For Hi-C matrices, mcool files are now supported.
+
+- For vlines, the line_width can now be set.
+
+Minor enhancements:
+^^^^^^^^^^^^^^^^^^^
+
+- Bedgraph with NA values in the 4-th column do not raise error anymore.
+
+- There is a progress bar for links.
+
+- For Hi-C matrices, 
+
+    - there is no error when the plot goes over the chromosome size provided by the matrix.
+
+    - if the depth is smaller than binsize it makes an empty plot instead of raising errors.
+
+- When the ``overlay_previous`` is set in the first track it is ignored and a warning is given instead of giving an error with a not meaningful error message.
+
+- The color for negative values in coverage tracks (bigwig and bedgraph) is now part of the output of ``make_tracks_file``.
+
+- Others output of ``make_tracks_file`` have been modified for better clarity.
+
+- Others code related enhancements which are transparent to the users.
+
+- The format of bed12 is more stringent (the blocks must span the chromStart and chromEnd).
+
+- Improve the documentation regarding the installation. We highly recommand to use conda.
+
+Bugfixes:
+^^^^^^^^^
+
+- For bed tracks when ``gene_rows`` or ``global_max_row`` was set the last row was very close to the bottom (sometimes even overlaying the next track). Now it is vertically centered and do not go over the track height.
+
+- Solve some bugs how non conventional bed files are handle.
+
+- Display more meaningful error messages.
+
+- Only plot scale bar when in the region of plot.
+
+- Do not show a warning when file_type is set for ``x_axis`` or ``spacer``.
+
+- Solve some incompatibilities with python 3.8. However, python 3.8 is not officially supported by now as bioconda do not support it yet `<https://bioconda.github.io/user/versions.html#python>`_.

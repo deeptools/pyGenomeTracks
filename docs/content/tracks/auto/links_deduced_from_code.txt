@@ -30,3 +30,5 @@ Optional:
 
 - **compact_arcs_level**: `0` (default) or 1 or 2.
 
+- **use_middle**: `false` (default) or true.
+

@@ -143,8 +143,7 @@ type = vlines
 
 import sys
 import argparse
-import matplotlib
-matplotlib.use('Agg')
+import warnings
 
 from pygenometracks.tracksClass import PlotTracks
 from pygenometracks._version import __version__
@@ -181,7 +180,7 @@ def parse_arguments(args=None):
                        )
 
     parser.add_argument('--width',
-                        help='figure width in centimeters (default is {})'.format(DEFAULT_FIGURE_WIDTH),
+                        help=f'figure width in centimeters (default is {DEFAULT_FIGURE_WIDTH})',
                         type=float,
                         default=DEFAULT_FIGURE_WIDTH)
 
@@ -231,7 +230,7 @@ def parse_arguments(args=None):
                         action='store_true')
 
     parser.add_argument('--version', action='version',
-                        version='%(prog)s {}'.format(__version__))
+                        version=f'%(prog)s {__version__}')
 
     return parser
 
@@ -244,28 +243,41 @@ def get_region(region_string):
     """
     if region_string:
         # separate the chromosome name and the location using the ':' character
-        chrom, position = region_string.strip().split(":")
+        try:
+            chrom, position = region_string.strip().split(":")
+        except ValueError:
+            raise InputError(f"The region provided ({region_string})"
+                             " is not valid, it should be chr:start-end.\n")
 
         # clean up the position
         for char in ",.;|!{}()":
             position = position.replace(char, '')
 
         position_list = position.split("-")
+        assert len(position_list) == 2, \
+            f"The region provided ({region_string})" \
+            " is not valid, it should be chr:start-end.\n"
+
         try:
             region_start = int(position_list[0])
-        except IndexError:
-            region_start = 0
+        except ValueError:
+            raise InputError(f"The start value ({position_list[0]}) in the"
+                             " region provided"
+                             " is not valid, it should be chr:start-end.\n")
         try:
             region_end = int(position_list[1])
-        except IndexError:
-            region_end = 1e15  # a huge number
-        if region_start < 0:
-            region_start = 0
+        except ValueError:
+            raise InputError(f"The start value ({position_list[0]}) in the"
+                             " region provided"
+                             " is not valid, it should be chr:start-end.\n")
+
         if region_end <= region_start:
             raise InputError("Please check that the region end is larger "
                              "than the region start.\n"
-                             "Values given:\nstart: {}\nend: {}"
-                             "\n".format(region_start, region_end))
+                             f"Values given:\nstart: {region_start}\n"
+                             f"end: {region_end}\n"
+                             "To plot tracks with a decreasing axis "
+                             "consider using `--decreasingXAxis`.")
 
         return chrom, region_start, region_end
 
@@ -273,14 +285,11 @@ def get_region(region_string):
 def main(args=None):
 
     args = parse_arguments().parse_args(args)
-    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height,
-                     fontsize=args.fontSize, dpi=args.dpi,
-                     track_label_width=args.trackLabelFraction)
 
+    # Identify the regions to plot:
     if args.BED:
-        count = 0
+        regions = []
         for line in args.BED.readlines():
-            count += 1
             try:
                 chrom, start, end = line.strip().split('\t')[0:3]
             except ValueError:
@@ -288,27 +297,38 @@ def main(args=None):
             try:
                 start, end = map(int, [start, end])
             except ValueError as detail:
-                sys.stderr.write("Invalid value found at line\t{}\t. {}\n".format(line, detail))
-            name = args.outFileName.split(".")
-            file_suffix = name[-1]
-            file_prefix = ".".join(name[:-1])
+                warnings.warn(f"Invalid value found at line\t{line}\t. {detail}\n")
+                continue
+            regions.append((chrom, start, end))
+    else:
+        regions = [get_region(args.region)]
 
-            file_name = "{}_{}-{}-{}.{}".format(file_prefix, chrom, start, end, file_suffix)
+    if len(regions) == 0:
+        raise InputError("There is no valid regions to plot.")
+
+    # Create all the tracks
+    trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height,
+                     fontsize=args.fontSize, dpi=args.dpi,
+                     track_label_width=args.trackLabelFraction,
+                     plot_regions=regions)
+
+    # Plot them
+    if args.BED:
+        name = args.outFileName.split(".")
+        file_suffix = name[-1]
+        file_prefix = ".".join(name[:-1])
+        for chrom, start, end in regions:
+            file_name = f"{file_prefix}_{chrom}-{start}-{end}.{file_suffix}"
             if end - start < 200000:
-                sys.stderr.write("A region shorter than 200kb has been "
-                                 "detected! This can be too small to return "
-                                 "a proper TAD plot!\n")
-                # start -= 100000
-                # start = max(0, start)
-                # end += 100000
-            sys.stderr.write("saving {}\n".format(file_name))
-            # print("{} {} {}".format(chrom, start, end))
+                warnings.warn("A region shorter than 200kb has been "
+                              "detected! This can be too small to return "
+                              "a proper TAD plot!\n")
+            sys.stderr.write(f"saving {file_name}\n")
             trp.plot(file_name, chrom, start, end, title=args.title,
                      h_align_titles=args.trackLabelHAlign,
                      decreasing_x_axis=args.decreasingXAxis)
     else:
-        region = get_region(args.region)
-        trp.plot(args.outFileName, *region, title=args.title,
+        trp.plot(args.outFileName, *regions[0], title=args.title,
                  h_align_titles=args.trackLabelHAlign,
                  decreasing_x_axis=args.decreasingXAxis)
     trp.close_files()

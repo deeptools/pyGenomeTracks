@@ -10,7 +10,7 @@ DEFAULT_SCALEBAR_COLOR = 'black'
 class ScaleBarTrack(GenomeTrack):
     SUPPORTED_ENDINGS = []
     TRACK_TYPE = 'scalebar'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # color of the scalebar
 color = black
 # To use transparency, you can use alpha
@@ -32,8 +32,8 @@ color = black
 #where = right
 # fontsize: default is 12
 #fontsize = 10
-file_type = {}
-    """.format(TRACK_TYPE)
+file_type = {TRACK_TYPE}
+    """
     DEFAULTS_PROPERTIES = {'fontsize': 12,
                            'color': DEFAULT_SCALEBAR_COLOR,
                            'alpha': 1,
@@ -56,9 +56,12 @@ file_type = {}
     # The color can only be a color
 
     def plot(self, ax, chrom_region, start_region, end_region):
+        # Get the center from the properties
         x_center = self.properties['x_center']
         if x_center is None:
+            # Else put it in the middle
             x_center = (end_region + start_region) / 2
+        # Get the size form the properties
         size = self.properties['size']
         if size is None:
             # We put the size that is less than half the plotted region
@@ -72,16 +75,19 @@ file_type = {}
             else:
                 first_char = 1
             size = first_char * 10**(len(str(half_plotted_region)) - 1)
+        # We only plot if it will be visible
+        if x_center - size / 2 > end_region or x_center + size / 2 < start_region:
+            return
+
+        # We adjust the unit to make it pretty
         if size < 1e3:
-            size_label = "{} bases".format(size)
+            size_label = f"{size} bases"
         elif size < 1e6:
             new_size = size / 1e3
-            size_label = "{} kb".format(int(new_size) if new_size.is_integer()
-                                        else new_size)
+            size_label = f"{int(new_size) if new_size.is_integer() else new_size} kb"
         else:
             new_size = size / 1e6
-            size_label = "{} Mb".format(int(new_size) if new_size.is_integer()
-                                        else new_size)
+            size_label = f"{int(new_size) if new_size.is_integer() else new_size} Mb"
 
         # We now draw the |-----|
         x_left = x_center - size / 2

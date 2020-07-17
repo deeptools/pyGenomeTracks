@@ -81,14 +81,6 @@ class ReadGtf(object):
     def __iter__(self):
         return self
 
-    def next(self):
-        """
-        :return: bedInterval object
-        """
-        bed = self.get_bed_interval()
-
-        return bed
-
     def __next__(self):
         """
         :return: bedInterval object

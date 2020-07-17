@@ -5,19 +5,23 @@ title =
 height = 2
 # if you want to plot the track upside-down:
 # orientation = inverted
-# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'. For the 'share-y'
-# option the y axis values is shared between this plot and the overlay plot. Otherwise, each plot use its own scale
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'.
+# For the 'share-y' option the y axis values is shared between this plot and the overlay plot.
+# Otherwise, each plot use its own scale
 #overlay_previous = yes
 
 color = #666666
+# To use a different color for negative values
+#negative_color = red
 # To use transparency, you can use alpha
 # default is 1
 # alpha = 0.5
 # the default for min_value and max_value is 'auto' which means that the scale will go
-# from the minimum value found in the region plotted to the maximum value found.
+# roughly from the minimum value found in the region plotted to the maximum value found.
 min_value = 0
 #max_value = auto
-# The number of bins takes the region to be plotted and divides it into the number of bins specified
+# The number of bins takes the region to be plotted and divides it
+# into the number of bins specified
 # Then, at each bin the bigwig mean value is computed and plotted.
 # A lower number of bins produces a coarser tracks
 number_of_bins = 700
@@ -60,5 +64,7 @@ show_data_range = true
 # gives the transformed values, if you prefer to see
 # the original values:
 #y_axis_values = original
+# If you want to have a grid on the y-axis
+#grid = true
 file_type = bigwig
     

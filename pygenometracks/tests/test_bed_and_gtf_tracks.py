@@ -461,50 +461,30 @@ display = collapsed
 with open(os.path.join(ROOT, "bed_genes_rgb.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
-browser_tracks = """
-[macs2 broadPeak]
-file = broadPeak.broadPeak
-title = broadPeak
-file_type = bed
-
-[spacer]
-
-[macs2 gappedPeak]
-file = gappedPeak.gappedPeak
-title = gappedPeak
-file_type = bed
-
-[spacer]
-
-[macs2 filteredbed]
-file = filtered.results.bed
-title = filtered.results.bed (strange format)
-file_type = bed
-"""
-with open(os.path.join(ROOT, "bed_unusual_formats.ini"), 'w') as fh:
-    fh.write(browser_tracks)
+with open(os.path.join(ROOT, "bed_genes_rgb_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace('style = flybase', 'style = inexisting'))
 
 wrong_track = """
 [test gtf]
-file = ../dm3_subset_BDGP5.78_gtf.dat
+file = dm3_subset_BDGP5.78_gtf.dat
 height = 10
 title = gtf from ensembl (with dat extension)
 fontsize = 12
 file_type = bed
 """
-with open(os.path.join(ROOT, "uncorrect_ini_files", "gtf_as_bed.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "gtf_as_bed.ini"), 'w') as fh:
     fh.write(wrong_track)
 
 
 wrong_track = """
 [test bed]
-file = ../dm3_genes.bed.gz
+file = dm3_genes.bed.gz
 height = 10
 title = bed file
 fontsize = 12
 file_type = gtf
 """
-with open(os.path.join(ROOT, "uncorrect_ini_files", "bed_as_gtf.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "bed_as_gtf.ini"), 'w') as fh:
     fh.write(wrong_track)
 
 browser_tracks = """
@@ -541,12 +521,96 @@ height = 10.0
 
 [scores in cod+utr 2]
 file = dm3_genes_withrgbandscore.bed.gz
-title = genes with scores both in coding and utr as Reds
+title = genes with scores both in coding and utr as Reds min_value = 0.2 max_value = 2
 color = Reds
 color_utr = Reds
 height = 10.0
+min_value = 0.2
+max_value = 2
 """
 with open(os.path.join(ROOT, "bed_colormap_genes.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+title = bed color = Reds
+color = Reds
+height = 4
+
+[spacer]
+
+[genes]
+file = dm3_genes_withrgbandscore_shuffled.bed.gz
+title = bed color = Reds bed is not sorted
+color = Reds
+height = 4
+
+[spacer]
+
+[genes]
+file = dm3_genes_withrgbandscore_shuffled.bed.gz
+title = bed color = Reds global_max_row = true and bed is not sorted
+color = Reds
+global_max_row = true
+height = 4
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "bed_shuffle.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+title = bed global_max_row = true labels = false
+labels = false
+global_max_row = true
+height = 4
+
+[spacer]
+
+[x-axis]
+title = centered title
+
+[vlines]
+file = tad_classification.bed
+type = vlines
+line_width = 3
+"""
+with open(os.path.join(ROOT, "bed_vlines.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+with open(os.path.join(ROOT, "bed_vlines_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks + 'line_style = dashed\n')
+
+browser_tracks = """
+[genes1]
+file = example.bed
+title = bed style = flybase
+style = flybase
+height = 4
+
+[spacer]
+
+[genes2]
+file = example.bed
+title = bed style = UCSC
+style = UCSC
+height = 4
+
+[spacer]
+
+[genes1]
+file = example.bed
+title = bed style = tssarrow
+style = tssarrow
+height = 4
+
+[spacer]
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "bed_different_UTR.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
@@ -556,13 +620,14 @@ def test_plot_tracks_bed_and_gtf():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3000000-3300000 "\
+    ini_file = os.path.join(ROOT, 'bed_and_gtf_tracks.ini')
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_bed_and_gtf.png')
+    args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_and_gtf_tracks.ini'),
-                     outfile.name).split()
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_and_gtf.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -573,13 +638,14 @@ def test_plot_tracks_bed_arrow():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3120000-3150000 "\
+    ini_file = os.path.join(ROOT, 'bed_arrow_tracks.ini')
+    region = "X:3120000-3150000"
+    expected_file = os.path.join(ROOT, 'master_bed_arrow.png')
+    args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_arrow_tracks.ini'),
-                     outfile.name).split()
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_arrow.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -590,13 +656,15 @@ def test_plot_tracks_bed_arrow_zoom():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3130000-3140000 "\
+
+    ini_file = os.path.join(ROOT, "bed_arrow_tracks.ini")
+    region = "X:3130000-3140000"
+    expected_file = os.path.join(ROOT, 'master_bed_arrow_zoom.png')
+    args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_arrow_tracks.ini'),
-                     outfile.name).split()
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_arrow_zoom.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -607,13 +675,15 @@ def test_plot_tracks_flybase():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3000000-3300000 "\
+
+    ini_file = os.path.join(ROOT, "bed_flybase_tracks.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_bed_flybase.png')
+    args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_flybase_tracks.ini'),
-                     outfile.name).split()
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_flybase.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -624,13 +694,14 @@ def test_plot_tracks_tssarrow():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3000000-3300000 "\
+    ini_file = os.path.join(ROOT, "bed_tssarrow_tracks.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_bed_tssarrow.png')
+    args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_tssarrow_tracks.ini'),
-                     outfile.name).split()
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_tssarrow.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -641,13 +712,14 @@ def test_plot_tracks_tssarrow_zoom():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3020000-3070000 "\
+    ini_file = os.path.join(ROOT, "bed_tssarrow_tracks.ini")
+    region = "X:3020000-3070000"
+    expected_file = os.path.join(ROOT, 'master_bed_tssarrow_zoom.png')
+    args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_tssarrow_tracks.ini'),
-                     outfile.name).split()
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_tssarrow_zoom.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -658,13 +730,14 @@ def test_plot_tracks_tssarrow_zoom2():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3130000-3150000 "\
+    ini_file = os.path.join(ROOT, "bed_tssarrow_tracks.ini")
+    region = "X:3130000-3150000"
+    expected_file = os.path.join(ROOT, 'master_bed_tssarrow_zoom2.png')
+    args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_tssarrow_tracks.ini'),
-                     outfile.name).split()
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_tssarrow_zoom2.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -675,13 +748,14 @@ def test_plot_tracks_bed_with_maxLab():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:2000000-3500000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_maxLab_tracks.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "bed_maxLab_tracks.ini")
+    region = "X:2000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_maxLab.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_maxLab.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -692,30 +766,37 @@ def test_plot_tracks_genes_rgb():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region chr2:74,650,000-74,710,000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_genes_rgb.ini'),
-                     outfile.name).split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_genes_rgb.png'),
-                         outfile.name, tolerance)
-    assert res is None, res
+    for suf in ['', '_incorrect']:
+        ini_file = os.path.join(ROOT, f"bed_genes_rgb{suf}.ini")
+        region = "chr2:74,650,000-74,710,000"
+        expected_file = os.path.join(ROOT, 'master_bed_genes_rgb.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
+        os.remove(outfile.name)
+        # remove the incorrect ini file
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
 
 
 def test_plot_tracks_bed_all_label_inside():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3100000-3200000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--trackLabelHAlign right --outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_all_labels_inside.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "bed_all_labels_inside.ini")
+    region = "X:3100000-3200000"
+    expected_file = os.path.join(ROOT, 'master_bed_all_label_inside.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--trackLabelHAlign right "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_all_label_inside.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
@@ -726,32 +807,18 @@ def test_plot_tracks_bed_all_label_inside_Xdec():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3215000-3240000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--trackLabelHAlign right --outFileName {1} --decreasingXAxis" \
-           "".format(os.path.join(ROOT, 'bed_all_labels_inside.ini'),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "bed_all_labels_inside.ini")
+    region = "X:3215000-3240000"
+    expected_file = os.path.join(ROOT, 'master_bed_all_label_inside_dec.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--trackLabelHAlign right --decreasingXAxis "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_all_label_inside_dec.png'),
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 
-    os.remove(outfile.name)
-
-
-def test_plot_tracks_bed_unusual_format():
-
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                 delete=False)
-    args = "--tracks {0} --region X:20000-40000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_unusual_formats.ini'),
-                     outfile.name).split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_unusual_formats.png'),
-                         outfile.name, tolerance)
-    assert res is None, res
     os.remove(outfile.name)
 
 
@@ -759,47 +826,117 @@ def test_gtf_as_bed():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3100000-3200000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--trackLabelHAlign right --outFileName {1}" \
-           "".format(os.path.join(ROOT, "uncorrect_ini_files", "gtf_as_bed.ini"),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "gtf_as_bed.ini")
+    region = "X:3100000-3200000"
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     try:
         pygenometracks.plotTracks.main(args)
     except InputError as e:
         assert 'This is probably not a bed file.' in str(e)
     else:
         raise Exception("The gtf as bed should fail.")
+    os.remove(ini_file)
 
 
 def test_bed_as_gtf():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3100000-3200000 "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 " \
-           "--trackLabelHAlign right --outFileName {1}" \
-           "".format(os.path.join(ROOT, "uncorrect_ini_files", "bed_as_gtf.ini"),
-                     outfile.name).split()
+    ini_file = os.path.join(ROOT, "bed_as_gtf.ini")
+    region = "X:3100000-3200000"
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     try:
         pygenometracks.plotTracks.main(args)
     except InputError as e:
         assert 'This is not a gtf file.' in str(e)
     else:
         raise Exception("The bed as gtf should fail.")
+    os.remove(ini_file)
 
 
 def test_plot_tracks_bed_scores():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    args = "--tracks {0} --region X:3000000-3300000 "\
+    ini_file = os.path.join(ROOT, "bed_colormap_genes.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_bed_colormap_genes.png')
+    args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           "--outFileName {1}" \
-           "".format(os.path.join(ROOT, 'bed_colormap_genes.ini'),
-                     outfile.name).split()
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
-    res = compare_images(os.path.join(ROOT, 'master_bed_colormap_genes.png'),
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bed_shuffle():
+    extension = '.png'
+
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bed_shuffle.ini")
+    bed_file = os.path.join(ROOT, 'regions_chr1XY.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    for region in ['chr1:0-500000', 'chrX:2500000-2600000', 'chrY:0-1000000']:
+        region_str = region.replace(':', '-')
+        output_file = outfile.name[:-4] + '_' + region_str + extension
+        expected_file = os.path.join(ROOT, 'master_bed_shuffle_'
+                                     + region_str + extension)
+        res = compare_images(expected_file,
+                             output_file, tolerance)
+        assert res is None, res
+
+        os.remove(output_file)
+
+
+def test_plot_tracks_bed_vlines():
+    extension = '.png'
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    bed_file = os.path.join(ROOT, 'regionsXfakeChr.bed')
+    for suf in ['', '_incorrect']:
+        ini_file = os.path.join(ROOT, f"bed_vlines{suf}.ini")
+        args = f"--tracks {ini_file} --BED {bed_file} "\
+               "--trackLabelFraction 0.5 --width 38 --dpi 130 "\
+               "--trackLabelHAlign center "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        for region in ['X:3000000-3300000', 'fakeChr:0-100']:
+            region_str = region.replace(':', '-')
+            output_file = outfile.name[:-4] + '_' + region_str + extension
+            expected_file = os.path.join(ROOT, 'master_bed_vlines_'
+                                         + region_str + extension)
+            res = compare_images(expected_file,
+                                 output_file, tolerance)
+            assert res is None, res
+
+            os.remove(output_file)
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
+
+
+def test_plot_tracks_bed_different_UTR():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bed_different_UTR.ini")
+    region = "chr1:0-500"
+    expected_file = os.path.join(ROOT, 'master_different_UTR.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
                          outfile.name, tolerance)
     assert res is None, res
 

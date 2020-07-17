@@ -106,12 +106,18 @@ The output file of some 4C-seq pipeline are bedgraph where the coordinates are t
 
 .. literalinclude:: ../../pygenometracks/tests/test_data/bedgraph_useMid.ini
     :language: INI
+
+We can generate two zooms using a bed instead of regions:
+
+.. literalinclude:: ../../pygenometracks/tests/test_data/regions_imbricated_chr2.bed
     
 .. code:: bash
 
-    $ pyGenomeTracks --tracks bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o master_bedgraph_useMid.pdf
+    $ pyGenomeTracks --tracks bedgraph_useMid.ini --BED regions_imbricated_chr2.bed --trackLabelFraction 0.2 --width 38 --dpi 130  -o master_bedgraph_useMid.png
 
-The output is available `here <https://github.com/deeptools/pyGenomeTracks/raw/master/pygenometracks/tests/test_data/master_bedgraph_useMid.pdf>`_.
+.. image:: ../../pygenometracks/tests/test_data/master_bedgraph_useMid_chr2-73800000-75744000.png
+
+.. image:: ../../pygenometracks/tests/test_data/master_bedgraph_useMid_chr2-74000000-74800000.png
 
 
 Examples with peaks
@@ -268,7 +274,7 @@ The configuration file for this image is:
 
 
 Log transform and Operation Examples
---------------------------
+------------------------------------
 
 With the parameter ``operation`` you can make operations between one or two files (here two bigwig files but this is also working with two bedgraph files). For example, difference, log ratio, scaling...
 

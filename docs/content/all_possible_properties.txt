@@ -24,6 +24,10 @@
 
   - for *links*: 0, 1, 2
 
+- **use_middle**:
+
+  - for *links, bedgraph*: true, false
+
 - **merge_transcripts**:
 
   - for *domains, bed, gtf*: true, false
@@ -94,9 +98,9 @@
 
   - for *bigwig, bedgraph*: true, false
 
-- **use_middle**:
+- **grid**:
 
-  - for *bedgraph*: true, false
+  - for *bigwig, bedgraph*: true, false
 
 - **rasterize**:
 

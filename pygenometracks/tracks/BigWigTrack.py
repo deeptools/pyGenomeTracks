@@ -1,6 +1,6 @@
 from . GenomeTrack import GenomeTrack
 import numpy as np
-from .. utilities import plot_coverage, InputError, transform
+from .. utilities import plot_coverage, InputError, transform, change_chrom_names
 import pyBigWig
 
 DEFAULT_BIGWIG_COLOR = '#33a02c'
@@ -9,16 +9,19 @@ DEFAULT_BIGWIG_COLOR = '#33a02c'
 class BigWigTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.bw', '.bigwig']
     TRACK_TYPE = 'bigwig'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + """
+    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 color = #666666
+# To use a different color for negative values
+#negative_color = red
 # To use transparency, you can use alpha
 # default is 1
 # alpha = 0.5
 # the default for min_value and max_value is 'auto' which means that the scale will go
-# from the minimum value found in the region plotted to the maximum value found.
+# roughly from the minimum value found in the region plotted to the maximum value found.
 min_value = 0
 #max_value = auto
-# The number of bins takes the region to be plotted and divides it into the number of bins specified
+# The number of bins takes the region to be plotted and divides it
+# into the number of bins specified
 # Then, at each bin the bigwig mean value is computed and plotted.
 # A lower number of bins produces a coarser tracks
 number_of_bins = 700
@@ -61,8 +64,10 @@ show_data_range = true
 # gives the transformed values, if you prefer to see
 # the original values:
 #y_axis_values = original
-file_type = {}
-    """.format(TRACK_TYPE)
+# If you want to have a grid on the y-axis
+#grid = true
+file_type = {TRACK_TYPE}
+    """
 
     DEFAULTS_PROPERTIES = {'max_value': None,
                            'min_value': None,
@@ -79,7 +84,8 @@ file_type = {}
                            'log_pseudocount': 0,
                            'y_axis_values': 'transformed',
                            'second_file': None,
-                           'operation': 'file'}
+                           'operation': 'file',
+                           'grid': False}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None}}
@@ -90,7 +96,7 @@ file_type = {}
                            'transform': ['no', 'log', 'log1p', '-log', 'log2',
                                          'log10'],
                            'y_axis_values': ['original', 'transformed']}
-    BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range']
+    BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range', 'grid']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'summary_method',
                          'title', 'color', 'negative_color',
@@ -111,9 +117,9 @@ file_type = {}
         self.bw2 = None
         if 'second_file' in self.properties['operation']:
             if self.properties['second_file'] is None:
-                raise InputError("operation: {} requires to set the parameter"
-                                 " second_file."
-                                 "".format(self.properties['operation']))
+                raise InputError(f"operation: {self.properties['operation']}"
+                                 " requires to set the parameter"
+                                 " second_file.")
             else:
                 self.bw2 = pyBigWig.open(self.properties['second_file'])
 
@@ -134,28 +140,22 @@ file_type = {}
                                  "'y_axis_values' was set to 'original'. "
                                  "'y_axis_values' can only be set to "
                                  "'original' when 'transform' is used.\n"
-                                 " It will be set as 'transformed'.")
+                                 " It will be set as 'transformed'.\n")
                 self.properties['y_axis_values'] = 'transformed'
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        formated_region = "{}:{}-{}".format(chrom_region, start_region, end_region)
 
         if chrom_region not in self.bw.chroms().keys():
             chrom_region_before = chrom_region
-            chrom_region = self.change_chrom_names(chrom_region)
+            chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.bw.chroms().keys():
                 self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " existss as a "
+                                 + " nor " + chrom_region + " exists as a "
                                  "chromosome name inside the bigwig file. "
                                  "This will generate an empty track!!\n")
                 return
 
         chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
-
-        if chrom_region not in self.bw.chroms().keys():
-            self.log.warning("Can not read region {} from bigwig file:\n\n"
-                             "{}\n\nPlease check that the chromosome name is part of the bigwig file "
-                             "and that the region is valid".format(formated_region, self.properties['file']))
 
         # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
         # of the memory. This only occurs when calling trackPlot from different
@@ -173,12 +173,13 @@ file_type = {}
             except Exception as e:
                 self.bw = pyBigWig.open(self.properties['file'])
 
-                self.log.warning("error found while reading bigwig scores ({}).\nTrying again. Iter num: {}".
-                                 format(e, num_tries))
+                self.log.warning("error found while reading bigwig scores "
+                                 f"({e}).\nTrying again."
+                                 f" Iter num: {num_tries}.\n")
                 pass
             else:
                 if num_tries > 1:
-                    self.log.warning("After {} the scores could be computed".format(num_tries))
+                    self.log.warning(f"After {num_tries} the scores could be computed.\n")
                 break
 
         x_values = np.linspace(start_region, end_region, self.properties['number_of_bins'])
@@ -193,10 +194,9 @@ file_type = {}
                 new_scores_per_bin = eval('[' + operation + ' for file in scores_per_bin]')
                 new_scores_per_bin = np.array(new_scores_per_bin)
             except Exception as e:
-                raise Exception("The operation in section {} could not be"
-                                " computed: {}".
-                                format(self.properties['section_name'],
-                                       e))
+                raise Exception("The operation in section "
+                                f"{self.properties['section_name']} could not "
+                                f"be computed: {e}")
             else:
                 scores_per_bin = new_scores_per_bin
         else:
@@ -204,7 +204,7 @@ file_type = {}
             chrom_region2 = chrom_region
             if chrom_region2 not in self.bw2.chroms().keys():
                 chrom_region_before2 = chrom_region2
-                chrom_region2 = self.change_chrom_names(chrom_region2)
+                chrom_region2 = change_chrom_names(chrom_region2)
                 if chrom_region2 not in self.bw2.chroms().keys():
                     self.log.warning("*Warning*\nNeither "
                                      + chrom_region_before2 + " nor "
@@ -232,12 +232,12 @@ file_type = {}
 
                     self.log.warning("error found while reading bigwig scores"
                                      " of second file"
-                                     " ({}).\nTrying again. Iter num: {}".
-                                     format(e, num_tries))
+                                     f" ({e}).\nTrying again."
+                                     " Iter num: {num_tries}.\n")
                     pass
                 else:
                     if num_tries > 1:
-                        self.log.warning("After {} the scores could be computed".format(num_tries))
+                        self.log.warning(f"After {num_tries} the scores could be computed.\n")
                     break
             # compute the operation
             try:
@@ -247,11 +247,9 @@ file_type = {}
                                           ' scores_per_bin2)]')
                 new_scores_per_bin = np.array(new_scores_per_bin)
             except Exception as e:
-                raise Exception("The operation {}, in section {} could not be"
-                                " computed: {}".
-                                format(self.properties['operation'],
-                                       self.properties['section_name'],
-                                       e))
+                raise Exception("The operation in section "
+                                f"{self.properties['section_name']} could not "
+                                f"be computed: {e}")
             else:
                 scores_per_bin = new_scores_per_bin
 
@@ -264,7 +262,8 @@ file_type = {}
                       self.size,
                       self.properties['color'],
                       self.properties['negative_color'],
-                      self.properties['alpha'])
+                      self.properties['alpha'],
+                      self.properties['grid'])
 
         ymax = self.properties['max_value']
         ymin = self.properties['min_value']
@@ -274,13 +273,13 @@ file_type = {}
         else:
             ymax = transform(np.array([ymax]), self.properties['transform'],
                              self.properties['log_pseudocount'],
-                             'ymax')
+                             'ymax')[0]
         if ymin is None:
             ymin = plot_ymin
         else:
             ymin = transform(np.array([ymin]), self.properties['transform'],
                              self.properties['log_pseudocount'],
-                             'ymin')
+                             'ymin')[0]
 
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(ymax, ymin)
@@ -293,7 +292,8 @@ file_type = {}
         super(BigWigTrack, self).plot_y_axis(ax, plot_axis,
                                              self.properties['transform'],
                                              self.properties['log_pseudocount'],
-                                             self.properties['y_axis_values'])
+                                             self.properties['y_axis_values'],
+                                             self.properties['grid'])
 
     def __del__(self):
         self.bw.close()
