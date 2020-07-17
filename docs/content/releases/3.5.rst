@@ -2,7 +2,7 @@
 ===
 
 Enhancements:
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
 
 - pyGenomeTracks goes much faster:
 
@@ -23,7 +23,7 @@ Enhancements:
 - For vlines, the line_width can now be set.
 
 Minor enhancements:
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 - Bedgraph with NA values in the 4-th column do not raise error anymore.
 
@@ -48,7 +48,7 @@ Minor enhancements:
 - Improve the documentation regarding the installation. We highly recommand to use conda.
 
 Bugfixes:
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^
 
 - For bed tracks when ``gene_rows`` or ``global_max_row`` was set the last row was very close to the bottom (sometimes even overlaying the next track). Now it is vertically centered and do not go over the track height.
 

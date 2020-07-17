@@ -26,13 +26,13 @@ We encourage users to use ``conda`` installation to install pygenometracks. All 
 
 .. code:: bash
 
-    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks pyhon=3.7
+    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks python=3.7
 
 To get a specific version, one can specify it. For example:
 
 .. code:: bash
 
-    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks=3.5 pyhon=3.7
+    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks=3.5 python=3.7
 
 Command line installation using ``pip``
 -----------------------------------------
