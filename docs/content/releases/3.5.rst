@@ -60,4 +60,4 @@ Bugfixes:
 
 - Do not show a warning when file_type is set for ``x_axis`` or ``spacer``.
 
-- Solve some incompatibilities with python 3.8.
+- Solve some incompatibilities with python 3.8. However, python 3.8 is not officially supported by now as bioconda do not support it yet `<https://bioconda.github.io/user/versions.html#python>`_.
