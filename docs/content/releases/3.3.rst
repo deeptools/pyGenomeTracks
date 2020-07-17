@@ -2,7 +2,7 @@
 ===
 
 Release 3.3 adds:
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 - a documentation on readthedocs: https://pygenometracks.readthedocs.io
 - progress bar for bed, gtf, bedgraph, narrowPeak, epilogos
@@ -26,7 +26,7 @@ Release 3.3 adds:
 - ``colormap`` can now be set in bedgraphMatrix tracks.
 
 bug fixes:
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^
 
 - if a bed with no interval is provided, pgt no longer exit.
 - When an exon had both UTR start and UTR end within it, only the UTR start was considered.
