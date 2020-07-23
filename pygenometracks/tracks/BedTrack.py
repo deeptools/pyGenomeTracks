@@ -3,7 +3,8 @@ from .. readBed import ReadBed
 # To remove next 1.0
 from .. readGtf import ReadGtf
 # End to remove
-from .. utilities import opener, get_length_w, count_lines, temp_file_from_intersect, change_chrom_names
+from .. utilities import (opener, get_length_w, count_lines,
+    temp_file_from_intersect, change_chrom_names, TextWrapAxis)
 import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
@@ -584,29 +585,20 @@ file_type = {TRACK_TYPE}
             elif self.properties['display'] == 'collapsed':
                 ax.set_ylim(1 + epsilon, ymax)
 
-    def plot_label(self, label_ax, width_dpi, h_align='left'):
+    def plot_label(self, label_ax, h_align='left'):
         if h_align == 'left':
-            label_ax.text(0.05, 1, self.properties['title'],
-                          horizontalalignment='left', size='large',
-                          verticalalignment='top',
-                          transform=label_ax.transAxes,
-                          wrap=True)
+            x_pos = 0.05
         elif h_align == 'right':
-            txt = label_ax.text(1, 1, self.properties['title'],
-                                horizontalalignment='right', size='large',
-                                verticalalignment='top',
-                                transform=label_ax.transAxes,
-                                wrap=True)
-            # To be able to wrap to the left:
-            txt._get_wrap_line_width = lambda: width_dpi
+            x_pos = 1
         else:
-            txt = label_ax.text(0.5, 1, self.properties['title'],
-                                horizontalalignment='center', size='large',
-                                verticalalignment='top',
-                                transform=label_ax.transAxes,
-                                wrap=True)
-            # To be able to wrap to the left:
-            txt._get_wrap_line_width = lambda: width_dpi
+            x_pos = 0.5
+        label_ax.add_artist(
+            TextWrapAxis(label_ax, x_pos, 1,
+                         self.properties['title'],
+                         horizontalalignment=h_align, size='large',
+                         verticalalignment='top',
+                         transform=label_ax.transAxes,
+                         wrap=True))
 
     def plot_y_axis(self, ax, plot_axis):
         if self.colormap is not None:
