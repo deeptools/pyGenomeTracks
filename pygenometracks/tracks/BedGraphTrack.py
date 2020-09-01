@@ -293,7 +293,7 @@ file_type = {TRACK_TYPE}
             prev_end = end
             score_list.append(values)
             pos_list.append((start, end))
-        
+
         # Add a last value if needed:
         if prev_end < end_region and return_nans:
             score_list.append(np.repeat(np.nan, self.num_fields))
