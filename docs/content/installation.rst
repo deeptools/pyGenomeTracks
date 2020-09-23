@@ -10,6 +10,8 @@ Remember -- pyGenomeTracks is available for **command line usage** as well as fo
 Requirements
 -------------
 
+Python dependencies:
+
 * Python >= 3.6
 * numpy >= 1.16
 * intervaltree >= 2.1.0
@@ -20,6 +22,8 @@ Requirements
 * gffutils >= 0.9
 * pybedtools >= 0.8.1
 * tqdm >= 4.20
+
+External dependencies:
 
 * BEDTools
 
