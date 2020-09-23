@@ -10,14 +10,16 @@ Remember -- pyGenomeTracks is available for **command line usage** as well as fo
 Requirements
 -------------
 
-* Python >=3.6
+* Python >= 3.6
 * numpy >= 1.16
-* intervaltree >=2.1.0
-* pyBigWig >= 0.3.4
-* hicmatrix >= 0.14
-* pysam >= 0.8
+* intervaltree >= 2.1.0
+* pyBigWig >= 0.3.16
+* hicmatrix >= 13
+* pysam >= 0.14
 * matplotlib >= 3.1.1
-* gffutils >=0.9
+* gffutils >= 0.9
+* pybedtools >= 0.8.1
+* tqdm >= 4.20
 
 * BEDTools
 
