@@ -7,6 +7,13 @@ from intervaltree import IntervalTree, Interval
 import pybedtools
 import tempfile
 import warnings
+import logging
+
+
+FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
+logging.basicConfig(format=FORMAT)
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 
 class InputError(Exception):
@@ -86,11 +93,12 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
             file_to_open = original_file.intersect(regions, wa=True, u=True).fn
         except pybedtools.helpers.BEDToolsError:
             file_to_open = file_name
-        except NotImplementedError:
-            print("It seems that BEDTools is not installed. Cannot subset the file.")
-            file_to_open = file_name
+        except NotImplementedError as e:
+            log.error("BEDTools is not installed but required.")
+            raise e
         except Exception as e:
-            print(e)
+            log.warning(f"BEDTools intersect raised: {e}"
+                        "\nWill not subset the file.")
             file_to_open = file_name
         sys.stderr.close()
         sys.stderr = sys.__stderr__
@@ -100,9 +108,9 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
         error_lines = [line for line in temp_std_error if 'error' in line.lower()]
         if len(error_lines) > 0:
             error_lines_printable = '\n'.join(error_lines)
-            sys.stderr.write("Bedtools intersect raised an error:\n"
-                             f"{error_lines_printable}\n"
-                             "Will not use bedtools.\n")
+            log.warning("BEDTools intersect raised an error:\n"
+                        f"{error_lines_printable}\n"
+                        "Will not use BEDTools.\n")
             file_to_open = file_name
     return file_to_open
 
