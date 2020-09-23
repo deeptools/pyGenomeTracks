@@ -19,6 +19,8 @@ Requirements
 * matplotlib >= 3.1.1
 * gffutils >=0.9
 
+* BEDTools
+
 Command line installation using ``conda``
 -----------------------------------------
 
@@ -44,6 +46,8 @@ Install pyGenomeTracks using the following command:
 
 All python requirements should be automatically installed.
 
+Since version 3.5, pyGenomeTracks require BEDTools, do not forget to install it or load it into your environment.
+
 If you need to specify a specific path for the installation of the tools, make use of `pip install`'s numerous options:
 
 .. code:: bash
@@ -55,7 +59,7 @@ Command line installation without ``pip``
 
 You are highly recommended to use `conda install` rather than the following complicated steps.
 
-1. Install the requirements listed above in the "requirements" section. This is done automatically by `pip`.
+1. Install the requirements listed above in the "requirements" section. This is done automatically by `pip` (except BEDTools).
 
 2. Download source code
 ::

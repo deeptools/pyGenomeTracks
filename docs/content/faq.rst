@@ -13,3 +13,12 @@ when you were providing ``cool`` file from `cooler balance <https://cooler.readt
 If you want to keep the old scale you need to downgrade to HiCMatrix version 12 but version 13 also correct some bugs so we advice
 to change your ``max_value`` in your parameter file to adjust to the new scale.
 
+No output generated with version 3.5 installed with pip
+-------------------------------------------------------
+If you used pyGenomeTracks version 3.5 and the last line you get is:
+
+.. code:: bash
+
+    INFO:pygenometracks.tracksClass:initialize x. [xxxxx]
+
+It is highly probable that BEDTools is not installed or not loaded in your environment.
