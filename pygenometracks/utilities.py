@@ -185,7 +185,11 @@ def file_to_intervaltree(file_name, plot_regions=None):
         valid_intervals += 1
 
     if valid_intervals == 0:
-        sys.stderr.write(f"No valid intervals were found in file {file_name}")
+        if file_to_open == file_name:
+            suffix = " after intersection with the plotted region"
+        else:
+            suffix = ""
+        log.warning(f"No valid intervals were found in file {file_name}{suffix}")
     file_h.close()
 
     return interval_tree, min_value, max_value
