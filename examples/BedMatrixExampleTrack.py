@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from . BedGraphTrack import BedGraphTrack
-from . GenomeTrack import GenomeTrack
+from . BedGraphLikeTrack import BedGraphLikeTrack
 
 
-class BedGraphMatrixTrack(BedGraphTrack):
+class BedGraphMatrixTrack(BedGraphLikeTrack):
     # this track class extends a BedGraphTrack that is already part of
     # pyGenomeTracks. The advantage of extending this class is that
     # we can re-use the code for reading a bedgraph file
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz']
     TRACK_TYPE = 'bedgraph_matrix'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
+    OPTIONS_TXT = BedGraphLikeTrack.OPTIONS_TXT + f"""
 # a bedgraph matrix file is like a bedgraph, except that per bin there
 # are more than one value (separated by tab). This file type is
 # produced by the HiCExplorer tool hicFindTads and contains
@@ -37,12 +36,6 @@ file_type = {TRACK_TYPE}
                         'min_value': [- np.inf, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
-
-    # In BedGraphTrack the method set_properties_defaults
-    # has been adapted to a coverage track. Here we want to
-    # go back to the initial method:
-    def set_properties_defaults(self):
-        GenomeTrack.set_properties_defaults(self)
 
     def plot(self, ax, chrom_region, start_region, end_region):
         """
@@ -88,7 +81,3 @@ file_type = {TRACK_TYPE}
     def plot_y_axis(self, ax, plot_axis):
         """turn off y_axis plot"""
         pass
-
-    def __del__(self):
-        if self.tbx is not None:
-            self.tbx.close()

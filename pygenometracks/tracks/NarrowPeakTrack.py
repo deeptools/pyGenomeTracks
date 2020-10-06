@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from . GenomeTrack import GenomeTrack
-from . BedGraphTrack import BedGraphTrack
+from . BedGraphLikeTrack import BedGraphLikeTrack
 
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
@@ -12,10 +11,10 @@ import numpy as np
 DEFAULT_NARROWPEAK_COLOR = '#FF000080'  # red, alpha=0.55
 
 
-class NarrowPeakTrack(BedGraphTrack):
+class NarrowPeakTrack(BedGraphLikeTrack):
     SUPPORTED_ENDINGS = ['.narrowPeak']
     TRACK_TYPE = 'narrow_peak'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
+    OPTIONS_TXT = BedGraphLikeTrack.OPTIONS_TXT + f"""
 color = #FF000080
 #max_value = 0.70
 show_data_range = true
@@ -61,12 +60,8 @@ file_type = {TRACK_TYPE}
     INTEGER_PROPERTIES = {}
     # color can only be a color
 
-    def __init__(self, properties_dict):
-        GenomeTrack.__init__(self, properties_dict)
-        self.load_file()
-
     def set_properties_defaults(self):
-        GenomeTrack.set_properties_defaults(self)
+        BedGraphLikeTrack.set_properties_defaults(self)
         self.process_color('color')
 
     def peak_plot(self, start, end, height, center=None, width_adjust=1.5):
