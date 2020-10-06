@@ -472,8 +472,8 @@ def test_plot_tracks_with_hic_rasterize_height_2chr():
         # To avoid issues related to write in test_data folder
         # We copy the expected file into a temporary place
         new_expected_file = NamedTemporaryFile(suffix='.pdf',
-                                            prefix='pyGenomeTracks_test_',
-                                            delete=False)
+                                               prefix='pyGenomeTracks_test_',
+                                               delete=False)
         os.system(f'cp {expected_file} {new_expected_file.name}')
         expected_file = new_expected_file.name
         res = compare_images(expected_file,
@@ -495,8 +495,8 @@ def test_plot_tracks_with_hic_rasterize_height_2chr_individual():
         # To avoid issues related to write in test_data folder
         # We copy the expected file into a temporary place
         new_expected_file = NamedTemporaryFile(suffix='.pdf',
-                                            prefix='pyGenomeTracks_test_',
-                                            delete=False)
+                                               prefix='pyGenomeTracks_test_',
+                                               delete=False)
         os.system(f'cp {expected_file} {new_expected_file.name}')
         expected_file = new_expected_file.name
         args = f"--tracks {ini_file} --region {region} "\
