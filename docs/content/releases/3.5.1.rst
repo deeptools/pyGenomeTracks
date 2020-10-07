@@ -1,0 +1,13 @@
+3.5.1
+=====
+
+Bugfixes:
+^^^^^^^^^
+
+- Get a message when bedtools is installed instead of crashing without any message.
+
+- Always test if a bedgraph is tabix indexed without checking the extension
+
+- Fix a bug which was happening when ``operation`` or ``summary_method`` was used on bedgraph whereas the bedgraph had some missing intervals.
+
+- Enforcing version 15 of HiCMatrix. Version 14 had a bug concerning the application of the correction factors of cool files.

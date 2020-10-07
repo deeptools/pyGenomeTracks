@@ -26,16 +26,12 @@ class BedGraphLikeTrack(GenomeTrack):
     def load_file(self):
         self.tbx = None
         # try to load a tabix file is available
-        if self.properties['file'].endswith(".bgz"):
+        try:
             # from the tabix file is not possible to know the
             # global min and max
-            try:
-                self.tbx = pysam.TabixFile(self.properties['file'])
-            except IOError:
-                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
-                                                                  self.properties['region'])
-        # load the file as an interval tree
-        else:
+            self.tbx = pysam.TabixFile(self.properties['file'])
+        except IOError:
+            # load the file as an interval tree
             self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
                                                               self.properties['region'])
 
@@ -135,6 +131,11 @@ class BedGraphLikeTrack(GenomeTrack):
             prev_end = end
             score_list.append(values)
             pos_list.append((start, end))
+
+        # Add a last value if needed:
+        if prev_end < end_region and return_nans:
+            score_list.append(np.repeat(np.nan, self.num_fields))
+            pos_list.append((prev_end, end_region))
 
         return score_list, pos_list
 
