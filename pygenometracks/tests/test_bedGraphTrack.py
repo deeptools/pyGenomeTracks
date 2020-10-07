@@ -214,6 +214,18 @@ height = 3
 with open(os.path.join(ROOT, "log1pm_bedgraph.ini"), 'w') as fh:
     fh.write(log1p_with_neg)
 
+
+bedgraph_end_not_covered = """
+[bedgraph]
+file = simple.bdg
+height = 3
+summary_method = max
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "bedgraph_end_not_covered.ini"), 'w') as fh:
+    fh.write(bedgraph_end_not_covered)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -427,3 +439,19 @@ def test_bedgraph_neg_log1p():
 
     os.remove(ini_file)
     os.remove(os.path.join(ROOT, "bedgraph_chrx_2e6_5e6_m.bg"))
+
+
+def test_bedgraph_end_not_covered():
+    region = "chr7:100-400"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_end_not_covered_', delete=False)
+    args = "--tracks {ini} --region {region} --trackLabelFraction 0.2 " \
+           "--dpi 130 --outFileName {outfile}" \
+           "".format(ini=os.path.join(ROOT, "bedgraph_end_not_covered.ini"),
+                     outfile=outfile.name, region=region).split()
+    pygenometracks.plotTracks.main(args)
+    print("saving test to {}".format(outfile.name))
+    res = compare_images(os.path.join(ROOT, 'master_bedgraph_end_not_covered.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)

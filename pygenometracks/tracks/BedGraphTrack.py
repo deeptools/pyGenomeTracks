@@ -229,7 +229,7 @@ file_type = {TRACK_TYPE}
                    return_nans=True, tbx_var='self.tbx', inttree_var='self.interval_tree'):
         """
         Retrieves the score (or scores or whatever fields are in a bedgraph like file) and the positions
-        for a given region.
+        for a given region. If return_nans is True the pos_list goes until at least end_region.
         In case there is no item in the region. It returns [], []
         Args:
             chrom_region:
@@ -237,7 +237,7 @@ file_type = {TRACK_TYPE}
             end_region:
         Returns:
             tuple:
-                scores_list, post_list
+                scores_list, pos_list
         """
         score_list = []
         pos_list = []
@@ -287,6 +287,11 @@ file_type = {TRACK_TYPE}
             prev_end = end
             score_list.append(values)
             pos_list.append((start, end))
+
+        # Add a last value if needed:
+        if prev_end < end_region and return_nans:
+            score_list.append(np.repeat(np.nan, self.num_fields))
+            pos_list.append((prev_end, end_region))
 
         return score_list, pos_list
 
