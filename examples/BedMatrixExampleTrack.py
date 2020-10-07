@@ -4,7 +4,7 @@ from . BedGraphLikeTrack import BedGraphLikeTrack
 
 
 class BedGraphMatrixTrack(BedGraphLikeTrack):
-    # this track class extends a BedGraphTrack that is already part of
+    # this track class extends a BedGraphLikeTrack that is already part of
     # pyGenomeTracks. The advantage of extending this class is that
     # we can re-use the code for reading a bedgraph file
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz']
