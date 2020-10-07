@@ -16,9 +16,9 @@ Python dependencies:
 * numpy >= 1.16
 * intervaltree >= 2.1.0
 * pyBigWig >= 0.3.16
-* hicmatrix >= 13
+* hicmatrix >= 15
 * pysam >= 0.14
-* matplotlib >= 3.1.1
+* matplotlib == 3.1.1
 * gffutils >= 0.9
 * pybedtools >= 0.8.1
 * tqdm >= 4.20
