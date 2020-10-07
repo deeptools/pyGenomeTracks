@@ -140,15 +140,13 @@ file_type = {TRACK_TYPE}
                                  " requires to set the parameter"
                                  " second_file.")
             else:
-                if self.properties['second_file'].endswith(".bgz"):
+                # First try to open it as a Tabix file
+                try:
                     # from the tabix file is not possible to know the
                     # global min and max
-                    try:
-                        self.tbx2 = pysam.TabixFile(self.properties['second_file'])
-                    except IOError:
-                        self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'])
-                # load the file as an interval tree
-                else:
+                    self.tbx2 = pysam.TabixFile(self.properties['second_file'])
+                except IOError:
+                    # load the file as an interval tree
                     self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'])
 
     def set_properties_defaults(self):
@@ -183,17 +181,13 @@ file_type = {TRACK_TYPE}
 
     def load_file(self):
         self.tbx = None
-        # try to load a tabix file is available
-        if self.properties['file'].endswith(".bgz"):
+        # try to load a tabix file if available
+        try:
             # from the tabix file is not possible to know the
             # global min and max
-            try:
-                self.tbx = pysam.TabixFile(self.properties['file'])
-            except IOError:
-                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
-                                                                  self.properties['region'])
-        # load the file as an interval tree
-        else:
+            self.tbx = pysam.TabixFile(self.properties['file'])
+        except IOError:
+            # load the file as an interval tree
             self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
                                                               self.properties['region'])
 

@@ -85,7 +85,7 @@ def main():
 
     # For the default they are summarized in a matrix
     mat = np.empty((len(all_default_parameters) + 2, len(all_tracks_with_default) + 1),
-                   dtype='U25')
+                   dtype='U100')
     mat[0, 0] = 'parameter'
     mat[1, 0] = '--'
     for j, track_type in enumerate(all_tracks_with_default, start=1):
