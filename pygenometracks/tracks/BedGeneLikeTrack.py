@@ -1,4 +1,4 @@
-from . BedLikeTrack import BedLikeTrack, AROUND_REGION, DEFAULT_BED_COLOR
+from . BedLikeTrack import BedLikeTrack, AROUND_REGION
 from .. utilities import get_length_w, change_chrom_names
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
