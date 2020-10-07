@@ -93,9 +93,10 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
             file_to_open = original_file.intersect(regions, wa=True, u=True).fn
         except pybedtools.helpers.BEDToolsError:
             file_to_open = file_name
-        except NotImplementedError as e:
-            log.error("BEDTools is not installed but required.")
-            raise e
+        except NotImplementedError:
+            log.warning("BEDTools is not installed pygenometracks"
+                        " will be slower.")
+            file_to_open = file_name
         except Exception as e:
             log.warning(f"BEDTools intersect raised: {e}"
                         "\nWill not subset the file.")
