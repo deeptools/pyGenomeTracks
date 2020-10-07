@@ -155,7 +155,7 @@ file_type = {TRACK_TYPE}
             else:
                 return
         # We need to get the size before masking bins because
-        # HiCMatrix v13 give smaller chromosome_sizes after:
+        # HiCMatrix>=v13 give smaller chromosome_sizes after:
         self.chrom_sizes = self.hic_ma.get_chromosome_sizes()
         if self.properties['show_masked_bins']:
             pass
