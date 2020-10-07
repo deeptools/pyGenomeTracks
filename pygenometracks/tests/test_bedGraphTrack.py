@@ -268,6 +268,14 @@ def test_plot_bedgraph_tracks_rasterize():
     ini_file = os.path.join(ROOT, "bedgraph_useMid.ini")
     region = "chr2:73,800,000-75,744,000"
     expected_file = os.path.join(ROOT, 'master_bedgraph_useMid.pdf')
+    # matplotlib compare on pdf will create a png next to it.
+    # To avoid issues related to write in test_data folder
+    # We copy the expected file into a temporary place
+    new_expected_file = NamedTemporaryFile(suffix='.pdf',
+                                           prefix='pyGenomeTracks_test_',
+                                           delete=False)
+    os.system(f'cp {expected_file} {new_expected_file.name}')
+    expected_file = new_expected_file.name
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()

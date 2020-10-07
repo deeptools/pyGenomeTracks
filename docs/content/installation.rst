@@ -10,14 +10,22 @@ Remember -- pyGenomeTracks is available for **command line usage** as well as fo
 Requirements
 -------------
 
-* Python >=3.6
+Python dependencies:
+
+* Python >= 3.6
 * numpy >= 1.16
-* intervaltree >=2.1.0
-* pyBigWig >= 0.3.4
-* hicmatrix >= 0.14
-* pysam >= 0.8
-* matplotlib >= 3.1.1
-* gffutils >=0.9
+* intervaltree >= 2.1.0
+* pyBigWig >= 0.3.16
+* hicmatrix >= 15
+* pysam >= 0.14
+* matplotlib == 3.1.1
+* gffutils >= 0.9
+* pybedtools >= 0.8.1
+* tqdm >= 4.20
+
+External dependencies:
+
+* BEDTools
 
 Command line installation using ``conda``
 -----------------------------------------
@@ -44,6 +52,8 @@ Install pyGenomeTracks using the following command:
 
 All python requirements should be automatically installed.
 
+Since version 3.5, pyGenomeTracks require BEDTools, do not forget to install it or load it into your environment.
+
 If you need to specify a specific path for the installation of the tools, make use of `pip install`'s numerous options:
 
 .. code:: bash
@@ -55,7 +65,7 @@ Command line installation without ``pip``
 
 You are highly recommended to use `conda install` rather than the following complicated steps.
 
-1. Install the requirements listed above in the "requirements" section. This is done automatically by `pip`.
+1. Install the requirements listed above in the "requirements" section. This is done automatically by `pip` (except BEDTools).
 
 2. Download source code
 ::
