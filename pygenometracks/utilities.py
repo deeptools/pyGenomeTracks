@@ -86,6 +86,12 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
             file_to_open = original_file.intersect(regions, wa=True, u=True).fn
         except pybedtools.helpers.BEDToolsError:
             file_to_open = file_name
+        except NotImplementedError:
+            print("It seems that BEDTools is not installed. Cannot subset the file.")
+            file_to_open = file_name
+        except Exception as e:
+            print(e)
+            file_to_open = file_name
         sys.stderr.close()
         sys.stderr = sys.__stderr__
         with open(temporary_file.name, 'r') as f:
