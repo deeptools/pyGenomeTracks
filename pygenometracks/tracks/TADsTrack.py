@@ -1,14 +1,12 @@
-from . BedTrack import BedTrack
-from . GenomeTrack import GenomeTrack
+from . BedLikeTrack import BedLikeTrack, AROUND_REGION
+from .. utilities import change_chrom_names
 import numpy as np
 
-DEFAULT_BED_COLOR = '#1f78b4'
 
-
-class TADsTrack(BedTrack):
+class TADsTrack(BedLikeTrack):
     SUPPORTED_ENDINGS = ['.domain', '.domains', '.tad', '.tads']
     TRACK_TYPE = 'domains'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
+    OPTIONS_TXT = BedLikeTrack.OPTIONS_TXT + f"""
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 #color = bed_rgb
@@ -21,50 +19,47 @@ class TADsTrack(BedTrack):
 #max_value=100
 # If the color is simply a color name, then this color is used and the score is not considered.
 color = darkblue
-# optional: line_width
-#line_width = 0.5
-# optional, default is black. To remove the border, simply set 'border_color' to none
-#border_color = black
 # optional. If not given it is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
 
-    DEFAULTS_PROPERTIES = {'orientation': None,
-                           'color': DEFAULT_BED_COLOR,
-                           'border_color': 'black',
-                           'line_width': 0.5,
-                           # To remove in next 1.0
-                           'prefered_name': 'transcript_name',
-                           'merge_transcripts': False,
-                           # End to remove
-                           'max_value': None,
-                           'min_value': None,
-                           'region': None}  # Cannot be set manually but is set by tracksClass
-    NECESSARY_PROPERTIES = ['file']
-    SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
-                             'min_value': {'auto': None}}
-    POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted']}
-    # In next 1.0: BOOLEAN_PROPERTIES = []
-    BOOLEAN_PROPERTIES = ['merge_transcripts']
-    STRING_PROPERTIES = ['file', 'file_type',
-                         'overlay_previous', 'orientation',
-                         'title', 'color', 'border_color',
-                         # To remove in next 1.0
-                         'prefered_name']
-    FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
-                        'min_value': [- np.inf, np.inf],
-                        'fontsize': [0, np.inf],
-                        'line_width': [0, np.inf],
-                        'height': [0, np.inf]}
-    INTEGER_PROPERTIES = {}
+    DEFAULTS_PROPERTIES = dict({'max_value': None,
+                                'min_value': None},
+                               **BedLikeTrack.DEFAULTS_PROPERTIES)
+    NECESSARY_PROPERTIES = BedLikeTrack.NECESSARY_PROPERTIES
+    SYNONYMOUS_PROPERTIES = dict({'max_value': {'auto': None},
+                                  'min_value': {'auto': None}},
+                                 **BedLikeTrack.SYNONYMOUS_PROPERTIES)
+    POSSIBLE_PROPERTIES = BedLikeTrack.POSSIBLE_PROPERTIES
+    BOOLEAN_PROPERTIES = BedLikeTrack.BOOLEAN_PROPERTIES
+    STRING_PROPERTIES = BedLikeTrack.STRING_PROPERTIES
+    FLOAT_PROPERTIES = dict({'max_value': [- np.inf, np.inf],
+                             'min_value': [- np.inf, np.inf]},
+                            **BedLikeTrack.FLOAT_PROPERTIES)
+    INTEGER_PROPERTIES = BedLikeTrack.INTEGER_PROPERTIES
     # The color can be a color or a colormap if bed_type is bed12 or 'bed_rgb'
-    # border_color can only be a color
 
     def __init__(self, *args, **kwarg):
         super(TADsTrack, self).__init__(*args, **kwarg)
         self.properties['display'] = 'triangles'
 
-    def set_properties_defaults(self):
-        self.properties['fontsize'] = 12
-        super(TADsTrack, self).set_properties_defaults()
-        self.properties['global_max_row'] = False
+    def plot(self, ax, chrom_region, start_region, end_region):
+        if chrom_region not in self.interval_tree.keys():
+            chrom_region_before = chrom_region
+            chrom_region = change_chrom_names(chrom_region)
+            if chrom_region not in self.interval_tree.keys():
+                self.log.warning("*Warning*\nNo interval was found when "
+                                 "overlapping with both "
+                                 f"{chrom_region_before}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                 f" and {chrom_region}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                 " inside the bed file. "
+                                 "This will generate an empty track!!\n")
+                return
+        chrom_region = self.check_chrom_str_bytes(self.interval_tree,
+                                                  chrom_region)
+
+        genes_overlap = \
+            sorted(self.interval_tree[chrom_region][start_region:end_region])
+
+        if self.properties['display'] == 'triangles':
+            self.plot_triangles(ax, genes_overlap)
