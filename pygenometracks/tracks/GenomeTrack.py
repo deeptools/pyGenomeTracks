@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .. utilities import to_string, to_bytes
+from .. utilities import to_string, to_bytes, TextWrapAxis
 import logging
 import numpy as np
 from matplotlib import colors as mc
@@ -219,29 +219,21 @@ height = 2
         ax.set_xlim(0, 1)
         ax.patch.set_visible(False)
 
-    def plot_label(self, label_ax, width_dpi, h_align='left'):
+    def plot_label(self, label_ax, h_align='left'):
         if h_align == 'left':
-            label_ax.text(0.05, 0.5, self.properties['title'],
-                          horizontalalignment='left', size='large',
-                          verticalalignment='center',
-                          transform=label_ax.transAxes,
-                          wrap=True)
+            x_pos = 0.05
         elif h_align == 'right':
-            txt = label_ax.text(1, 0.5, self.properties['title'],
-                                horizontalalignment='right', size='large',
-                                verticalalignment='center',
-                                transform=label_ax.transAxes,
-                                wrap=True)
-            # To be able to wrap to the left:
-            txt._get_wrap_line_width = lambda: width_dpi
+            x_pos = 1
         else:
-            txt = label_ax.text(0.5, 0.5, self.properties['title'],
-                                horizontalalignment='center', size='large',
-                                verticalalignment='center',
-                                transform=label_ax.transAxes,
-                                wrap=True)
-            # To be able to wrap to the left:
-            txt._get_wrap_line_width = lambda: width_dpi
+            x_pos = 0.5
+        print(x_pos, 0.5)
+        label_ax.add_artist(
+            TextWrapAxis(label_ax, x_pos, 0.5,
+                         self.properties['title'],
+                         horizontalalignment=h_align, size='large',
+                         verticalalignment='center',
+                         transform=label_ax.transAxes,
+                         wrap=True))
 
     def process_type_for_coverage_track(self):
         default_plot_type = 'fill'

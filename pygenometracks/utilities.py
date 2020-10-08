@@ -7,6 +7,9 @@ from intervaltree import IntervalTree, Interval
 import pybedtools
 import tempfile
 import warnings
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import math
 import logging
 
 
@@ -14,6 +17,72 @@ FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s
 logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
+
+
+# This is a class for text which
+# enable to wrap within an axis
+# (the default plt.Text only wrap
+# within a figure)
+class TextWrapAxis(plt.Text):
+
+    def __init__(self, axis, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.axis = axis
+
+    def _get_wrap_line_width(self):
+        """
+        Return the maximum line width for wrapping text based on the current
+        orientation.
+        """
+        x0, y0 = self.get_transform().transform(self.get_position())
+        # In the original plt.Text it is:
+        # figure_box = self.get_figure().get_window_extent()
+        # In this Class we use the axis box:
+        axis_box = self.axis.get_window_extent()
+        # Calculate available width based on text alignment
+        alignment = self.get_horizontalalignment()
+        self.set_rotation_mode('anchor')
+        rotation = self.get_rotation()
+
+        # In the original plt.Text it was distance to figure_box
+        left = self._get_dist_to_box(rotation, x0, y0, axis_box)
+        right = self._get_dist_to_box(
+            (180 + rotation) % 360, x0, y0, axis_box)
+        if alignment == 'left':
+            line_width = left
+        elif alignment == 'right':
+            line_width = right
+        else:
+            line_width = 2 * min(left, right)
+
+        return line_width
+
+    def _get_dist_to_box(self, rotation, x0, y0, figure_box):
+        """
+        Return the distance from the given points to the boundaries of a
+        rotated box, in pixels.
+        """
+
+        # In the original function, it was assumed that
+        # figure_box.x0 = 0 and figure_box.y0 = 0
+        # This is now added.
+        if rotation > 270:
+            quad = rotation - 270
+            h1 = (y0 - figure_box.y0) / math.cos(math.radians(quad))
+            h2 = (figure_box.x1 - x0) / math.cos(math.radians(90 - quad))
+        elif rotation > 180:
+            quad = rotation - 180
+            h1 = (x0 - figure_box.x0) / math.cos(math.radians(quad))
+            h2 = (y0 - figure_box.y0) / math.cos(math.radians(90 - quad))
+        elif rotation > 90:
+            quad = rotation - 90
+            h1 = (figure_box.y1 - y0) / math.cos(math.radians(quad))
+            h2 = (x0 - figure_box.x0) / math.cos(math.radians(90 - quad))
+        else:
+            h1 = (figure_box.x1 - x0) / math.cos(math.radians(rotation))
+            h2 = (figure_box.y1 - y0) / math.cos(math.radians(90 - rotation))
+
+        return min(h1, h2)
 
 
 class InputError(Exception):

@@ -3,7 +3,7 @@ from .. readBed import ReadBed
 # To remove next 1.0
 from .. readGtf import ReadGtf
 # End to remove
-from .. utilities import opener, count_lines, temp_file_from_intersect
+from .. utilities import opener, count_lines, temp_file_from_intersect, TextWrapAxis
 import matplotlib
 from matplotlib.patches import Polygon
 from intervaltree import IntervalTree, Interval
@@ -217,29 +217,20 @@ class BedLikeTrack(GenomeTrack):
         else:
             ax.set_ylim(0, ymax)
 
-    def plot_label(self, label_ax, width_dpi, h_align='left'):
+    def plot_label(self, label_ax, h_align='left'):
         if h_align == 'left':
-            label_ax.text(0.05, 1, self.properties['title'],
-                          horizontalalignment='left', size='large',
-                          verticalalignment='top',
-                          transform=label_ax.transAxes,
-                          wrap=True)
+            x_pos = 0.05
         elif h_align == 'right':
-            txt = label_ax.text(1, 1, self.properties['title'],
-                                horizontalalignment='right', size='large',
-                                verticalalignment='top',
-                                transform=label_ax.transAxes,
-                                wrap=True)
-            # To be able to wrap to the left:
-            txt._get_wrap_line_width = lambda: width_dpi
+            x_pos = 1
         else:
-            txt = label_ax.text(0.5, 1, self.properties['title'],
-                                horizontalalignment='center', size='large',
-                                verticalalignment='top',
-                                transform=label_ax.transAxes,
-                                wrap=True)
-            # To be able to wrap to the left:
-            txt._get_wrap_line_width = lambda: width_dpi
+            x_pos = 0.5
+        label_ax.add_artist(
+            TextWrapAxis(label_ax, x_pos, 1,
+                         self.properties['title'],
+                         horizontalalignment=h_align, size='large',
+                         verticalalignment='top',
+                         transform=label_ax.transAxes,
+                         wrap=True))
 
     def get_rgb(self, bed, param='color', default=DEFAULT_BED_COLOR):
         """
