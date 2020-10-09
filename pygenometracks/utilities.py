@@ -66,7 +66,20 @@ class TextWrapAxis(plt.Text):
         # In the original function, it was assumed that
         # figure_box.x0 = 0 and figure_box.y0 = 0
         # This is now added.
-        if rotation > 270:
+        # There is an issue because
+        # math.cos(math.radians(90)) gives 6.123233995736766e-17
+        # Thus if rotation = 0 and figure_box.y1 = y0
+        # _get_dist_to_box returns 0
+        # I add round values of rotation:
+        if rotation == 0:
+            return(figure_box.x1 - x0)
+        elif rotation == 90:
+            return(figure_box.y1 - y0)
+        elif rotation == 180:
+            return(x0 - figure_box.x0)
+        elif rotation == 270:
+            return(y0 - figure_box.y0)
+        elif rotation > 270:
             quad = rotation - 270
             h1 = (y0 - figure_box.y0) / math.cos(math.radians(quad))
             h2 = (figure_box.x1 - x0) / math.cos(math.radians(90 - quad))
