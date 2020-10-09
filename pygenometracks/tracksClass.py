@@ -41,7 +41,7 @@ DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 # proportion of width dedicated to (figure, legends)
 DEFAULT_WIDTH_RATIOS = (0.01, 0.90, 0.1)
-DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
+DEFAULT_MARGINS = {'left': 0.04, 'right': 0.98, 'bottom': 0.03, 'top': 0.97}
 
 
 class MultiDict(OrderedDict):
@@ -86,7 +86,7 @@ class PlotTracks(object):
         if track_label_width is None:
             self.width_ratios = DEFAULT_WIDTH_RATIOS
         else:
-            self.width_ratios = (0.01,
+            self.width_ratios = (DEFAULT_WIDTH_RATIOS[0],
                                  1 - track_label_width,
                                  track_label_width)
 
