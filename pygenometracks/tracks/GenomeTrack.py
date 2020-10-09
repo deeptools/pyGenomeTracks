@@ -226,7 +226,6 @@ height = 2
             x_pos = 1
         else:
             x_pos = 0.5
-        print(x_pos, 0.5)
         label_ax.add_artist(
             TextWrapAxis(label_ax, x_pos, 0.5,
                          self.properties['title'],
