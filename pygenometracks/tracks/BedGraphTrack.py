@@ -140,15 +140,13 @@ file_type = {TRACK_TYPE}
                                  " requires to set the parameter"
                                  " second_file.")
             else:
-                if self.properties['second_file'].endswith(".bgz"):
+                # First try to open it as a Tabix file
+                try:
                     # from the tabix file is not possible to know the
                     # global min and max
-                    try:
-                        self.tbx2 = pysam.TabixFile(self.properties['second_file'])
-                    except IOError:
-                        self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'])
-                # load the file as an interval tree
-                else:
+                    self.tbx2 = pysam.TabixFile(self.properties['second_file'])
+                except IOError:
+                    # load the file as an interval tree
                     self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'])
 
     def set_properties_defaults(self):
@@ -183,17 +181,13 @@ file_type = {TRACK_TYPE}
 
     def load_file(self):
         self.tbx = None
-        # try to load a tabix file is available
-        if self.properties['file'].endswith(".bgz"):
+        # try to load a tabix file if available
+        try:
             # from the tabix file is not possible to know the
             # global min and max
-            try:
-                self.tbx = pysam.TabixFile(self.properties['file'])
-            except IOError:
-                self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
-                                                                  self.properties['region'])
-        # load the file as an interval tree
-        else:
+            self.tbx = pysam.TabixFile(self.properties['file'])
+        except IOError:
+            # load the file as an interval tree
             self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
                                                               self.properties['region'])
 
@@ -235,7 +229,7 @@ file_type = {TRACK_TYPE}
                    return_nans=True, tbx_var='self.tbx', inttree_var='self.interval_tree'):
         """
         Retrieves the score (or scores or whatever fields are in a bedgraph like file) and the positions
-        for a given region.
+        for a given region. If return_nans is True the pos_list goes until at least end_region.
         In case there is no item in the region. It returns [], []
         Args:
             chrom_region:
@@ -243,7 +237,7 @@ file_type = {TRACK_TYPE}
             end_region:
         Returns:
             tuple:
-                scores_list, post_list
+                scores_list, pos_list
         """
         score_list = []
         pos_list = []
@@ -293,6 +287,11 @@ file_type = {TRACK_TYPE}
             prev_end = end
             score_list.append(values)
             pos_list.append((start, end))
+
+        # Add a last value if needed:
+        if prev_end < end_region and return_nans:
+            score_list.append(np.repeat(np.nan, self.num_fields))
+            pos_list.append((prev_end, end_region))
 
         return score_list, pos_list
 

@@ -468,13 +468,19 @@ def test_plot_tracks_with_hic_rasterize_height_2chr():
         output_file = outfile.name[:-4] + '_' + region_str + extension
         expected_file = os.path.join(ROOT, 'master_plot_hic_rasterize_height_'
                                      + region_str + extension)
+        # matplotlib compare on pdf will create a png next to it.
+        # To avoid issues related to write in test_data folder
+        # We copy the expected file into a temporary place
+        new_expected_file = NamedTemporaryFile(suffix='.pdf',
+                                               prefix='pyGenomeTracks_test_',
+                                               delete=False)
+        os.system(f'cp {expected_file} {new_expected_file.name}')
+        expected_file = new_expected_file.name
         res = compare_images(expected_file,
                              output_file, tolerance)
         assert res is None, res
 
         os.remove(output_file)
-        if extension == '.pdf':
-            os.remove(expected_file.replace(extension, '_pdf.png'))
 
 
 def test_plot_tracks_with_hic_rasterize_height_2chr_individual():
@@ -485,15 +491,20 @@ def test_plot_tracks_with_hic_rasterize_height_2chr_individual():
                                      delete=False)
         expected_file = os.path.join(ROOT, 'master_plot_hic_rasterize_height_'
                                      + region.replace(':', '-') + extension)
-
+        # matplotlib compare on pdf will create a png next to it.
+        # To avoid issues related to write in test_data folder
+        # We copy the expected file into a temporary place
+        new_expected_file = NamedTemporaryFile(suffix='.pdf',
+                                               prefix='pyGenomeTracks_test_',
+                                               delete=False)
+        os.system(f'cp {expected_file} {new_expected_file.name}')
+        expected_file = new_expected_file.name
         args = f"--tracks {ini_file} --region {region} "\
                "--trackLabelFraction 0.23 --width 38 --dpi 10 "\
                f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
                              outfile.name, tolerance)
-        if extension == '.pdf':
-            os.remove(expected_file.replace(extension, '_pdf.png'))
     assert res is None, res
 
 
