@@ -326,37 +326,36 @@ height = 2
         else:
             valid_colormap = None
             # We will try to process the color as a colormap
-            if valid_color is None:
-                # If someone what to use its own colormap,
-                # he can specify the rgb values or color values:
-                # For example:
-                # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
-                if self.properties[param][0] == '[':
-                    try:
-                        custom_colors = eval(self.properties[param])
-                    except (SyntaxError, NameError) as e:
-                        self.log.warning("Warning: section "
-                                         f"{self.properties['section_name']},"
-                                         f" {param} was set as "
-                                         f"{self.properties[param]} but "
-                                         f"raises an error:\n{e}\nIt will be "
-                                         "ignored and default value will be "
-                                         "used.\n")
-                    else:
-                        try:
-                            valid_colormap = mc.LinearSegmentedColormap.from_list(
-                                'custom', custom_colors, N=100)
-                        except ValueError as e:
-                            self.log.warning("Warning: section "
-                                             f"{self.properties['section_name']},"
-                                             f" {param} was set as "
-                                             f"{self.properties[param]} but "
-                                             f"raises an error:\n{e}\nIt will "
-                                             f"be ignored and"
-                                             " default value will be used.\n")
+            # If someone what to use its own colormap,
+            # he can specify the rgb values or color values:
+            # For example:
+            # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+            if self.properties[param][0] == '[':
+                try:
+                    custom_colors = eval(self.properties[param])
+                except (SyntaxError, NameError) as e:
+                    self.log.warning("Warning: section "
+                                     f"{self.properties['section_name']},"
+                                     f" {param} was set as "
+                                     f"{self.properties[param]} but "
+                                     f"raises an error:\n{e}\nIt will be "
+                                     "ignored and default value will be "
+                                     "used.\n")
                 else:
-                    if self.properties[param] in dir(plt.cm):
-                        valid_colormap = self.properties[param]
+                    try:
+                        valid_colormap = mc.LinearSegmentedColormap.from_list(
+                            'custom', custom_colors, N=100)
+                    except ValueError as e:
+                        self.log.warning("Warning: section "
+                                            f"{self.properties['section_name']},"
+                                            f" {param} was set as "
+                                            f"{self.properties[param]} but "
+                                            f"raises an error:\n{e}\nIt will "
+                                            f"be ignored and"
+                                            " default value will be used.\n")
+            else:
+                if self.properties[param] in dir(plt.cm):
+                    valid_colormap = self.properties[param]
         # Here, colormap is possible
         # valid_color is None or a valid color or the default value
         # valid_colormap is None or a valid colormap
