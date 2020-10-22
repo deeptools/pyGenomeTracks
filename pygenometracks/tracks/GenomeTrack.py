@@ -347,12 +347,12 @@ height = 2
                             'custom', custom_colors, N=100)
                     except ValueError as e:
                         self.log.warning("Warning: section "
-                                            f"{self.properties['section_name']},"
-                                            f" {param} was set as "
-                                            f"{self.properties[param]} but "
-                                            f"raises an error:\n{e}\nIt will "
-                                            f"be ignored and"
-                                            " default value will be used.\n")
+                                         f"{self.properties['section_name']},"
+                                         f" {param} was set as "
+                                         f"{self.properties[param]} but "
+                                         f"raises an error:\n{e}\nIt will "
+                                         f"be ignored and"
+                                         " default value will be used.\n")
             else:
                 if self.properties[param] in dir(plt.cm):
                     valid_colormap = self.properties[param]
