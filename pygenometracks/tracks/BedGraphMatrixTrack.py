@@ -1,7 +1,6 @@
 from . BedGraphTrack import BedGraphTrack
 from . GenomeTrack import GenomeTrack
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib import cm
 
 DEFAULT_BEDGRAPHMATRIX_COLORMAP = 'viridis'
@@ -154,27 +153,7 @@ file_type = {TRACK_TYPE}
         if self.properties['type'] == 'lines':
             GenomeTrack.plot_y_axis(self, ax, plot_axis)
         else:
-            try:
-                cobar = plt.colorbar(self.img, ax=ax, fraction=0.95)
-            except AttributeError:
-                return
-
-            cobar.solids.set_edgecolor("face")
-            cobar.ax.tick_params(labelsize='smaller')
-            cobar.ax.yaxis.set_ticks_position('left')
-            # adjust the labels of the colorbar
-            ticks = cobar.ax.get_yticks()
-            labels = cobar.ax.set_yticklabels(ticks.astype('float32'))
-            (vmin, vmax) = cobar.mappable.get_clim()
-            for idx in np.where(ticks == vmin)[0]:
-                # if the label is at the start of the colobar
-                # move it above avoid being cut or overlapping with other track
-                labels[idx].set_verticalalignment('bottom')
-            for idx in np.where(ticks == vmax)[0]:
-                # if the label is at the end of the colobar
-                # move it a bit inside to avoid overlapping
-                # with other labels
-                labels[idx].set_verticalalignment('top')
+            GenomeTrack.plot_custom_cobar(self, ax)
 
     def __del__(self):
         if self.tbx is not None:

@@ -5,6 +5,7 @@ import logging
 import numpy as np
 from matplotlib import colors as mc
 import matplotlib.pyplot as plt
+from matplotlib.ticker import LogFormatter
 
 
 class GenomeTrack(object):
@@ -401,6 +402,50 @@ height = 2
             elif type(next(iter(iteratable_obj))) in [bytes, np.bytes_]:
                 p_obj = to_bytes(p_obj)
         return p_obj
+
+    def plot_custom_cobar(self, axis, fraction=0.95):
+        if self.properties.get('transform', 'no') in ['log', 'log1p']:
+            # get a useful log scale
+            # that looks like [1, 2, 5, 10, 20, 50, 100, ... etc]
+
+            formatter = LogFormatter(10, labelOnlyBase=False)
+            aa = np.array([1, 2, 5])
+            tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
+            try:
+                cobar = plt.colorbar(self.img, ticks=tick_values,
+                                     format=formatter, ax=axis,
+                                     fraction=fraction)
+            except AttributeError:
+                return
+        else:
+            try:
+                cobar = plt.colorbar(self.img, ax=axis, fraction=0.95)
+            except AttributeError:
+                try:
+                    cobar = plt.colorbar(self.colormap, ax=axis, fraction=0.95)
+                except AttributeError:
+                    return
+
+        cobar.solids.set_edgecolor("face")
+        cobar.ax.tick_params(labelsize='smaller')
+        cobar.ax.yaxis.set_ticks_position('left')
+        # adjust the labels of the colorbar
+        # Get ticks positions
+        ticks = cobar.ax.get_yticks()
+        # Fix them
+        cobar.set_ticks(ticks)
+        # Set the corresponding labels
+        labels = cobar.ax.set_yticklabels(ticks.astype('float32'))
+        (vmin, vmax) = cobar.mappable.get_clim()
+        for idx in np.where(ticks == vmin)[0]:
+            # if the label is at the start of the colobar
+            # move it above avoid being cut or overlapping with other track
+            labels[idx].set_verticalalignment('bottom')
+        for idx in np.where(ticks == vmax)[0]:
+            # if the label is at the end of the colobar
+            # move it a bit inside to avoid overlapping
+            # with other labels
+            labels[idx].set_verticalalignment('top')
 
     def __del__(self):
         return
