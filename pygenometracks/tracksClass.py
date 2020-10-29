@@ -678,7 +678,7 @@ class XAxisTrack(GenomeTrack):
             vert_align = 'bottom'
 
         # First adjust the size of the label
-        ax.axis["x"].major_ticklabels.set(size=self.properties['fontsize'])    
+        ax.axis["x"].major_ticklabels.set(size=self.properties['fontsize'])
 
         # Get the ticks values
         ticks = ax.get_xticks()

@@ -3,7 +3,6 @@ from pygenometracks.utilities import InputError
 from intervaltree import IntervalTree, Interval
 import matplotlib
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Polygon
 from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect
 from tqdm import tqdm
