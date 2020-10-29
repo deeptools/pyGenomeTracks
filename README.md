@@ -20,6 +20,10 @@ are highly customizable. Currently, it is possible to plot:
  * links (represented as arcs)
  * Hi-C matrices
 
+Here is a scheme which describe how pyGenomeTracks is working (graphical abstract of [Lopez-Delisle et al. 2020](https://doi.org/10.1093/bioinformatics/btaa692)):
+
+![pyGenomeTracks](./docs/content/images/graphicalabstract.png)
+
 pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of
 pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
 
@@ -131,7 +135,8 @@ Citation
 ---------
 If you use pyGenomeTracks in your analysis, you can cite the following paper :
 
-Fidel Ramírez, Vivek Bhardwaj, Laura Arrigoni, Kin Chung Lam, Björn A. Grüning, José Villaveces, Bianca Habermann, Asifa Akhtar & Thomas Manke. High-resolution TADs reveal DNA sequences underlying genome organization in flies. Nature Communications (2018) [doi:10.1038/s41467-017-02525-w](https://www.nature.com/articles/s41467-017-02525-w)
+Lopez-Delisle L, Rabbani L, Wolff J, Bhardwaj V, Backofen R, Grüning B, Ramírez F, Manke T. pyGenomeTracks: reproducible plots for multivariate genomic data sets. Bioinformatics. 2020 Aug 3:btaa692. [doi: 10.1093/bioinformatics/btaa692](https://doi.org/10.1093/bioinformatics/btaa692). Epub ahead of print. PMID: 32745185.
+
 
 Documentation
 -------------

@@ -20,6 +20,10 @@ are highly customizable. Currently, it is possible to plot:
 - links
 - Hi-C matrices
 
+Here is a scheme which describe how pyGenomeTracks is working (graphical abstract of `Lopez-Delisle et al. 2020 <https://doi.org/10.1093/bioinformatics/btaa692>`_):
+
+.. image:: content/images/graphicalabstract.png
+
 pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of
 pyGenomeTracks from `Ramírez et al. 2017 <https://www.nature.com/articles/s41467-017-02525-w>`_.
 
