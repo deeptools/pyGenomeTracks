@@ -666,6 +666,21 @@ class XAxisTrack(GenomeTrack):
         super(XAxisTrack, self).__init__(*args, **kwargs)
 
     def plot(self, ax, chrom_region, region_start, region_end):
+
+        if self.properties['where'] == 'top':
+            ax.axis["x"] = ax.new_floating_axis(0, 0.2)
+            ax.axis["x"].set_axis_direction("top")
+            label_y_pos = 0.99
+            vert_align = 'top'
+        else:
+            ax.axis["x"] = ax.new_floating_axis(0, 0.9)
+            label_y_pos = 0.01
+            vert_align = 'bottom'
+
+        # First adjust the size of the label
+        ax.axis["x"].major_ticklabels.set(size=self.properties['fontsize'])    
+
+        # Get the ticks values
         ticks = ax.get_xticks()
         if ticks[-1] - ticks[1] <= 1e3:
             labels = [f"{x:,.0f}"
@@ -682,23 +697,21 @@ class XAxisTrack(GenomeTrack):
                       for x in ticks]
             labels[-2] += " Mbp"
 
-        if self.properties['where'] == 'top':
-            ax.axis["x"] = ax.new_floating_axis(0, 0.2)
-            ax.axis["x"].set_axis_direction("top")
-            label_y_pos = 0.99
-            vert_align = 'top'
-        else:
-            ax.axis["x"] = ax.new_floating_axis(0, 0.9)
-            label_y_pos = 0.01
-            vert_align = 'bottom'
+        # Fix ticks values
+        ax.set_xticks(ticks)
+
+        # Fix the limits which can be overwritten by set_xticks:
+        ax.set_xlim(region_start, region_end)
+
+        # Put the label
+        ax.set_xticklabels(labels)
+
+        ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
+
+        # Add the chromosome name
         ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
                 fontsize=self.properties['fontsize'],
                 verticalalignment=vert_align, transform=ax.transAxes)
-
-        ax.axis["x"].axis.set_ticklabels(labels)
-        ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
-
-        ax.axis["x"].major_ticklabels.set(size=self.properties['fontsize'])
 
     def plot_y_axis(self, ax, plot_ax):
         pass
