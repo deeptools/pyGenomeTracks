@@ -339,12 +339,12 @@ file_type = {TRACK_TYPE}
         self.log.info("setting min, max values for track "
                       f"{self.properties['section_name']} to: "
                       f"{vmin}, {vmax}\n")
-        
+
         if self.properties['transform'] == 'log1p':
             self.norm = colors.LogNorm(vmin=vmin, vmax=vmax)
         else:
             self.norm = colors.Normalize(vmin=vmin, vmax=vmax)
-        
+
         self.img = self.pcolormesh_45deg(ax, matrix, start_pos)
         if self.properties['rasterize']:
             self.img.set_rasterized(True)
