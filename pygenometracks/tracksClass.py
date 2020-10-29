@@ -667,6 +667,7 @@ class XAxisTrack(GenomeTrack):
 
     def plot(self, ax, chrom_region, region_start, region_end):
 
+        start, end = ax.get_xlim()
         if self.properties['where'] == 'top':
             ax.axis["x"] = ax.new_floating_axis(0, 0.2)
             ax.axis["x"].set_axis_direction("top")
@@ -701,7 +702,7 @@ class XAxisTrack(GenomeTrack):
         ax.set_xticks(ticks)
 
         # Fix the limits which can be overwritten by set_xticks:
-        ax.set_xlim(region_start, region_end)
+        ax.set_xlim(start, end)
 
         # Put the label
         ax.set_xticklabels(labels)
