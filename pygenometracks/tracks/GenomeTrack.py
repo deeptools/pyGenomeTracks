@@ -419,10 +419,10 @@ height = 2
                 return
         else:
             try:
-                cobar = plt.colorbar(self.img, ax=axis, fraction=0.95)
+                cobar = plt.colorbar(self.img, ax=axis, fraction=fraction)
             except AttributeError:
                 try:
-                    cobar = plt.colorbar(self.colormap, ax=axis, fraction=0.95)
+                    cobar = plt.colorbar(self.colormap, ax=axis, fraction=fraction)
                 except AttributeError:
                     return
 
