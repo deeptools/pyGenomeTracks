@@ -13,7 +13,7 @@ deploy:
   python:
     - 3.6
     - 3.7
-    #- 3.8
+    - 3.8
 env:
 - TRAVIS_PYTHON_VERSION=3.6
 - TRAVIS_PYTHON_VERSION=3.7
