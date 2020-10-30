@@ -552,8 +552,10 @@ class PlotTracks(object):
                 file_field_name = key
                 # # THIS COULD BE REMOVED IN A NEXT 1.0 VERSION
                 if file_field_name == 'boundaries_file':
-                    log.warning("The boundaries_file is not used anymore"
-                                " please use another track with the"
+                    log.warning("Deprecation Warning: "
+                                "The boundaries_file is not used anymore."
+                                " It will be ignored."
+                                " Please use another track with the"
                                 " `overlay_previous` option.\n")
                 # # END
                 file_names = [x for x in track_dict[file_field_name].split(" ") if x != '']
