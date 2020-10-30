@@ -1,9 +1,15 @@
 3.5.2
 =====
 
-Dependencies with conda:
-^^^^^^^^^^^^^^^^^^^^^^^^
-- Using conda which is the way we recommand installation it is now possible to use python 3.8 and any version of matplotlib from 3.1.1 to 3.3.2.
+Python dependency with conda:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Using conda which is the way we recommand installation it is now possible to use python 3.8.
+
+Relax version control on matplotlib:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Any version of matplotlib from 3.1.1 to 3.3.2 is now accepted.
 
 Bugfixes:
 ^^^^^^^^^
