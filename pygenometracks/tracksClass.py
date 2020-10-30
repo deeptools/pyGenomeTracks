@@ -707,8 +707,6 @@ class XAxisTrack(GenomeTrack):
         # Put the label
         ax.set_xticklabels(labels)
 
-        ax.axis['x'].axis.set_tick_params(which='minor', bottom='on')
-
         # Add the chromosome name
         ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
                 fontsize=self.properties['fontsize'],
