@@ -367,8 +367,8 @@ class PlotTracks(object):
                 extra_keywords = [k for k in all_keywords
                                   if k not in ['file', 'type', 'line_width']]
                 if len(extra_keywords) > 0:
-                    log.warn("These parameters were specified but will not"
-                             f" be used {' '.join(extra_keywords)}.\n")
+                    log.warning("These parameters were specified but will not"
+                                f" be used {' '.join(extra_keywords)}.\n")
                 self.vlines_properties = \
                     self.check_file_exists(track_options, tracks_file_path)
                 continue
@@ -426,10 +426,10 @@ class PlotTracks(object):
                 if ' ' in name:
                     old_name = name
                     name = '_'.join(name.split(' '))
-                    log.warn(f"Deprecated Warning: The section {section_name} "
-                             f"uses parameter {old_name} but there is no more "
-                             "parameter with space in name. "
-                             f"Will be substituted by {name}.\n")
+                    log.warning(f"Deprecated Warning: The section {section_name} "
+                                f"uses parameter {old_name} but there is no more "
+                                "parameter with space in name. "
+                                f"Will be substituted by {name}.\n")
                 else:
                     old_name = name
                 # end
@@ -497,8 +497,8 @@ class PlotTracks(object):
                     unused_keys.append(name)
             # If there are unused keys they are printed in a warning.
             if len(unused_keys) > 0:
-                log.warn(f"In section {section_name}, these parameters are "
-                         f"unused:{unused_keys}.\n")
+                log.warning(f"In section {section_name}, these parameters are "
+                            f"unused:{unused_keys}.\n")
             # The track_options will be checked for the file paths:
             track_options = self.check_file_exists(track_options,
                                                    tracks_file_path,
@@ -516,8 +516,8 @@ class PlotTracks(object):
                 if track_options['overlay_previous'] == 'no' and \
                    track_options['track_class'] not in [SpacerTrack,
                                                         XAxisTrack]:
-                    log.warn("title not set for section "
-                             f"{track_options['section_name']}\n")
+                    log.warning("title not set for section "
+                                f"{track_options['section_name']}\n")
             # The track_options are added to the track_list
             track_list.append(track_options)
         # Now that they were all checked
@@ -552,9 +552,11 @@ class PlotTracks(object):
                 file_field_name = key
                 # # THIS COULD BE REMOVED IN A NEXT 1.0 VERSION
                 if file_field_name == 'boundaries_file':
-                    log.warn("The boundaries_file is not used anymore"
-                             " please use another track with the"
-                             " `overlay_previous` option.\n")
+                    log.warning("Deprecation Warning: "
+                                "The boundaries_file is not used anymore."
+                                " It will be ignored."
+                                " Please use another track with the"
+                                " `overlay_previous` option.\n")
                 # # END
                 file_names = [x for x in track_dict[file_field_name].split(" ") if x != '']
                 full_path_file_names = []
