@@ -5,6 +5,15 @@ import logging
 import numpy as np
 from matplotlib import colors as mc
 import matplotlib.pyplot as plt
+import re
+
+# This is a regex for float which would work for 11, 102.25, but also .2
+float_regex = r'(?:\d+)?(?:\.\d+)?'
+# This is a regex for color_tuple without space: (float,float,float) which
+# put each float in a group:
+color_tuple = re.compile(r'^\(({0}),({0}),({0})\)$'.format(float_regex))
+# This is a regex for group without comma except between parenthesis
+block_no_comma_outside_parenthesis = re.compile(r'(?:[^,(]|\([^)]*\))+')
 
 
 class GenomeTrack(object):
@@ -289,35 +298,48 @@ height = 2
             return False
         if mc.is_color_like(self.properties[param]):
             valid_color = self.properties[param]
-        # It can be a tuple (for example (1, 0.88, 2./3) would be a valid color):
+        # It can be a tuple (for example (1, 0.88, 0.66666) would be a valid color):
+        # Warning: (1, 0.88, 2./3) is not a valid color anymore
         elif self.properties[param][0] == '(':
-            try:
-                custom_color = eval(self.properties[param])
-            except (SyntaxError, NameError) as e:
-                self.log.warning(f"*WARNING*: '{param}' for section"
-                                 f" {self.properties[param]}"
-                                 f" raised an error:\n{e}\n"
-                                 f"{self.properties['section_name']} has "
-                                 "been set to "
-                                 f"{default_value}.\n")
-                valid_color = default_value
-            else:
-                if mc.is_color_like(custom_color):
-                    valid_color = custom_color
-                else:
+            match = color_tuple.match(self.properties[param].replace(' ', ''))
+            if match is not None:
+                try:
+                    custom_color = tuple([float(v) for v in match.groups()])
+                except ValueError as e:
                     self.log.warning(f"*WARNING*: '{param}' for section"
-                                     f" {self.properties[param]}"
-                                     " is not valid. "
-                                     f"{self.properties['section_name']} has "
+                                     f" {self.properties['section_name']}"
+                                     f" raised an error:\n{e}\n"
+                                     f"{param} has "
                                      "been set to "
                                      f"{default_value}.\n")
                     valid_color = default_value
+                else:
+                    if mc.is_color_like(custom_color):
+                        valid_color = custom_color
+                    else:
+                        self.log.warning(f"*WARNING*: '{param}' for section"
+                                         f" {self.properties['section_name']}"
+                                         " is not valid. "
+                                         f"{param} has "
+                                         "been set to "
+                                         f"{default_value}.\n")
+                        valid_color = default_value
+            else:
+                self.log.warning(f"*WARNING*: '{param}' for section"
+                                 f" {self.properties['section_name']}"
+                                 " is not well formatted (expected (r, g, b), "
+                                 "with r,g,b values as float). "
+                                 f"{param} has "
+                                 "been set to "
+                                 f"{default_value}.\n")
+                valid_color = default_value
+
         if not colormap_possible:
             if valid_color is None:
                 self.log.warning(f"*WARNING*: '{param}' for section"
-                                 f" {self.properties[param]}"
+                                 f" {self.properties['section_name']}"
                                  " is not valid. "
-                                 f"{self.properties['section_name']} has "
+                                 f"{param} has "
                                  "been set to "
                                  f"{default_value}.\n")
                 valid_color = default_value
@@ -325,35 +347,45 @@ height = 2
             return False
         else:
             valid_colormap = None
+            message = ""
             # We will try to process the color as a colormap
             if valid_color is None:
                 # If someone what to use its own colormap,
                 # he can specify the rgb values or color values:
                 # For example:
+                # colormap = ['white', (1, 0.88, 0.66), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+                # Warning:
                 # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+                # is not any more a valid color because of 2./3
                 if self.properties[param][0] == '[':
-                    try:
-                        custom_colors = eval(self.properties[param])
-                    except (SyntaxError, NameError) as e:
-                        self.log.warning("Warning: section "
-                                         f"{self.properties['section_name']},"
-                                         f" {param} was set as "
-                                         f"{self.properties[param]} but "
-                                         f"raises an error:\n{e}\nIt will be "
-                                         "ignored and default value will be "
-                                         "used.\n")
-                    else:
-                        try:
-                            valid_colormap = mc.LinearSegmentedColormap.from_list(
-                                'custom', custom_colors, N=100)
-                        except ValueError as e:
-                            self.log.warning("Warning: section "
-                                             f"{self.properties['section_name']},"
-                                             f" {param} was set as "
-                                             f"{self.properties[param]} but "
-                                             f"raises an error:\n{e}\nIt will "
-                                             f"be ignored and"
-                                             " default value will be used.\n")
+                    if self.properties[param][-1] == ']':
+                        # We remove all space and quote
+                        prepared_color_list = re.sub(" |\'|\"", "", self.properties[param][1:-1])
+                        # We extract individual colors
+                        match = block_no_comma_outside_parenthesis.findall(prepared_color_list)
+                        if match is not None:
+                            # We check the color which start with '(' are (r,g,b) with rgb as floats
+                            if all([color_tuple.match(v) is not None
+                                    for v in match if v[0] == '(']):
+                                # We try to convert them as float:
+                                try:
+                                    custom_colors = [tuple([float(v) for v in color_tuple.match(v).groups()])
+                                                     if v[0] == '(' else v for v in match]
+                                except ValueError:
+                                    message = "some (r,g,b) values of the list could not be converted to float"
+                                else:
+                                    try:
+                                        valid_colormap = mc.LinearSegmentedColormap.from_list(
+                                            'custom', custom_colors, N=100)
+                                    except ValueError:
+                                        message = "the list of color could not be converted to colormap"
+                            else:
+                                message = "there is no color between brackets"
+                        else:
+                            message = "some colors starting with ( in the color" \
+                                      " list are not formatted (r,g,b) with r,g,b as float"
+                    if message != "":
+                        message = f" ({message})"
                 else:
                     if self.properties[param] in dir(plt.cm):
                         valid_colormap = self.properties[param]
@@ -363,7 +395,7 @@ height = 2
         if valid_color is None and valid_colormap is None:
             self.log.warning(f"*WARNING* {param}: '{self.properties[param]}'"
                              f" for section {self.properties['section_name']}"
-                             " is not valid. It has "
+                             f" is not valid{message}. It has "
                              "been set to "
                              f"{default_value}.\n")
             self.properties[param] = default_value
@@ -374,7 +406,7 @@ height = 2
                 self.log.warning(f"*WARNING* {param}: "
                                  f"'{self.properties[param]}' for section"
                                  f" {self.properties['section_name']}"
-                                 " is not valid. It has "
+                                 f" is not valid{message}. It has "
                                  "been set to "
                                  f"{default_value}.\n")
                 valid_colormap = default_value
