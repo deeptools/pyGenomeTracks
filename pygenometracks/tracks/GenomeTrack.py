@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .. utilities import to_string, to_bytes
+from .. utilities import to_string, to_bytes, InputError
 import logging
 import numpy as np
 from matplotlib import colors as mc
@@ -387,6 +387,23 @@ height = 2
             else:
                 self.properties[param] = valid_colormap
                 return True
+
+    def checkoperation(self):
+        "Will check if the operation is 'safe'"
+        allowed_words = ['second_file', 'file',
+                         'sum', 'min', 'max',
+                         'log1p', 'log']
+        allowed_signs = ['+', '-', '*', '/',
+                         '(', ')', '.', ',', ' '] + \
+                        [f"{i}" for i in range(10)]
+        operation = self.properties['operation']
+        for word in allowed_words:
+            operation = operation.replace(word, "")
+        forbidden_signs = [s for s in operation if s not in allowed_signs]
+        if len(forbidden_signs) > 0:
+            raise InputError(f"operation: {self.properties['operation']}"
+                             " uses signs which are not allowed: "
+                             f"{','.join(forbidden_signs)}.")
 
     @staticmethod
     def check_chrom_str_bytes(iteratable_obj, p_obj):

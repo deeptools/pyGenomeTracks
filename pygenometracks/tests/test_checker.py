@@ -138,7 +138,7 @@ with open(os.path.join(ROOT, "test_tracks_13b.ini"), 'w') as fh:
 test_tracks_14 = """
 [invalid operation]
 file = bigwig_chrx_2e6_5e6.bw
-operation = file + a
+operation = file + 0.0.0
 """
 with open(os.path.join(ROOT, "test_tracks_14.ini"), 'w') as fh:
     fh.write(test_tracks_14)
@@ -146,7 +146,7 @@ with open(os.path.join(ROOT, "test_tracks_14.ini"), 'w') as fh:
 test_tracks_14b = """
 [invalid operation]
 file = bedgraph2_X_2.5e6_3.5e6.bdg
-operation = file + a
+operation = file + 0.0.0
 """
 with open(os.path.join(ROOT, "test_tracks_14b.ini"), 'w') as fh:
     fh.write(test_tracks_14b)
@@ -155,7 +155,7 @@ test_tracks_15 = """
 [invalid operation with 2 files]
 file = bigwig_chrx_2e6_5e6.bw
 second_file = bigwig_chrx_2e6_5e6.bw
-operation = file + a * second_file
+operation = file + 0.0.0 * second_file
 """
 with open(os.path.join(ROOT, "test_tracks_15.ini"), 'w') as fh:
     fh.write(test_tracks_15)
@@ -164,7 +164,7 @@ test_tracks_15b = """
 [invalid operation with 2 files]
 file = bedgraph2_X_2.5e6_3.5e6.bdg
 second_file = bedgraph2_X_2.5e6_3.5e6.bdg
-operation = file + a * second_file
+operation = file + 0.0.0 * second_file
 """
 with open(os.path.join(ROOT, "test_tracks_15b.ini"), 'w') as fh:
     fh.write(test_tracks_15b)
@@ -191,6 +191,17 @@ line_width = a
 """
 with open(os.path.join(ROOT, "test_tracks_17.ini"), 'w') as fh:
     fh.write(test_tracks_17)
+
+
+test_tracks_18 = """
+[x-axis]
+
+[bedgraph]
+file = empty.bedgraph
+operation = quit()
+"""
+with open(os.path.join(ROOT, "test_tracks_18.ini"), 'w') as fh:
+    fh.write(test_tracks_18)
 
 
 class TestCheckerMethods(unittest.TestCase):
@@ -509,6 +520,23 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("whereas we should have a float" in str(context.exception))
+        os.remove(ini_file)
+
+    def test_invalid_characters_in_operation(self):
+        """
+        This test check that if you put
+        in operation invalid words/characters
+        it will raise an input error
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_18.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("uses signs which are not allowed" in str(context.exception))
         os.remove(ini_file)
 
 
