@@ -147,7 +147,8 @@ file_type = {TRACK_TYPE}
                     self.tbx2 = pysam.TabixFile(self.properties['second_file'])
                 except IOError:
                     # load the file as an interval tree
-                    self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'])
+                    self.interval_tree2, __, __ = file_to_intervaltree(self.properties['second_file'],
+                                                                       self.properties['region'])
 
     def set_properties_defaults(self):
         super(BedGraphTrack, self).set_properties_defaults()
