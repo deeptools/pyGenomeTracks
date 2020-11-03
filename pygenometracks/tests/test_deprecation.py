@@ -68,8 +68,7 @@ file = bigwig2_X_2.5e6_3.5e6.bw
 color = gray
 height = 5
 # title = gray:summary method=mean; blue:summary method=max; red:summary method=min
-title = gray:summary_method = mean; blue:summary_method = max;
-        red:summary_method = min
+title = gray:summary_method = mean; blue:summary_method = max; red:summary_method = min
 type = line
 summary method = mean
 max_value = 150

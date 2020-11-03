@@ -55,8 +55,7 @@ title = nans_to_zeros = true
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = gray
 height = 5
-title = gray:summary_method = mean; blue:summary_method = max;
-        red:summary_method = min
+title = gray:summary_method = mean; blue:summary_method = max; red:summary_method = min
 type = line
 summary_method = mean
 max_value = 150
@@ -251,8 +250,7 @@ tracks = """
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 7
-title = No alpha:
-        (bigwig color=blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) max over 300 bins) overlaid with (bigwig mean color = green 200 bins)
+title = No alpha: (bigwig color=blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) max over 300 bins) overlaid with (bigwig mean color = green 200 bins)
 number_of_bins = 2000
 min_value = 0
 max_value = 30
@@ -277,8 +275,7 @@ overlay_previous = share-y
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 7
-title = alpha
-        (bigwig color = blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) alpha = 0.5 max over 300 bins) overlaid with (bigwig mean color = green alpha = 0.5 200 bins)
+title = alpha (bigwig color = blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) alpha = 0.5 max over 300 bins) overlaid with (bigwig mean color = green alpha = 0.5 200 bins)
 number_of_bins = 2000
 min_value = 0
 max_value = 30
@@ -304,8 +301,7 @@ overlay_previous = share-y
 [test bigwig]
 file = bigwig2_X_2.5e6_3.5e6.bw
 height = 7
-title = alpha for lines/points:
-        (bigwig color=(0.6, 0, 0) alpha = 0.5 max) overlaid with (bigwig mean color = green alpha = 0.5 line:2) overlaid with (bigwig min color = blue alpha = 0.5 points:2)
+title = alpha for lines/points: (bigwig color=(0.6, 0, 0) alpha = 0.5 max) overlaid with (bigwig mean color = green alpha = 0.5 line:2) overlaid with (bigwig min color = blue alpha = 0.5 points:2)
 color = (0.6, 0, 0)
 alpha = 0.5
 summary_method = max
