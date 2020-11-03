@@ -10,6 +10,7 @@ from . GenomeTrack import GenomeTrack
 from .. utilities import change_chrom_names
 import logging
 import itertools
+import copy
 
 DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
 logging.basicConfig(level=logging.DEBUG)
@@ -215,12 +216,10 @@ file_type = {TRACK_TYPE}
                                                     shape=self.hic_ma.matrix.shape)
             self.hic_ma.matrix = self.hic_ma.matrix + main_diagonal
 
-        self.norm = None
-
         self.process_color('colormap', colormap_possible=True,
                            colormap_only=True, default_value_is_colormap=True)
 
-        self.cmap = cm.get_cmap(self.properties['colormap'])
+        self.cmap = copy.copy(cm.get_cmap(self.properties['colormap']))
         self.cmap.set_bad('black')
 
     def plot(self, ax, chrom_region, region_start, region_end):
@@ -296,7 +295,6 @@ file_type = {TRACK_TYPE}
 
         if self.properties['transform'] == 'log1p':
             matrix += 1
-            self.norm = colors.LogNorm()
 
         elif self.properties['transform'] in ['-log', 'log']:
             # We first replace 0 values by minimum values after 0
@@ -341,7 +339,13 @@ file_type = {TRACK_TYPE}
         self.log.info("setting min, max values for track "
                       f"{self.properties['section_name']} to: "
                       f"{vmin}, {vmax}\n")
-        self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
+
+        if self.properties['transform'] == 'log1p':
+            self.norm = colors.LogNorm(vmin=vmin, vmax=vmax)
+        else:
+            self.norm = colors.Normalize(vmin=vmin, vmax=vmax)
+
+        self.img = self.pcolormesh_45deg(ax, matrix, start_pos)
         if self.properties['rasterize']:
             self.img.set_rasterized(True)
         if self.properties['orientation'] == 'inverted':
@@ -388,7 +392,7 @@ file_type = {TRACK_TYPE}
             # with other labels
             labels[idx].set_verticalalignment('top')
 
-    def pcolormesh_45deg(self, ax, matrix_c, start_pos_vector, vmin=None, vmax=None):
+    def pcolormesh_45deg(self, ax, matrix_c, start_pos_vector):
         """
         Turns the matrix 45 degrees and adjusts the
         bins to match the actual start end positions.
@@ -406,5 +410,5 @@ file_type = {TRACK_TYPE}
         y = matrix_a[:, 0].reshape(n + 1, n + 1)
         # plot
         im = ax.pcolormesh(x, y, np.flipud(matrix_c),
-                           vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
+                           cmap=self.cmap, norm=self.norm)
         return im
