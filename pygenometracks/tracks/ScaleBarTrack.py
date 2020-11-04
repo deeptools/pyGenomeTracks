@@ -154,7 +154,7 @@ file_type = {TRACK_TYPE}
 
         # We adjust the unit to make it pretty
         if size < 1e3:
-            size_label = f"{size} bases"
+            size_label = f"{int(size) if float(size).is_integer() else size} bases"
         elif size < 1e6:
             new_size = size / 1e3
             size_label = f"{int(new_size) if new_size.is_integer() else new_size} kb"
