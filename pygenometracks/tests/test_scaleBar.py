@@ -70,6 +70,56 @@ height = 3
 with open(os.path.join(ROOT, "scale_bar.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[sb1]
+file_type = scalebar
+title = scalebar where = right
+where = right
+
+[spacer]
+
+[sb2]
+file_type = scalebar
+title = scalebar x_boundary1 = 3200000
+x_boundary1 = 3200000
+
+[spacer]
+
+[sb3]
+file_type = scalebar
+title = scalebar x_boundary1 = 3200000 x_boundary2 = 3250000
+x_boundary2 = 3250000
+x_boundary1 = 3200000
+
+[spacer]
+
+[sb4]
+file_type = scalebar
+title = scalebar x_boundary1 = 3250000 x_boundary2 = 3200000
+x_boundary1 = 3250000
+x_boundary2 = 3200000
+
+[spacer]
+
+[sb5]
+file_type = scalebar
+title = scalebar x_boundary1 = 3200000 x_center = 3250000
+x_center = 3250000
+x_boundary1 = 3200000
+
+[spacer]
+
+[sb6]
+file_type = scalebar
+title = scalebar x_boundary1 = 3200000 size = 50000
+size = 50000
+x_boundary1 = 3200000
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "scale_bar_xboundary.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -101,6 +151,43 @@ def test_scale_bar_zoom():
     expected_file = os.path.join(ROOT, 'master_scale_bar_zoom.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_scale_bar_xboundary():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "scale_bar_xboundary.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_scale_bar_xboundary.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_scale_bar_xboundary_dec():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "scale_bar_xboundary.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_scale_bar_xboundary_dec.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--decreasingXAxis "\
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
