@@ -161,7 +161,8 @@ file_type = {TRACK_TYPE}
 
         if 'second_file' in self.properties['operation'] and \
            self.properties['second_file'] is not None and \
-           self.properties['summary_method'] is None:
+           self.properties['summary_method'] is None and \
+           not self.properties['use_middle']:
             self.log.warning("When an operation is computed"
                              " between 2 files"
                              " a summary_method needs to be"
