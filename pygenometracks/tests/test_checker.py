@@ -115,7 +115,7 @@ file = bedgraph2_X_2.5e6_3.5e6.bdg
 operation = file - second_file
 """
 with open(os.path.join(ROOT, "test_tracks_12b.ini"), 'w') as fh:
-    fh.write(test_tracks_12)
+    fh.write(test_tracks_12b)
 
 test_tracks_13 = """
 [operation with transform]
