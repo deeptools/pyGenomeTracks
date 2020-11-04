@@ -557,6 +557,39 @@ def test_defaults():
             os.remove(ini_file)
 
 
+def test_width():
+    region = "X:2,500,000-3,000,000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "example_bigwig.ini")
+    expected_file = os.path.join(ROOT, 'master_example_bigwig_width12.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--width 12 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+    expected_file = os.path.join(ROOT, 'master_example_bigwig_plotwidth12.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--plotWidth 12 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+    expected_file = os.path.join(ROOT, 'master_example_bigwig_plotwidth12Lab0.5.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--plotWidth 12 --trackLabelFraction 0.5 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_op_chr_in_only_one_bw():
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_',
                                  delete=False)
