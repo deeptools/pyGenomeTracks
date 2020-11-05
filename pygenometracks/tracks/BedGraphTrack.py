@@ -170,6 +170,7 @@ file_type = {TRACK_TYPE}
             self.properties['summary_method'] = 'mean'
 
         if self.properties['operation'] != 'file':
+            self.checkoperation()
             if self.properties['transform'] != 'no':
                 raise InputError("'operation' and 'transform' cannot be set at"
                                  " the same time.")

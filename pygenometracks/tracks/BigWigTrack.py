@@ -132,6 +132,7 @@ file_type = {TRACK_TYPE}
         else:
             self.process_color('negative_color')
         if self.properties['operation'] != 'file':
+            self.checkoperation()
             if self.properties['transform'] != 'no':
                 raise InputError("'operation' and 'transform' cannot be set at"
                                  " the same time.")
@@ -296,6 +297,9 @@ file_type = {TRACK_TYPE}
                                              self.properties['grid'])
 
     def __del__(self):
-        self.bw.close()
+        try:
+            self.bw.close()
+        except AttributeError:
+            pass
         if self.bw2 is not None:
             self.bw2.close()

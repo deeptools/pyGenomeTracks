@@ -20,11 +20,11 @@ show_masked_bins = false
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth = 250000; orientation = inverted; colormap = PuRd; min_value = 5; max_value = 70
+title = depth = 250000; orientation = inverted; customized colormap; min_value = 5; max_value = 70
 min_value = 5
 max_value = 70
 depth = 250000
-colormap = PuRd
+colormap = ['white', (1, 0.88, .66), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
 file_type = hic_matrix
 show_masked_bins = false
 orientation = inverted
