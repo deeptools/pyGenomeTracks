@@ -40,9 +40,7 @@ height = 1
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 7
-title = bed6 border_color = black; gene_rows=10; fontsize=7; color=Reds
-        (when a color map is used for the color (e.g. coolwarm, Reds) the bed
-        score column mapped to a color)
+title = bed6 border_color = black; gene_rows=10; fontsize=7; color=Reds (when a color map is used for the color (e.g. coolwarm, Reds) the bed score column mapped to a color)
 fontsize = 7
 file_type = bed
 color = Reds
@@ -55,9 +53,7 @@ height = 1
 [test bed4]
 file = dm3_genes.bed4.gz
 height = 10
-title = bed4 fontsize = 10; line_width = 1.5; global_max_row = true
-        (global_max_row sets the number of genes per row as the maximum found
-        anywhere in the genome, hence the white space at the bottom)
+title = bed4 fontsize = 10; line_width = 1.5; global_max_row = true (global_max_row sets the number of genes per row as the maximum found anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed
 global_max_row = true

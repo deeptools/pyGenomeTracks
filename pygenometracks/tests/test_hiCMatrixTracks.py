@@ -20,8 +20,7 @@ show_masked_bins = false
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth = 250000; orientation = inverted; colormap = PuRd; min_value = 5;
-        max_value = 70
+title = depth = 250000; orientation = inverted; colormap = PuRd; min_value = 5; max_value = 70
 min_value = 5
 max_value = 70
 depth = 250000
@@ -35,8 +34,7 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth = 300000; transform = log1p; colormap Blues (TADs:
-        overlay_previous = share-y; line_width = 1.5)
+title = depth = 300000; transform = log1p; colormap Blues (TADs: overlay_previous = share-y; line_width = 1.5)
 colormap = Blues
 min_value = 10
 max_value = 150
@@ -60,8 +58,7 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth = 250000; transform = log1p; colormap = bone_r (links: overlay_previous = share-y;
-        links_type = triangles; color = darkred; line_style = dashed, bigwig: color = red)
+title = depth = 250000; transform = log1p; colormap = bone_r (links: overlay_previous = share-y; links_type = triangles; color = darkred; line_style = dashed, bigwig: color = red)
 colormap = bone_r
 min_value = 15
 max_value = 200
@@ -96,8 +93,7 @@ height = 0.5
 
 [hic matrix]
 file = Li_et_al_2015.h5
-title = depth = 200000; show_masked_bins = true; colormap =
-        ['blue', 'yellow', 'red']; max_value = 150
+title = depth = 200000; show_masked_bins = true; colormap = ['blue', 'yellow', 'red']; max_value = 150
 depth = 200000
 colormap = ['blue', 'yellow', 'red']
 max_value = 150
@@ -374,6 +370,36 @@ with open(os.path.join(ROOT, "browser_tracks_hic_small_test_3_invalid2.ini"), 'w
 
 with open(os.path.join(ROOT, "browser_tracks_hic_small_test_3_invalid3.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic_small_3b.replace('log1p', '-log'))
+
+browser_tracks_with_hic_force_scale = """
+[hic matrix]
+file = Li_et_al_2015.h5
+title = depth = 500000; colormap = PuRd; min_value = 5; max_value = 70
+min_value = 5
+max_value = 70
+depth = 500000
+colormap = PuRd
+file_type = hic_matrix
+show_masked_bins = false
+
+[spacer]
+height = 0.5
+
+[hic matrix]
+file = Li_et_al_2015.h5
+title = depth = 1000000; colormap = PuRd; min_value = 0; max_value = 80
+min_value = 0
+max_value = 80
+depth = 1000000
+colormap = PuRd
+file_type = hic_matrix
+show_masked_bins = false
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "browser_tracks_hic_force_scale.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_hic_force_scale)
 
 
 tolerance = 13  # default matplotlib pixed difference tolerance
@@ -807,3 +833,22 @@ def test_plot_tracks_with_hic_small3_invalid():
         else:
             raise Exception("The plot_tracks_with_hic_small3_invalid should fail.")
         os.remove(ini_file)
+
+
+def test_plot_tracks_with_hic_force_scale():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'browser_tracks_hic_force_scale.ini')
+    region = 'X:2500000-3500000'
+    expected_file = os.path.join(ROOT, 'master_plot_hic_force_scale.png')
+
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.23 --width 38 --dpi 130 "\
+           "--fontSize 16 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
