@@ -66,7 +66,7 @@ class PlotTracks(object):
     def __init__(self, tracks_file, fig_width=DEFAULT_FIGURE_WIDTH,
                  fig_height=None, fontsize=None, dpi=None,
                  track_label_width=None,
-                 plot_regions=None):
+                 plot_regions=None, plot_width=None):
         self.fig_width = fig_width
         self.fig_height = fig_height
         self.dpi = dpi
@@ -89,6 +89,13 @@ class PlotTracks(object):
             self.width_ratios = (0.01,
                                  1 - track_label_width,
                                  track_label_width)
+
+        # Process the width:
+        if plot_width is not None:
+            self.fig_width = plot_width \
+                / (DEFAULT_MARGINS['right'] - DEFAULT_MARGINS['left']) \
+                * (1 + 2 / 3 * 0.01) \
+                / (self.width_ratios[1] / sum(self.width_ratios))
 
         font = {'size': fontsize}
         matplotlib.rc('font', **font)
