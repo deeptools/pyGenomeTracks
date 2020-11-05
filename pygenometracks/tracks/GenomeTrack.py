@@ -14,6 +14,7 @@ float_regex = r'(?:\d+)?(?:\.\d+)?'
 # put each float in a group:
 color_tuple = re.compile(r'^\(({0}),({0}),({0})\)$'.format(float_regex))
 # This is a regex for group without comma except between parenthesis
+block_no_comma_outside_parenthesis = re.compile(r'(?:[^,(]|\([^)]*\))+')
 
 
 class GenomeTrack(object):
