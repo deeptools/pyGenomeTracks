@@ -4,7 +4,7 @@
 Python dependency with conda:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Using conda which is the way we recommand installation it is now possible to use python 3.8.
+- Using conda which is the way we recommand installation it is now possible to use Python 3.8.
 
 Relax version control on matplotlib:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
