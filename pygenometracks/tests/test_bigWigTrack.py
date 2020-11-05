@@ -55,8 +55,7 @@ title = nans_to_zeros = true
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = gray
 height = 5
-title = gray:summary_method = mean; blue:summary_method = max;
-        red:summary_method = min
+title = gray:summary_method = mean; blue:summary_method = max; red:summary_method = min
 type = line
 summary_method = mean
 max_value = 150
@@ -251,8 +250,7 @@ tracks = """
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 7
-title = No alpha:
-        (bigwig color=blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) max over 300 bins) overlaid with (bigwig mean color = green 200 bins)
+title = No alpha: (bigwig color=blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) max over 300 bins) overlaid with (bigwig mean color = green 200 bins)
 number_of_bins = 2000
 min_value = 0
 max_value = 30
@@ -277,8 +275,7 @@ overlay_previous = share-y
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = blue
 height = 7
-title = alpha
-        (bigwig color = blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) alpha = 0.5 max over 300 bins) overlaid with (bigwig mean color = green alpha = 0.5 200 bins)
+title = alpha (bigwig color = blue 2000 bins) overlaid with (bigwig color = (0.6, 0, 0) alpha = 0.5 max over 300 bins) overlaid with (bigwig mean color = green alpha = 0.5 200 bins)
 number_of_bins = 2000
 min_value = 0
 max_value = 30
@@ -304,8 +301,7 @@ overlay_previous = share-y
 [test bigwig]
 file = bigwig2_X_2.5e6_3.5e6.bw
 height = 7
-title = alpha for lines/points:
-        (bigwig color=(0.6, 0, 0) alpha = 0.5 max) overlaid with (bigwig mean color = green alpha = 0.5 line:2) overlaid with (bigwig min color = blue alpha = 0.5 points:2)
+title = alpha for lines/points: (bigwig color=(0.6, 0, 0) alpha = 0.5 max) overlaid with (bigwig mean color = green alpha = 0.5 line:2) overlaid with (bigwig min color = blue alpha = 0.5 points:2)
 color = (0.6, 0, 0)
 alpha = 0.5
 summary_method = max
@@ -555,6 +551,39 @@ def test_defaults():
         os.remove(outfile.name)
         if 'invalid' in ini_file:
             os.remove(ini_file)
+
+
+def test_width():
+    region = "X:2,500,000-3,000,000"
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "example_bigwig.ini")
+    expected_file = os.path.join(ROOT, 'master_example_bigwig_width12.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--width 12 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+    expected_file = os.path.join(ROOT, 'master_example_bigwig_plotwidth12.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--plotWidth 12 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+    expected_file = os.path.join(ROOT, 'master_example_bigwig_plotwidth12Lab0.5.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--plotWidth 12 --trackLabelFraction 0.5 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
 
 
 def test_op_chr_in_only_one_bw():
