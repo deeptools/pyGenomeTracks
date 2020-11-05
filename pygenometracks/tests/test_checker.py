@@ -115,7 +115,7 @@ file = bedgraph2_X_2.5e6_3.5e6.bdg
 operation = file - second_file
 """
 with open(os.path.join(ROOT, "test_tracks_12b.ini"), 'w') as fh:
-    fh.write(test_tracks_12)
+    fh.write(test_tracks_12b)
 
 test_tracks_13 = """
 [operation with transform]
@@ -173,7 +173,7 @@ with open(os.path.join(ROOT, "test_tracks_15b.ini"), 'w') as fh:
 test_tracks_16 = """
 [x-axis]
 
-[bedgraph]
+[bedgraph with wrong overlay_previous value]
 file = bedgraph2_X_2.5e6_3.5e6.bdg
 overlay_previous = anything
 """
@@ -184,7 +184,7 @@ with open(os.path.join(ROOT, "test_tracks_16.ini"), 'w') as fh:
 test_tracks_17 = """
 [x-axis]
 
-[vlines]
+[vlines with invalid line_width]
 file = tad_classification.bed
 type = vlines
 line_width = a
