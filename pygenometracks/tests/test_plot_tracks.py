@@ -201,6 +201,8 @@ file_type = domains
 [bedgraph]
 title = empty bedgraph
 file = empty.bedgraph
+min_value = -10
+max_value = 100
 
 [narrowPeak]
 title = empty narrowPeak
