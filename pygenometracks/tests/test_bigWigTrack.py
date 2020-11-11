@@ -425,6 +425,17 @@ title = file - second_file
 with open(os.path.join(ROOT, "example_op.ini"), 'w') as fh:
     fh.write(tracks)
 
+tracks = """
+[bigwig op test]
+file = bigwig2_X_2.5e6_3.5e6.bw
+operation = file / 1e3
+height = 4
+title = file / 1e3
+"""
+
+with open(os.path.join(ROOT, "example_op2.ini"), 'w') as fh:
+    fh.write(tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -593,6 +604,23 @@ def test_op_chr_in_only_one_bw():
     region = "2L:0-1000"
     expected_file = os.path.join(ROOT, 'master_operation_2L.png')
     args = f"--tracks {ini_file} --region {region} "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_op_with_scientific_notation():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_op_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "example_op2.ini")
+    region = "X:2700000-3100000"
+    expected_file = os.path.join(ROOT, 'master_operation_scien.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
