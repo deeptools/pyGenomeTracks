@@ -266,3 +266,7 @@ class BedLikeTrack(GenomeTrack):
             else:
                 rgb = default
         return rgb
+
+    def plot_y_axis(self, ax, plot_axis):
+        if self.colormap is not None:
+            self.plot_custom_cobar(ax, fraction=1)
