@@ -1,6 +1,15 @@
 3.5.2
 =====
 
+
+Enhancements:
+^^^^^^^^^^^^^
+
+- A new parameter for pyGenomeTracks allow to fix the width of the central part: ``--plotWidth``
+
+- For scale bars, you can now define the position using 2 parameters among ``x_center``, ``size``, ``scalebar_start_position`` and ``scalebar_end_position``.
+
+
 Python dependency with conda:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -16,4 +25,8 @@ Bugfixes:
 
 - When the ``--fontSize`` parameter was used it happened that the colorbar labels were not corresponding to the colorbar ticks. This bug has been fixed.
 
-- The colormap ``pink`` were not working because it was both the name of a color and a colormap. This bug has been fixed.]
+- The colormap ``pink`` was not working because it was both the name of a color and a colormap. This bug has been fixed.
+
+- When setting ``min_value``, ``max_value``, if the track was empty these values were ignored. This bug has been fixed.
+
+- When using ``operation`` in bedgraph with a ``second_file``, BEDTools is now used to intersect the second file. ``use_middle`` is now taken into account on the second file.
