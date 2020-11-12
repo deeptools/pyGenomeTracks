@@ -350,46 +350,45 @@ height = 2
             valid_colormap = None
             message = ""
             # We will try to process the color as a colormap
-            if valid_color is None:
-                # If someone what to use its own colormap,
-                # he can specify the rgb values or color values:
-                # For example:
-                # colormap = ['white', (1, 0.88, 0.66), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
-                # Warning:
-                # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
-                # is not any more a valid color because of 2./3
-                if self.properties[param][0] == '[':
-                    if self.properties[param][-1] == ']':
-                        # We remove all space and quote
-                        prepared_color_list = re.sub(" |\'|\"", "", self.properties[param][1:-1])
-                        # We extract individual colors
-                        match = block_no_comma_outside_parenthesis.findall(prepared_color_list)
-                        if match is not None:
-                            # We check the color which start with '(' are (r,g,b) with rgb as floats
-                            if all([color_tuple.match(v) is not None
-                                    for v in match if v[0] == '(']):
-                                # We try to convert them as float:
-                                try:
-                                    custom_colors = [tuple([float(v) for v in color_tuple.match(v).groups()])
-                                                     if v[0] == '(' else v for v in match]
-                                except ValueError:
-                                    message = "some (r,g,b) values of the list could not be converted to float"
-                                else:
-                                    try:
-                                        valid_colormap = mc.LinearSegmentedColormap.from_list(
-                                            'custom', custom_colors, N=100)
-                                    except ValueError:
-                                        message = "the list of color could not be converted to colormap"
+            # If someone what to use its own colormap,
+            # he can specify the rgb values or color values:
+            # For example:
+            # colormap = ['white', (1, 0.88, 0.66), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+            # Warning:
+            # colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+            # is not any more a valid color because of 2./3
+            if self.properties[param][0] == '[':
+                if self.properties[param][-1] == ']':
+                    # We remove all space and quote
+                    prepared_color_list = re.sub(" |\'|\"", "", self.properties[param][1:-1])
+                    # We extract individual colors
+                    match = block_no_comma_outside_parenthesis.findall(prepared_color_list)
+                    if match is not None:
+                        # We check the color which start with '(' are (r,g,b) with rgb as floats
+                        if all([color_tuple.match(v) is not None
+                                for v in match if v[0] == '(']):
+                            # We try to convert them as float:
+                            try:
+                                custom_colors = [tuple([float(v) for v in color_tuple.match(v).groups()])
+                                                 if v[0] == '(' else v for v in match]
+                            except ValueError:
+                                message = "some (r,g,b) values of the list could not be converted to float"
                             else:
-                                message = "there is no color between brackets"
+                                try:
+                                    valid_colormap = mc.LinearSegmentedColormap.from_list(
+                                        'custom', custom_colors, N=100)
+                                except ValueError:
+                                    message = "the list of color could not be converted to colormap"
                         else:
-                            message = "some colors starting with ( in the color" \
-                                      " list are not formatted (r,g,b) with r,g,b as float"
-                    if message != "":
-                        message = f" ({message})"
-                else:
-                    if self.properties[param] in dir(plt.cm):
-                        valid_colormap = self.properties[param]
+                            message = "there is no color between brackets"
+                    else:
+                        message = "some colors starting with ( in the color" \
+                                  " list are not formatted (r,g,b) with r,g,b as float"
+                if message != "":
+                    message = f" ({message})"
+            else:
+                if self.properties[param] in dir(plt.cm):
+                    valid_colormap = self.properties[param]
         # Here, colormap is possible
         # valid_color is None or a valid color or the default value
         # valid_colormap is None or a valid colormap
