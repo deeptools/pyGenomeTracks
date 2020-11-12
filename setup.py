@@ -107,7 +107,6 @@ setup(
     name='pyGenomeTracks',
     version=get_version(),
     author='Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolf, Björn Grüning',
-    author_email='deeptools@googlegroups.com',
     packages=find_packages(exclude=['tests']),
     scripts=['bin/make_tracks_file', 'bin/pgt', 'bin/pyGenomeTracks'],
     include_package_data=True,
