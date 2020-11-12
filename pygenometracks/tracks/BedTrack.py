@@ -8,7 +8,6 @@ import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
 from matplotlib.lines import Line2D
-import matplotlib.pyplot as plt
 from intervaltree import IntervalTree, Interval
 import numpy as np
 from tqdm import tqdm
@@ -611,26 +610,7 @@ file_type = {TRACK_TYPE}
     def plot_y_axis(self, ax, plot_axis):
         if self.colormap is not None:
             self.colormap.set_array([])
-
-            cobar = plt.colorbar(self.colormap, ax=ax, fraction=1,
-                                 orientation='vertical')
-
-            cobar.solids.set_edgecolor("face")
-            cobar.ax.tick_params(labelsize='smaller')
-            cobar.ax.yaxis.set_ticks_position('left')
-            # adjust the labels of the colorbar
-            ticks = cobar.ax.get_yticks()
-            labels = cobar.ax.set_yticklabels(ticks.astype('float32'))
-            (vmin, vmax) = cobar.mappable.get_clim()
-            for idx in np.where(ticks == vmin)[0]:
-                # if the label is at the start of the colobar
-                # move it above avoid being cut or overlapping with other track
-                labels[idx].set_verticalalignment('bottom')
-            for idx in np.where(ticks == vmax)[0]:
-                # if the label is at the end of the colobar
-                # move it a bit inside to avoid overlapping
-                # with other labels
-                labels[idx].set_verticalalignment('top')
+            GenomeTrack.plot_custom_cobar(self, ax, fraction=1)
 
     def get_rgb(self, bed, param='color', default=DEFAULT_BED_COLOR):
         """

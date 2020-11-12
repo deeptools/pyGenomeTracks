@@ -3,13 +3,12 @@ import hicmatrix.utilities
 import scipy.sparse
 from matplotlib import cm
 from matplotlib import colors
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import LogFormatter
 from . GenomeTrack import GenomeTrack
 from .. utilities import change_chrom_names
 import logging
 import itertools
+import copy
 
 DEFAULT_MATRIX_COLORMAP = 'RdYlBu_r'
 logging.basicConfig(level=logging.DEBUG)
@@ -25,7 +24,7 @@ class HiCMatrixTrack(GenomeTrack):
 # the default color map is RdYlBu_r (_r) stands for reverse
 # If you want your own colormap you can put the values of the color you want
 # For example, colormap = ['blue', 'yellow', 'red']
-# or colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+# or colormap = ['white', (1, 0.88, .66), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
 #colormap = RdYlBu_r
 # depth is the maximum distance that should be plotted.
 # If it is more than 125% of the plotted region, it will
@@ -215,12 +214,10 @@ file_type = {TRACK_TYPE}
                                                     shape=self.hic_ma.matrix.shape)
             self.hic_ma.matrix = self.hic_ma.matrix + main_diagonal
 
-        self.norm = None
-
         self.process_color('colormap', colormap_possible=True,
                            colormap_only=True, default_value_is_colormap=True)
 
-        self.cmap = cm.get_cmap(self.properties['colormap'])
+        self.cmap = copy.copy(cm.get_cmap(self.properties['colormap']))
         self.cmap.set_bad('black')
 
     def plot(self, ax, chrom_region, region_start, region_end):
@@ -296,7 +293,6 @@ file_type = {TRACK_TYPE}
 
         if self.properties['transform'] == 'log1p':
             matrix += 1
-            self.norm = colors.LogNorm()
 
         elif self.properties['transform'] in ['-log', 'log']:
             # We first replace 0 values by minimum values after 0
@@ -341,7 +337,13 @@ file_type = {TRACK_TYPE}
         self.log.info("setting min, max values for track "
                       f"{self.properties['section_name']} to: "
                       f"{vmin}, {vmax}\n")
-        self.img = self.pcolormesh_45deg(ax, matrix, start_pos, vmax=vmax, vmin=vmin)
+
+        if self.properties['transform'] == 'log1p':
+            self.norm = colors.LogNorm(vmin=vmin, vmax=vmax)
+        else:
+            self.norm = colors.Normalize(vmin=vmin, vmax=vmax)
+
+        self.img = self.pcolormesh_45deg(ax, matrix, start_pos)
         if self.properties['rasterize']:
             self.img.set_rasterized(True)
         if self.properties['orientation'] == 'inverted':
@@ -353,42 +355,9 @@ file_type = {TRACK_TYPE}
         if self.img is None:
             return
 
-        if self.properties['transform'] in ['log', 'log1p']:
-            # get a useful log scale
-            # that looks like [1, 2, 5, 10, 20, 50, 100, ... etc]
+        GenomeTrack.plot_custom_cobar(self, cbar_ax)
 
-            formatter = LogFormatter(10, labelOnlyBase=False)
-            aa = np.array([1, 2, 5])
-            tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
-            try:
-                cobar = plt.colorbar(self.img, ticks=tick_values, format=formatter, ax=cbar_ax, fraction=0.95)
-            except AttributeError:
-                return
-        else:
-            try:
-                cobar = plt.colorbar(self.img, ax=cbar_ax, fraction=0.95)
-            except AttributeError:
-                return
-
-        cobar.solids.set_edgecolor("face")
-        cobar.ax.tick_params(labelsize='smaller')
-        cobar.ax.yaxis.set_ticks_position('left')
-
-        # adjust the labels of the colorbar
-        ticks = cobar.ax.get_yticks()
-        labels = cobar.ax.set_yticklabels(ticks.astype('float32'))
-        (vmin, vmax) = cobar.mappable.get_clim()
-        for idx in np.where(ticks == vmin)[0]:
-            # if the label is at the start of the colobar
-            # move it above avoid being cut or overlapping with other track
-            labels[idx].set_verticalalignment('bottom')
-        for idx in np.where(ticks == vmax)[0]:
-            # if the label is at the end of the colobar
-            # move it a bit inside to avoid overlapping
-            # with other labels
-            labels[idx].set_verticalalignment('top')
-
-    def pcolormesh_45deg(self, ax, matrix_c, start_pos_vector, vmin=None, vmax=None):
+    def pcolormesh_45deg(self, ax, matrix_c, start_pos_vector):
         """
         Turns the matrix 45 degrees and adjusts the
         bins to match the actual start end positions.
@@ -406,5 +375,5 @@ file_type = {TRACK_TYPE}
         y = matrix_a[:, 0].reshape(n + 1, n + 1)
         # plot
         im = ax.pcolormesh(x, y, np.flipud(matrix_c),
-                           vmin=vmin, vmax=vmax, cmap=self.cmap, norm=self.norm)
+                           cmap=self.cmap, norm=self.norm)
         return im

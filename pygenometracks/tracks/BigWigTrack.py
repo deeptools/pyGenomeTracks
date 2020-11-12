@@ -132,6 +132,7 @@ file_type = {TRACK_TYPE}
         else:
             self.process_color('negative_color')
         if self.properties['operation'] != 'file':
+            self.checkoperation()
             if self.properties['transform'] != 'no':
                 raise InputError("'operation' and 'transform' cannot be set at"
                                  " the same time.")
@@ -153,6 +154,7 @@ file_type = {TRACK_TYPE}
                                  + " nor " + chrom_region + " exists as a "
                                  "chromosome name inside the bigwig file. "
                                  "This will generate an empty track!!\n")
+                self.adjust_ylim(ax)
                 return
 
         chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
@@ -212,6 +214,7 @@ file_type = {TRACK_TYPE}
                                      "chromosome name inside the second bigwig"
                                      " file. This will generate an empty track"
                                      "!!\n")
+                    self.adjust_ylim(ax)
                     return
             # get the scores
             # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
@@ -265,26 +268,7 @@ file_type = {TRACK_TYPE}
                       self.properties['alpha'],
                       self.properties['grid'])
 
-        ymax = self.properties['max_value']
-        ymin = self.properties['min_value']
-        plot_ymin, plot_ymax = ax.get_ylim()
-        if ymax is None:
-            ymax = plot_ymax
-        else:
-            ymax = transform(np.array([ymax]), self.properties['transform'],
-                             self.properties['log_pseudocount'],
-                             'ymax')[0]
-        if ymin is None:
-            ymin = plot_ymin
-        else:
-            ymin = transform(np.array([ymin]), self.properties['transform'],
-                             self.properties['log_pseudocount'],
-                             'ymin')[0]
-
-        if self.properties['orientation'] == 'inverted':
-            ax.set_ylim(ymax, ymin)
-        else:
-            ax.set_ylim(ymin, ymax)
+        self.adjust_ylim(ax)
 
         return ax
 
@@ -296,6 +280,9 @@ file_type = {TRACK_TYPE}
                                              self.properties['grid'])
 
     def __del__(self):
-        self.bw.close()
+        try:
+            self.bw.close()
+        except AttributeError:
+            pass
         if self.bw2 is not None:
             self.bw2.close()

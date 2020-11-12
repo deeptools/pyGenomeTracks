@@ -73,9 +73,9 @@ type = points:0.5
 
 [test bedgraph matrix]
 file = tad_separation_score.bm.gz
-title = bedgraph matrix (file type is tabix) colormap = Reds
+title = bedgraph matrix (file type is tabix) colormap = pink
 height = 5
-colormap = Reds
+colormap = pink
 file_type = bedgraph_matrix
 
 [spacer]

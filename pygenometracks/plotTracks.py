@@ -155,9 +155,12 @@ DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 def parse_arguments(args=None):
     parser = argparse.ArgumentParser(
         description='Plots genomic tracks on specified region(s). '
-                    'Citation : Ramirez et al.  High-resolution TADs reveal DNA '
+                    'Citations :\nRamirez et al.  High-resolution TADs reveal DNA '
                     'sequences underlying genome organization in flies. '
-                    'Nature Communications (2018) doi:10.1038/s41467-017-02525-w',
+                    'Nature Communications (2018) doi:10.1038/s41467-017-02525-w\n'
+                    'Lopez-Delisle et al.  pyGenomeTracks: reproducible'
+                    ' plots for multivariate genomic datasets. '
+                    'Bioinformatics (2020) doi:10.1093/bioinformatics/btaa692',
         usage="%(prog)s --tracks tracks.ini --region chr1:1000000-4000000 -o image.png")
 
     parser.add_argument('--tracks',
@@ -179,10 +182,15 @@ def parse_arguments(args=None):
                        type=argparse.FileType('r')
                        )
 
-    parser.add_argument('--width',
-                        help=f'figure width in centimeters (default is {DEFAULT_FIGURE_WIDTH})',
-                        type=float,
-                        default=DEFAULT_FIGURE_WIDTH)
+    width_group = parser.add_mutually_exclusive_group()
+    width_group.add_argument('--width',
+                             help=f'figure width in centimeters (default is {DEFAULT_FIGURE_WIDTH})',
+                             type=float,
+                             default=DEFAULT_FIGURE_WIDTH)
+    width_group.add_argument('--plotWidth',
+                             help='width in centimeters of the plotting (central) part',
+                             type=float,
+                             default=None)
 
     parser.add_argument('--height',
                         help='Figure height in centimeters. If not given, the figure height is computed '
@@ -310,7 +318,7 @@ def main(args=None):
     trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height,
                      fontsize=args.fontSize, dpi=args.dpi,
                      track_label_width=args.trackLabelFraction,
-                     plot_regions=regions)
+                     plot_regions=regions, plot_width=args.plotWidth)
 
     # Plot them
     if args.BED:

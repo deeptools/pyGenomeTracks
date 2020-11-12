@@ -166,6 +166,9 @@ with open(os.path.join(ROOT, "invalid_score.ini"), 'w') as fh:
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
+# For this test I need to fix the tolerence at 19 to make it work
+# On python3.6 3.7 and 3.8
+# The only difference between outputs is the font width...
 def test_plot_tracks_bed_unusual_format():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
@@ -178,7 +181,7 @@ def test_plot_tracks_bed_unusual_format():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, tolerance + 6)
     assert res is None, res
 
     os.remove(outfile.name)

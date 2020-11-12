@@ -22,3 +22,7 @@ Optional:
 
 - **size**: by default this option is not set but you can also put: any integer above 0
 
+- **scalebar_start_position**: by default this option is not set but you can also put: any integer above 0
+
+- **scalebar_end_position**: by default this option is not set but you can also put: any integer above 0
+
