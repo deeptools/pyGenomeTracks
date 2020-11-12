@@ -17,14 +17,23 @@ color = black
 # alpha = 0.5
 # line width:
 # line_width = 0.5
+# To set the position and the size of the scale bar
+# 4 parameters can be set:
+# x_center, scalebar_start_position, scalebar_end_position, size
+# scalebar_start_position need to be smaller than x_center smaller than scalebar_end_position
 # x_center: coordinate where the scale bar should be plotted (center)
-# if not set it will be in the middle of the plotted area
+# if not set and cannot be deduce from other parameters
+# it will be in the middle of the plotted area
 #x_center = 3100000
 # size: in bp the length of the scale bar
-# if not set it will be like in UCSC:
+# if not set and cannot be deduced from other parameters
+# it will be like in UCSC:
 # the higher number that begins with 1, 2 or 5 followed by 0s
 # that is less than half the plotted area
 #size = 100000
+# Another example:
+#scalebar_start_position = 2900000
+#scalebar_end_position = 3100000
 # where: where the size of the scale bar should
 # appear among left, right, top, bottom
 # default is left

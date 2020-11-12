@@ -103,6 +103,8 @@ optional arguments:
                         case, multiple files will be created using a prefix
                         the value of --outFileName
   --width WIDTH         figure width in centimeters (default is 40)
+  --plotWidth PLOTWIDTH
+                        width in centimeters of the plotting (central) part
   --height HEIGHT       Figure height in centimeters. If not given, the figure
                         height is computed based on the heights of the tracks.
                         If given, the track height are proportionally scaled
