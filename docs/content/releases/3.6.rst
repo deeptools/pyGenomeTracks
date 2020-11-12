@@ -1,5 +1,5 @@
-3.5.2
-=====
+3.6
+===
 
 
 Enhancements:
@@ -30,3 +30,5 @@ Bugfixes:
 - When setting ``min_value``, ``max_value``, if the track was empty these values were ignored. This bug has been fixed.
 
 - When using ``operation`` in bedgraph with a ``second_file``, BEDTools is now used to intersect the second file. ``use_middle`` is now taken into account on the second file.
+
+- Different handling of string evaluation of color, colormap and operation.
