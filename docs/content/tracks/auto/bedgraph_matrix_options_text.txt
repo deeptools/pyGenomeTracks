@@ -29,7 +29,7 @@ type = lines
 # the default color map is viridis
 # If you want your own colormap you can put the values of the color you want
 # For example, colormap = ['blue', 'yellow', 'red']
-# or colormap = ['white', (1, 0.88, 2./3), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+# or colormap = ['white', (1, 0.88, .66), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
 #colormap = Reds
 # pos_score_in_bin means 'position of score with respect to bin start and end'
 # if the lines option is used, the y values can be put at the

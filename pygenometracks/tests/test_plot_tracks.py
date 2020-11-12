@@ -84,8 +84,7 @@ number_of_bins = 2000
 [test bigwig overlay]
 file = bigwig2_X_2.5e6_3.5e6.bw
 color = red
-title = color:red; max_value = 50; number_of_bins = 100 (next track: overlay_previous = yes;
-        max_value = 50; show_data_range = false; color = #0000FF80 (blue, with alpha 0.5))
+title = color:red; max_value = 50; number_of_bins = 100 (next track: overlay_previous = yes; max_value = 50; show_data_range = false; color = #0000FF80 (blue, with alpha 0.5))
 min_value = 0
 max_value = 50
 height = 2
@@ -106,8 +105,7 @@ height = 1
 
 [tads 3]
 file = tad_classification.bed
-title = TADs color = #cccccc; border_color = red (next track:
-        overlay_previous = share-y links_type = loops)
+title = TADs color = #cccccc; border_color = red (next track: overlay_previous = share-y links_type = loops)
 file_type = domains
 border_color = red
 color = #cccccc
@@ -155,9 +153,7 @@ height = 1
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 7
-title = bed6 border_color = black; gene_rows = 10; fontsize = 7; color = Reds
-        (when a color map is used for the color (e.g. coolwarm, Reds) the bed
-        score column mapped to a color)
+title = bed6 border_color = black; gene_rows = 10; fontsize = 7; color = Reds (when a color map is used for the color (e.g. coolwarm, Reds) the bed score column mapped to a color)
 fontsize = 7
 file_type = bed
 color = Reds
@@ -167,9 +163,7 @@ gene_rows = 10
 [test bed6]
 file = dm3_genes.bed6.gz
 height = 10
-title = bed6 fontsize = 10; line_width = 1.5; global_max_row = true
-        (global_max_row sets the number of genes per row as the maximum found
-        anywhere in the genome, hence the white space at the bottom)
+title = bed6 fontsize = 10; line_width = 1.5; global_max_row = true (global_max_row sets the number of genes per row as the maximum found anywhere in the genome, hence the white space at the bottom)
 fontsize = 10
 file_type = bed
 global_max_row = true
@@ -207,6 +201,8 @@ file_type = domains
 [bedgraph]
 title = empty bedgraph
 file = empty.bedgraph
+min_value = -10
+max_value = 100
 
 [narrowPeak]
 title = empty narrowPeak

@@ -91,7 +91,7 @@ class install(_install):
 
 
 install_requires_py = ["numpy >=1.16",
-                       "matplotlib ==3.1.1",
+                       "matplotlib >=3.1.1,<=3.3.2",
                        "intervaltree >=2.1.0",
                        "pyBigWig >=0.3.16",
                        "future >=0.17.0",
@@ -106,8 +106,7 @@ install_requires_py = ["numpy >=1.16",
 setup(
     name='pyGenomeTracks',
     version=get_version(),
-    author='Fidel Ramírez, Vivek Bhardwaj, Joachim Wolf, Björn Grüning',
-    author_email='deeptools@googlegroups.com',
+    author='Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolf, Björn Grüning',
     packages=find_packages(exclude=['tests']),
     scripts=['bin/make_tracks_file', 'bin/pgt', 'bin/pyGenomeTracks'],
     include_package_data=True,

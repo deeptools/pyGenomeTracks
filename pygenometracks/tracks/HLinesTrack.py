@@ -76,15 +76,6 @@ file_type = {TRACK_TYPE}
                        color=self.properties['color'],
                        alpha=self.properties['alpha'],
                        linestyle=self.properties['line_style'])
-        ymin, ymax = ax.get_ylim()
-        if self.properties['max_value'] is not None:
-            ymax = self.properties['max_value']
-        if self.properties['min_value'] is not None:
-            ymin = self.properties['min_value']
-
-        if self.properties['orientation'] == 'inverted':
-            ax.set_ylim(ymax, ymin)
-        else:
-            ax.set_ylim(ymin, ymax)
+        self.adjust_ylim(ax)
 
         return ax

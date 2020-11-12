@@ -70,6 +70,142 @@ height = 3
 with open(os.path.join(ROOT, "scale_bar.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[sb1]
+file_type = scalebar
+title = scalebar where = right
+where = right
+
+[spacer]
+
+[sb2]
+file_type = scalebar
+title = scalebar scalebar_start_position = 3200000
+scalebar_start_position = 3200000
+
+[spacer]
+
+[sb3]
+file_type = scalebar
+title = scalebar scalebar_start_position = 3200000 scalebar_end_position = 3250000
+scalebar_end_position = 3250000
+scalebar_start_position = 3200000
+
+[spacer]
+
+[sb4]
+file_type = scalebar
+title = scalebar scalebar_start_position = 3200000 x_center = 3250000
+x_center = 3250000
+scalebar_start_position = 3200000
+
+[spacer]
+
+[sb5]
+file_type = scalebar
+title = scalebar scalebar_start_position = 3200000 size = 50000
+size = 50000
+scalebar_start_position = 3200000
+
+[spacer]
+
+[sb6]
+file_type = scalebar
+title = scalebar scalebar_end_position = 3200000 size = 50000
+size = 50000
+scalebar_end_position = 3200000
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "scale_bar_startend.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[sb]
+file_type = scalebar
+scalebar_start_position = 2000000
+scalebar_end_position = 2500000
+# x_center is not valid
+x_center = 2100000
+size = 500000
+"""
+with open(os.path.join(ROOT, "incompatible_param1.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[sb]
+file_type = scalebar
+scalebar_start_position = 2000000
+scalebar_end_position = 2500000
+x_center = 2250000
+# size is not valid
+size = 5000000
+"""
+with open(os.path.join(ROOT, "incompatible_param2.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[sb]
+file_type = scalebar
+scalebar_start_position = 2000000
+scalebar_end_position = 2500000
+# x_center is not valid
+x_center = 2100000
+"""
+with open(os.path.join(ROOT, "incompatible_param3.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[sb]
+file_type = scalebar
+scalebar_start_position = 2000000
+scalebar_end_position = 2500000
+# size is not valid
+size = 2000000
+"""
+with open(os.path.join(ROOT, "incompatible_param4.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[sb]
+file_type = scalebar
+x_center = 2000000
+scalebar_end_position = 2500000
+# size is not valid
+size = 2000000
+"""
+with open(os.path.join(ROOT, "incompatible_param5.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[sb]
+file_type = scalebar
+x_center = 2000000
+# end smaller
+scalebar_end_position = 1500000
+"""
+with open(os.path.join(ROOT, "scalebar_wrong_param1.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[sb]
+file_type = scalebar
+x_center = 2000000
+# start bigger
+scalebar_start_position = 2500000
+"""
+with open(os.path.join(ROOT, "scalebar_wrong_param2.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[sb]
+file_type = scalebar
+scalebar_end_position = 2000000
+# start bigger
+scalebar_start_position = 2500000
+"""
+with open(os.path.join(ROOT, "scalebar_wrong_param3.ini"), 'w') as fh:
+    fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -108,3 +244,114 @@ def test_scale_bar_zoom():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_scale_bar_startend():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "scale_bar_startend.ini")
+    region = "X:3000000-3600000"
+    expected_file = os.path.join(ROOT, 'master_scale_bar_startend.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_scale_bar_startend_dec():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "scale_bar_startend.ini")
+    region = "X:3000000-3600000"
+    expected_file = os.path.join(ROOT, 'master_scale_bar_startend_dec.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--decreasingXAxis "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_scale_bar_startend_outside():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "scale_bar_startend.ini")
+    region = "X:2000000000-2500000000"
+    expected_file = os.path.join(ROOT, 'master_scale_bar_startend_outside.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_scale_bar_startend_superzoom():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "scale_bar_startend.ini")
+    region = "X:3199500-3201000"
+    expected_file = os.path.join(ROOT, 'master_scale_bar_startend_superzoom.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_scale_bar_incompatible_param():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    region = "X:3000000-3300000"
+    for suf in ['1', '2', '3', '4', '5']:
+        ini_file = os.path.join(ROOT, f"incompatible_param{suf}.ini")
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        try:
+            pygenometracks.plotTracks.main(args)
+        except Exception as e:
+            assert 'is incompatible with' in str(e)
+        else:
+            raise Exception(f"incompatible_param{suf} should fail.")
+        os.remove(ini_file)
+
+
+def test_scale_bar_wrong_param():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    region = "X:3000000-3300000"
+    for suf in ['1', '2', '3']:
+        ini_file = os.path.join(ROOT, f"scalebar_wrong_param{suf}.ini")
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        try:
+            pygenometracks.plotTracks.main(args)
+        except Exception as e:
+            assert 'must be smaller than' in str(e)
+        else:
+            raise Exception(f"scalebar_wrong_param{suf} should fail.")
+        os.remove(ini_file)
