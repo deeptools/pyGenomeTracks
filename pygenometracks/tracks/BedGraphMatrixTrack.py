@@ -1,5 +1,4 @@
-from . BedGraphTrack import BedGraphTrack
-from . GenomeTrack import GenomeTrack
+from . BedGraphLikeTrack import BedGraphLikeTrack
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -7,10 +6,10 @@ from matplotlib import cm
 DEFAULT_BEDGRAPHMATRIX_COLORMAP = 'viridis'
 
 
-class BedGraphMatrixTrack(BedGraphTrack):
+class BedGraphMatrixTrack(BedGraphLikeTrack):
     SUPPORTED_ENDINGS = ['.bm', '.bm.gz', '.bedgraphmatrix', '.bm.bgz']
     TRACK_TYPE = 'bedgraph_matrix'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
+    OPTIONS_TXT = BedGraphLikeTrack.OPTIONS_TXT + f"""
 # a bedgraph matrix file is like a bedgraph, except that per bin there
 # are more than one value separated by tab: E.g.
 # This file type is produced by HiCExplorer tool hicFindTads and contains
@@ -72,11 +71,6 @@ file_type = {TRACK_TYPE}
     INTEGER_PROPERTIES = {}
     # The color cannot be set for the moment
 
-    def __init__(self, properties_dict):
-        GenomeTrack.__init__(self, properties_dict)
-
-        self.load_file()
-
     def set_properties_defaults(self):
         # To remove in next 1.0
         if 'type' not in self.properties:
@@ -86,7 +80,7 @@ file_type = {TRACK_TYPE}
                              " the default type is matrix but in the"
                              " next version it will be lines.\n")
         # End to remove
-        GenomeTrack.set_properties_defaults(self)
+        BedGraphLikeTrack.set_properties_defaults(self)
         if self.properties['type'] == 'matrix':
             self.process_color('colormap', colormap_possible=True,
                                colormap_only=True,
@@ -152,7 +146,7 @@ file_type = {TRACK_TYPE}
 
     def plot_y_axis(self, ax, plot_axis):
         if self.properties['type'] == 'lines':
-            GenomeTrack.plot_y_axis(self, ax, plot_axis)
+            BedGraphLikeTrack.plot_y_axis(self, ax, plot_axis)
         else:
             try:
                 cobar = plt.colorbar(self.img, ax=ax, fraction=0.95)
@@ -175,7 +169,3 @@ file_type = {TRACK_TYPE}
                 # move it a bit inside to avoid overlapping
                 # with other labels
                 labels[idx].set_verticalalignment('top')
-
-    def __del__(self):
-        if self.tbx is not None:
-            self.tbx.close()

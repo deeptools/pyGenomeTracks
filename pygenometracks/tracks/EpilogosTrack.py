@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from . BedGraphTrack import BedGraphTrack
-from . GenomeTrack import GenomeTrack
+from . BedGraphLikeTrack import BedGraphLikeTrack
 import json
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
@@ -9,7 +8,7 @@ from matplotlib import cm
 import numpy as np
 
 
-class EpilogosTrack(BedGraphTrack):
+class EpilogosTrack(BedGraphLikeTrack):
     """
     The data format for this type of track can be found
     at http://wiki.wubrowse.org/QuantitativeCategorySeries.
@@ -22,7 +21,7 @@ class EpilogosTrack(BedGraphTrack):
     """
     SUPPORTED_ENDINGS = ['.qcat', '.qcat.bgz']
     TRACK_TYPE = 'epilogos'
-    OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
+    OPTIONS_TXT = BedGraphLikeTrack.OPTIONS_TXT + f"""
 # The categories file should contain the color information for each category id
 # A categories file should look like:
 # {{
@@ -51,13 +50,8 @@ file_type = {TRACK_TYPE}
     FLOAT_PROPERTIES = {'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
-    def __init__(self, properties_dict):
-        GenomeTrack.__init__(self, properties_dict)
-
-        self.load_file()
-
     def set_properties_defaults(self):
-        GenomeTrack.set_properties_defaults(self)
+        BedGraphLikeTrack.set_properties_defaults(self)
         # load categories file
         if self.properties['categories_file'] is not None:
             with open(self.properties['categories_file']) as f:
@@ -136,10 +130,3 @@ file_type = {TRACK_TYPE}
         if self.properties['orientation'] == 'inverted':
             ymin, ymax = ax.get_ylim()
             ax.set_ylim(ymax, ymin)
-
-    def plot_y_axis(self, ax, plot_axis):
-        GenomeTrack.plot_y_axis(self, ax, plot_axis)
-
-    def __del__(self):
-        if self.tbx is not None:
-            self.tbx.close()
