@@ -154,6 +154,7 @@ file_type = {TRACK_TYPE}
                                  + " nor " + chrom_region + " exists as a "
                                  "chromosome name inside the bigwig file. "
                                  "This will generate an empty track!!\n")
+                self.adjust_ylim(ax)
                 return
 
         chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
@@ -213,6 +214,7 @@ file_type = {TRACK_TYPE}
                                      "chromosome name inside the second bigwig"
                                      " file. This will generate an empty track"
                                      "!!\n")
+                    self.adjust_ylim(ax)
                     return
             # get the scores
             # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
@@ -266,26 +268,7 @@ file_type = {TRACK_TYPE}
                       self.properties['alpha'],
                       self.properties['grid'])
 
-        ymax = self.properties['max_value']
-        ymin = self.properties['min_value']
-        plot_ymin, plot_ymax = ax.get_ylim()
-        if ymax is None:
-            ymax = plot_ymax
-        else:
-            ymax = transform(np.array([ymax]), self.properties['transform'],
-                             self.properties['log_pseudocount'],
-                             'ymax')[0]
-        if ymin is None:
-            ymin = plot_ymin
-        else:
-            ymin = transform(np.array([ymin]), self.properties['transform'],
-                             self.properties['log_pseudocount'],
-                             'ymin')[0]
-
-        if self.properties['orientation'] == 'inverted':
-            ax.set_ylim(ymax, ymin)
-        else:
-            ax.set_ylim(ymin, ymax)
+        self.adjust_ylim(ax)
 
         return ax
 

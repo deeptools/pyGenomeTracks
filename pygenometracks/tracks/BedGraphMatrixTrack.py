@@ -99,6 +99,7 @@ file_type = {TRACK_TYPE}
         """
         values_list, start_pos = self.get_scores(chrom_region, start_region, end_region)
         if start_pos == []:
+            self.adjust_ylim(ax)
             return
         matrix_rows = []
         for values in values_list:
@@ -127,9 +128,7 @@ file_type = {TRACK_TYPE}
             else:
                 mean_values = matrix.mean(axis=0)
             ax.plot(x_values, mean_values, linestyle="--", marker="|")
-            ymax = self.properties['max_value']
-            ymin = self.properties['min_value']
-            ax.set_ylim(ymin, ymax)
+            self.adjust_ylim(ax)
 
             if self.properties['plot_horizontal_lines']:
                 ax.grid(True)

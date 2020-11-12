@@ -301,6 +301,7 @@ file_type = {TRACK_TYPE}
     def plot(self, ax, chrom_region, start_region, end_region):
         score_list, pos_list = self.get_scores(chrom_region, start_region, end_region)
         if pos_list == []:
+            self.adjust_ylim(ax)
             return
         try:
             score_list = [float(x[0]) for x in score_list]
@@ -349,6 +350,7 @@ file_type = {TRACK_TYPE}
                                                      tbx_var='self.tbx2',
                                                      inttree_var='self.interval_tree2')
             if pos_list2 == []:
+                self.adjust_ylim(ax)
                 return
             try:
                 score_list2 = [float(x[0]) for x in score_list2]
@@ -432,26 +434,7 @@ file_type = {TRACK_TYPE}
                       self.properties['alpha'],
                       self.properties['grid'])
 
-        ymax = self.properties['max_value']
-        ymin = self.properties['min_value']
-        plot_ymin, plot_ymax = ax.get_ylim()
-        if ymax is None:
-            ymax = plot_ymax
-        else:
-            ymax = transform(np.array([ymax]), self.properties['transform'],
-                             self.properties['log_pseudocount'],
-                             'ymax')[0]
-        if ymin is None:
-            ymin = plot_ymin
-        else:
-            ymin = transform(np.array([ymin]), self.properties['transform'],
-                             self.properties['log_pseudocount'],
-                             'ymin')[0]
-
-        if self.properties['orientation'] == 'inverted':
-            ax.set_ylim(ymax, ymin)
-        else:
-            ax.set_ylim(ymin, ymax)
+        self.adjust_ylim(ax)
 
         if self.properties['rasterize']:
             ax.set_rasterized(True)

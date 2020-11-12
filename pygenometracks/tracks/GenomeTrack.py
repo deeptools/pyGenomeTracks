@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .. utilities import to_string, to_bytes, InputError
+from .. utilities import to_string, to_bytes, InputError, transform
 import logging
 import numpy as np
 from matplotlib import colors as mc
@@ -495,6 +495,28 @@ height = 2
             # move it a bit inside to avoid overlapping
             # with other labels
             labels[idx].set_verticalalignment('top')
+
+    def adjust_ylim(self, axis):
+        ymax = self.properties.get('max_value', None)
+        ymin = self.properties.get('min_value', None)
+        plot_ymin, plot_ymax = axis.get_ylim()
+        if ymax is None:
+            ymax = plot_ymax
+        else:
+            ymax = transform(np.array([ymax]), self.properties.get('transform', 'no'),
+                             self.properties.get('log_pseudocount', 0),
+                             'ymax')[0]
+        if ymin is None:
+            ymin = plot_ymin
+        else:
+            ymin = transform(np.array([ymin]), self.properties.get('transform', 'no'),
+                             self.properties.get('log_pseudocount', 0),
+                             'ymin')[0]
+
+        if self.properties.get('orientation', None) == 'inverted':
+            axis.set_ylim(ymax, ymin)
+        else:
+            axis.set_ylim(ymin, ymax)
 
     def __del__(self):
         return
