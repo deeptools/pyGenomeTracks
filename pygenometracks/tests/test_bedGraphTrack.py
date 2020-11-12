@@ -53,6 +53,63 @@ browser_tracks = """
 [x-axis]
 where = top
 
+[spacer]
+height = 0.05
+
+[test bedgraph use middle]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = blue
+alpha = 0.5
+height = 5
+title = bedgraph with use_middle = true 2 files red and blue and minimum black
+min_value = 0
+max_value = 10
+use_middle = true
+
+[test bedgraph2 use middle]
+file = GSM3182415_E12PHL_WT_Hoxd11vp.bedgraph.gz
+color = red
+alpha = 0.5
+use_middle = true
+overlay_previous = share-y
+
+[test bedgraph min use middle]
+file = GSM3182415_E12PHL_WT_Hoxd11vp.bedgraph.gz
+second_file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+operation = min(file, second_file)
+color = black
+alpha = 1
+use_middle = true
+overlay_previous = share-y
+
+[diff use middle]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+second_file = GSM3182415_E12PHL_WT_Hoxd11vp.bedgraph.gz
+operation = file - second_file
+color = blue
+negative_color = red
+alpha = 0.5
+height = 5
+title = bedgraph with use_middle = true difference
+min_value = -5
+max_value = 5
+use_middle = true
+
+
+[genes]
+file = HoxD_cluster_regulatory_regions_mm10.bed
+height = 3
+title = HoxD genes and regulatory regions
+
+"""
+with open(os.path.join(ROOT, "bedgraph_useMid_op.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+
+browser_tracks = """
+[x-axis]
+where = top
+
 [test bedgraph neg]
 file = test_with_neg_values.bg.gz
 color = blue
@@ -271,6 +328,22 @@ def test_plot_bedgraph_tracks_individual():
         assert res is None, res
 
         os.remove(outfile.name)
+
+
+def test_plot_bedgraph_use_mid_op():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bdg_NA_', delete=False)
+    ini_file = os.path.join(ROOT, "bedgraph_useMid_op.ini")
+    region = "chr2:74000000-74800000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_useMid_op.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
 
 
 def test_plot_bedgraph_tracks_rasterize():

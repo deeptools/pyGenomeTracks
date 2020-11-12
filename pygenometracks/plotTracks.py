@@ -182,10 +182,15 @@ def parse_arguments(args=None):
                        type=argparse.FileType('r')
                        )
 
-    parser.add_argument('--width',
-                        help=f'figure width in centimeters (default is {DEFAULT_FIGURE_WIDTH})',
-                        type=float,
-                        default=DEFAULT_FIGURE_WIDTH)
+    width_group = parser.add_mutually_exclusive_group()
+    width_group.add_argument('--width',
+                             help=f'figure width in centimeters (default is {DEFAULT_FIGURE_WIDTH})',
+                             type=float,
+                             default=DEFAULT_FIGURE_WIDTH)
+    width_group.add_argument('--plotWidth',
+                             help='width in centimeters of the plotting (central) part',
+                             type=float,
+                             default=None)
 
     parser.add_argument('--height',
                         help='Figure height in centimeters. If not given, the figure height is computed '
@@ -313,7 +318,7 @@ def main(args=None):
     trp = PlotTracks(args.tracks.name, args.width, fig_height=args.height,
                      fontsize=args.fontSize, dpi=args.dpi,
                      track_label_width=args.trackLabelFraction,
-                     plot_regions=regions)
+                     plot_regions=regions, plot_width=args.plotWidth)
 
     # Plot them
     if args.BED:
