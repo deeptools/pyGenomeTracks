@@ -155,9 +155,12 @@ DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 def parse_arguments(args=None):
     parser = argparse.ArgumentParser(
         description='Plots genomic tracks on specified region(s). '
-                    'Citation : Ramirez et al.  High-resolution TADs reveal DNA '
+                    'Citations :\nRamirez et al.  High-resolution TADs reveal DNA '
                     'sequences underlying genome organization in flies. '
-                    'Nature Communications (2018) doi:10.1038/s41467-017-02525-w',
+                    'Nature Communications (2018) doi:10.1038/s41467-017-02525-w\n'
+                    'Lopez-Delisle et al.  pyGenomeTracks: reproducible'
+                    ' plots for multivariate genomic datasets. '
+                    'Bioinformatics (2020) doi:10.1093/bioinformatics/btaa692',
         usage="%(prog)s --tracks tracks.ini --region chr1:1000000-4000000 -o image.png")
 
     parser.add_argument('--tracks',

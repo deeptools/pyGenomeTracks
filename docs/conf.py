@@ -29,7 +29,8 @@ MOCK_MODULES = ['pygenometracks.tracksClass',  # (required for both)
                 # For plotTracks in utilities
                 'numpy',
                 'tqdm',
-                'intervaltree']
+                'intervaltree',
+                'pybedtools']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
