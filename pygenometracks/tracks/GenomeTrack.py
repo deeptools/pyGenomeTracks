@@ -427,7 +427,7 @@ height = 2
                          'sum', 'min', 'max',
                          'log1p', 'log']
         allowed_signs = ['+', '-', '*', '/',
-                         '(', ')', '.', ',', ' '] + \
+                         '(', ')', '.', ',', ' ', 'e'] + \
                         [f"{i}" for i in range(10)]
         operation = self.properties['operation']
         for word in allowed_words:
