@@ -16,7 +16,6 @@ VERSION_PY = """
 __version__ = '%s'
 """
 
-print(find_packages())
 def update_version_py():
     if not os.path.isdir(".git"):
         print("This does not appear to be a Git repository.")
