@@ -12,10 +12,10 @@ import matplotlib.colors
 import matplotlib.gridspec
 import matplotlib.cm
 import mpl_toolkits.axisartist as axisartist
-from . utilities import file_to_intervaltree, change_chrom_names
+from .. utilities import file_to_intervaltree, change_chrom_names
 from collections import OrderedDict
-from pygenometracks.tracks.GenomeTrack import GenomeTrack
-from pygenometracks.utilities import InputError
+from . GenomeTrack import GenomeTrack
+from .. utilities import InputError
 
 import warnings
 

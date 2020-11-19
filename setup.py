@@ -16,7 +16,7 @@ VERSION_PY = """
 __version__ = '%s'
 """
 
-
+print(find_packages())
 def update_version_py():
     if not os.path.isdir(".git"):
         print("This does not appear to be a Git repository.")
@@ -108,7 +108,7 @@ setup(
     version=get_version(),
     author='Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolf, Björn Grüning',
     packages=find_packages(exclude=['tests']),
-    scripts=['bin/make_tracks_file', 'bin/pgt', 'bin/pyGenomeTracks'],
+    scripts=['bin/make_tracks_config', 'bin/pgt', 'bin/pyGenomeTracks'],
     include_package_data=True,
     package_dir={'pygenometracks': 'pygenometracks'},
     url='http://pygenometracks.readthedocs.io',
