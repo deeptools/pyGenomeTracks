@@ -150,13 +150,17 @@ class ReadGtf(object):
                                                     order_by='start')]
         else:
             # This means that the gtf does not have exon info for this gene/transcript:
-            exons_starts = [[ch.start - 1
-                             for ch in self.db.children(tr,
-                                                        order_by='start')][0]]
-            exons_ends = [[ch.end
-                           for ch in self.db.children(tr,
-                                                      order_by='end',
-                                                      reverse=True)][0]]
+            try:
+                exons_starts = [[ch.start - 1
+                                 for ch in self.db.children(tr,
+                                                            order_by='start')][0]]
+                exons_ends = [[ch.end
+                               for ch in self.db.children(tr,
+                                                          order_by='end',
+                                                          reverse=True)][0]]
+            except IndexError:
+                exons_starts = [tr.start - 1]
+                exons_ends = [tr.end]
         exons_length = [e - s for s, e in zip(exons_starts, exons_ends)]
         relative_exons_starts = [s - (tr.start - 1) for s in exons_starts]
         line_values = [tr.chrom, tr.start - 1, tr.end, trName, 0, tr.strand,
