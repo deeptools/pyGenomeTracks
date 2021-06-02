@@ -52,7 +52,7 @@ def main():
                                       'hlines', 'hic_matrix', 'scalebar']
     my_prefered_order_tracks_names = [k for k in my_prefered_order_tracks_names
                                       if k in all_tracks]
-    other_tracks = list(set(all_tracks.keys())
+    other_tracks = list(set([k for k in all_tracks.keys() if k is not None])
                         - set(my_prefered_order_tracks_names))
     # Get all possible and default parameters
     all_default_parameters = {}

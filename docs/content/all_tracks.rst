@@ -14,6 +14,7 @@ All available tracks
    tracks/hic_matrix
    tracks/hlines
    tracks/links
+   tracks/maf
    tracks/narrow_peak
    tracks/scalebar
    tracks/spacer
