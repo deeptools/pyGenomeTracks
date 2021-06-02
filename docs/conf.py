@@ -30,7 +30,8 @@ MOCK_MODULES = ['pygenometracks.tracksClass',  # (required for both)
                 'numpy',
                 'tqdm',
                 'intervaltree',
-                'pybedtools']
+                'pybedtools',
+                'Bio']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
