@@ -1,0 +1,987 @@
+##maf version=1
+a score=41100.0
+s mm10.chr2 34705072 4 + 182113224 G-AAG     
+s rn5.chr3  19096925 4 + 183740530 G-AAG     
+i rn5.chr3                         C 0 C 0   
+s hg19.chr9 13114691 4 - 141213431 G-ACA     
+i hg19.chr9                        I 195 I 6 
+
+a score=423183.0
+s mm10.chr2 34705076 25 + 182113224 AGGTGGAGA-------ACTATAGAATTTGAAA 
+s rn5.chr3  19096929 25 + 183740530 AGGCAGAGA-------ACTGTGGAGTTTGAAA 
+i rn5.chr3                          C 0 C 0                          
+s hg19.chr9 13114701 25 - 141213431 AAATAAAAG-------GCTGTAAATCTTGAAG 
+i hg19.chr9                         I 6 C 0                          
+
+a score=66158.0
+s mm10.chr2 34705101 4 + 182113224 GTCT    
+s rn5.chr3  19096954 4 + 183740530 GGCT    
+i rn5.chr3                         C 0 C 0 
+s hg19.chr9 13114726 4 - 141213431 TTCT    
+i hg19.chr9                        C 0 C 0 
+
+a score=387811.0
+s mm10.chr2 34705105 18 + 182113224 AATATTGCTTTCA---GCAAA 
+s rn5.chr3  19096958 18 + 183740530 AATATTGCTTTCA---GCAAA 
+i rn5.chr3                          C 0 C 0               
+s hg19.chr9 13114730 18 - 141213431 AACACTGCTCTCA---GCAAA 
+i hg19.chr9                         C 0 C 0               
+
+a score=10920.0
+s mm10.chr2 34705123 1 + 182113224 T       
+s rn5.chr3  19096976 1 + 183740530 T       
+i rn5.chr3                         C 0 C 0 
+s hg19.chr9 13114748 1 - 141213431 T       
+i hg19.chr9                        C 0 C 0 
+
+a score=-29032.0
+s mm10.chr2 34705124 7 + 182113224 GTCTTGA--- 
+s rn5.chr3  19096977 7 + 183740530 GTCCTAA--- 
+i rn5.chr3                         C 0 C 0    
+s hg19.chr9 13114749 2 - 141213431 -----AA--- 
+i hg19.chr9                        C 0 C 0    
+
+a score=-6898.0
+s mm10.chr2 34705131 8 + 182113224 TTTA------AAAA 
+s rn5.chr3  19096984 8 + 183740530 TTTT------AAAA 
+i rn5.chr3                         C 0 C 0        
+s hg19.chr9 13114751 8 - 141213431 CTTT------AAAA 
+i hg19.chr9                        C 0 I 1        
+
+a score=37882.0
+s mm10.chr2 34705139 24 + 182113224 AAAAATCTATGAGTGAAATG---AATA 
+s rn5.chr3  19096992 23 + 183740530 CGAATTC-ATGAATGAAATG---AATA 
+i rn5.chr3                          C 0 C 0                     
+s hg19.chr9 13114760 24 - 141213431 AGATAAGTATGCAGAGGATG---GAAA 
+i hg19.chr9                         I 1 C 0                     
+
+a score=2589.0
+s mm10.chr2 34705163 1 + 182113224 T       
+s rn5.chr3  19097015 1 + 183740530 T       
+i rn5.chr3                         C 0 C 0 
+s hg19.chr9 13114784 1 - 141213431 T       
+i hg19.chr9                        C 0 C 0 
+
+a score=-36380.0
+s mm10.chr2 34705164 35 + 182113224 ATAATGCCATGAAAT--TGACTCTA-ATTTCT-AAATGT 
+s rn5.chr3  19097016 30 + 183740530 ATAATGCCACG-AAT--TAACTCTA-ATTTCT-AA---- 
+i rn5.chr3                          C 0 C 0                                 
+s hg19.chr9 13114785 32 - 141213431 -TTCAAACATAAAA---AAATTATT-A-ATCT-AAATGT 
+i hg19.chr9                         C 0 C 0                                 
+
+a score=33050.0
+s mm10.chr2 34705199 17 + 182113224 ACTA-TTTTA--GACTACAG 
+s rn5.chr3  19097046 14 + 183740530 ---A-TCTTA--GACTACAG 
+i rn5.chr3                          C 0 C 0              
+s hg19.chr9 13114817 13 - 141213431 -----TTTTA--GTCTGAAG 
+i hg19.chr9                         C 0 I 3470           
+
+a score=548.0
+s mm10.chr2 34705216 11 + 182113224 AACTCCCCCTC-- 
+s rn5.chr3  19097060 11 + 183740530 AACCCCCACTC-- 
+i rn5.chr3                          C 0 C 0       
+
+a score=-4856.0
+s mm10.chr2 34705227 6 + 182113224 CCCAAA- 
+s rn5.chr3  19097071 6 + 183740530 CCAAAA- 
+i rn5.chr3                         C 0 C 0 
+
+a score=87104.0
+s mm10.chr2 34705233 20 + 182113224 AGATAACCCTAACTAAGCAT 
+s rn5.chr3  19097077 16 + 183740530 AGATACCC----CTAAGCAC 
+i rn5.chr3                          C 0 C 0              
+
+a score=1769.0
+s mm10.chr2 34705253 1 + 182113224 G       
+s rn5.chr3  19097093 1 + 183740530 G       
+i rn5.chr3                         C 0 C 0 
+
+a score=-7449.0
+s mm10.chr2 34705254 3 + 182113224 TCT--   
+s rn5.chr3  19097094 3 + 183740530 TCT--   
+i rn5.chr3                         C 0 C 0 
+
+a score=-9682.0
+s mm10.chr2 34705257 3 + 182113224 TAA     
+s rn5.chr3  19097097 3 + 183740530 TAA     
+i rn5.chr3                         C 0 C 0 
+
+a score=45039.0
+s mm10.chr2 34705260 9 + 182113224 CACAACTAG 
+s rn5.chr3  19097100 9 + 183740530 CACAATTAG 
+i rn5.chr3                         C 0 C 0   
+
+a score=4300.0
+s mm10.chr2 34705269 1 + 182113224 A       
+s rn5.chr3  19097109 1 + 183740530 A       
+i rn5.chr3                         C 0 C 0 
+
+a score=135112.0
+s mm10.chr2 34705270 16 + 182113224 AA-T------ATTAAAATAG----GTA 
+s rn5.chr3  19097110 16 + 183740530 AA-T------ATTAAAATAG----GTA 
+i rn5.chr3                          C 0 C 0                     
+
+a score=171803.0
+s mm10.chr2 34705286 14 + 182113224 AGTATACAGAGACT 
+s rn5.chr3  19097126 14 + 183740530 AGTATAAAGATACC 
+i rn5.chr3                          C 0 C 0        
+
+a score=59500.0
+s mm10.chr2 34705300 4 + 182113224 AAAA       
+s rn5.chr3  19097140 4 + 183740530 AAAA       
+i rn5.chr3                         C 0 I 99   
+s hg19.chr9 13118300 4 - 141213431 ggac       
+i hg19.chr9                        I 3470 C 0 
+
+a score=26234.0
+s mm10.chr2 34705304 2 + 182113224 CT       
+s rn5.chr3  19097243 2 + 183740530 CT       
+i rn5.chr3                         I 99 C 0 
+s hg19.chr9 13118304 2 - 141213431 tt       
+i hg19.chr9                        C 0 C 0  
+
+a score=4664.0
+s mm10.chr2 34705306 1 + 182113224 T       
+s rn5.chr3  19097245 1 + 183740530 T       
+i rn5.chr3                         C 0 C 0 
+
+a score=10920.0
+s mm10.chr2 34705307 1 + 182113224 T       
+s rn5.chr3  19097246 1 + 183740530 T       
+i rn5.chr3                         C 0 C 0 
+s hg19.chr9 13118306 1 - 141213431 t       
+i hg19.chr9                        C 0 C 0 
+
+a score=10500.0
+s mm10.chr2 34705308 1 + 182113224 C       
+s rn5.chr3  19097247 1 + 183740530 C       
+i rn5.chr3                         C 0 C 0 
+s hg19.chr9 13118307 1 - 141213431 c       
+i hg19.chr9                        C 0 C 0 
+
+a score=1320.0
+s mm10.chr2 34705309 14 + 182113224 TCCACTCACGGATT---- 
+s rn5.chr3  19097248 14 + 183740530 TCCATTCATGGatt---- 
+i rn5.chr3                          C 0 C 0            
+s hg19.chr9 13118308 18 - 141213431 tctacacatggaattttt 
+i hg19.chr9                         C 0 C 0            
+
+a score=8456.0
+s mm10.chr2 34705323 15 + 182113224 TCCTTATAACAGATT 
+s rn5.chr3  19097262 15 + 183740530 tcattatgacagatt 
+i rn5.chr3                          C 0 C 0         
+s hg19.chr9 13118326 15 - 141213431 tcattatgactgaca 
+i hg19.chr9                         C 0 C 0         
+
+a score=352.0
+s mm10.chr2 34705338 11 + 182113224 TCTAGAAGTAG--- 
+s hg19.chr9 13118341 11 - 141213431 cctagaagtgg--- 
+i hg19.chr9                         C 0 C 0        
+
+a score=25195.0
+s mm10.chr2 34705349 194 + 182113224 TTCT-------------------TTTTTTTCCCCGCCTtttttttgagacagggtttctctgtgtagatcttg-------gctgtcctggaactcact--ctgtagac-caggctggccttgaactcagaaatccgcctgcctctgcctctgcctctgcctcccaagtgctgggattaaaggcttgcagcaccactgcctggcCtttttt-------ttttttttaaaga 
+
+a score=0.0
+s mm10.chr2 34705543 173 + 182113224 tttattattatttatatgtaagtacactgtagctatcctcagacacaccagtagagggcatcagatgtcatttcagatggttgtaaaccaccatgtggttgctaggatttgaactcaggaccttcattagaacagtcagtgctcttaaccgctgaaccatctctccagccccC 
+
+a score=1419.0
+s mm10.chr2 34705716 5 + 182113224 TCTAG   
+s rn5.chr3  19097277 5 + 183740530 tctag   
+i rn5.chr3                         C 0 C 0 
+
+a score=23757.0
+s mm10.chr2 34705721 71 + 182113224 AAGTAGTTCTAACTGATCCAAATTTAGAATATGATCATCTAAGTCCCCAAGAACACATTGACAAGTTATGC 
+s rn5.chr3  19097282 71 + 183740530 aagtagttctaactgaaccaaatttagaatatgaacatttaagtccccacgtacacactgacaagttatgc 
+i rn5.chr3                          C 0 I 271                                                               
+s hg19.chr9 13118352 65 - 141213431 ------aactaacctgactaaatttagaatgtgaacatttaagaccttaaatagatactgacaaagtatgt 
+i hg19.chr9                         C 0 C 0                                                                 
+
+a score=1587.0
+s mm10.chr2 34705792 4 + 182113224 CCCA      
+s rn5.chr3  19097624 4 + 183740530 CCTG      
+i rn5.chr3                         I 271 C 0 
+s hg19.chr9 13118417 4 - 141213431 ccca      
+i hg19.chr9                        C 0 I 76  
+
+a score=1744.0
+s mm10.chr2 34705796 49 + 182113224 CTTTGATTTTTAGGGCTTTGTTTT--GGTTGTTTTAGGATTTTTTTTTCTC 
+s rn5.chr3  19097628 51 + 183740530 CTTTGTTTTGTAGGAttttgcttttgggttttttcttctcttttttctttc 
+i rn5.chr3                          C 0 C 0                                             
+
+a score=-3038.0
+s mm10.chr2 34705845 83 + 182113224 CTTTTT----CTTTCGTttttggttttttggatcaggactcactatgtagact-tggctgacctagaactcactatgtagaccaggca 
+s rn5.chr3  19097679 83 + 183740530 tttttt----gttttttttttttttttttggataaaggctcactctacagact-tggctgacttggaactcactatgtaagccaggca 
+i rn5.chr3                          C 0 C 0                                                                                  
+
+a score=-8755.0
+s mm10.chr2 34705928 42 + 182113224 agtctcaaactcatagatattccctg----gcctctatct---gagttc 
+s rn5.chr3  19097762 45 + 183740530 aatcttaaactcacagataatcccct----gcctccacctcctgagtgc 
+i rn5.chr3                          C 0 C 0                                           
+
+a score=1299.0
+s mm10.chr2 34705970 3 + 182113224 tga     
+s rn5.chr3  19097807 3 + 183740530 tga     
+i rn5.chr3                         C 0 C 0 
+
+a score=-2713.0
+s mm10.chr2 34705973 5 + 182113224 cattC   
+s rn5.chr3  19097810 5 + 183740530 tacaa   
+i rn5.chr3                         C 0 C 0 
+
+a score=6695.0
+s mm10.chr2 34705978 1 + 182113224 T       
+s rn5.chr3  19097815 1 + 183740530 t       
+i rn5.chr3                         C 0 C 0 
+
+a score=395.0
+s mm10.chr2 34705979 1 + 182113224 A       
+s rn5.chr3  19097816 1 + 183740530 a       
+i rn5.chr3                         C 0 C 0 
+
+a score=28965.0
+s mm10.chr2 34705980 8 + 182113224 TAATTACC 
+s rn5.chr3  19097817 8 + 183740530 tgaTTACC 
+i rn5.chr3                         C 0 C 0  
+
+a score=12376.0
+s mm10.chr2 34705988 1 + 182113224 T       
+s rn5.chr3  19097825 1 + 183740530 T       
+i rn5.chr3                         C 0 C 0 
+
+a score=12907.0
+s mm10.chr2 34705989 1 + 182113224 T       
+s rn5.chr3  19097826 1 + 183740530 T       
+i rn5.chr3                         C 0 C 0 
+
+a score=258.0
+s mm10.chr2 34705990 1 + 182113224 A       
+s rn5.chr3  19097827 1 + 183740530 A       
+i rn5.chr3                         C 0 C 0 
+
+a score=29575.0
+s mm10.chr2 34705991 1 + 182113224 A       
+s rn5.chr3  19097828 1 + 183740530 A       
+i rn5.chr3                         C 0 C 0 
+
+a score=18893.0
+s mm10.chr2 34705992 1 + 182113224 A       
+s rn5.chr3  19097829 1 + 183740530 A       
+i rn5.chr3                         C 0 C 0 
+
+a score=395908.0
+s mm10.chr2               34705993 19 + 182113224 A-------AGCCATTCT------CACTCCTAC 
+s rn5.chr3                19097830 19 + 183740530 A-------GGTCATTCT------CACCCCCAC 
+i rn5.chr3                                        C 0 C 0                          
+s hg19.chr9               13118497 19 - 141213431 A-------AGTCATCCT------CATTTCCCC 
+i hg19.chr9                                       I 76 C 0                         
+s sorAra1.scaffold_258498     5366 18 +    196505 A-------AGCCcctct------ttttcca-t 
+i sorAra1.scaffold_258498                         N 0 C 0                          
+
+a score=11678.0
+s mm10.chr2               34706012 1 + 182113224 A       
+s rn5.chr3                19097849 1 + 183740530 A       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13118516 1 - 141213431 C       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5384 1 +    196505 t       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=41513.0
+s mm10.chr2               34706013 1 + 182113224 A       
+s rn5.chr3                19097850 1 + 183740530 A       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13118517 1 - 141213431 T       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5385 1 +    196505 t       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=154000.0
+s mm10.chr2               34706014 1 + 182113224 C       
+s rn5.chr3                19097851 1 + 183740530 C       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13118518 1 - 141213431 C       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5386 1 +    196505 c       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=98483.0
+s mm10.chr2               34706015 1 + 182113224 T       
+s rn5.chr3                19097852 1 + 183740530 T       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13118519 1 - 141213431 T       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5387 1 +    196505 t       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=13020051.0
+s mm10.chr2               34706016 111 + 182113224 T--ACCATGGGCTATGTCATCCATATCT--GGACTAGTTACA-GAATCTTTGCCCCC-AAAATCA-GAGCTGCACTCAGA-TCTCAGGTCTTCGATCTTATTGGGAATATCCTCCGATG 
+s rn5.chr3                19097853 111 + 183740530 T--ACCATGGGCTATGTCATCCACATCT--GGACTAGTTACA-GAATCTTTACCCCC-AAAATCA-GAGCTGCACTCAGA-TCGCAGGTCTTCGATCTTATTGGGAATATCCTCCGATG 
+i rn5.chr3                                         C 0 C 0                                                                                                                 
+s hg19.chr9               13118520 111 - 141213431 T--ACCGTGAGTTATTTCATCCATGTCT--GGACTAGTGACA-GAATCTTTACCCCC-AAAATCA-GAGCTGCACTCAGA-TCTCAGGTCTTCAATCTTATTGGGAATATCCTCAGAGG 
+i hg19.chr9                                        C 0 C 0                                                                                                                 
+s sorAra1.scaffold_258498     5388 111 +    196505 t--accATGAGTTACTTCATCCATGTCT--GGGCTAGTGACA-GAGTCTTTACCCCC-AAAGTCA-GAGCTGCACTCAGA-TCTCAGGTCTTCTATCTTATTAGGAATATCCTCAGAGG 
+i sorAra1.scaffold_258498                          C 0 C 0                                                                                                                 
+
+a score=1769347.0
+s mm10.chr2               34706127 14 + 182113224 TAGCACTTATACCT 
+s rn5.chr3                19097964 14 + 183740530 TAGCGCTTATGCCT 
+i rn5.chr3                                        C 0 C 0        
+s hg19.chr9               13118631 14 - 141213431 TTGCACTTATGCCT 
+i hg19.chr9                                       C 0 C 0        
+s sorAra1.scaffold_258498     5499 14 +    196505 TTGCACTTATgcct 
+i sorAra1.scaffold_258498                         C 0 C 0        
+
+a score=-78567.0
+s mm10.chr2               34706141 7 + 182113224 TTAAA-------------------AA----- 
+s rn5.chr3                19097978 7 + 183740530 TTGAA-------------------AA----- 
+i rn5.chr3                                       C 0 C 0                         
+s hg19.chr9               13118645 7 - 141213431 TTAAA-------------------AA----- 
+i hg19.chr9                                      C 0 C 0                         
+s sorAra1.scaffold_258498     5513 6 +    196505 tt-aa-------------------ag----- 
+i sorAra1.scaffold_258498                        C 0 C 0                         
+
+a score=-435240.0
+s mm10.chr2 34706148 8 + 182113224 ATACAGCA-------------------------------------- 
+s rn5.chr3  19097985 7 + 183740530 -TACAGCA-------------------------------------- 
+i rn5.chr3                         C 0 C 0                                        
+s hg19.chr9 13118652 1 - 141213431 -------A-------------------------------------- 
+i hg19.chr9                        C 0 C 0                                        
+
+a score=-126692.0
+s mm10.chr2               34706156 2 + 182113224 A-A-    
+s rn5.chr3                19097992 2 + 183740530 A-A-    
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13118653 2 - 141213431 C-A-    
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5519 2 +    196505 a-t-    
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=-311071.0
+s mm10.chr2               34706158 6 + 182113224 A-A----TACA-- 
+s rn5.chr3                19097994 5 + 183740530 A------TACA-- 
+i rn5.chr3                                       C 0 C 0       
+s hg19.chr9               13118655 3 - 141213431 A--------TA-- 
+i hg19.chr9                                      C 0 C 0       
+s sorAra1.scaffold_258498     5521 3 +    196505 a--------aa-- 
+i sorAra1.scaffold_258498                        C 0 C 0       
+
+a score=-651211.0
+s mm10.chr2               34706164 10 + 182113224 TA--A--G----------------------------------------------------------------------------------------------TAAA--TA 
+s rn5.chr3                19097999 10 + 183740530 GA--A--G----------------------------------------------------------------------------------------------TAAA--TA 
+i rn5.chr3                                        C 0 C 0                                                                                                        
+s hg19.chr9               13118658 10 - 141213431 GT--A--A----------------------------------------------------------------------------------------------AAAA--TA 
+i hg19.chr9                                       C 0 C 0                                                                                                        
+s sorAra1.scaffold_258498     5524 12 +    196505 at--a--a--------------------------------------------------------------------------------------------ttaaaa--ct 
+i sorAra1.scaffold_258498                         C 0 C 0                                                                                                        
+
+a score=165149.0
+s mm10.chr2               34706174 5 + 182113224 AATAA   
+s rn5.chr3                19098009 4 + 183740530 AACA-   
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13118668 4 - 141213431 AACA-   
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5536 2 +    196505 a--a-   
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=386714.0
+s mm10.chr2               34706179 12 + 182113224 GCTGCAAG----AAGA-------- 
+s rn5.chr3                19098013  9 + 183740530 ---GCAAG----AAGA-------- 
+i rn5.chr3                                        C 0 C 0                  
+s hg19.chr9               13118672  9 - 141213431 ---GGAAG----AAGA-------- 
+i hg19.chr9                                       C 0 C 0                  
+s sorAra1.scaffold_258498     5538 13 +    196505 ---gcAAACTGGAACA-------- 
+i sorAra1.scaffold_258498                         C 0 C 0                  
+
+a score=224266.0
+s mm10.chr2               34706191 6 + 182113224 CCAAAG-- 
+s rn5.chr3                19098022 6 + 183740530 ACAAAG-- 
+i rn5.chr3                                       C 0 C 0  
+s hg19.chr9               13118681 6 - 141213431 ACAAAA-- 
+i hg19.chr9                                      C 0 C 0  
+s sorAra1.scaffold_258498     5551 6 +    196505 ACAAAA-- 
+i sorAra1.scaffold_258498                        C 0 C 0  
+
+a score=584015.0
+s mm10.chr2               34706197 35 + 182113224 TAGTTACAC-------AA---------------------------------------------------------------------------------A--ATTT--TATG---------AAG--TT-------------------------------T-GGAGAAA----------------------------------------------------TT-- 
+s rn5.chr3                19098028 36 + 183740530 CAGTTACAC-------AA---------------------------------------------------------------------------------A--ATTC--TACT---------AAG--TT-------------------------------TTGGATAAA----------------------------------------------------TC-- 
+i rn5.chr3                                        C 0 C 0                                                                                                                                                                                                                          
+s hg19.chr9               13118687 36 - 141213431 TATCCACAC-A-----AA---------------------------------------------------------------------------------A--AGTA--TATG---------AAA--TT-------------------------------T-GGAGAAA----------------------------------------------------CT-- 
+i hg19.chr9                                       C 0 I 4                                                                                                                                                                                                                          
+s sorAra1.scaffold_258498     5557 36 +    196505 TAAGCACAC-A-----GA---------------------------------------------------------------------------------A--AGTT--TATG---------AAG--TC-------------------------------T-GGAGAAA----------------------------------------------------GT-- 
+i sorAra1.scaffold_258498                         C 0 I 4                                                                                                                                                                                                                          
+
+a score=-1110372.0
+s mm10.chr2               34706232 43 + 182113224 CCTTTTC-------------------------------------------------AAA---CT--A---TC--CAC-------------------------------------------------------------------------------------------------------------------------------------------------------------CTACAC------ATGTGA-GTTGCTGAGTGCT-------- 
+s rn5.chr3                19098064 37 + 183740530 CCTCCTC-------------------------------------------------GAG---CT--G---TC--CAC-------------------------------------------------------------------------------------------------------------------------------------------------------------------------ACGTGA-GCTGCCGAGTGCT-------- 
+i rn5.chr3                                        C 0 C 0                                                                                                                                                                                                                                                                            
+s hg19.chr9               13118727 47 - 141213431 CATTCTC-------------------------------------------------GAA---TT--T---TG--T----------------------------GTCCCAGT--TC------------------------------------------------------------------------------------------------------------------------TATAC------ATGTGA----GTTTAGTATT-------- 
+i hg19.chr9                                       I 4 C 0                                                                                                                                                                                                                                                                            
+s sorAra1.scaffold_258498     5597 51 +    196505 TACCCTC-------------------------------------------------AATT--GT--T---TG--T----------------------------GTCCAGTTC-TA------------------------------------------------------------------------------------------------------------------------CACAC------AAGGGA-GCTG-CCGGTGTT-------- 
+i sorAra1.scaffold_258498                         I 4 C 0                                                                                                                                                                                                                                                                            
+
+a score=-57305.0
+s mm10.chr2 34706275 9 + 182113224 G-------------------GCAAGTTA 
+s rn5.chr3  19098101 9 + 183740530 G-------------------CCACCTCA 
+i rn5.chr3                         C 0 C 0                      
+
+a score=-785463.0
+s mm10.chr2               34706284 23 + 182113224 CCAC--------------------------------------------------------------------------TGTTA----TTCAAACACACT----TA----------- 
+s rn5.chr3                19098110 23 + 183740530 CCAC--------------------------------------------------------------------------TGCTG----TCCAAGTACACT----TA----------- 
+i rn5.chr3                                        C 0 C 0                                                                                                              
+s hg19.chr9               13118774 35 - 141213431 -------------------------------------------------------ATATCCTT---TA-T-GGTA--CTACTG----CTTAAATATACT----TA----------- 
+i hg19.chr9                                       C 0 C 0                                                                                                              
+s sorAra1.scaffold_258498     5648 36 +    196505 -------------------------------------------------------TCGGCTTT---TATC-AGTA--CTACTG----CTTAAATATGAT----TA----------- 
+i sorAra1.scaffold_258498                         C 0 C 0                                                                                                              
+
+a score=38342.0
+s mm10.chr2               34706307 6 + 182113224 TCTTGC- 
+s rn5.chr3                19098133 6 + 183740530 TCTTGC- 
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13118809 6 - 141213431 CCTTGC- 
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5684 5 +    196505 C-CCGA- 
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=173064.0
+s mm10.chr2               34706313 10 + 182113224 T-TTATACAAT 
+s rn5.chr3                19098139  8 + 183740530 T---ATACAGC 
+i rn5.chr3                                        C 0 C 0     
+s hg19.chr9               13118815 10 - 141213431 T-TTACACAAC 
+i hg19.chr9                                       C 0 C 0     
+s sorAra1.scaffold_258498     5689  7 +    196505 T-GTGTGC--- 
+i sorAra1.scaffold_258498                         C 0 C 0     
+
+a score=110922.0
+s mm10.chr2               34706323 13 + 182113224 ATCATC------------------------------------------AGA---ATT-A 
+s rn5.chr3                19098147 13 + 183740530 AGCATC------------------------------------------AAA---AGT-T 
+i rn5.chr3                                        C 0 C 0                                                     
+s hg19.chr9               13118825 13 - 141213431 ATAATC------------------------------------------AGA---ATC-G 
+i hg19.chr9                                       C 0 C 0                                                     
+s sorAra1.scaffold_258498     5696 12 +    196505 -AAAAT------------------------------------------ATC---CAA-G 
+i sorAra1.scaffold_258498                         C 0 I 1                                                     
+
+a score=-155855.0
+s mm10.chr2               34706336 16 + 182113224 CACGC----T----ATAC-----CTAAAT 
+s rn5.chr3                19098160 15 + 183740530 CATGC----T----GTAC-----CTAA-T 
+i rn5.chr3                                        C 0 C 0                       
+s hg19.chr9               13118838 14 - 141213431 --TAC----A----ATTC-----TAAAGT 
+i hg19.chr9                                       C 0 C 0                       
+s sorAra1.scaffold_258498     5709 16 +    196505 TACAT----G----CTCT-----GTACAC 
+i sorAra1.scaffold_258498                         I 1 I 5                       
+
+a score=5448.0
+s mm10.chr2 34706352 3 + 182113224 ATC     
+s rn5.chr3  19098175 3 + 183740530 ATT     
+i rn5.chr3                         C 0 C 0 
+
+a score=-7915.0
+s mm10.chr2 34706355 2 + 182113224 GT-     
+s rn5.chr3  19098178 2 + 183740530 GT-     
+i rn5.chr3                         C 0 C 0 
+
+a score=592160.0
+s mm10.chr2               34706357 20 + 182113224 AGCAAAAGC-----TAT-CAAAAA----TA 
+s rn5.chr3                19098180 20 + 183740530 AGCAGAAGC-----TAC-CAAAAG----TA 
+i rn5.chr3                                        C 0 C 0                        
+s hg19.chr9               13118852 20 - 141213431 AGGACAGGC-----TAC-TAAGAA----CA 
+i hg19.chr9                                       C 0 C 0                        
+s sorAra1.scaffold_258498     5730 20 +    196505 AGCAGAAGC-----TAT-GCAGTA----CA 
+i sorAra1.scaffold_258498                         I 5 C 0                        
+
+a score=-246926.0
+s mm10.chr2               34706377 6 + 182113224 TCA-----A--------GA 
+s rn5.chr3                19098200 6 + 183740530 TCG-----A--------AA 
+i rn5.chr3                                       C 0 C 0             
+s hg19.chr9               13118872 6 - 141213431 GAA-----A--------CA 
+i hg19.chr9                                      C 0 C 0             
+s sorAra1.scaffold_258498     5750 4 +    196505 GAT-----A---------- 
+i sorAra1.scaffold_258498                        C 0 C 0             
+
+a score=-935672.0
+s mm10.chr2               34706383 18 + 182113224 GCTG------------------AA--------AG---AGGAG-----------------------CAGCA 
+s rn5.chr3                19098206 17 + 183740530 GCTG------------------AA---------G---AAGAA-----------------------CAGTT 
+i rn5.chr3                                        C 0 C 0                                                                
+s hg19.chr9               13118878 17 - 141213431 GTTG------------------TA---------G---AGAGA-----------------------CTGTT 
+i hg19.chr9                                       C 0 C 0                                                                
+s sorAra1.scaffold_258498     5754 20 +    196505 ----------------------GT---------C---AGGGAA---CA---CAC-----A-----TGAGC 
+i sorAra1.scaffold_258498                         C 0 C 0                                                                
+
+a score=499767.0
+s mm10.chr2               34706401 25 + 182113224 CGTCCA--TTATTTT----AACAGGCTGTA--A 
+s rn5.chr3                19098223 23 + 183740530 CGTCAG--TTATC------AATAGGCTGTG--A 
+i rn5.chr3                                        C 0 C 0                           
+s hg19.chr9               13118895 26 - 141213431 TGCCAA--TTACTTC----AACAGGCTCCAT-A 
+i hg19.chr9                                       C 0 C 0                           
+s sorAra1.scaffold_258498     5774 26 +    196505 TGCAAA--TTACTTT----AATGAGCTCTGC-G 
+i sorAra1.scaffold_258498                         C 0 C 0                           
+
+a score=767553.0
+s mm10.chr2               34706426 54 + 182113224 A----AGC------CACATATT--AAGTT----CTCAAAGA----TTAT------------G-AAG-GCATAAAATTAAT-TTTTTTCC 
+s rn5.chr3                19098246 54 + 183740530 A----AGC------TACACATT--AGGTT----CTCAAAGA----TTAT------------G-AAA-GCGTAAAATTGAT-TTTGTTCC 
+i rn5.chr3                                        C 0 C 0                                                                                   
+s hg19.chr9               13118921 55 - 141213431 A----GGC------CACACATT--AAGTT----CTCAAAGAT---TTCA------------G-GTG-CAATGGAAATAAG-TTTGTTTT 
+i hg19.chr9                                       C 0 C 0                                                                                   
+s sorAra1.scaffold_258498     5800 55 +    196505 A----AGC------CGCACATT--AAGCT----CTCATAGCT---ATTT------------G-GTA-CCCTAGAAATAAT-TTCATTCC 
+i sorAra1.scaffold_258498                         C 0 C 0                                                                                   
+
+a score=512662.0
+s mm10.chr2               34706480 12 + 182113224 CTGG-GGACTACT 
+s rn5.chr3                19098300 12 + 183740530 CTGG-AGACTACT 
+i rn5.chr3                                        C 0 C 0       
+s hg19.chr9               13118976 12 - 141213431 CTGG-AAATTACT 
+i hg19.chr9                                       C 0 C 0       
+s sorAra1.scaffold_258498     5855 12 +    196505 CTGG-AAATCACC 
+i sorAra1.scaffold_258498                         C 0 C 0       
+
+a score=266794.0
+s mm10.chr2               34706492 19 + 182113224 GAG-AACTTAAATAA-CATA--T 
+s rn5.chr3                19098312 19 + 183740530 GAG-CTCTTAAATAA-CACA--T 
+i rn5.chr3                                        C 0 C 0                 
+s hg19.chr9               13118988 19 - 141213431 CAG-CTCTTAAATAT-AACA--T 
+i hg19.chr9                                       C 0 I 2                 
+s sorAra1.scaffold_258498     5867  1 +    196505 C---------------------- 
+i sorAra1.scaffold_258498                         C 0 C 0                 
+
+a score=43661.0
+s mm10.chr2 34706511 4 + 182113224 CT--CT  
+s rn5.chr3  19098331 4 + 183740530 CT--CT  
+i rn5.chr3                         C 0 C 0 
+s hg19.chr9 13119009 4 - 141213431 CT--TT  
+i hg19.chr9                        I 2 C 0 
+
+a score=10868.0
+s mm10.chr2 34706515 1 + 182113224 T       
+s rn5.chr3  19098335 1 + 183740530 T       
+i rn5.chr3                         C 0 C 0 
+s hg19.chr9 13119013 1 - 141213431 T       
+i hg19.chr9                        C 0 C 0 
+
+a score=-67977.0
+s mm10.chr2 34706516 23 + 182113224 gggggtggagatacagctcag----------------tg 
+s rn5.chr3  19098336 23 + 183740530 ggggacaaagctacagctcag----------------tg 
+i rn5.chr3                          C 0 C 0                                 
+
+a score=-16667.0
+s mm10.chr2 34706539 4 + 182113224 at---ga 
+s rn5.chr3  19098359 5 + 183740530 ac--aga 
+i rn5.chr3                         C 0 C 0 
+
+a score=-47800.0
+s mm10.chr2               34706543 9 + 182113224 acacatgac 
+s rn5.chr3                19098364 9 + 183740530 gcacatgac 
+i rn5.chr3                                       C 0 C 0   
+s sorAra1.scaffold_258498     5868 9 +    196505 GCTGGTAAT 
+i sorAra1.scaffold_258498                        C 0 C 0   
+
+a score=-120172.0
+s mm10.chr2 34706552 20 + 182113224 taacatgtcccaagtt--------------------ctgg 
+s rn5.chr3  19098373 20 + 183740530 taacatgtcccgagtt--------------------ctga 
+i rn5.chr3                          C 0 C 0                                  
+
+a score=-60366.0
+s mm10.chr2               34706572 21 + 182113224 gttcaacagatagtacca-------------------------------------------------------tac 
+s rn5.chr3                19098393 18 + 183740530 gttcaacagccagcacca---------------------------------------------------------- 
+i rn5.chr3                                        C 0 C 0                                                                      
+s sorAra1.scaffold_258498     5877  5 +    196505 -------------TATCA---------------------------------------------------------- 
+i sorAra1.scaffold_258498                         C 0 C 0                                                                      
+
+a score=-3306.0
+s mm10.chr2 34706593 3 + 182113224 cat-- 
+
+a score=-199980.0
+s mm10.chr2 34706596 23 + 182113224 aa------aacAGCCAACAAAACCC-AGTT-------------- 
+s rn5.chr3  19098411 18 + 183740530 ----------gcagcaacaaaaCCC-AGT--------------- 
+i rn5.chr3                          C 0 C 0                                      
+s hg19.chr9 13119014  7 - 141213431 ------------------TGTATCA------------------- 
+i hg19.chr9                         C 0 C 0                                      
+
+a score=21021.0
+s mm10.chr2 34706619 1 + 182113224 A       
+s rn5.chr3  19098429 1 + 183740530 A       
+i rn5.chr3                         C 0 C 0 
+
+a score=28151.0
+s mm10.chr2 34706620 3 + 182113224 TCT     
+s rn5.chr3  19098430 3 + 183740530 TCT     
+i rn5.chr3                         C 0 C 0 
+
+a score=21179.0
+s mm10.chr2 34706623 3 + 182113224 CTT-    
+s rn5.chr3  19098433 3 + 183740530 CTT-    
+i rn5.chr3                         C 0 C 0 
+
+a score=-542671.0
+s mm10.chr2               34706626 14 + 182113224 TGG-TAAC-----AC------------T--------TTAT-------- 
+s rn5.chr3                19098436 14 + 183740530 TGG-TAAC-----AC------------T--------TTAT-------- 
+i rn5.chr3                                        C 0 C 0                                          
+s hg19.chr9               13119021  7 - 141213431 -------------AC------------T--------TTAT-------- 
+i hg19.chr9                                       C 0 C 0                                          
+s sorAra1.scaffold_258498     5882  7 +    196505 -------------AC------------A--------TTAT-------- 
+i sorAra1.scaffold_258498                         C 0 C 0                                          
+
+a score=-12000.0
+s mm10.chr2               34706640 5 + 182113224 AAAC-A  
+s rn5.chr3                19098450 5 + 183740530 AAAC-A  
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119028 5 - 141213431 AAAT-A  
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5889 5 +    196505 ACAC-G  
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=112347.0
+s mm10.chr2               34706645 2 + 182113224 GA      
+s rn5.chr3                19098455 2 + 183740530 GA      
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119033 2 - 141213431 GG      
+i hg19.chr9                                      C 0 I 7 
+s sorAra1.scaffold_258498     5894 2 +    196505 GG      
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=-75428.0
+s mm10.chr2               34706647 10 + 182113224 AAGA-AGGGGA 
+s rn5.chr3                19098457 10 + 183740530 AAGA-AGGGGA 
+i rn5.chr3                                        C 0 C 0     
+s hg19.chr9               13119042 10 - 141213431 AGGG-GGTGAA 
+i hg19.chr9                                       I 7 C 0     
+s sorAra1.scaffold_258498     5896 10 +    196505 GTGG-TAGGAA 
+i sorAra1.scaffold_258498                         C 0 C 0     
+
+a score=26690.0
+s mm10.chr2               34706657 1 + 182113224 T       
+s rn5.chr3                19098467 1 + 183740530 T       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119052 1 - 141213431 C       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5906 1 +    196505 C       
+i sorAra1.scaffold_258498                        C 0 I 2 
+
+a score=582929.0
+s mm10.chr2               34706658 21 + 182113224 GCCTTCAAA--------------------TTCCTAGC----CCTT 
+s rn5.chr3                19098468 21 + 183740530 GCCTTCAAA--------------------TTCCTAGT----CCTT 
+i rn5.chr3                                        C 0 C 0                                       
+s hg19.chr9               13119053 21 - 141213431 ACCTTCAAA--------------------TCCCTACT----CCTT 
+i hg19.chr9                                       C 0 C 0                                       
+s sorAra1.scaffold_258498     5909 21 +    196505 ACCTTCCAA--------------------TCCTTATT----CCTT 
+i sorAra1.scaffold_258498                         I 2 C 0                                       
+
+a score=357258.0
+s mm10.chr2               34706679 6 + 182113224 AAAAC---------------------------------A--- 
+s rn5.chr3                19098489 6 + 183740530 AAAAC---------------------------------A--- 
+i rn5.chr3                                       C 0 C 0                                    
+s hg19.chr9               13119074 6 - 141213431 AAAAC---------------------------------A--- 
+i hg19.chr9                                      C 0 C 0                                    
+s sorAra1.scaffold_258498     5930 6 +    196505 AAAAC---------------------------------A--- 
+i sorAra1.scaffold_258498                        C 0 C 0                                    
+
+a score=522064.0
+s mm10.chr2               34706685 8 + 182113224 AGA-C-AGAC 
+s rn5.chr3                19098495 8 + 183740530 AGA-C-AGAC 
+i rn5.chr3                                       C 0 C 0    
+s hg19.chr9               13119080 8 - 141213431 AGA-C-AGAC 
+i hg19.chr9                                      C 0 C 0    
+s sorAra1.scaffold_258498     5936 8 +    196505 AGA-C-AGAC 
+i sorAra1.scaffold_258498                        C 0 C 0    
+
+a score=75873.0
+s mm10.chr2               34706693 1 + 182113224 A       
+s rn5.chr3                19098503 1 + 183740530 A       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119088 1 - 141213431 A       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5944 1 +    196505 A       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=117040.0
+s mm10.chr2               34706694 1 + 182113224 T       
+s rn5.chr3                19098504 1 + 183740530 T       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119089 1 - 141213431 T       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     5945 1 +    196505 T       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=18601995.0
+s mm10.chr2               34706695 141 + 182113224 A-CCGGACACAAC-ACTGAGG--CCTGGT-GTGC-TGGGGC-GGGAA--CTGACCTCCCTGAC-ATCCGTATCATCA-GATGTGCTG-CCCAGTCCAGAACAG---CTCT-CCAGCTCTTGGAGGCGCTCTTCCTGCTTTAAGTCTGGAGCCTCTGA 
+s rn5.chr3                19098505 141 + 183740530 A-CCGGACACAAC-ACTGAGG--CCTGGT-GTGC-TGGGGC-GGGAA--CTGACCTCCCTGAC-ATCCGTATCATCA-GATGTACTG-CCCAGTCCAGAACAG---CTCT-CCAGCTCTTGGAGGCGCTCTTCCTGCTTTAAGTCTGGAGCCTCTGC 
+i rn5.chr3                                         C 0 C 0                                                                                                                                                       
+s hg19.chr9               13119090 141 - 141213431 A-CCGGACACAAC-ACTGAGG--CCTGGT-GTGC-TGGGGC-GGGAA--CTGACCTCCCTGAC-ATCCGTATCATCA-GATGTGCTA-CCCAGTCCAGAACAG---CTCT-CCAGTTCTTGCAGACGCTCCTCCTGCTTTAGGTCTGGGGCCTCTAA 
+i hg19.chr9                                        C 0 C 0                                                                                                                                                       
+s sorAra1.scaffold_258498     5946 141 +    196505 A-CCCGACACAAC-ACTGAGG--CCTGGT-GTGC-TGGGGC-GGGAA--CTGACCTCCCTGAC-ATCCGTGTCGTCA-GAGGTGCTG-CCCAGGCCGGAACAG---CTCT-CCAGCTCCTGCAGACGCTCCTCCTGCTTCAGGTCTGGGGCTTCTAG 
+i sorAra1.scaffold_258498                          C 0 C 0                                                                                                                                                       
+
+a score=93544.0
+s mm10.chr2               34706836 1 + 182113224 A       
+s rn5.chr3                19098646 1 + 183740530 A       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119231 1 - 141213431 A       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     6087 1 +    196505 G       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=265691.0
+s mm10.chr2               34706837 6 + 182113224 CAGAAA- 
+s rn5.chr3                19098647 6 + 183740530 CAGAGA- 
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119232 6 - 141213431 TAGAAG- 
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     6088 6 +    196505 GAAAGA- 
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=100475.0
+s mm10.chr2               34706843 1 + 182113224 A        
+s rn5.chr3                19098653 1 + 183740530 A        
+i rn5.chr3                                       C 0 I 41 
+s hg19.chr9               13119238 1 - 141213431 A        
+i hg19.chr9                                      C 0 I 45 
+s sorAra1.scaffold_258498     6094 1 +    196505 G        
+i sorAra1.scaffold_258498                        C 0 I 41 
+
+a score=123198.0
+s mm10.chr2               34706844 2 + 182113224 CA       
+s rn5.chr3                19098695 2 + 183740530 CA       
+i rn5.chr3                                       I 41 C 0 
+s hg19.chr9               13119284 2 - 141213431 CA       
+i hg19.chr9                                      I 45 C 0 
+s sorAra1.scaffold_258498     6136 2 +    196505 CC       
+i sorAra1.scaffold_258498                        I 41 C 0 
+
+a score=83667.0
+s mm10.chr2               34706846 1 + 182113224 G       
+s rn5.chr3                19098697 1 + 183740530 G       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119286 1 - 141213431 G       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     6138 1 +    196505 A       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=30972.0
+s mm10.chr2               34706847 1 + 182113224 C       
+s rn5.chr3                19098698 1 + 183740530 C       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119287 1 - 141213431 C       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     6139 1 +    196505 C       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=74745.0
+s mm10.chr2               34706848 1 + 182113224 T       
+s rn5.chr3                19098699 1 + 183740530 T       
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119288 1 - 141213431 T       
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     6140 1 +    196505 T       
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=223036.0
+s mm10.chr2               34706849 11 + 182113224 TT------TG-TG--ACT-TA 
+s rn5.chr3                19098700 11 + 183740530 TT------TG-TG--ACT-TA 
+i rn5.chr3                                        C 0 C 0               
+s hg19.chr9               13119289 11 - 141213431 TT------TG-TG--ACC-CA 
+i hg19.chr9                                       C 0 C 0               
+s sorAra1.scaffold_258498     6141 11 +    196505 TC------CG-TG--ACC-CA 
+i sorAra1.scaffold_258498                         C 0 C 0               
+
+a score=3047381.0
+s mm10.chr2               34706860 139 + 182113224 GACATACAAG---C-------G-ATT-GGGG----AATAAA-GAGAT---TT----------A-------TAAG------CCTAAGCTACTT-AGC-AAAG-CTAGTTAG---ATCA---TAGTTTAAAGAAGAT-A---AGGTTATGA--TTTC-CTCCTGATA-----TACACACT---AGTTTGT----------TATGTACAG-ATGTCAAC---T 
+s rn5.chr3                19098711 134 + 183740530 G----AGAAG---C-------C-ACT-GGGG----AATACC-TAGCT---TT----------A-------TAAG------TCTAAGTTACTC-ACC-AAAA-CTTGTTAG---ATCA---TAGATT-AAGAAGGC-A---AGGTTATAA--TTTC-CCCCTGATA-----TACACACT---AATTTGC----------TATGCACAG-ACGACAAC---T 
+i rn5.chr3                                         C 0 C 0                                                                                                                                                                                                                      
+s hg19.chr9               13119300 149 - 141213431 G----ATAAA---CAAAG--CT-ACC-AGGG----CATGAA-TAAAA---TCAGTG-CAAATACATGTG-TAAG------TCTGGACTAGTT-----AATG-CTAGTTAG---ATTA---AGTGTT----AAGTC-A---AAGTTGTGAT-TTTC-ATCCCAATA-----TAAGC--C---AGTTCAC----------TGTGCACAG-ATGAAAAC-GTG 
+i hg19.chr9                                        C 0 C 0                                                                                                                                                                                                                      
+s sorAra1.scaffold_258498     6152 151 +    196505 G----CTGAA---GAAAA--CTGAAC-AGGG----CTT--A-CGGAAGGGTCAGTG-TAAATAGATTTC-TAGG------TCTCGGCCAGTT-AGT-AAGG-CTGGTT-G---AAGA---AACGCCAAGGAAGTC-ATATCAACTCTGAT-TTTC--CCCCAGCA-----TAGGC--C---AGT----------------TGTACAG-ATAAAAAC-T-- 
+i sorAra1.scaffold_258498                          C 0 I 2                                                                                                                                                                                                                      
+
+a score=-43731.0
+s mm10.chr2               34706999 2 + 182113224 AT-     
+s rn5.chr3                19098845 2 + 183740530 GT-     
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119449 1 - 141213431 G--     
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     6305 2 +    196505 GG-     
+i sorAra1.scaffold_258498                        I 2 C 0 
+
+a score=126153.0
+s mm10.chr2               34707001 4 + 182113224 TTCT-   
+s rn5.chr3                19098847 4 + 183740530 TTCT-   
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119450 4 - 141213431 TTCT-   
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     6307 4 +    196505 TTTT-   
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=311713.0
+s mm10.chr2               34707005 8 + 182113224 AGAATACT 
+s rn5.chr3                19098851 8 + 183740530 AGACTACT 
+i rn5.chr3                                       C 0 C 0  
+s hg19.chr9               13119454 8 - 141213431 AGATCACT 
+i hg19.chr9                                      C 0 I 4  
+s sorAra1.scaffold_258498     6311 8 +    196505 AGATCACT 
+i sorAra1.scaffold_258498                        C 0 C 0  
+
+a score=-2161.0
+s mm10.chr2 34707013 2 + 182113224 TT        
+s rn5.chr3  19098859 2 + 183740530 CT        
+i rn5.chr3                         C 0 I 199 
+s hg19.chr9 13119466 1 - 141213431 -T        
+i hg19.chr9                        I 4 I 1   
+
+a score=-432190.0
+s mm10.chr2               34707015 20 + 182113224 AAAGAAAAAAAAAAGCG------------AT----------T--------------- 
+s rn5.chr3                19099060 26 + 183740530 aaacaaaacaaaacaaa------------acTGTA----CAT--------------- 
+i rn5.chr3                                        I 199 C 0                                                 
+s hg19.chr9               13119468 11 - 141213431 ---------------------------ACAGAGTA----TGC--------------- 
+i hg19.chr9                                       I 1 C 0                                                   
+s sorAra1.scaffold_258498     6319 17 +    196505 -------------------ATT--CTCAATGAGTG----TGC--------------- 
+i sorAra1.scaffold_258498                         C 0 C 0                                                   
+
+a score=221858.0
+s mm10.chr2               34707035 6 + 182113224 TCTTGG  
+s rn5.chr3                19099086 6 + 183740530 TCTTGG  
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119479 6 - 141213431 TATTGA  
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     6336 5 +    196505 TAC-GG  
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=458493.0
+s mm10.chr2               34707041 12 + 182113224 TTAACACGTAAA- 
+s rn5.chr3                19099092 12 + 183740530 TTAACACATAAA- 
+i rn5.chr3                                        C 0 C 0       
+s hg19.chr9               13119485 12 - 141213431 TTAACATGTGAA- 
+i hg19.chr9                                       C 0 C 0       
+s sorAra1.scaffold_258498     6341 12 +    196505 CTAACATGAAAA- 
+i sorAra1.scaffold_258498                         C 0 C 0       
+
+a score=67988.0
+s mm10.chr2               34707053 8 + 182113224 CTA---ATCAA 
+s rn5.chr3                19099104 5 + 183740530 CTG------AA 
+i rn5.chr3                                       C 0 C 0     
+s hg19.chr9               13119497 5 - 141213431 CTG------GA 
+i hg19.chr9                                      C 0 C 0     
+s sorAra1.scaffold_258498     6353 5 +    196505 CTG------AA 
+i sorAra1.scaffold_258498                        C 0 C 0     
+
+a score=123485.0
+s mm10.chr2               34707061 3 + 182113224 TAG     
+s rn5.chr3                19099109 3 + 183740530 CAG     
+i rn5.chr3                                       C 0 C 0 
+s hg19.chr9               13119502 3 - 141213431 CAA     
+i hg19.chr9                                      C 0 C 0 
+s sorAra1.scaffold_258498     6358 3 +    196505 CAA     
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=33526.0
+s mm10.chr2               34707064 4 + 182113224 GA--GC-- 
+s rn5.chr3                19099112 4 + 183740530 GA--GC-- 
+i rn5.chr3                                       C 0 C 0  
+s hg19.chr9               13119505 6 - 141213431 GAGAGT-- 
+i hg19.chr9                                      C 0 C 0  
+s sorAra1.scaffold_258498     6361 6 +    196505 GAACGC-- 
+i sorAra1.scaffold_258498                        C 0 C 0  
+
+a score=167903.0
+s mm10.chr2               34707068 8 + 182113224 A-CAGAAT--A 
+s rn5.chr3                19099116 8 + 183740530 A-CAGAAT--A 
+i rn5.chr3                                       C 0 C 0     
+s hg19.chr9               13119511 8 - 141213431 A-TGGAAT--A 
+i hg19.chr9                                      C 0 C 0     
+s sorAra1.scaffold_258498     6367 7 +    196505 A-GAGAAG--- 
+i sorAra1.scaffold_258498                        C 0 C 0     
+
+a score=2760.0
+s mm10.chr2 34707076 1 + 182113224 A       
+s rn5.chr3  19099124 1 + 183740530 G       
+i rn5.chr3                         C 0 C 0 
+s hg19.chr9 13119519 1 - 141213431 G       
+i hg19.chr9                        C 0 C 0 
+
+a score=-203.0
+s mm10.chr2 34707077 4 + 182113224 TATA--- 
+s rn5.chr3  19099125 3 + 183740530 TGT---- 
+i rn5.chr3                         C 0 C 0 
+s hg19.chr9 13119520 3 - 141213431 CCT---- 
+i hg19.chr9                        C 0 C 0 
+
+a score=73448.0
+s mm10.chr2               34707081 10 + 182113224 CAACACTGTA--- 
+s rn5.chr3                19099128  9 + 183740530 -AACACTGTA--- 
+i rn5.chr3                                        C 0 C 0       
+s hg19.chr9               13119523  9 - 141213431 -GGTATTAAA--- 
+i hg19.chr9                                       C 0 C 0       
+s sorAra1.scaffold_258498     6374  1 +    196505 ---------A--- 
+i sorAra1.scaffold_258498                         C 0 C 0       
+
+a score=-28287.0
+s mm10.chr2               34707091 5 + 182113224 TCAA---C 
+s rn5.chr3                19099137 7 + 183740530 TCCACT-C 
+i rn5.chr3                                       C 0 C 0  
+s sorAra1.scaffold_258498     6375 5 +    196505 TCAAC--- 
+i sorAra1.scaffold_258498                        C 0 C 0  
+
+a score=4831.0
+s mm10.chr2               34707096 1 + 182113224 T         
+s rn5.chr3                19099144 1 + 183740530 T         
+i rn5.chr3                                       C 0 C 0   
+s hg19.chr9               13119532 1 - 141213431 T         
+i hg19.chr9                                      C 0 I 709 
+s sorAra1.scaffold_258498     6380 1 +    196505 T         
+i sorAra1.scaffold_258498                        C 0 I 1   
+
+a score=555.0
+s mm10.chr2 34707097 1 + 182113224 C       
+s rn5.chr3  19099145 1 + 183740530 C       
+i rn5.chr3                         C 0 C 0 
+
+a score=18165.0
+s mm10.chr2               34707098 3 + 182113224 TCT     
+s rn5.chr3                19099146 3 + 183740530 TCT     
+i rn5.chr3                                       C 0 C 0 
+s sorAra1.scaffold_258498     6382 2 +    196505 -TT     
+i sorAra1.scaffold_258498                        I 1 C 0 
+
+a score=32760.0
+s mm10.chr2               34707101 3 + 182113224 AAA     
+s rn5.chr3                19099149 3 + 183740530 AAA     
+i rn5.chr3                                       C 0 C 0 
+s sorAra1.scaffold_258498     6384 3 +    196505 AAA     
+i sorAra1.scaffold_258498                        C 0 C 0 
+
+a score=-12377.0
+s mm10.chr2               34707104 8 + 182113224 TCTCAATG  
+s rn5.chr3                19099152 8 + 183740530 GTTCAATG  
+i rn5.chr3                                       C 0 C 0   
+s sorAra1.scaffold_258498     6387 6 +    196505 --TTTAAA  
+i sorAra1.scaffold_258498                        C 0 I 672 
+
+a score=13142.0
+s mm10.chr2 34707112 17 + 182113224 ttctcaaaagcacttaa--- 
+s rn5.chr3  19099160 17 + 183740530 TTTTCAAAAGCACTTAC--- 
+i rn5.chr3                          C 0 C 0              
+
+a score=2730.0
+s mm10.chr2 34707129 2 + 182113224 aa      
+s rn5.chr3  19099177 2 + 183740530 AA      
+i rn5.chr3                         C 0 C 0 
+
+a score=1746.0
+s mm10.chr2 34707131 3 + 182113224 tgg     
+s rn5.chr3  19099179 3 + 183740530 Tgg     
+i rn5.chr3                         C 0 C 0 
+
+a score=1998.0
+s mm10.chr2 34707134 22 + 182113224 gcat------gaca--gcagggcaatctca 
+s rn5.chr3  19099182 24 + 183740530 gcat------gatattgcagggcactctca 
+i rn5.chr3                          C 0 C 0                        
+
+a score=452.0
+s mm10.chr2 34707156 4 + 182113224 acac    
+s rn5.chr3  19099206 4 + 183740530 gcac    
+i rn5.chr3                         C 0 C 0 
+
+a score=8445.0
+s mm10.chr2 34707160 152 + 182113224 tcaataagcagaggcaggtggatctctgtgagtttgagtccagcctaaaatacactggcagttccatgaatagcctgagctacatgacgagatcctgtctcaaaCTAGCTCCAAAAAGGAAGACAGG-AAAATCATTTCTTTACTTAATACTT 
+s rn5.chr3  19099210 147 + 183740530 tcaagaggcagaggcaggtgga--tctgtaagtctgaggccagcctgaggttcactggcagttcca-gcatagcctgagctacatgatgagaccctggctcaaaccaa---aagaaaGAAAGAAAGGAAAAATGATTTCTTTATCTAATATTT 
+i rn5.chr3                           C 0 I 1                                                                                                                                                   
+
+a score=0.0
+s mm10.chr2 34707312 6 + 182113224 TACCTA 
+
