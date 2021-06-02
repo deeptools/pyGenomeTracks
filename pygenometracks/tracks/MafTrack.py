@@ -221,9 +221,10 @@ file_type = {TRACK_TYPE}
 
         # Give row number
         self.species_y = {}
+        self.max_y = 0
         for y, species in enumerate(self.species):
             self.species_y[species] = y
-        self.max_y = y
+            self.max_y = y
 
     def plot(self, ax, chrom_region, start_region, end_region):
         if self.chromosome is not None:
