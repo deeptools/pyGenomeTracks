@@ -84,7 +84,6 @@ file_type = {TRACK_TYPE}
                 self.chromosome = match_ref.group('chromosome')
         # Process the species_order and species_labels:
         self.species, self.labels = self.process_species_user()
-        print(self.species)
         # Then get the interval_tree
         self.interval_tree = self.process_maf(self.properties['region'])
 
@@ -224,7 +223,6 @@ file_type = {TRACK_TYPE}
         self.species_y = {}
         for y, species in enumerate(self.species):
             self.species_y[species] = y
-        print(self.species_y)
         self.max_y = y
 
     def plot(self, ax, chrom_region, start_region, end_region):
