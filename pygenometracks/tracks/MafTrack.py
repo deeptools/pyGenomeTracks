@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import change_chrom_names, InputError
+from .. utilities import change_chrom_names, InputError, get_optimal_fontsize
 from Bio import AlignIO
 from matplotlib.patches import Rectangle
 from intervaltree import IntervalTree, Interval
@@ -9,6 +9,11 @@ import re
 
 # This is to match the database and chromosome from src:
 src_re = re.compile(r'^(?P<database>\w+)\.(?P<chromosome>\w+)$')
+# Color code for seqs
+seq_color = {'A': 'red',
+             'T': 'green',
+             'G': 'blue',
+             'C': 'black'}
 
 
 class MafTrack(GenomeTrack):
@@ -37,6 +42,8 @@ class MafTrack(GenomeTrack):
 #species_labels = human chimpanzee
 # optional if species_order is specified and they are the only one you want:
 #species_order_only = true
+# optional if you want to see the DNA sequence of the ref
+#display_ref_seq = true
 # optional: If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
@@ -49,12 +56,13 @@ file_type = {TRACK_TYPE}
                            'line_width': 0.5,
                            'species_order': None,
                            'species_labels': None,
-                           'species_order_only': False}
+                           'species_order_only': False,
+                           'display_ref_seq': False}
     NECESSARY_PROPERTIES = ['file', 'reference']
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            }
-    BOOLEAN_PROPERTIES = ['species_order_only']
+    BOOLEAN_PROPERTIES = ['species_order_only', 'display_ref_seq']
     STRING_PROPERTIES = ['file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'file_index', 'color_identical',
@@ -126,6 +134,8 @@ file_type = {TRACK_TYPE}
 
         valid_blocks = 0
         interval_tree = IntervalTree()
+        if self.properties['display_ref_seq']:
+            ref_seq_interval_tree = IntervalTree()
         # First get the iterator:
         if self.idx is not None:
             # Check that the chromosome plotted
@@ -165,6 +175,11 @@ file_type = {TRACK_TYPE}
             gaps = [m.start() for m in re.finditer('(?=-)', ref_seq)]
             ref_seq_no_gap = ''.join([l for i, l in enumerate(ref_seq)
                                       if i not in gaps])
+            # Store the seq
+            if self.properties['display_ref_seq']:
+                for i, lr in enumerate(ref_seq_no_gap,
+                                       start=ref_alg.annotations['start']):
+                    ref_seq_interval_tree.add(Interval(i, i + 1, lr))
             # Naive approach:
             for alg in block:
                 if alg.id != self.ref:
@@ -200,6 +215,9 @@ file_type = {TRACK_TYPE}
             self.log.warning("No valid blocks were found in file "
                              f"{self.properties['file']}.\n")
         self.process_ids(all_ids)
+
+        if self.properties['display_ref_seq']:
+            self.seq = ref_seq_interval_tree
 
         return interval_tree
 
@@ -240,8 +258,27 @@ file_type = {TRACK_TYPE}
             if chrom_region not in valid_chrom:
                 self.log.warning("The plotting chromosome is not the reference."
                                  " Nothing will be plotted.")
+        epsilon = 0.08
+        ymax = 0
+        if self.properties['display_ref_seq']:
+            fontsize = get_optimal_fontsize(ax.get_figure().get_figwidth(),
+                                            start_region, end_region)
+            # Here my calculation is wrong somehow
+            height_all_except_seq = self.row_scale * self.max_y + (1 + epsilon) + epsilon
+            coeff = 30
+            height_seq = height_all_except_seq * (self.properties['height'] * coeff) / \
+                ((end_region - start_region)
+                 * (self.properties['height'] - ax.get_figure().get_figwidth() / 2.54 / (end_region - start_region) * coeff))
+            ymax = - height_seq
+            seq_overlap = \
+                self.seq[start_region:end_region]
+            for seq in seq_overlap:
+                ax.text(seq.begin + 0.5, ymax / 2, seq.data,
+                        color=seq_color[seq.data], verticalalignment='center',
+                        horizontalalignment='center', fontsize=fontsize)
+
         blocks_overlap = \
-            sorted(self.interval_tree[start_region:end_region])
+            self.interval_tree[start_region:end_region]
 
         for block in blocks_overlap:
             ypos = self.species_y[self.id_to_species[block.data['id']]] * self.row_scale
@@ -250,8 +287,7 @@ file_type = {TRACK_TYPE}
                          edgecolor="none",
                          facecolor=self.properties[f'color_{block.data["status"]}']))
 
-        epsilon = 0.08
-        ymax = - epsilon
+        ymax -= epsilon
         ymin = self.row_scale * self.max_y + (1 + epsilon)
 
         self.log.debug(f"ylim {ymin},{ymax}")

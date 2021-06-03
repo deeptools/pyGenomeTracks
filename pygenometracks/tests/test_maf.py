@@ -45,6 +45,19 @@ with open(os.path.join(ROOT, "first_maf.ini"), 'w') as fh:
 with open(os.path.join(ROOT, "first_maf_order_species_only.ini"), 'w') as fh:
     fh.write(browser_tracks.replace("species_order", "species_order_only = true\nspecies_order"))
 
+browser_tracks = """
+[maf]
+file = first.maf
+reference = mm10.chr2
+title = display_ref_seq = true
+display_ref_seq = true
+height = 3
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "first_maf_seq.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -69,24 +82,6 @@ def test_first_maf():
         assert res is None, res
 
         os.remove(output_file)
-
-
-def test_first_maf_other_chr_name():
-    extension = '.png'
-
-    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
-                                 delete=False)
-    ini_file = os.path.join(ROOT, "first_maf.ini")
-    region = "2:34705032-34707346"
-    expected_file = os.path.join(ROOT, 'master_first_maf_chr2-34705032-34707346.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance + 4)  # We increase tolerence because the chr name in X-axis changed.
-    assert res is None, res
-    os.remove(outfile.name)
 
 
 def test_first_maf_empty_chr():
@@ -115,6 +110,42 @@ def test_first_maf_order_species_only():
     ini_file = os.path.join(ROOT, "first_maf_order_species_only.ini")
     region = "2:34705032-34707346"
     expected_file = os.path.join(ROOT, 'master_first_maf_order_species_only.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+    os.remove(outfile.name)
+
+
+def test_first_maf_seq():
+    extension = '.png'
+
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "first_maf_seq.ini")
+    region = "2:34704975-34705208"
+    expected_file = os.path.join(ROOT, 'master_first_maf_seq.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+    os.remove(outfile.name)
+
+
+def test_first_maf_seq_zoom():
+    extension = '.png'
+
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "first_maf_seq.ini")
+    region = "2:34705108-34705208"
+    expected_file = os.path.join(ROOT, 'master_first_maf_seq_zoom.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
