@@ -114,8 +114,7 @@ def test_first_maf_order_species_only():
                                  delete=False)
     ini_file = os.path.join(ROOT, "first_maf_order_species_only.ini")
     region = "2:34705032-34707346"
-    expected_file = os.path.join(ROOT, 'master_first_maf.png')
-    # expected_file = os.path.join(ROOT, 'master_first_maf_order_species_only.png')
+    expected_file = os.path.join(ROOT, 'master_first_maf_order_species_only.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
