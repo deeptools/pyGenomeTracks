@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import change_chrom_names
+from .. utilities import change_chrom_names, InputError
 from Bio import AlignIO
 import matplotlib
 from matplotlib import font_manager
@@ -38,6 +38,8 @@ class MafTrack(GenomeTrack):
 #species_order = hg18 panTro2
 # optional if species_order is specified (don't use space in names)
 #species_labels = human chimpanzee
+# optional if species_order is specified and they are the only one you want:
+#species_order_only = true
 # optional: If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
@@ -49,12 +51,13 @@ file_type = {TRACK_TYPE}
                            'color_gap': 'lightgrey',
                            'line_width': 0.5,
                            'species_order': None,
-                           'species_labels': None}
+                           'species_labels': None,
+                           'species_order_only': False}
     NECESSARY_PROPERTIES = ['file', 'reference']
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            }
-    BOOLEAN_PROPERTIES = []
+    BOOLEAN_PROPERTIES = ['species_order_only']
     STRING_PROPERTIES = ['file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'file_index', 'color_identical',
@@ -84,6 +87,9 @@ file_type = {TRACK_TYPE}
                 self.chromosome = match_ref.group('chromosome')
         # Process the species_order and species_labels:
         self.species, self.labels = self.process_species_user()
+        # Check incompatibilities
+        if self.species is None and self.properties['species_order_only']:
+            raise InputError("species_order_only set to true while species_order not specified.")
         # Then get the interval_tree
         self.interval_tree = self.process_maf(self.properties['region'])
 
@@ -123,9 +129,9 @@ file_type = {TRACK_TYPE}
 
         valid_blocks = 0
         interval_tree = IntervalTree()
-
+        # First get the iterator:
         if self.idx is not None:
-            # First check that the chromosome plotted
+            # Check that the chromosome plotted
             # is compatible with the ref
             # and extract valid starts/ends
             starts = []
@@ -162,13 +168,16 @@ file_type = {TRACK_TYPE}
             gaps = [m.start() for m in re.finditer('(?=-)', ref_seq)]
             ref_seq_no_gap = ''.join([l for i, l in enumerate(ref_seq)
                                       if i not in gaps])
-            # First naive:
+            # Naive approach:
             for alg in block:
                 if alg.id != self.ref:
                     alg_id = alg.id
                     if alg_id not in all_ids:
                         match_alg = src_re.match(alg_id)
                         all_ids[alg_id] = match_alg
+                    if self.properties['species_order_only']:
+                        if all_ids[alg_id] is None or all_ids[alg_id].group('database') not in self.species:
+                            continue
                     alg_seq = str(alg.seq.upper())
                     alg_seq_no_gap = ''.join([l for i, l in enumerate(alg_seq)
                                               if i not in gaps])
@@ -205,12 +214,14 @@ file_type = {TRACK_TYPE}
         found_species = []
         for id in all_ids:
             if all_ids[id] is None:
-                self.id_to_species[id] = id
-                found_species.append(id)
+                if not self.properties['species_order_only']:
+                    self.id_to_species[id] = id
+                    found_species.append(id)
             else:
                 genome = all_ids[id].group('database')
-                self.id_to_species[id] = genome
-                found_species.append(genome)
+                if not self.properties['species_order_only'] or genome in self.species:
+                    self.id_to_species[id] = genome
+                    found_species.append(genome)
         if self.species is None:
             self.species = []
             self.labels = []
