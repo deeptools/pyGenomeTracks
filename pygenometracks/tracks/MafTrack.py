@@ -1,10 +1,7 @@
 from . GenomeTrack import GenomeTrack
 from .. utilities import change_chrom_names, InputError
 from Bio import AlignIO
-import matplotlib
-from matplotlib import font_manager
-from matplotlib.patches import Rectangle, Polygon
-from matplotlib.lines import Line2D
+from matplotlib.patches import Rectangle
 from intervaltree import IntervalTree, Interval
 import numpy as np
 from tqdm import tqdm
@@ -124,7 +121,7 @@ file_type = {TRACK_TYPE}
         if my_species is not None and my_labels is None:
             my_labels = my_species
         return(my_species, my_labels)
-                    
+
     def process_maf(self, plot_regions=None):
 
         valid_blocks = 0
@@ -191,12 +188,12 @@ file_type = {TRACK_TYPE}
                         # print(cur_status)
                         if cur_status != last_status:
                             if last_status is not None:
-                                interval_tree.add(Interval(last_end, i, {'id':alg_id, 'status':last_status}))
+                                interval_tree.add(Interval(last_end, i, {'id': alg_id, 'status': last_status}))
                                 valid_blocks += 1
                             last_end = i
                             last_status = cur_status
                     if last_status is not None:
-                        interval_tree.add(Interval(last_end, i + 1, {'id':alg_id, 'status':last_status}))
+                        interval_tree.add(Interval(last_end, i + 1, {'id': alg_id, 'status': last_status}))
                         valid_blocks += 1
 
         if valid_blocks == 0:
@@ -207,7 +204,7 @@ file_type = {TRACK_TYPE}
         return interval_tree
 
     def process_ids(self, all_ids):
-        ''' 
+        '''
         Process the all_ids to get a correspondence with the species
         '''
         self.id_to_species = {}
