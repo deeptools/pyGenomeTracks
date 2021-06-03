@@ -21,7 +21,7 @@ env:
 
 os:
 - linux
-- osx
+# - osx
 jobs:
   include:
   - stage: lint
