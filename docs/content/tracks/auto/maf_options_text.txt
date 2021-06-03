@@ -30,6 +30,10 @@ height = 2
 #species_order = hg18 panTro2
 # optional if species_order is specified (don't use space in names)
 #species_labels = human chimpanzee
+# optional if species_order is specified and they are the only one you want:
+#species_order_only = true
+# optional if you want to see the DNA sequence of the ref
+#display_ref_seq = true
 # optional: If not given is guessed from the file ending.
 file_type = maf
     

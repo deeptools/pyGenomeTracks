@@ -28,3 +28,7 @@ Optional:
 
 - **species_labels**: by default this option is not set
 
+- **species_order_only**: `false` (default) or true.
+
+- **display_ref_seq**: `false` (default) or true.
+

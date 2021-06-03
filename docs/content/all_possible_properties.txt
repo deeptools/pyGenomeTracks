@@ -1,6 +1,6 @@
 - **overlay_previous**:
 
-  - for *x_axis, epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, scalebar, spacer, maf*: no, yes, share-y
+  - for *x_axis, epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, scalebar, maf, spacer*: no, yes, share-y
 
 - **where**:
 
@@ -117,4 +117,12 @@
 - **show_masked_bins**:
 
   - for *hic_matrix*: true, false
+
+- **species_order_only**:
+
+  - for *maf*: true, false
+
+- **display_ref_seq**:
+
+  - for *maf*: true, false
 
