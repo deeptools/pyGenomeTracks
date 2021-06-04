@@ -261,14 +261,18 @@ file_type = {TRACK_TYPE}
         epsilon = 0.08
         ymax = 0
         if self.properties['display_ref_seq']:
-            fontsize = get_optimal_fontsize(ax.get_figure().get_figwidth(),
-                                            start_region, end_region)
-            # Here my calculation is wrong somehow
-            height_all_except_seq = self.row_scale * self.max_y + (1 + epsilon) + epsilon
-            coeff = 30
-            height_seq = height_all_except_seq * (self.properties['height'] * coeff) / \
-                ((end_region - start_region)
-                 * (self.properties['height'] - ax.get_figure().get_figwidth() / 2.54 / (end_region - start_region) * coeff))
+            plotting_figure_width = ax.get_window_extent().transformed(ax.get_figure().dpi_scale_trans.inverted()).width
+            fontsize = 1.4 * get_optimal_fontsize(plotting_figure_width,
+                                                  start_region, end_region)
+            # Evaluate the best height for letters to be coeff times higher than width:
+            width_bp_cm = plotting_figure_width * 2.54 / (end_region - start_region)
+            coeff = 3
+            target_height_cm = coeff * width_bp_cm
+            height_all_except_seq = self.row_scale * self.max_y + \
+                (1 + epsilon) + \
+                epsilon
+            height_seq = height_all_except_seq \
+                / (self.properties['height'] / target_height_cm - 1)
             ymax = - height_seq
             seq_overlap = \
                 self.seq[start_region:end_region]
