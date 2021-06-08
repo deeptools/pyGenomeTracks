@@ -67,6 +67,8 @@ fontsize = 10
 # If you want to display the name of the gene which goes over the plotted
 # region in the right margin put:
 #labels_in_margin = true
+# If you want to use italic for your labels:
+#fontstyle = italic
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
@@ -108,19 +110,21 @@ file_type = {TRACK_TYPE}
                            'arrow_length': None,
                            'region': None,  # Cannot be set manually but is set by tracksClass
                            'all_labels_inside': False,
-                           'labels_in_margin': False}
+                           'labels_in_margin': False,
+                           'fontstyle': 'normal'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'display': DISPLAY_BED_SYNONYMOUS}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'style': ['flybase', 'UCSC', 'tssarrow'],
-                           'display': DISPLAY_BED_VALID}
+                           'display': DISPLAY_BED_VALID,
+                           'fontstyle': ['normal', 'italic', 'oblique']}
     BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
                           'arrowhead_included', 'all_labels_inside',
                           'labels_in_margin']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
-                         'color_utr', 'display']
+                         'color_utr', 'display', 'fontstyle']
     FLOAT_PROPERTIES = {'fontsize': [0, np.inf],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf],

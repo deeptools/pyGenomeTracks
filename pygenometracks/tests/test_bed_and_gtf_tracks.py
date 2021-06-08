@@ -609,6 +609,37 @@ height = 4
 with open(os.path.join(ROOT, "bed_different_UTR.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+
+browser_tracks = """
+[x-axis]
+where = top
+
+[spacer]
+height = 0.5
+
+[genes 0]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 20; color = bed_rgb
+style = tssarrow
+fontsize = 20
+color = bed_rgb
+
+[spacer]
+height = 0.5
+
+[genes 0]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 20; color = bed_rgb; fontstyle = italic
+style = tssarrow
+fontsize = 20
+color = bed_rgb
+fontstyle = italic
+"""
+with open(os.path.join(ROOT, "bed_italic.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -937,3 +968,23 @@ def test_plot_tracks_bed_different_UTR():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_plot_tracks_genes_italic():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, f"bed_italic.ini")
+    region = "chr2:74,650,000-74,710,000"
+    expected_file = os.path.join(ROOT, 'master_bed_italic.png')
+    args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+            f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                            outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
