@@ -100,8 +100,9 @@ optional arguments:
   --region REGION       Region to plot, the format is chr:start-end
   --BED BED             Instead of a region, a file containing the regions to
                         plot, in BED format, can be given. If this is the
-                        case, multiple files will be created using a prefix
-                        the value of --outFileName
+                        case, multiple files will be created. It will use the
+                        value of --outFileName as a template and put the
+                        coordinates between the file name and the extension.
   --width WIDTH         figure width in centimeters (default is 40)
   --plotWidth PLOTWIDTH
                         width in centimeters of the plotting (central) part
