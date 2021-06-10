@@ -17,6 +17,8 @@ color_tuple = re.compile(r'^\(({0}),({0}),({0})\)$'.format(float_regex))
 # This is a regex for group without comma except between parenthesis
 block_no_comma_outside_parenthesis = re.compile(r'(?:[^,(]|\([^)]*\))+')
 
+DEFAULT_MAX_SIGNS = 4
+
 
 class GenomeTrack(object):
     """
@@ -99,30 +101,59 @@ height = 2
             return
 
         def value_to_str(value, max_signs=4, set_zero_max_value=0):
-            # given a numeric value, returns a
-            # string that removes unneeded decimal places
-            assert max_signs > 3
+            r"""
+            given a numeric value, returns a
+            string that removes unneeded decimal places
+            which uses max_signs (excluding the '.')
+
+            >>> value_to_str(12.01, max_signs=4)
+            '12.01'
+            >>> value_to_str(12.001, max_signs=4)
+            '12'
+            >>> value_to_str(12001, max_signs=4)
+            '1.2e4'
+            >>> value_to_str(1201.12, max_signs=4)
+            '1,201'
+            >>> value_to_str(.12001, max_signs=4)
+            '0.12'
+            >>> value_to_str(.00000012001, max_signs=4)
+            '1e-7'
+            >>> value_to_str(.00000012001, max_signs=5)
+            '1.2e-7'
+            >>> value_to_str(-12.01, max_signs=4)
+            '-12'
+            >>> value_to_str(-1201.12, max_signs=4)
+            '-1e3'
+            >>> value_to_str(-.0120112, max_signs=4)
+            '-0.01'
+            >>> value_to_str(-.0000120112, max_signs=4)
+            '-0.00'
+            # >>> value_to_str(120112, max_signs=2)
+            # raise an input Error
+            """
+            original_max_signs = max_signs
             if np.abs(value) <= set_zero_max_value:
                 return "0"
             elif value < 0:
                 prefix = "-"
                 value = - value
+                max_signs -= 1
             else:
                 prefix = ""
             exponent = math.floor(np.log10(value))
             sigfigs = max_signs - 1
             value_scien = value / 10 ** exponent
             while sigfigs >= 0:
-                if np.abs(value_scien - np.round(value_scien, decimals=sigfigs)) < 1.01 * 10 ** (-max_signs + 1):
+                if np.abs(value_scien - np.round(value_scien, decimals=sigfigs)) < 1 * 10 ** (-max_signs + 1):
                     sigfigs -= 1
                 else:
                     break
             sigfigs += 1
             if exponent < 0:
-                if - exponent <= 3:
+                if - exponent <= 3 or max_signs < 4:
                     orderOfMagnitude = 0
                     suffix = ""
-                    sigfigs = min(max_signs - 1, sigfigs - exponent)
+                    sigfigs = max(0, min(max_signs - 1, sigfigs - exponent))
                 else:
                     # Printing e exponent will take space
                     orderOfMagnitude = exponent
@@ -132,12 +163,14 @@ height = 2
                 if exponent <= (max_signs - 1):
                     orderOfMagnitude = 0
                     suffix = ""
-                    sigfigs = min(sigfigs, max_signs - 3)
+                    sigfigs = max(0, sigfigs - exponent)
                 else:
                     # Printing e exponent will take space
                     orderOfMagnitude = exponent
-                    sigfigs = max(0, sigfigs - 2)
+                    sigfigs = min(sigfigs, max_signs - 3)
                     suffix = f"e{exponent}"
+                    if sigfigs < 0:
+                        raise InputError(f"I need max_signs above {original_max_signs} to display {value}")
             else:  # exponent == 0:
                 orderOfMagnitude = 0
                 suffix = ""
@@ -186,7 +219,13 @@ height = 2
                 # There is a transformation and we want to display original values
                 original_values = [untransform(t, transform, log_pseudocount) for t in ticks_values]
             max_abs_value = np.max(np.abs(original_values))
-            ticks_labels = [value_to_str(t, set_zero_max_value=max_abs_value / 1000) for t in original_values]
+            try:
+                ticks_labels = [value_to_str(t, max_signs=DEFAULT_MAX_SIGNS,
+                                             set_zero_max_value=max_abs_value / 1000) for t in original_values]
+            except InputError:
+                ticks_labels = [value_to_str(t, max_signs=DEFAULT_MAX_SIGNS + 1,
+                                             set_zero_max_value=max_abs_value / 1000) for t in original_values]
+
         elif transform == 'no' or y_axis == 'transformed':
             # This is a linear scale
             # plot something that looks like this:
@@ -199,7 +238,13 @@ height = 2
             ticks_values = [ymin + epsilon_pretty, ymax - epsilon_pretty]
             labels_pos = [ymin, ymax]
             max_abs_value = np.max(np.abs([ymin, ymax]))
-            ticks_labels = [value_to_str(v, set_zero_max_value=max_abs_value / 1000) for v in [ymin, ymax]]
+            try:
+                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS,
+                                             set_zero_max_value=max_abs_value / 1000) for v in [ymin, ymax]]
+            except InputError:
+                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS + 1,
+                                             set_zero_max_value=max_abs_value / 1000) for v in [ymin, ymax]]
+
             if y_axis == 'transformed' and transform != 'no':
                 if transform == 'log1p':
                     ymid_str = "log(1 + x)"
@@ -228,7 +273,12 @@ height = 2
             original_values = [untransform(v, transform, log_pseudocount) for v in [ymin, ymid, ymax]]
             max_abs_value = np.max(np.abs(original_values))
             labels_pos = [ymin, ymid, ymax]
-            ticks_labels = [value_to_str(v, set_zero_max_value=max_abs_value / 1000) for v in original_values]
+            try:
+                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS,
+                                             set_zero_max_value=max_abs_value / 1000) for v in original_values]
+            except InputError:
+                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS,
+                                             set_zero_max_value=max_abs_value / 1000) for v in original_values]
 
         # The lower label should be verticalalignment='bottom'
         # if it corresponds to ymin
