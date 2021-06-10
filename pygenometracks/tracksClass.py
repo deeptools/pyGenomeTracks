@@ -678,7 +678,8 @@ class XAxisTrack(GenomeTrack):
 
         start, end = ax.get_xlim()
         if self.properties['where'] == 'top':
-            ax.axis["x"] = ax.new_floating_axis(0, 0.2)
+            ax.axis["x"] = ax.new_floating_axis(0, 0.2, axis_direction="top")
+            # In some old matplotlib version (<3.3.4) it was not set:
             ax.axis["x"].set_axis_direction("top")
             label_y_pos = 0.99
             vert_align = 'top'
