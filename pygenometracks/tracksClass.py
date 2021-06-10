@@ -12,7 +12,7 @@ import matplotlib.colors
 import matplotlib.gridspec
 import matplotlib.cm
 import mpl_toolkits.axisartist as axisartist
-from . utilities import file_to_intervaltree, change_chrom_names
+from . utilities import file_to_intervaltree, change_chrom_names, MyBasePairFormatter
 from collections import OrderedDict
 from pygenometracks.tracks.GenomeTrack import GenomeTrack
 from pygenometracks.utilities import InputError
@@ -690,33 +690,8 @@ class XAxisTrack(GenomeTrack):
         # First adjust the size of the label
         ax.axis["x"].major_ticklabels.set(size=self.properties['fontsize'])
 
-        # Get the ticks values
-        ticks = ax.get_xticks()
-        if ticks[-1] - ticks[1] <= 1e3:
-            labels = [f"{x:,.0f}"
-                      for x in ticks]
-            labels[-2] += " b"
-
-        elif ticks[-1] - ticks[1] <= 4e5:
-            labels = [f"{x / 1000.0:,.0f}"
-                      for x in ticks]
-            labels[-2] += " Kb"
-
-        else:
-            labels = [f"{x / 1000000.0:,.1f} "
-                      for x in ticks]
-            labels[-2] += " Mbp"
-
-        # Fix ticks values
-        ax.set_xticks(ticks)
-
-        # Fix the limits which can be overwritten by set_xticks:
-        ax.set_xlim(start, end)
-
-        # Put the label
-        ax.set_xticklabels(labels)
-
-        # Add the chromosome name
+        # Use the formatter
+        ax.xaxis.set_major_formatter(MyBasePairFormatter())
         ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
                 fontsize=self.properties['fontsize'],
                 verticalalignment=vert_align, transform=ax.transAxes)
