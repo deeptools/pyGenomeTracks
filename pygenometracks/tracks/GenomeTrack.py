@@ -7,6 +7,7 @@ from matplotlib import colors as mc
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LogFormatter
 import re
+import math
 
 # This is a regex for float which would work for 11, 102.25, but also .2
 float_regex = r'(?:\d+)?(?:\.\d+)?'
@@ -97,14 +98,51 @@ height = 2
         if not self.properties.get('show_data_range', True):
             return
 
-        def value_to_str(value):
+        def value_to_str(value, max_signs=4, set_zero_max_value=0):
             # given a numeric value, returns a
             # string that removes unneeded decimal places
-            if value % 1 == 0:
-                str_value = str(int(value))
+            assert max_signs > 3
+            if np.abs(value) <= set_zero_max_value:
+                return "0"
+            elif value < 0:
+                prefix = "-"
+                value = - value
             else:
-                str_value = f"{value:.1f}"
-            return str_value
+                prefix = ""
+            exponent = math.floor(np.log10(value))
+            sigfigs = max_signs - 1
+            value_scien = value / 10 ** exponent
+            while sigfigs >= 0:
+                if np.abs(value_scien - np.round(value_scien, decimals=sigfigs)) < 1.01 * 10 ** (-max_signs + 1):
+                    sigfigs -= 1
+                else:
+                    break
+            sigfigs += 1
+            if exponent < 0:
+                if - exponent <= 3:
+                    orderOfMagnitude = 0
+                    suffix = ""
+                    sigfigs = min(max_signs - 1, sigfigs - exponent)
+                else:
+                    # Printing e exponent will take space
+                    orderOfMagnitude = exponent
+                    sigfigs = min(sigfigs, max_signs - 4)
+                    suffix = f"e{exponent}"
+            elif exponent > 0:
+                if exponent <= (max_signs - 1):
+                    orderOfMagnitude = 0
+                    suffix = ""
+                    sigfigs = min(sigfigs, max_signs - 3)
+                else:
+                    # Printing e exponent will take space
+                    orderOfMagnitude = exponent
+                    sigfigs = max(0, sigfigs - 2)
+                    suffix = f"e{exponent}"
+            else:  # exponent == 0:
+                orderOfMagnitude = 0
+                suffix = ""
+            value /= 10 ** orderOfMagnitude
+            return prefix + ("{:,." + str(sigfigs) + "f}").format(value) + suffix
 
         def untransform(value, transform, log_pseudocount):
             # given a numeric value, transform and log_pseudocount
@@ -143,10 +181,12 @@ height = 2
                 ticks_values.sort(reverse=True)
             labels_pos = ticks_values
             if transform == 'no' or y_axis == 'transformed':
-                ticks_labels = [value_to_str(t) for t in ticks_values]
+                original_values = ticks_values
             else:
                 # There is a transformation and we want to display original values
-                ticks_labels = [value_to_str(untransform(t, transform, log_pseudocount)) for t in ticks_values]
+                original_values = [untransform(t, transform, log_pseudocount) for t in ticks_values]
+            max_abs_value = np.max(np.abs(original_values))
+            ticks_labels = [value_to_str(t, set_zero_max_value=max_abs_value / 1000) for t in original_values]
         elif transform == 'no' or y_axis == 'transformed':
             # This is a linear scale
             # plot something that looks like this:
@@ -158,7 +198,8 @@ height = 2
             # and not only half of the width of the line.
             ticks_values = [ymin + epsilon_pretty, ymax - epsilon_pretty]
             labels_pos = [ymin, ymax]
-            ticks_labels = [value_to_str(v) for v in [ymin, ymax]]
+            max_abs_value = np.max(np.abs([ymin, ymax]))
+            ticks_labels = [value_to_str(v, set_zero_max_value=max_abs_value / 1000) for v in [ymin, ymax]]
             if y_axis == 'transformed' and transform != 'no':
                 if transform == 'log1p':
                     ymid_str = "log(1 + x)"
@@ -184,8 +225,10 @@ height = 2
             #      │
             # ymin ┘
             ticks_values = [ymin + epsilon_pretty, ymid, ymax - epsilon_pretty]
+            original_values = [untransform(v, transform, log_pseudocount) for v in [ymin, ymid, ymax]]
+            max_abs_value = np.max(np.abs(original_values))
             labels_pos = [ymin, ymid, ymax]
-            ticks_labels = [value_to_str(untransform(v, transform, log_pseudocount)) for v in [ymin, ymid, ymax]]
+            ticks_labels = [value_to_str(v, set_zero_max_value=max_abs_value / 1000) for v in original_values]
 
         # The lower label should be verticalalignment='bottom'
         # if it corresponds to ymin
