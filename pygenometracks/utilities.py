@@ -360,6 +360,7 @@ class MyBasePairFormatter(Formatter):
         Return the format for tick value *x* at position *pos*.
         """
         if len(self.locs) == 0:
+            # This should never happen...
             return ''
         else:
             xp = (x) / (10. ** self.exponent)
@@ -384,6 +385,7 @@ class MyBasePairFormatter(Formatter):
         locs = locs[(vmin <= locs) & (locs <= vmax)]
         locs = np.abs(locs)
         if not len(locs):
+            # I don't understand how this can happen
             self.exponent = 0
             self.unit = ""
             return
