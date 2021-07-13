@@ -422,6 +422,18 @@ color_utr = bed_rgb
 
 [spacer]
 
+[genes 2bix]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = same but color_backbone = bed_rgb
+style = UCSC
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+color_backbone = bed_rgb
+
+[spacer]
+
 [genes 3]
 file = hoxd_genes_rgb.bed.gz
 height = 7
@@ -430,6 +442,18 @@ style = flybase
 fontsize = 10
 color = bed_rgb
 color_utr = bed_rgb
+
+[spacer]
+
+[genes 3bis]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = same but color_backbone = bed_rgb
+style = flybase
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+color_backbone = bed_rgb
 
 [spacer]
 
