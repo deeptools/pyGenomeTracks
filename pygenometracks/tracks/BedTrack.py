@@ -308,7 +308,7 @@ file_type = {TRACK_TYPE}
             for region in sorted(self.interval_tree[chrom][0:500000000]):
                 bed = region.data
                 if self.properties['labels']:
-                    bed_extended_end = int(bed.end + (len(bed.name) * len_w))
+                    bed_extended_end = int(bed.end + small_relative + ((len(bed.name) + 2) * len_w))
                 else:
                     bed_extended_end = (bed.end + 2 * small_relative)
 
@@ -479,7 +479,7 @@ file_type = {TRACK_TYPE}
                 if self.properties['labels']:
                     num_name_characters = len(bed.name) + 2
                     # +2 to account for a space before and after the name
-                    bed_extended_right = int(add_to_right(bed_right, (num_name_characters * self.len_w)))
+                    bed_extended_right = int(add_to_right(bed_right, (num_name_characters * self.len_w + self.small_relative)))
                 else:
                     bed_extended_right = add_to_right(bed_right, 2 * self.small_relative)
 
@@ -493,7 +493,7 @@ file_type = {TRACK_TYPE}
                     # genes which goes over will have their labels inside
                     if self.properties['all_labels_inside'] and self.properties['labels'] \
                        and is_right_to(bed_extended_right, ax.get_xlim()[1]):
-                        bed_extended_left = int(add_to_left(bed_left, (num_name_characters * self.len_w)))
+                        bed_extended_left = int(add_to_left(bed_left, (num_name_characters * self.len_w + self.small_relative)))
                         # Check that the start position is not outside:
                         if is_left_to(bed_extended_left, ax.get_xlim()[0]):
                             # If it would be outside, we use the default right label
@@ -545,18 +545,18 @@ file_type = {TRACK_TYPE}
                     pass
                 elif bed_extended_left != bed_left:
                     # The label will be plotted before
-                    ax.text(add_to_left(bed_left, self.small_relative),
+                    ax.text(add_to_left(bed_left, self.small_relative + self.len_w),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='right',
                             verticalalignment='center', fontproperties=self.fp)
                 elif bed_right > start_region and bed_right < end_region:
-                    ax.text(add_to_right(bed_right, self.small_relative),
+                    ax.text(add_to_right(bed_right, self.small_relative + self.len_w),
                             ypos + 0.5,
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
                 elif self.properties['labels_in_margin'] \
                         and (bed_right == end_region or is_right_to(bed_right, end_region)):
-                    ax.text(add_to_right(ax.get_xlim()[1], self.small_relative),
+                    ax.text(add_to_right(ax.get_xlim()[1], self.small_relative + self.len_w),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp)
