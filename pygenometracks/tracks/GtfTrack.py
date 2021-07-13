@@ -83,7 +83,12 @@ fontsize = 10
 # outside of the interval.
 # If you want that the tip of the arrow correspond to
 # the extremity of the interval use:
-# arrowhead_included = true
+#arrowhead_included = true
+# By default the size of this arrow is 0.4% of the plotted region.
+# This size is also used to put space between the bed regions and
+# their labels.
+# To increase it:
+#arrowhead_fraction = 0.01
 # optional. If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
@@ -103,6 +108,7 @@ file_type = {TRACK_TYPE}
                            'gene_rows': None,
                            'arrow_interval': 2,
                            'arrowhead_included': False,
+                           'arrowhead_fraction': 0.004,
                            'color_utr': 'grey',
                            'height_utr': 1,
                            'arrow_length': None,
@@ -124,7 +130,8 @@ file_type = {TRACK_TYPE}
     FLOAT_PROPERTIES = {'fontsize': [0, np.inf],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf],
-                        'height_utr': [0, 1]}
+                        'height_utr': [0, 1],
+                        'arrowhead_fraction': [0, np.inf]}
     INTEGER_PROPERTIES = {'gene_rows': [0, np.inf],
                           'max_labels': [0, np.inf],
                           'arrow_interval': [1, np.inf],
