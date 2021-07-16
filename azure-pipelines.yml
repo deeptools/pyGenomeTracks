@@ -1,19 +1,80 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+pr:
+  autoCancel: true
+  
+jobs:
 
-trigger:
-- master
+- job: 'Linux'
+  timeoutInMinutes: 0
+  pool:
+    vmImage: 'ubuntu-latest'
+  strategy:
+    matrix:
+      Python36:
+        python.version: '3.6'
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
 
-pool:
-  vmImage: ubuntu-latest
+  steps:
+  - bash: |
+      echo "##vso[task.prependpath]$CONDA/bin"
+      hash -r
+    displayName: Add conda to PATH
+  - bash: |
+      conda config --set always_yes yes --set changeps1 no
+      conda info -a
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements.txt
+      source activate pygenometracks
+      conda install --yes -c conda-forge -c bioconda pytest flake8 pytest-xdist pytest-forked
+      conda install --yes -c conda-forge -c bioconda nose
+      conda install --yes pathlib
+      conda install --yes -c defaults -c conda-forge -c bioconda configparser
+      python setup.py install
+    displayName: installing dependencies
+  - script: |
+      source activate pygenometracks
+      flake8 . --exclude=.venv,.build,planemo_test_env,build --ignore=E501,F401,F403,E402,F999,F405,E712,W504
+    displayName: linting
+  - script: |
+      source activate pygenometracks
+      py.test pygenometracks --doctest-modules -n 4
+    displayName: pytest
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- job: 'OSX'
+  timeoutInMinutes: 0
+  pool:
+    vmImage: 'macOS-10.14'
+  strategy:
+    matrix:
+      Python36:
+        python.version: '3.6'
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  steps:
+  - bash: |
+      echo "##vso[task.prependpath]$CONDA/bin"
+      hash -r
+    displayName: Add conda to PATH
+  - bash: |
+      conda config --set always_yes yes --set changeps1 no
+      conda info -a
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements.txt
+      source activate pygenometracks
+      conda install --yes -c conda-forge -c bioconda pytest flake8 pytest-xdist pytest-forked
+      conda install --yes -c conda-forge -c bioconda nose
+      conda install --yes pathlib
+      conda install --yes -c defaults -c conda-forge -c bioconda configparser
+      python setup.py install
+    displayName: installing dependencies
+  - script: |
+      source activate pygenometracks
+      flake8 . --exclude=.venv,.build,planemo_test_env,build --ignore=E501,F401,F403,E402,F999,F405,E712,W504
+    displayName: linting
+  - script: |
+      source activate pygenometracks
+      py.test pygenometracks --doctest-modules -n 4
+    displayName: pytest
