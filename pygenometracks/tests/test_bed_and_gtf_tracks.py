@@ -974,17 +974,15 @@ def test_plot_tracks_genes_italic():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, f"bed_italic.ini")
+    ini_file = os.path.join(ROOT, "bed_italic.ini")
     region = "chr2:74,650,000-74,710,000"
     expected_file = os.path.join(ROOT, 'master_bed_italic.png')
     args = f"--tracks {ini_file} --region {region} "\
-            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-            f"--outFileName {outfile.name}".split()
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
-
-
