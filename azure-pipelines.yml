@@ -34,7 +34,7 @@ jobs:
     displayName: installing dependencies
   - script: |
       source activate pygenometracks
-      flake8 . --exclude=.venv,.build,planemo_test_env,build --ignore=E501,F401,F403,E402,F999,F405,E712,W504
+      flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503
     displayName: linting
   - script: |
       source activate pygenometracks
@@ -72,7 +72,7 @@ jobs:
     displayName: installing dependencies
   - script: |
       source activate pygenometracks
-      flake8 . --exclude=.venv,.build,planemo_test_env,build --ignore=E501,F401,F403,E402,F999,F405,E712,W504
+      flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503
     displayName: linting
   - script: |
       source activate pygenometracks
