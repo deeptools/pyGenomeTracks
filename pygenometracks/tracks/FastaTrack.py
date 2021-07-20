@@ -3,11 +3,14 @@ from .. utilities import get_optimal_fontsize
 import numpy as np
 import os
 
+
 # Color code for seqs
 seq_color = {'A': 'red',
              'T': 'green',
              'G': 'blue',
-             'C': 'black'}
+             'C': 'black',
+             'N':'grey'
+}
 
 
 def load_fasta(fastafile):
@@ -56,6 +59,5 @@ class FaTrack(GenomeTrack):
         seq_overlap = self.seq[chrom_region][start_region:end_region+1]
         for i in range(len(seq_overlap)):
             ax.text(i+start_region, 0.5, seq_overlap[i],
-                    color=seq_color[seq_overlap[i]], verticalalignment='center',
+                    color=seq_color[seq_overlap[i].upper()], verticalalignment='center',
                     horizontalalignment='center',fontsize=fontsize)
-
