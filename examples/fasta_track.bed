@@ -1,0 +1,12 @@
+browser position rDNA_unit_8919x2_bp:0-5000
+browser hide all
+track name="ItemRGBDemo" description="Item RGB demonstration" visibility=2 itemRgb="On"
+rDNA_unit_8919x2_bp	0	3	Pos1	10	+	0	2	255,0,0
+rDNA_unit_8919x2_bp	10	15	Pos2	20	-	10	12	255,0,0
+rDNA_unit_8919x2_bp	50	51	Pos3	0	+	50	51	255,0,0
+rDNA_unit_8919x2_bp	80	90	Pos4	0	+	80	85	255,0,0
+rDNA_unit_8919x2_bp	99	100	Neg1	0	-	99	100	0,0,255
+rDNA_unit_8919x2_bp	100	101	Neg2	0	-	100	101	0,0,255
+rDNA_unit_8919x2_bp	150	200	Neg3	0	-	150	200	0,0,255
+rDNA_unit_8919x2_bp	3000	4000	Pos5	0	+	3000	4000	255,0,0
+rDNA_unit_8919x2_bp	3500	3525	Neg4	0	-	3500	3525	0,0,255
