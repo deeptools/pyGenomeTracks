@@ -337,3 +337,16 @@ def change_chrom_names(chrom):
         chrom = 'chr' + chrom
 
     return chrom
+
+def get_optimal_fontsize(fig_width, region_start, region_end):
+    """
+    to improve the visualization of the letters (one per base)
+    it is good to have an estimation of the fontsize.
+    """
+    # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
+    inches_per_pt = 1.0 / 72.27
+    region_len = region_end - region_start
+    bp_per_inch = region_len / fig_width
+    fontsize = 1 / (inches_per_pt * bp_per_inch)
+    return fontsize
+
