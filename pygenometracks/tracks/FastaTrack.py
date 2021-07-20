@@ -37,10 +37,16 @@ class FaTrack(GenomeTrack):
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
 
+    def set_properties_defaults(self):
+        GenomeTrack.set_properties_defaults(self)
+
     def __init__(self, *args, **kwarg):
         super(FaTrack, self).__init__(*args, **kwarg)
         self.ref = self.properties['file']
         self.seq = load_fasta(self.ref)
+
+    def plot_y_axis(self, ax, plot_axis):
+        pass
 
     def plot(self, ax, chrom_region, start_region, end_region):
         plotting_figure_width = ax.get_window_extent().transformed(ax.get_figure().dpi_scale_trans.inverted()).width
