@@ -22,6 +22,10 @@ class GtfTrack(BedTrack):
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
 # merge_transcripts = true
+# Sometimes merging transcripts without merging overlapping
+# exons may give unexpected output especially when
+# multiple 3' exons overlap. We recommand to use:
+# merge_overlapping_exons = true
 # You can change the color of coding sequences by:
 color = darkblue
 # height of track in cm
@@ -99,6 +103,7 @@ file_type = {TRACK_TYPE}
                            'max_labels': 60,
                            'prefered_name': 'transcript_name',
                            'merge_transcripts': False,
+                           'merge_overlapping_exons': False,
                            'global_max_row': False,
                            'gene_rows': None,
                            'arrow_interval': 2,
@@ -114,7 +119,8 @@ file_type = {TRACK_TYPE}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'style': ['flybase', 'UCSC', 'tssarrow'],
                            'display': DISPLAY_BED_VALID}
-    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
+    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts',
+                          'merge_overlapping_exons', 'global_max_row',
                           'arrowhead_included', 'all_labels_inside',
                           'labels_in_margin']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
@@ -160,6 +166,7 @@ file_type = {TRACK_TYPE}
 
         bed_file_h = ReadGtf(file_to_open,
                              self.properties['prefered_name'],
-                             self.properties['merge_transcripts'])
+                             self.properties['merge_transcripts'],
+                             self.properties['merge_overlapping_exons'])
         total_length = bed_file_h.length
         return(bed_file_h, total_length)
