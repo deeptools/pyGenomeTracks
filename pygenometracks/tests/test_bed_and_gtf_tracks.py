@@ -623,6 +623,18 @@ title = genes (gtf) style = flybase
 style = flybase
 
 [spacer]
+height = 2
+
+[genes 3]
+file = HoxD.gtf
+height = 2
+title = genes (gtf) style = flybase; merge_transcripts = false; merge_overlapping_exons = true
+style = flybase
+merge_transcripts = false
+merge_overlapping_exons = true
+
+[spacer]
+height = 2
 
 [genes 1]
 file = HoxD.gtf
@@ -632,6 +644,7 @@ style = flybase
 merge_transcripts = true
 
 [spacer]
+height = 2
 
 [genes 2]
 file = HoxD.gtf
@@ -642,6 +655,7 @@ merge_transcripts = true
 merge_overlapping_exons = true
 
 [spacer]
+height = 2
 """
 with open(os.path.join(ROOT, "gtf_merge_overlapping_exons.ini"), 'w') as fh:
     fh.write(browser_tracks)
