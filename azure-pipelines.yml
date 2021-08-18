@@ -9,12 +9,24 @@ jobs:
     vmImage: 'ubuntu-latest'
   strategy:
     matrix:
-      Python36:
+      Python36LowMatplotlib:
         python.version: '3.6'
-      Python37:
+        matplotlib.version: '3.1.1'
+      Python36HighMatplotlib:
+        python.version: '3.6'
+        matplotlib.version: '3.3.4'
+      Python37LowMatplotlib:
         python.version: '3.7'
-      Python38:
+        matplotlib.version: '3.1.1'
+      Python37HighMatplotlib:
+        python.version: '3.7'
+        matplotlib.version: '3.4.3'
+      Python38LowMatplotlib:
         python.version: '3.8'
+        matplotlib.version: '3.1.1'
+      Python38HighMatplotlib:
+        python.version: '3.8'
+        matplotlib.version: '3.4.3'
 
   steps:
   - bash: |
@@ -24,12 +36,13 @@ jobs:
   - bash: |
       conda config --set always_yes yes --set changeps1 no
       conda info -a
-      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements.txt
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_azure.txt
       source activate pygenometracks
       conda install --yes -c conda-forge -c bioconda pytest flake8 pytest-xdist pytest-forked
       conda install --yes -c conda-forge -c bioconda nose
       conda install --yes pathlib
       conda install --yes -c defaults -c conda-forge -c bioconda configparser
+      conda install --yes -c conda-forge matplotlib=$(matplotlib.version)
       python setup.py install
     displayName: installing dependencies
   - script: |
@@ -47,12 +60,24 @@ jobs:
     vmImage: 'macOS-10.14'
   strategy:
     matrix:
-      Python36:
+      Python36LowMatplotlib:
         python.version: '3.6'
-      Python37:
+        matplotlib.version: '3.1.1'
+      Python36HighMatplotlib:
+        python.version: '3.6'
+        matplotlib.version: '3.3.4'
+      Python37LowMatplotlib:
         python.version: '3.7'
-      Python38:
+        matplotlib.version: '3.1.1'
+      Python37HighMatplotlib:
+        python.version: '3.7'
+        matplotlib.version: '3.4.3'
+      Python38LowMatplotlib:
         python.version: '3.8'
+        matplotlib.version: '3.1.1'
+      Python38HighMatplotlib:
+        python.version: '3.8'
+        matplotlib.version: '3.4.3'
 
   steps:
   - bash: |
@@ -62,12 +87,13 @@ jobs:
   - bash: |
       conda config --set always_yes yes --set changeps1 no
       conda info -a
-      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements.txt
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_azure.txt
       source activate pygenometracks
       conda install --yes -c conda-forge -c bioconda pytest flake8 pytest-xdist pytest-forked
       conda install --yes -c conda-forge -c bioconda nose
       conda install --yes pathlib
       conda install --yes -c defaults -c conda-forge -c bioconda configparser
+      conda install --yes -c conda-forge matplotlib=$(matplotlib.version)
       python setup.py install
     displayName: installing dependencies
   - script: |

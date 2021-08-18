@@ -1,5 +1,4 @@
 numpy >=1.16
-matplotlib ==3.3.2 # For the tests on travis
 intervaltree >=2.1.0
 pybigwig >=0.3.16
 future >=0.17.0
