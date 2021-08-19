@@ -1,7 +1,6 @@
 from . GenomeTrack import GenomeTrack
 from .. utilities import get_optimal_fontsize, change_chrom_names
 import numpy as np
-import os
 from pyfaidx import Fasta
 
 # Color code for seqs
