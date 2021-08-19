@@ -2,7 +2,7 @@ from . GenomeTrack import GenomeTrack
 from .. utilities import get_optimal_fontsize, change_chrom_names
 import numpy as np
 import os
-
+from pyfaidx import Fasta
 
 # Color code for seqs
 seq_color = {'A': 'red',
@@ -30,16 +30,7 @@ class FastaTrack(GenomeTrack):
 
     def __init__(self, *args, **kwarg):
         super(FastaTrack, self).__init__(*args, **kwarg)
-        self.ref = self.properties['file']
-        self.seq = self.load_fasta(self.ref)
-
-    def load_fasta(self, fastafile):
-        """Returns a python dict { id : sequence } for the given .fasta file"""
-        with open(os.path.realpath(fastafile), 'r') as filin:
-            fasta = filin.read()
-            fasta = fasta.split('>')[1:]
-            outputdict = {x.split('\n')[0].strip(): "".join(x.split('\n')[1:]) for x in fasta}
-        return outputdict
+        self.seq = Fasta(self.properties['file'])
 
     def plot_y_axis(self, ax, plot_axis):
         pass
@@ -74,7 +65,7 @@ class FastaTrack(GenomeTrack):
                              " sequence length")
             end_region = len(self.seq[chrom_region])
 
-        seq_overlap = self.seq[chrom_region][start_region:end_region]
+        seq_overlap = self.seq[chrom_region][start_region:end_region].seq
         for i, letter in enumerate(seq_overlap):
             ax.text(i + start_region + 0.5, 0.5, letter,
                     color=seq_color[letter.upper()], verticalalignment='center',

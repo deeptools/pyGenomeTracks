@@ -18,10 +18,11 @@ Python dependencies:
 * pyBigWig >= 0.3.16
 * hicmatrix >= 15
 * pysam >= 0.14
-* matplotlib >=3.1.1,<=3.3.2
+* matplotlib >= 3.1.1, <= 3.3.2
 * gffutils >= 0.9
 * pybedtools >= 0.8.1
 * tqdm >= 4.20
+* pyfaidx >= 0.1.3
 
 External dependencies:
 
