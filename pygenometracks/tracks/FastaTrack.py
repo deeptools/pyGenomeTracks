@@ -58,8 +58,8 @@ class FastaTrack(GenomeTrack):
         # Let's take the biggest font possible with these constraints so that the figure is as readable as possible
         fontsize = min(ideal_fontsize, max_fontsize)
 
-        seq_overlap = self.seq[chrom_region][start_region:end_region + 1]
+        seq_overlap = self.seq[chrom_region][start_region:end_region]
         for i in range(len(seq_overlap)):
-            ax.text(i + start_region, 0.5, seq_overlap[i],
+            ax.text(i + start_region + 0.5, 0.5, seq_overlap[i],
                     color=seq_color[seq_overlap[i].upper()], verticalalignment='center',
                     horizontalalignment='center', fontsize=fontsize)
