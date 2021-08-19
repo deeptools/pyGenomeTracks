@@ -1,5 +1,5 @@
 from . GenomeTrack import GenomeTrack
-from .. utilities import get_optimal_fontsize
+from .. utilities import get_optimal_fontsize, change_chrom_names
 import numpy as np
 import os
 
@@ -45,6 +45,18 @@ class FastaTrack(GenomeTrack):
         pass
 
     def plot(self, ax, chrom_region, start_region, end_region):
+
+        if chrom_region not in self.seq.keys():
+            chrom_region_before = chrom_region
+            chrom_region = change_chrom_names(chrom_region)
+            if chrom_region not in self.seq.keys():
+                self.log.warning("*Warning*\nNo record was found for "
+                                 f"{chrom_region_before}"
+                                 f" nor {chrom_region}"
+                                 " inside the fasta file. "
+                                 "This will generate an empty track!!\n")
+                return
+
         plotting_figure_width = ax.get_window_extent().transformed(ax.get_figure().dpi_scale_trans.inverted()).width
 
         # The first constrain on the fontsize is the width
@@ -52,14 +64,18 @@ class FastaTrack(GenomeTrack):
                                                     start_region, end_region)
         # The other constraint is the height
         # 1 point = 1/72 inch = height of character
-        cm = 2.54
-        max_fontsize = self.properties["height"] * 72 / cm
+        max_fontsize = ax.get_window_extent().transformed(ax.get_figure().dpi_scale_trans.inverted()).height * 72
 
         # Let's take the biggest font possible with these constraints so that the figure is as readable as possible
         fontsize = min(ideal_fontsize, max_fontsize)
 
+        if end_region > len(self.seq[chrom_region]):
+            self.log.warning("*Warning*\nPlotting regions goes above"
+                             " sequence length")
+            end_region = len(self.seq[chrom_region])
+
         seq_overlap = self.seq[chrom_region][start_region:end_region]
-        for i in range(len(seq_overlap)):
-            ax.text(i + start_region + 0.5, 0.5, seq_overlap[i],
-                    color=seq_color[seq_overlap[i].upper()], verticalalignment='center',
+        for i, letter in enumerate(seq_overlap):
+            ax.text(i + start_region + 0.5, 0.5, letter,
+                    color=seq_color[letter.upper()], verticalalignment='center',
                     horizontalalignment='center', fontsize=fontsize)

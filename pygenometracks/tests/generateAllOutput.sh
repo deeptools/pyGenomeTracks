@@ -121,4 +121,5 @@ bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region 
 bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-100 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_zoomout.png
 bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-11 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_zoomin.png
 bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-3 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_extrazoomin.png
-
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-3 --trackLabelFraction 0.2 --width 38 --dpi 130 --height 2 -o pygenometracks/tests/test_data/master_fasta_tracks_extrazoomin_height2.png
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:17840-17850 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_end_chr.png
