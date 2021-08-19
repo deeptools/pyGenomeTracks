@@ -461,7 +461,7 @@ def test_plot_tracks_with_cool_region():
 
 
 def test_plot_hic_logmlog():
-
+    my_tolerence = 17
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "browser_tracks_hic_log-log.ini")
@@ -472,7 +472,7 @@ def test_plot_hic_logmlog():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerence)
     assert res is None, res
 
     os.remove(outfile.name)
