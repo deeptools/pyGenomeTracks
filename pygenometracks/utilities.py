@@ -338,6 +338,7 @@ def change_chrom_names(chrom):
 
     return chrom
 
+
 def get_optimal_fontsize(fig_width, region_start, region_end):
     """
     to improve the visualization of the letters (one per base)
@@ -349,4 +350,3 @@ def get_optimal_fontsize(fig_width, region_start, region_end):
     bp_per_inch = region_len / fig_width
     fontsize = 1 / (inches_per_pt * bp_per_inch)
     return fontsize
-
