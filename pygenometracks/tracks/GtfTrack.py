@@ -78,6 +78,8 @@ fontsize = 10
 # as well as the proportion between their height and the one of coding
 # (by default they are the same height):
 #height_utr = 1
+# if you use flybase or UCSC style, you can choose the color of the backbone
+#color_backbone = red
 # By default, for oriented intervals in flybase style,
 # or bed files with less than 12 columns, the arrowhead is added
 # outside of the interval.
@@ -104,6 +106,7 @@ file_type = {TRACK_TYPE}
                            'arrow_interval': 2,
                            'arrowhead_included': False,
                            'color_utr': 'grey',
+                           'color_backbone': 'black',
                            'height_utr': 1,
                            'arrow_length': None,
                            'region': None,  # Cannot be set manually but is set by tracksClass
@@ -120,7 +123,7 @@ file_type = {TRACK_TYPE}
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
-                         'color_utr', 'display']
+                         'color_utr', 'display', 'color_backbone']
     FLOAT_PROPERTIES = {'fontsize': [0, np.inf],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf],
@@ -140,10 +143,10 @@ file_type = {TRACK_TYPE}
                            bed_rgb_possible=False,
                            default_value_is_colormap=False)
 
-        # check if border_color and color_utr are colors
+        # check if border_color and color_utr and color_backbone are colors
         # if they are part of self.properties
-        # (for example, TADsTracks do not have color_utr)
-        for param in [p for p in ['border_color', 'color_utr']
+        # (for example, TADsTracks do not have color_utr nor color_backbone)
+        for param in [p for p in ['border_color', 'color_utr', 'color_backbone']
                       if p in self.properties]:
             self.process_color(param, bed_rgb_possible=False)
 
