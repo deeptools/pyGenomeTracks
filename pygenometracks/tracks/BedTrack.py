@@ -119,6 +119,7 @@ file_type = {TRACK_TYPE}
                            # To remove in next 1.0
                            'prefered_name': 'transcript_name',
                            'merge_transcripts': False,
+                           'merge_overlapping_exons': False,
                            # end to remove
                            'global_max_row': False,
                            'gene_rows': None,
@@ -146,7 +147,7 @@ file_type = {TRACK_TYPE}
                           'arrowhead_included', 'all_labels_inside',
                           'labels_in_margin',
                           # To remove in next 1.0
-                          'merge_transcripts']
+                          'merge_transcripts', 'merge_overlapping_exons']
     STRING_PROPERTIES = ['file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
@@ -244,7 +245,8 @@ file_type = {TRACK_TYPE}
                              " use file_type = gtf.\n")
             bed_file_h = ReadGtf(file_to_open,
                                  self.properties['prefered_name'],
-                                 self.properties['merge_transcripts'])
+                                 self.properties['merge_transcripts'],
+                                 self.properties['merge_overlapping_exons'])
             total_length = bed_file_h.length
         else:
             # end of remove
