@@ -57,7 +57,8 @@ file_type = {TRACK_TYPE}
     POSSIBLE_PROPERTIES = {'where': ['left', 'right',
                                      'top', 'bottom']}
     BOOLEAN_PROPERTIES = []
-    STRING_PROPERTIES = ['file_type', 'title', 'color', 'where']
+    STRING_PROPERTIES = ['file_type', 'title', 'overlay_previous',
+                         'color', 'where']
     FLOAT_PROPERTIES = {'fontsize': [0, np.inf],
                         'alpha': [0, 1],
                         'line_width': [0, np.inf],
