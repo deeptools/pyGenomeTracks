@@ -609,6 +609,25 @@ height = 4
 with open(os.path.join(ROOT, "bed_different_UTR.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[genes1]
+file = no_exon.gtf
+title = default
+
+[spacer]
+
+[genes2]
+file = no_exon.gtf
+title = merge_transcripts=true
+merge_transcripts = true
+
+[spacer]
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "gtf_no_exon.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -928,6 +947,24 @@ def test_plot_tracks_bed_different_UTR():
     ini_file = os.path.join(ROOT, "bed_different_UTR.ini")
     region = "chr1:0-500"
     expected_file = os.path.join(ROOT, 'master_different_UTR.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_gtf_no_exon():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'gtf_no_exon.ini')
+    region = "381:0-1000"
+    expected_file = os.path.join(ROOT, 'master_gtf_no_exon.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
