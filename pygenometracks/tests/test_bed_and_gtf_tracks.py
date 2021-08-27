@@ -422,6 +422,18 @@ color_utr = bed_rgb
 
 [spacer]
 
+[genes 2bix]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = same but color_backbone = bed_rgb
+style = UCSC
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+color_backbone = bed_rgb
+
+[spacer]
+
 [genes 3]
 file = hoxd_genes_rgb.bed.gz
 height = 7
@@ -430,6 +442,18 @@ style = flybase
 fontsize = 10
 color = bed_rgb
 color_utr = bed_rgb
+
+[spacer]
+
+[genes 3bis]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = same but color_backbone = bed_rgb
+style = flybase
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+color_backbone = bed_rgb
 
 [spacer]
 
@@ -658,6 +682,25 @@ merge_overlapping_exons = true
 height = 2
 """
 with open(os.path.join(ROOT, "gtf_merge_overlapping_exons.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[genes1]
+file = no_exon.gtf
+title = default
+
+[spacer]
+
+[genes2]
+file = no_exon.gtf
+title = merge_transcripts=true
+merge_transcripts = true
+
+[spacer]
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "gtf_no_exon.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
@@ -997,6 +1040,24 @@ def test_plot_gtf_merge_overlapping_exons():
     ini_file = os.path.join(ROOT, 'gtf_merge_overlapping_exons.ini')
     region = "chr2:74,704,000-74,710,000"
     expected_file = os.path.join(ROOT, 'master_gtf_merge_overlapping_exons.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_gtf_no_exon():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'gtf_no_exon.ini')
+    region = "381:0-1000"
+    expected_file = os.path.join(ROOT, 'master_gtf_no_exon.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()

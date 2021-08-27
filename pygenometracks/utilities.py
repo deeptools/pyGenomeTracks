@@ -8,6 +8,8 @@ import pybedtools
 import tempfile
 import warnings
 import logging
+from matplotlib.ticker import Formatter
+import math
 
 
 FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
@@ -91,7 +93,9 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
         sys.stderr = open(temporary_file.name, 'w')
         try:
             file_to_open = original_file.intersect(regions, wa=True, u=True).fn
-        except pybedtools.helpers.BEDToolsError:
+        except pybedtools.helpers.BEDToolsError as e:
+            log.warning(f"BEDTools intersect raised: {e}"
+                        "\nWill not subset the file.")
             file_to_open = file_name
         except NotImplementedError:
             log.warning("BEDTools is not installed pygenometracks"
@@ -337,3 +341,95 @@ def change_chrom_names(chrom):
         chrom = 'chr' + chrom
 
     return chrom
+
+
+class MyBasePairFormatter(Formatter):
+    """
+    Format tick values as pretty numbers and add as offset the unit
+
+    The units are "b", "Kb", "Mb"
+    The choice is made based on distance between extreme visible locs
+
+    """
+
+    def __init__(self):
+        self.format = ''
+        self.exponent = 0
+        self.unit = ""
+
+    def __call__(self, x, pos=None):
+        """
+        Return the format for tick value *x* at position *pos*.
+        """
+        if len(self.locs) == 0:
+            # This should never happen...
+            return ''
+        else:
+            xp = (x) / (10. ** self.exponent)
+            if abs(xp) < 1e-8:
+                xp = 0
+            if len(self.locs) < 2 or x == self.locs[-2]:
+                return self.format.format(xp) + ' ' + self.unit
+            else:
+                return self.format.format(xp)
+
+    def set_locs(self, locs):
+        # docstring inherited
+        self.locs = locs
+        if len(self.locs) > 0:
+            self._set_unit()
+            self._set_format()
+
+    def _set_unit(self):
+        # restrict to visible ticks
+        vmin, vmax = sorted(self.axis.get_view_interval())
+        locs = np.asarray(self.locs)
+        locs = locs[(vmin <= locs) & (locs <= vmax)]
+        locs = np.abs(locs)
+        if not len(locs):
+            # I don't understand how this can happen
+            self.exponent = 0
+            self.unit = ""
+            return
+        else:
+            if np.abs(locs[-1] - locs[0]) <= 1e3:
+                self.exponent = 0
+                self.unit = "b"
+            elif np.abs(locs[-1] - locs[0]) <= 7e5:
+                self.exponent = 3
+                self.unit = "Kb"
+            else:
+                self.exponent = 6
+                self.unit = "Mb"
+
+    # This is adapted from ScalarFormatter
+    def _set_format(self):
+        # set the format string to format all the ticklabels
+        if len(self.locs) < 2:
+            # Temporarily augment the locations with the axis end points.
+            _locs = [*self.locs, *self.axis.get_view_interval()]
+        else:
+            _locs = self.locs
+        locs = np.asarray(_locs) / 10. ** self.exponent
+        loc_range = np.ptp(locs)
+        # Curvilinear coordinates can yield two identical points.
+        if loc_range == 0:
+            loc_range = np.max(np.abs(locs))
+        # Both points might be zero.
+        if loc_range == 0:
+            loc_range = 1
+        if len(self.locs) < 2:
+            # We needed the end points only for the loc_range calculation.
+            locs = locs[:-2]
+        loc_range_oom = int(math.floor(math.log10(loc_range)))
+        # first estimate:
+        sigfigs = max(0, 3 - loc_range_oom)
+        # refined estimate:
+        thresh = 1e-3 * 10 ** loc_range_oom
+        while sigfigs >= 0:
+            if np.abs(locs - np.round(locs, decimals=sigfigs)).max() < thresh:
+                sigfigs -= 1
+            else:
+                break
+        sigfigs += 1
+        self.format = '{:,.' + str(sigfigs) + 'f}'
