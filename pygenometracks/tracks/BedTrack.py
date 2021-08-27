@@ -95,6 +95,8 @@ fontsize = 10
 # as well as the proportion between their height and the one of coding
 # (by default they are the same height):
 #height_utr = 1
+# if you use flybase or UCSC style, you can choose the color of the backbone
+#color_backbone = red
 # By default, for oriented intervals in flybase style,
 # or bed files with less than 12 columns, the arrowhead is added
 # outside of the interval.
@@ -125,6 +127,7 @@ file_type = {TRACK_TYPE}
                            'arrow_interval': 2,
                            'arrowhead_included': False,
                            'color_utr': 'grey',
+                           'color_backbone': 'black',
                            'height_utr': 1,
                            'region': None,  # Cannot be set manually but is set by tracksClass
                            'arrow_length': None,
@@ -148,6 +151,7 @@ file_type = {TRACK_TYPE}
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
                          'color_utr', 'display', 'fontstyle',
+                         'color_backbone',
                          # To remove in next 1.0
                          'prefered_name']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
@@ -193,10 +197,10 @@ file_type = {TRACK_TYPE}
             self.colormap = self.properties['color']
             self.parametersUsingColormap.append('color')
 
-        # check if border_color and color_utr are colors
+        # check if border_color and color_utr and color_backbone are colors
         # if they are part of self.properties
-        # (for example, TADsTracks do not have color_utr)
-        for param in [p for p in ['border_color', 'color_utr']
+        # (for example, TADsTracks do not have color_utr nor color_backbone)
+        for param in [p for p in ['border_color', 'color_utr', 'color_backbone']
                       if p in self.properties]:
             is_colormap = self.process_color(param, colormap_possible=True,
                                              bed_rgb_possible=True)
@@ -673,8 +677,9 @@ file_type = {TRACK_TYPE}
             return
         half_height = 1 / 2
         # draw 'backbone', a line from the start until the end of the gene
+        rgb_backbone = self.get_rgb(bed, param='color_backbone', default='black')
         ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height],
-                'black', linewidth=linewidth, zorder=-1)
+                color=rgb_backbone, linewidth=linewidth, zorder=-1)
 
         # get start, end of all the blocks
         positions = self._split_bed_to_blocks(bed)
@@ -838,7 +843,8 @@ file_type = {TRACK_TYPE}
             return
 
         # draw 'backbone', a line from the start until the end of the gene
-        ax.plot([bed.start, bed.end], [ypos + 1 / 2, ypos + 1 / 2], 'black', linewidth=linewidth, zorder=-1)
+        rgb_backbone = self.get_rgb(bed, param='color_backbone', default='black')
+        ax.plot([bed.start, bed.end], [ypos + 1 / 2, ypos + 1 / 2], color=rgb_backbone, linewidth=linewidth, zorder=-1)
 
         for idx in range(0, bed.block_count):
             x0 = bed.start + bed.block_starts[idx]
@@ -903,7 +909,7 @@ file_type = {TRACK_TYPE}
                     pos = pos + intron_center - pos.mean()
                     # plot them
                     for xpos in pos:
-                        self._plot_small_arrow(ax, xpos, ypos, bed.strand)
+                        self._plot_small_arrow(ax, xpos, ypos, bed.strand, bed)
 
     def draw_gene_tssarrow_style(self, ax, bed, ypos, rgb, linewidth):
         """
@@ -1018,7 +1024,7 @@ file_type = {TRACK_TYPE}
         else:
             ax.set_ylim(0, ymax)
 
-    def _plot_small_arrow(self, ax, xpos, ypos, strand):
+    def _plot_small_arrow(self, ax, xpos, ypos, strand, bed):
         """
         Draws a broken line with 2 parts:
         For strand = +:  > For strand = -: <
@@ -1041,4 +1047,6 @@ file_type = {TRACK_TYPE}
         ydata = [ypos + 1 / 4,
                  ypos + 1 / 2,
                  ypos + 3 / 4]
-        ax.add_line(Line2D(xdata, ydata, color='black', linewidth=self.properties['line_width']))
+
+        rgb_backbone = self.get_rgb(bed, param='color_backbone', default='black')
+        ax.add_line(Line2D(xdata, ydata, color=rgb_backbone, linewidth=self.properties['line_width']))

@@ -4,6 +4,13 @@ import collections
 import gffutils
 import warnings
 from .utilities import InputError
+import logging
+
+
+FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
+logging.basicConfig(format=FORMAT)
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 warnings.filterwarnings("ignore", message="It appears you have a gene feature"
                         " in your GTF file. You may want to use the "
@@ -70,11 +77,14 @@ class ReadGtf(object):
                 raise InputError("This is not a gtf file.")
         else:
             if self.merge_transcripts:
-                self.length = len([i for i in self.db.features_of_type("gene")])
+                self.length = self.db.count_features_of_type("gene")
                 self.all_transcripts = self.db.features_of_type("gene",
                                                                 order_by='start')
             else:
-                self.length = len([i for i in self.db.features_of_type("transcript")])
+                self.length = self.db.count_features_of_type("transcript")
+                if self.length == 0:
+                    # This is unexpected as the database contains things
+                    log.warning("No transcript found consider. If your gtf only have genes, use `merge_transcripts = true`")
                 self.all_transcripts = self.db.features_of_type("transcript",
                                                                 order_by='start')
 
@@ -129,14 +139,28 @@ class ReadGtf(object):
             cds_start = tr.start - 1
             cds_end = tr.start - 1
         # Get all exons starts and end to get lengths
-        exons_starts = [e.start - 1
-                        for e in self.db.children(tr,
-                                                  featuretype='exon',
-                                                  order_by='start')]
-        exons_ends = [e.end
-                      for e in self.db.children(tr,
-                                                featuretype='exon',
-                                                order_by='start')]
+        if self.db.count_features_of_type("exon") > 0:
+            exons_starts = [e.start - 1
+                            for e in self.db.children(tr,
+                                                      featuretype='exon',
+                                                      order_by='start')]
+            exons_ends = [e.end
+                          for e in self.db.children(tr,
+                                                    featuretype='exon',
+                                                    order_by='start')]
+        else:
+            # This means that the gtf does not have exon info for this gene/transcript:
+            try:
+                exons_starts = [[ch.start - 1
+                                 for ch in self.db.children(tr,
+                                                            order_by='start')][0]]
+                exons_ends = [[ch.end
+                               for ch in self.db.children(tr,
+                                                          order_by='end',
+                                                          reverse=True)][0]]
+            except IndexError:
+                exons_starts = [tr.start - 1]
+                exons_ends = [tr.end]
         exons_length = [e - s for s, e in zip(exons_starts, exons_ends)]
         relative_exons_starts = [s - (tr.start - 1) for s in exons_starts]
         line_values = [tr.chrom, tr.start - 1, tr.end, trName, 0, tr.strand,

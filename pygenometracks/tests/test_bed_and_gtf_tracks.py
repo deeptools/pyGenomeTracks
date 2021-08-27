@@ -422,6 +422,18 @@ color_utr = bed_rgb
 
 [spacer]
 
+[genes 2bix]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = same but color_backbone = bed_rgb
+style = UCSC
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+color_backbone = bed_rgb
+
+[spacer]
+
 [genes 3]
 file = hoxd_genes_rgb.bed.gz
 height = 7
@@ -430,6 +442,18 @@ style = flybase
 fontsize = 10
 color = bed_rgb
 color_utr = bed_rgb
+
+[spacer]
+
+[genes 3bis]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = same but color_backbone = bed_rgb
+style = flybase
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+color_backbone = bed_rgb
 
 [spacer]
 
@@ -580,6 +604,36 @@ with open(os.path.join(ROOT, "bed_vlines_incorrect.ini"), 'w') as fh:
     fh.write(browser_tracks + 'line_style = dashed\n')
 
 browser_tracks = """
+[x-axis]
+where = top
+
+[spacer]
+height = 0.5
+
+[genes 0]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 20; color = bed_rgb
+style = tssarrow
+fontsize = 20
+color = bed_rgb
+
+[spacer]
+height = 0.5
+
+[genes 0]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 20; color = bed_rgb; fontstyle = italic
+style = tssarrow
+fontsize = 20
+color = bed_rgb
+fontstyle = italic
+"""
+with open(os.path.join(ROOT, "bed_italic.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
 [genes1]
 file = example.bed
 title = bed style = flybase
@@ -609,35 +663,23 @@ height = 4
 with open(os.path.join(ROOT, "bed_different_UTR.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
-
 browser_tracks = """
+[genes1]
+file = no_exon.gtf
+title = default
+
+[spacer]
+
+[genes2]
+file = no_exon.gtf
+title = merge_transcripts=true
+merge_transcripts = true
+
+[spacer]
+
 [x-axis]
-where = top
-
-[spacer]
-height = 0.5
-
-[genes 0]
-file = hoxd_genes_rgb.bed.gz
-height = 7
-title = genes (bed12) style = tssarrow; fontsize = 20; color = bed_rgb
-style = tssarrow
-fontsize = 20
-color = bed_rgb
-
-[spacer]
-height = 0.5
-
-[genes 0]
-file = hoxd_genes_rgb.bed.gz
-height = 7
-title = genes (bed12) style = tssarrow; fontsize = 20; color = bed_rgb; fontstyle = italic
-style = tssarrow
-fontsize = 20
-color = bed_rgb
-fontstyle = italic
 """
-with open(os.path.join(ROOT, "bed_italic.ini"), 'w') as fh:
+with open(os.path.join(ROOT, "gtf_no_exon.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
@@ -952,6 +994,24 @@ def test_plot_tracks_bed_vlines():
             os.remove(ini_file)
 
 
+def test_plot_tracks_genes_italic():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bed_italic.ini")
+    region = "chr2:74,650,000-74,710,000"
+    expected_file = os.path.join(ROOT, 'master_bed_italic.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_plot_tracks_bed_different_UTR():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
@@ -970,13 +1030,13 @@ def test_plot_tracks_bed_different_UTR():
     os.remove(outfile.name)
 
 
-def test_plot_tracks_genes_italic():
+def test_plot_gtf_no_exon():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    ini_file = os.path.join(ROOT, "bed_italic.ini")
-    region = "chr2:74,650,000-74,710,000"
-    expected_file = os.path.join(ROOT, 'master_bed_italic.png')
+    ini_file = os.path.join(ROOT, 'gtf_no_exon.ini')
+    region = "381:0-1000"
+    expected_file = os.path.join(ROOT, 'master_gtf_no_exon.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
