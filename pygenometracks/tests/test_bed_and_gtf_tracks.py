@@ -604,6 +604,36 @@ with open(os.path.join(ROOT, "bed_vlines_incorrect.ini"), 'w') as fh:
     fh.write(browser_tracks + 'line_style = dashed\n')
 
 browser_tracks = """
+[x-axis]
+where = top
+
+[spacer]
+height = 0.5
+
+[genes 0]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 20; color = bed_rgb
+style = tssarrow
+fontsize = 20
+color = bed_rgb
+
+[spacer]
+height = 0.5
+
+[genes 0]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = tssarrow; fontsize = 20; color = bed_rgb; fontstyle = italic
+style = tssarrow
+fontsize = 20
+color = bed_rgb
+fontstyle = italic
+"""
+with open(os.path.join(ROOT, "bed_italic.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
 [genes1]
 file = example.bed
 title = bed style = flybase
@@ -653,6 +683,57 @@ color = green
 [x-axis]
 """
 with open(os.path.join(ROOT, "vhighlight.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[x-axis]
+where = top
+
+[spacer]
+height = 0.5
+
+[genes 0]
+file = HoxD.gtf
+height = 2
+title = genes (gtf) style = flybase
+style = flybase
+
+[spacer]
+height = 2
+
+[genes 3]
+file = HoxD.gtf
+height = 2
+title = genes (gtf) style = flybase; merge_transcripts = false; merge_overlapping_exons = true
+style = flybase
+merge_transcripts = false
+merge_overlapping_exons = true
+
+[spacer]
+height = 2
+
+[genes 1]
+file = HoxD.gtf
+height = 1
+title = genes (gtf) style = flybase; merge_transcripts = true
+style = flybase
+merge_transcripts = true
+
+[spacer]
+height = 2
+
+[genes 2]
+file = HoxD.gtf
+height = 1
+title = genes (gtf) style = flybase; merge_transcripts = true; merge_overlapping_exons = true
+style = flybase
+merge_transcripts = true
+merge_overlapping_exons = true
+
+[spacer]
+height = 2
+"""
+with open(os.path.join(ROOT, "gtf_merge_overlapping_exons.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 browser_tracks = """
@@ -986,6 +1067,24 @@ def test_plot_tracks_bed_vlines():
             os.remove(ini_file)
 
 
+def test_plot_tracks_genes_italic():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bed_italic.ini")
+    region = "chr2:74,650,000-74,710,000"
+    expected_file = os.path.join(ROOT, 'master_bed_italic.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_plot_tracks_bed_different_UTR():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
@@ -1011,6 +1110,24 @@ def test_vhighlight():
     ini_file = os.path.join(ROOT, "vhighlight.ini")
     region = "chr2:73,800,000-75,744,000"
     expected_file = os.path.join(ROOT, 'master_vhighlight.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_gtf_merge_overlapping_exons():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'gtf_merge_overlapping_exons.ini')
+    region = "chr2:74,704,000-74,710,000"
+    expected_file = os.path.join(ROOT, 'master_gtf_merge_overlapping_exons.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()

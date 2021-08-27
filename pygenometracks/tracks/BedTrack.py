@@ -82,6 +82,8 @@ fontsize = 10
 # If you want to display the name of the gene which goes over the plotted
 # region in the right margin put:
 #labels_in_margin = true
+# If you want to use italic for your labels:
+#fontstyle = italic
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
@@ -117,6 +119,7 @@ file_type = {TRACK_TYPE}
                            # To remove in next 1.0
                            'prefered_name': 'transcript_name',
                            'merge_transcripts': False,
+                           'merge_overlapping_exons': False,
                            # end to remove
                            'global_max_row': False,
                            'gene_rows': None,
@@ -130,23 +133,26 @@ file_type = {TRACK_TYPE}
                            'region': None,  # Cannot be set manually but is set by tracksClass
                            'arrow_length': None,
                            'all_labels_inside': False,
-                           'labels_in_margin': False}
+                           'labels_in_margin': False,
+                           'fontstyle': 'normal'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
                              'display': DISPLAY_BED_SYNONYMOUS}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'style': ['flybase', 'UCSC', 'tssarrow'],
-                           'display': DISPLAY_BED_VALID}
+                           'display': DISPLAY_BED_VALID,
+                           'fontstyle': ['normal', 'italic', 'oblique']}
     BOOLEAN_PROPERTIES = ['labels', 'global_max_row',
                           'arrowhead_included', 'all_labels_inside',
                           'labels_in_margin',
                           # To remove in next 1.0
-                          'merge_transcripts']
+                          'merge_transcripts', 'merge_overlapping_exons']
     STRING_PROPERTIES = ['file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
-                         'color_utr', 'display', 'color_backbone',
+                         'color_utr', 'display', 'fontstyle',
+                         'color_backbone',
                          # To remove in next 1.0
                          'prefered_name']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
@@ -239,7 +245,8 @@ file_type = {TRACK_TYPE}
                              " use file_type = gtf.\n")
             bed_file_h = ReadGtf(file_to_open,
                                  self.properties['prefered_name'],
-                                 self.properties['merge_transcripts'])
+                                 self.properties['merge_transcripts'],
+                                 self.properties['merge_overlapping_exons'])
             total_length = bed_file_h.length
         else:
             # end of remove
@@ -544,18 +551,21 @@ file_type = {TRACK_TYPE}
                     ax.text(add_to_left(bed_left, self.small_relative),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='right',
-                            verticalalignment='center', fontproperties=self.fp)
+                            verticalalignment='center', fontproperties=self.fp,
+                            fontstyle=self.properties['fontstyle'])
                 elif bed_right > start_region and bed_right < end_region:
                     ax.text(add_to_right(bed_right, self.small_relative),
                             ypos + 0.5,
                             bed.name, horizontalalignment='left',
-                            verticalalignment='center', fontproperties=self.fp)
+                            verticalalignment='center', fontproperties=self.fp,
+                            fontstyle=self.properties['fontstyle'])
                 elif self.properties['labels_in_margin'] \
                         and (bed_right == end_region or is_right_to(bed_right, end_region)):
                     ax.text(add_to_right(ax.get_xlim()[1], self.small_relative),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='left',
-                            verticalalignment='center', fontproperties=self.fp)
+                            verticalalignment='center', fontproperties=self.fp,
+                            fontstyle=self.properties['fontstyle'])
 
             if self.counter == 0:
                 self.log.warning("*Warning* No intervals were found for file"
