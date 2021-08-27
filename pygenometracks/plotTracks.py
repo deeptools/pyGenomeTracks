@@ -177,8 +177,9 @@ def parse_arguments(args=None):
 
     group.add_argument('--BED',
                        help='Instead of a region, a file containing the regions to plot, in BED format, '
-                       'can be given. If this is the case, multiple files will be created using a prefix '
-                       'the value of --outFileName',
+                       'can be given. If this is the case, multiple files will be created. '
+                       'It will use the value of --outFileName as a template'
+                       ' and put the coordinates between the file name and the extension.',
                        type=argparse.FileType('r')
                        )
 

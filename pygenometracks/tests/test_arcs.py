@@ -235,6 +235,23 @@ file = arcs_invalid{suf}.arcs
     with open(os.path.join(ROOT, f"arcs_invalid{suf}.ini"), 'w') as fh:
         fh.write(browser_tracks)
 
+browser_tracks = """
+[arcs]
+title = arcs with scores viridis overlayed with shifted arcs hot
+file = test_high_score.arcs
+color = cividis
+height = 2
+min_value = 0
+max_value = 80
+
+[arcs]
+file = test_high_score_other_pos.arcs
+color = hot
+overlay_previous = share-y
+"""
+with open(os.path.join(ROOT, "arcs_overlay.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -335,3 +352,21 @@ def test_arcs_invalid2():
     else:
         raise Exception("The arcs_invalid2 should fail.")
     os.remove(ini_file)
+
+
+def test_arcs_overlay():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=True)
+    ini_file = os.path.join(ROOT, "arcs_overlay.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_arcs_overlay.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
