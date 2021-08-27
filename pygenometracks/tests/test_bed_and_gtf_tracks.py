@@ -664,6 +664,28 @@ with open(os.path.join(ROOT, "bed_different_UTR.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
 browser_tracks = """
+[annotations]
+file = HoxD_cluster_regulatory_regions_mm10.bed
+height = 3
+title = HoxD genes and regulatory regions
+
+[annotations as highlight]
+file = HoxD_cluster_regulatory_regions_mm10.bed
+type = vhighlight
+
+[genes as highlight]
+file = hoxd_genes_noGm_rgb.bed.gz
+type = vhighlight
+color = green
+
+[spacer]
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "vhighlight.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
 [x-axis]
 where = top
 
@@ -1070,6 +1092,24 @@ def test_plot_tracks_bed_different_UTR():
     ini_file = os.path.join(ROOT, "bed_different_UTR.ini")
     region = "chr1:0-500"
     expected_file = os.path.join(ROOT, 'master_different_UTR.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_vhighlight():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "vhighlight.ini")
+    region = "chr2:73,800,000-75,744,000"
+    expected_file = os.path.join(ROOT, 'master_vhighlight.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
