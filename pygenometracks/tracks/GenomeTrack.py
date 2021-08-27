@@ -463,7 +463,7 @@ height = 2
                 cobar = plt.colorbar(self.img, ticks=tick_values,
                                      format=formatter, ax=axis,
                                      fraction=fraction)
-            except AttributeError:
+            except (AttributeError, ValueError):
                 return
         else:
             try:
@@ -471,7 +471,7 @@ height = 2
             except AttributeError:
                 try:
                     cobar = plt.colorbar(self.colormap, ax=axis, fraction=fraction)
-                except AttributeError:
+                except (AttributeError, ValueError):
                     return
 
         cobar.solids.set_edgecolor("face")
