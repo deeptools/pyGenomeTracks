@@ -124,3 +124,7 @@ bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region 
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region X:3000000-3600000 --trackLabelFraction 0.2 --width 38 --dpi 130 --decreasingXAxis -o pygenometracks/tests/test_data/master_scale_bar_startend_dec.png
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region X:2000000000-2500000000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_startend_outside.png
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region X:3199500-3201000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_startend_superzoom.png
+
+# hic_matrix_square
+bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_square.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 --decreasingXAxis -o ./pygenometracks/tests/test_data/master_hic_square_dec.png
