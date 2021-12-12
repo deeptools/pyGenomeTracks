@@ -55,6 +55,10 @@ jobs:
       echo "##vso[task.prependpath]$CONDA/bin"
       hash -r
     displayName: Add conda to PATH
+  # On Hosted macOS, the agent user doesn't have ownership of Miniconda's installation directory/
+  # We need to take ownership if we want to update conda or install packages globally
+  - bash: sudo chown -R $USER $CONDA
+    displayName: Take ownership of conda installation
   - bash: |
       conda config --set always_yes yes --set changeps1 no
       conda info -a
