@@ -4,7 +4,7 @@ from intervaltree import IntervalTree, Interval
 import matplotlib
 import numpy as np
 from matplotlib.patches import Arc, Polygon
-from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect
+from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect, get_region
 from tqdm import tqdm
 
 DEFAULT_LINKS_COLOR = 'blue'
@@ -21,14 +21,19 @@ class LinksTrack(GenomeTrack):
 # The fields after the score field will be ignored
 # for example:
 #   chr1 100 200 chr1 250 300 0.5
-# depending on the value of links_type either 'arcs' or 'triangles' or 'loops' can be plotted.
+# depending on the value of links_type either 'arcs' or 'triangles' or 'loops'
+# or 'squares' can be plotted.
 # If arcs, a line will be drawn from the center of the first region (chr1: 150),
 # to the center of the other region (chr1: 275).
-# if triangles, the vertix of the triangle will be drawn at the center between the two points
+# If triangles, the vertix of the triangle will be drawn at the center between the two points
 # (also the extremity of each position is used)
-# if loops, a rectangle highlighting the intersection between the 2 regions will be shown
+# If loops, a diamond highlighting the intersection between the 2 regions will be shown
 # the triangles, and loops options are convenient to overlay over a
-# Hi-C matrix to highlight the matrix pixel of the highlighted link
+# Hi-C matrix to highlight the matrix pixel of the highlighted link.
+# If squares, a rectangle highlighting the intersection between the 2 regions will be shown
+# In this case the y axis represent region2 which can be specified
+# By default it is the same as the region of the x-axis
+#region2 = X:3000000-3500000
 # For these tracks do not hesitate to put large line_width like 5 or 10.
 links_type = arcs
 # For triangles and arcs, by default the extremities coordinates are used
@@ -74,20 +79,22 @@ file_type = {TRACK_TYPE}
                            'region': None,  # Cannot be set manually but is set by tracksClass
                            'ylim': None,
                            'compact_arcs_level': '0',
-                           'use_middle': False}
+                           'use_middle': False,
+                           'region2': None}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
                              'ylim': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'links_type': ['arcs', 'triangles', 'loops'],
+                           'links_type': ['arcs', 'triangles', 'loops', 'squares'],
                            'line_style': ['solid', 'dashed',
                                           'dotted', 'dashdot'],
                            'compact_arcs_level': ['0', '1', '2']}
     BOOLEAN_PROPERTIES = ['use_middle']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'links_type', 'line_style',
-                         'title', 'color', 'compact_arcs_level']
+                         'title', 'color', 'compact_arcs_level',
+                         'region2']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'ylim': [0, np.inf],
@@ -100,6 +107,27 @@ file_type = {TRACK_TYPE}
     def set_properties_defaults(self):
         super(LinksTrack, self).set_properties_defaults()
         self.max_height = None
+
+        if self.properties['region2'] is not None \
+           and self.properties['links_type'] != 'squares':
+            self.log.warning("*WARNING* for section "
+                             f"{self.properties['section_name']}"
+                             " a region2 was set but "
+                             "links_type was not set to squares."
+                             "region2 will be ignored.\n")
+            self.properties['region2'] = None
+        if self.properties['region2'] is not None:
+            region2 = get_region(self.properties['region2'])
+            self.properties['region'].append(region2)
+            self.region2 = region2
+            if self.properties['use_middle']:
+                self.log.warning("*WARNING* for section "
+                                 f"{self.properties['section_name']}"
+                                 " a use_middle was set to true "
+                                 "but this is incompatible with squares."
+                                 "\n")
+                self.properties['use_middle'] = False
+
         self.interval_tree, min_score, max_score, has_score = self.process_link_file(self.properties['region'])
         if self.properties['line_width'] is None and not has_score:
             self.log.warning("*WARNING* for section "
@@ -144,15 +172,16 @@ file_type = {TRACK_TYPE}
                              f"{self.properties['section_name']}"
                              " a ylim was set but "
                              "compact_arcs_level was set to 2."
-                             "ylim will be ignore.\n")
+                             "ylim will be ignored.\n")
             self.properties['ylim'] = None
 
     def plot(self, ax, chrom_region, region_start, region_end):
         """
-        Makes and arc connecting two points on a linear scale representing
+        Makes an arc connecting two points on a linear scale representing
         interactions between Hi-C bins.
+        Or a diamong or a triangle highlighting interactions.
+        Or a square.
         :param ax: matplotlib axis
-        :param label_ax: matplotlib axis for labels
         """
         self.max_height = 0
         count = 0
@@ -172,9 +201,16 @@ file_type = {TRACK_TYPE}
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
         for idx, interval in enumerate(arcs_in_region):
-            # skip intervals whose start and end are outside the plotted region
-            if interval.begin < region_start and interval.end > region_end:
-                continue
+            # If region2 is defined skip intervals which does not overlap region2:
+            if self.properties['region2'] is not None:
+                start2 = interval.data[2]
+                end2 = interval.data[3]
+                if start2 > self.region2[2] or end2 < self.region2[1]:
+                    continue
+            else:
+                # skip intervals whose start and end are outside the plotted region
+                if interval.begin < region_start and interval.end > region_end:
+                    continue
 
             if self.properties['line_width'] is not None:
                 self.line_width = float(self.properties['line_width'])
@@ -185,26 +221,41 @@ file_type = {TRACK_TYPE}
                 self.plot_triangles(ax, interval)
             elif self.properties['links_type'] == 'loops':
                 self.plot_loops(ax, interval.data)
+            elif self.properties['links_type'] == 'squares':
+                self.plot_squares(ax, interval.data)
             else:
                 self.plot_arcs(ax, interval)
 
             count += 1
 
-        # the arc height is equal to the radius, the track height is the largest
-        # radius plotted plus an small increase to avoid cropping of the arcs
-        self.max_height *= 1.1
-        if self.properties['ylim'] is None:
-            ymax = self.max_height
-        else:
-            if self.properties['compact_arcs_level'] == '1':
-                ymax = np.sqrt(self.properties['ylim'])
-            else:
-                ymax = self.properties['ylim']
         self.log.debug(f"{count} were links plotted")
-        if self.properties['orientation'] == 'inverted':
-            ax.set_ylim(ymax, -1)
-        else:
-            ax.set_ylim(-1, ymax)
+        if self.properties['overlay_previous'] != 'share-y':
+            if self.properties['links_type'] == 'squares':
+                if self.properties['region2'] is None:
+                    region_start_y = region_start
+                    region_end_y = region_end
+                else:
+                    region_start_y = self.region2[1]
+                    region_end_y = self.region2[2]
+                if self.properties['orientation'] == 'inverted':
+                    ax.set_ylim(region_start_y, region_end_y)
+                else:
+                    ax.set_ylim(region_end_y, region_start_y)
+            else:
+                # the arc height is equal to the radius, the track height is the largest
+                # radius plotted plus an small increase to avoid cropping of the arcs
+                self.max_height *= 1.1
+                if self.properties['ylim'] is None:
+                    ymax = self.max_height
+                else:
+                    if self.properties['compact_arcs_level'] == '1':
+                        ymax = np.sqrt(self.properties['ylim'])
+                    else:
+                        ymax = self.properties['ylim']
+                if self.properties['orientation'] == 'inverted':
+                    ax.set_ylim(ymax, -1)
+                else:
+                    ax.set_ylim(-1, ymax)
 
     def plot_y_axis(self, axis, plot_ax):
         if self.colormap is not None and self.properties['overlay_previous'] == 'no':
@@ -299,6 +350,36 @@ file_type = {TRACK_TYPE}
         if y2 > self.max_height:
             self.max_height = y2
 
+    def plot_squares(self, ax, loop):
+        """
+        2->  "  " <- 1
+        3->  "  " <- 0
+        """
+        # loop is start1, end1, start2, end2, score
+        x0 = loop[1]
+        y0 = loop[2]
+
+        x1 = x0
+        y1 = loop[3]
+
+        x2 = loop[0]
+        y2 = y1
+
+        x3 = x2
+        y3 = y0
+
+        if self.colormap:
+            # translate score field
+            # into a color
+            rgb = self.colormap.to_rgba(loop[4])
+        else:
+            rgb = self.properties['color']
+        rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
+                            facecolor='none', edgecolor=rgb,
+                            linewidth=self.line_width,
+                            ls=self.properties['line_style'])
+        ax.add_artist(rectangle)
+
     def process_link_file(self, plot_regions):
         # the file format expected is similar to file format of links in
         # circos:
@@ -334,8 +415,26 @@ file_type = {TRACK_TYPE}
                                  f'chrom2, start2, end2\nError: {detail}\n'
                                  f' in line\n {line}')
             if chrom1 != chrom2:
-                self.log.warning(f"Only links in same chromosome are used. Skipping line\n{line}\n")
-                continue
+                if self.properties['region2'] is None:
+                    self.log.warning(f"Only links in same chromosome are used. Skipping line\n{line}\n")
+                    continue
+                else:
+                    # I keep if chrom1 or chrom2 matches the region2
+                    # And store with chrom2 corresponding to region2
+                    possible_chrom_region2 = [self.region2[0], change_chrom_names(self.region2[0])]
+                    if chrom1 in possible_chrom_region2:
+                        is_trans = True
+                        # I switch:
+                        chrom1, chrom2 = chrom2, chrom1
+                        start1, start2 = start2, start1
+                        end1, end2 = end2, end1
+                    elif chrom2 in possible_chrom_region2:
+                        is_trans = True
+                    else:
+                        self.log.warning(f"Only links with a chromosome matching region2 are used. Skipping line\n{line}\n")
+                        continue
+            else:
+                is_trans = False
 
             try:
                 score = line.strip().split('\t')[6]
@@ -371,11 +470,9 @@ file_type = {TRACK_TYPE}
 
             if chrom1 not in interval_tree:
                 interval_tree[chrom1] = IntervalTree()
-
-            if start2 < start1:
+            if start2 < start1 and not is_trans:
                 start1, start2 = start2, start1
                 end1, end2 = end2, end1
-
             if self.properties['use_middle']:
                 mid1 = (start1 + end1) / 2
                 mid2 = (start2 + end2) / 2
