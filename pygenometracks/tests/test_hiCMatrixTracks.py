@@ -806,15 +806,15 @@ def test_plot_tracks_with_hic_one_interaction_diag():
     ini_file = os.path.join(ROOT, 'browser_tracks_hic_one_interaction_diag_h5.ini')
     regions = ['chrY:0-1000000', 'chrY:130000000-131000000']
     for region in regions:
-        expected_file = os.path.join(ROOT, 'master_plot_hic_one_interaction_diag_' +
-                                     region.replace(':', '-') + '.png')
+        expected_file = os.path.join(ROOT, 'master_plot_hic_one_interaction_diag_'
+                                     + region.replace(':', '-') + '.png')
 
         args = f"--tracks {ini_file} --region {region} "\
             "--trackLabelFraction 0.23 --width 38 "\
             f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                             outfile.name, tolerance)
         assert res is None, res
 
         os.remove(outfile.name)
