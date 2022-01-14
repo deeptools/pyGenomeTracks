@@ -24,12 +24,8 @@ jobs:
   - bash: |
       conda config --set always_yes yes --set changeps1 no
       conda info -a
-      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements.txt
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI.txt
       source activate pygenometracks
-      conda install --yes -c conda-forge -c bioconda pytest flake8 pytest-xdist pytest-forked
-      conda install --yes -c conda-forge -c bioconda nose
-      conda install --yes pathlib
-      conda install --yes -c defaults -c conda-forge -c bioconda configparser
       python setup.py install
     displayName: installing dependencies
   - script: |
@@ -62,12 +58,8 @@ jobs:
   - bash: |
       conda config --set always_yes yes --set changeps1 no
       conda info -a
-      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements.txt
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI.txt
       source activate pygenometracks
-      conda install --yes -c conda-forge -c bioconda pytest flake8 pytest-xdist pytest-forked
-      conda install --yes -c conda-forge -c bioconda nose
-      conda install --yes pathlib
-      conda install --yes -c defaults -c conda-forge -c bioconda configparser
       python setup.py install
     displayName: installing dependencies
   - script: |
