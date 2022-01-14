@@ -8,4 +8,14 @@ pysam >=0.14
 gffutils >=0.9
 pybedtools >=0.8.1
 tqdm >=4.20
-
+# Below are dependencies for tests
+pytest
+pytest-xdist
+pytest-forked
+flake8
+nose
+pathlib
+configparser
+ghostscript
+coverage
+coverage-badge
