@@ -40,7 +40,7 @@ jobs:
 - job: 'OSX'
   timeoutInMinutes: 0
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-11'
   strategy:
     matrix:
       Python36:
