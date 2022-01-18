@@ -14,22 +14,22 @@ jobs:
         matplotlib.version: '3.1.1'
       Python36HighMatplotlib:
         python.version: '3.6'
-        matplotlib.version: '3.3.4'
+        matplotlib.version: '3.5.1'
       Python37LowMatplotlib:
         python.version: '3.7'
         matplotlib.version: '3.1.1'
       Python37HighMatplotlib:
         python.version: '3.7'
-        matplotlib.version: '3.4.3'
+        matplotlib.version: '3.5.1'
       Python38LowMatplotlib:
         python.version: '3.8'
         matplotlib.version: '3.1.1'
       Python38HighMatplotlib:
         python.version: '3.8'
-        matplotlib.version: '3.4.3'
+        matplotlib.version: '3.5.1'
       Python39HighMatplotlib:
         python.version: '3.9'
-        matplotlib.version: '3.4.3'
+        matplotlib.version: '3.5.1'
 
   steps:
   - bash: |
@@ -64,21 +64,21 @@ jobs:
         matplotlib.version: '3.1.1'
       Python36HighMatplotlib:
         python.version: '3.6'
-        matplotlib.version: '3.3.4'
+        matplotlib.version: '3.5.1'
       Python37LowMatplotlib:
         python.version: '3.7'
         matplotlib.version: '3.1.1'
       Python37HighMatplotlib:
         python.version: '3.7'
-        matplotlib.version: '3.4.3'
+        matplotlib.version: '3.5.1'
       Python38LowMatplotlib:
         python.version: '3.8'
       Python38HighMatplotlib:
         python.version: '3.8'
-        matplotlib.version: '3.4.3'
+        matplotlib.version: '3.5.1'
       Python39HighMatplotlib:
         python.version: '3.9'
-        matplotlib.version: '3.4.3'
+        matplotlib.version: '3.5.1'
 
   steps:
   - bash: |
