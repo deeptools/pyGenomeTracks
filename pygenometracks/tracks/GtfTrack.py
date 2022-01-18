@@ -22,6 +22,10 @@ class GtfTrack(BedTrack):
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
 # merge_transcripts = true
+# Sometimes merging transcripts without merging overlapping
+# exons may give unexpected output especially when
+# multiple 3' exons overlap. We recommand to use:
+# merge_overlapping_exons = true
 # You can change the color of coding sequences by:
 color = darkblue
 # height of track in cm
@@ -67,6 +71,8 @@ fontsize = 10
 # If you want to display the name of the gene which goes over the plotted
 # region in the right margin put:
 #labels_in_margin = true
+# If you want to use italic for your labels:
+#fontstyle = italic
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
@@ -78,6 +84,8 @@ fontsize = 10
 # as well as the proportion between their height and the one of coding
 # (by default they are the same height):
 #height_utr = 1
+# if you use flybase or UCSC style, you can choose the color of the backbone
+#color_backbone = red
 # By default, for oriented intervals in flybase style,
 # or bed files with less than 12 columns, the arrowhead is added
 # outside of the interval.
@@ -99,28 +107,34 @@ file_type = {TRACK_TYPE}
                            'max_labels': 60,
                            'prefered_name': 'transcript_name',
                            'merge_transcripts': False,
+                           'merge_overlapping_exons': False,
                            'global_max_row': False,
                            'gene_rows': None,
                            'arrow_interval': 2,
                            'arrowhead_included': False,
                            'color_utr': 'grey',
+                           'color_backbone': 'black',
                            'height_utr': 1,
                            'arrow_length': None,
                            'region': None,  # Cannot be set manually but is set by tracksClass
                            'all_labels_inside': False,
-                           'labels_in_margin': False}
+                           'labels_in_margin': False,
+                           'fontstyle': 'normal'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'display': DISPLAY_BED_SYNONYMOUS}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'style': ['flybase', 'UCSC', 'tssarrow'],
-                           'display': DISPLAY_BED_VALID}
-    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts', 'global_max_row',
+                           'display': DISPLAY_BED_VALID,
+                           'fontstyle': ['normal', 'italic', 'oblique']}
+    BOOLEAN_PROPERTIES = ['labels', 'merge_transcripts',
+                          'merge_overlapping_exons', 'global_max_row',
                           'arrowhead_included', 'all_labels_inside',
                           'labels_in_margin']
     STRING_PROPERTIES = ['prefered_name', 'file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
-                         'color_utr', 'display']
+                         'color_utr', 'display', 'fontstyle',
+                         'color_backbone']
     FLOAT_PROPERTIES = {'fontsize': [0, np.inf],
                         'line_width': [0, np.inf],
                         'height': [0, np.inf],
@@ -140,10 +154,10 @@ file_type = {TRACK_TYPE}
                            bed_rgb_possible=False,
                            default_value_is_colormap=False)
 
-        # check if border_color and color_utr are colors
+        # check if border_color and color_utr and color_backbone are colors
         # if they are part of self.properties
-        # (for example, TADsTracks do not have color_utr)
-        for param in [p for p in ['border_color', 'color_utr']
+        # (for example, TADsTracks do not have color_utr nor color_backbone)
+        for param in [p for p in ['border_color', 'color_utr', 'color_backbone']
                       if p in self.properties]:
             self.process_color(param, bed_rgb_possible=False)
 
@@ -160,6 +174,7 @@ file_type = {TRACK_TYPE}
 
         bed_file_h = ReadGtf(file_to_open,
                              self.properties['prefered_name'],
-                             self.properties['merge_transcripts'])
+                             self.properties['merge_transcripts'],
+                             self.properties['merge_overlapping_exons'])
         total_length = bed_file_h.length
         return(bed_file_h, total_length)
