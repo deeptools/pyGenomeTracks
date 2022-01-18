@@ -461,7 +461,7 @@ def test_plot_tracks_with_cool_region():
 
 
 def test_plot_hic_logmlog():
-    my_tolerence = 17
+    my_tolerance = 17
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "browser_tracks_hic_log-log.ini")
@@ -472,7 +472,7 @@ def test_plot_hic_logmlog():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, my_tolerence)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
@@ -480,7 +480,7 @@ def test_plot_hic_logmlog():
 
 def test_plot_tracks_with_hic_rasterize_height_2chr():
     extension = '.pdf'
-
+    my_tolerance = 17
     outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "browser_tracks_hic_rasterize_height.ini")
@@ -503,7 +503,7 @@ def test_plot_tracks_with_hic_rasterize_height_2chr():
         os.system(f'cp {expected_file} {new_expected_file.name}')
         expected_file = new_expected_file.name
         res = compare_images(expected_file,
-                             output_file, tolerance)
+                             output_file, my_tolerance)
         assert res is None, res
 
         os.remove(output_file)
