@@ -82,6 +82,8 @@ fontsize = 10
 # If you want to display the name of the gene which goes over the plotted
 # region in the right margin put:
 #labels_in_margin = true
+# If you want to use italic for your labels:
+#fontstyle = italic
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
@@ -93,6 +95,8 @@ fontsize = 10
 # as well as the proportion between their height and the one of coding
 # (by default they are the same height):
 #height_utr = 1
+# if you use flybase or UCSC style, you can choose the color of the backbone
+#color_backbone = red
 # By default, for oriented intervals in flybase style,
 # or bed files with less than 12 columns, the arrowhead is added
 # outside of the interval.
@@ -115,6 +119,7 @@ file_type = {TRACK_TYPE}
                            # To remove in next 1.0
                            'prefered_name': 'transcript_name',
                            'merge_transcripts': False,
+                           'merge_overlapping_exons': False,
                            # end to remove
                            'global_max_row': False,
                            'gene_rows': None,
@@ -123,27 +128,31 @@ file_type = {TRACK_TYPE}
                            'arrow_interval': 2,
                            'arrowhead_included': False,
                            'color_utr': 'grey',
+                           'color_backbone': 'black',
                            'height_utr': 1,
                            'region': None,  # Cannot be set manually but is set by tracksClass
                            'arrow_length': None,
                            'all_labels_inside': False,
-                           'labels_in_margin': False}
+                           'labels_in_margin': False,
+                           'fontstyle': 'normal'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
                              'display': DISPLAY_BED_SYNONYMOUS}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            'style': ['flybase', 'UCSC', 'tssarrow'],
-                           'display': DISPLAY_BED_VALID}
+                           'display': DISPLAY_BED_VALID,
+                           'fontstyle': ['normal', 'italic', 'oblique']}
     BOOLEAN_PROPERTIES = ['labels', 'global_max_row',
                           'arrowhead_included', 'all_labels_inside',
                           'labels_in_margin',
                           # To remove in next 1.0
-                          'merge_transcripts']
+                          'merge_transcripts', 'merge_overlapping_exons']
     STRING_PROPERTIES = ['file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
-                         'color_utr', 'display',
+                         'color_utr', 'display', 'fontstyle',
+                         'color_backbone',
                          # To remove in next 1.0
                          'prefered_name']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
@@ -189,10 +198,10 @@ file_type = {TRACK_TYPE}
             self.colormap = self.properties['color']
             self.parametersUsingColormap.append('color')
 
-        # check if border_color and color_utr are colors
+        # check if border_color and color_utr and color_backbone are colors
         # if they are part of self.properties
-        # (for example, TADsTracks do not have color_utr)
-        for param in [p for p in ['border_color', 'color_utr']
+        # (for example, TADsTracks do not have color_utr nor color_backbone)
+        for param in [p for p in ['border_color', 'color_utr', 'color_backbone']
                       if p in self.properties]:
             is_colormap = self.process_color(param, colormap_possible=True,
                                              bed_rgb_possible=True)
@@ -236,7 +245,8 @@ file_type = {TRACK_TYPE}
                              " use file_type = gtf.\n")
             bed_file_h = ReadGtf(file_to_open,
                                  self.properties['prefered_name'],
-                                 self.properties['merge_transcripts'])
+                                 self.properties['merge_transcripts'],
+                                 self.properties['merge_overlapping_exons'])
             total_length = bed_file_h.length
         else:
             # end of remove
@@ -541,18 +551,21 @@ file_type = {TRACK_TYPE}
                     ax.text(add_to_left(bed_left, self.small_relative),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='right',
-                            verticalalignment='center', fontproperties=self.fp)
+                            verticalalignment='center', fontproperties=self.fp,
+                            fontstyle=self.properties['fontstyle'])
                 elif bed_right > start_region and bed_right < end_region:
                     ax.text(add_to_right(bed_right, self.small_relative),
                             ypos + 0.5,
                             bed.name, horizontalalignment='left',
-                            verticalalignment='center', fontproperties=self.fp)
+                            verticalalignment='center', fontproperties=self.fp,
+                            fontstyle=self.properties['fontstyle'])
                 elif self.properties['labels_in_margin'] \
                         and (bed_right == end_region or is_right_to(bed_right, end_region)):
                     ax.text(add_to_right(ax.get_xlim()[1], self.small_relative),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='left',
-                            verticalalignment='center', fontproperties=self.fp)
+                            verticalalignment='center', fontproperties=self.fp,
+                            fontstyle=self.properties['fontstyle'])
 
             if self.counter == 0:
                 self.log.warning("*Warning* No intervals were found for file"
@@ -666,8 +679,9 @@ file_type = {TRACK_TYPE}
             return
         half_height = 1 / 2
         # draw 'backbone', a line from the start until the end of the gene
+        rgb_backbone = self.get_rgb(bed, param='color_backbone', default='black')
         ax.plot([bed.start, bed.end], [ypos + half_height, ypos + half_height],
-                'black', linewidth=linewidth, zorder=-1)
+                color=rgb_backbone, linewidth=linewidth, zorder=-1)
 
         # get start, end of all the blocks
         positions = self._split_bed_to_blocks(bed)
@@ -831,7 +845,8 @@ file_type = {TRACK_TYPE}
             return
 
         # draw 'backbone', a line from the start until the end of the gene
-        ax.plot([bed.start, bed.end], [ypos + 1 / 2, ypos + 1 / 2], 'black', linewidth=linewidth, zorder=-1)
+        rgb_backbone = self.get_rgb(bed, param='color_backbone', default='black')
+        ax.plot([bed.start, bed.end], [ypos + 1 / 2, ypos + 1 / 2], color=rgb_backbone, linewidth=linewidth, zorder=-1)
 
         for idx in range(0, bed.block_count):
             x0 = bed.start + bed.block_starts[idx]
@@ -896,7 +911,7 @@ file_type = {TRACK_TYPE}
                     pos = pos + intron_center - pos.mean()
                     # plot them
                     for xpos in pos:
-                        self._plot_small_arrow(ax, xpos, ypos, bed.strand)
+                        self._plot_small_arrow(ax, xpos, ypos, bed.strand, bed)
 
     def draw_gene_tssarrow_style(self, ax, bed, ypos, rgb, linewidth):
         """
@@ -1011,7 +1026,7 @@ file_type = {TRACK_TYPE}
         else:
             ax.set_ylim(0, ymax)
 
-    def _plot_small_arrow(self, ax, xpos, ypos, strand):
+    def _plot_small_arrow(self, ax, xpos, ypos, strand, bed):
         """
         Draws a broken line with 2 parts:
         For strand = +:  > For strand = -: <
@@ -1034,4 +1049,6 @@ file_type = {TRACK_TYPE}
         ydata = [ypos + 1 / 4,
                  ypos + 1 / 2,
                  ypos + 3 / 4]
-        ax.add_line(Line2D(xdata, ydata, color='black', linewidth=self.properties['line_width']))
+
+        rgb_backbone = self.get_rgb(bed, param='color_backbone', default='black')
+        ax.add_line(Line2D(xdata, ydata, color=rgb_backbone, linewidth=self.properties['line_width']))
