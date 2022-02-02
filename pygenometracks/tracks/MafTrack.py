@@ -345,15 +345,15 @@ file_type = {TRACK_TYPE}
                         last_end = None
                         # This might need some improvement
                         for i, (lr, la) in enumerate(zip(ref_seq_no_gap, c_seq_no_gap),
-                                                    start=ref.get_forward_strand_start()):
+                                                     start=ref.get_forward_strand_start()):
                             cur_status = self.compare_letters(lr, la)
                             if cur_status != last_status:
                                 if last_status is not None:
                                     # I plot it:
                                     ax.add_patch(Rectangle((last_end, ypos),
-                                                        i - last_end, 1,
-                                                        edgecolor="none",
-                                                        facecolor=self.properties[f'color_{last_status}']))
+                                                           i - last_end, 1,
+                                                           edgecolor="none",
+                                                           facecolor=self.properties[f'color_{last_status}']))
                                     valid_blocks += 1
                                 last_end = i
                                 last_status = cur_status

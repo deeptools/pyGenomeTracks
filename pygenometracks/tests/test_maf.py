@@ -208,7 +208,7 @@ def test_first_maf_seq_zoom_change_height():
 
     for height in [2, 10]:
         outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
-                                    delete=False)
+                                     delete=False)
         expected_file = os.path.join(ROOT, f'master_first_maf_seq_zoom_h{height}.png')
         args = f"--tracks {ini_file} --region {region} "\
             "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
@@ -216,7 +216,7 @@ def test_first_maf_seq_zoom_change_height():
             f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                             outfile.name, tolerance)
         assert res is None, res
         os.remove(outfile.name)
 
@@ -229,14 +229,14 @@ def test_second_maf_withe():
                                 'chr2:74,075,687-74,075,808'],
                                start=1):
         outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
-                                    delete=False)
+                                     delete=False)
         expected_file = os.path.join(ROOT, f'master_maf_withe_region{i}.png')
         args = f"--tracks {ini_file} --region {region} "\
             "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
             f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                             outfile.name, tolerance)
         assert res is None, res
         os.remove(outfile.name)
     # Remove the index file:
