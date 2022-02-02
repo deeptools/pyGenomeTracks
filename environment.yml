@@ -17,5 +17,6 @@ dependencies:
     - gffutils >=0.9
     - pybedtools >=0.8.1
     - tqdm >=4.20
+    - bx-python >=0.8.13
     - pip:
         - "git+https://github.com/deeptools/pyGenomeTracks.git"
