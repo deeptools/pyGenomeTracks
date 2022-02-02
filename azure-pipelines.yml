@@ -1,0 +1,81 @@
+pr:
+  autoCancel: true
+  
+jobs:
+
+- job: 'Linux'
+  timeoutInMinutes: 0
+  pool:
+    vmImage: 'ubuntu-latest'
+  strategy:
+    matrix:
+      Python36:
+        python.version: '3.6'
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
+      Python39:
+        python.version: '3.9'
+
+  steps:
+  - bash: |
+      echo "##vso[task.prependpath]$CONDA/bin"
+      hash -r
+    displayName: Add conda to PATH
+  - bash: |
+      conda config --set always_yes yes --set changeps1 no
+      conda info -a
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI.txt
+      source activate pygenometracks
+      python setup.py install
+    displayName: installing dependencies
+  - script: |
+      source activate pygenometracks
+      flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503
+    displayName: linting
+  - script: |
+      source activate pygenometracks
+      py.test pygenometracks --doctest-modules -n 4
+    displayName: pytest
+
+- job: 'OSX'
+  timeoutInMinutes: 0
+  pool:
+    vmImage: 'macOS-11'
+  strategy:
+    matrix:
+      Python36:
+        python.version: '3.6'
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
+      Python39:
+        python.version: '3.9'
+
+  steps:
+  - bash: |
+      echo "##vso[task.prependpath]$CONDA/bin"
+      hash -r
+    displayName: Add conda to PATH
+
+  # On Hosted macOS, the agent user doesn't have ownership of Miniconda's installation directory/
+  # We need to take ownership if we want to update conda or install packages globally
+  - bash: sudo chown -R $USER $CONDA
+    displayName: Take ownership of conda installation
+  - bash: |
+      conda config --set always_yes yes --set changeps1 no
+      conda info -a
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI.txt
+      source activate pygenometracks
+      python setup.py install
+    displayName: installing dependencies
+  - script: |
+      source activate pygenometracks
+      flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503
+    displayName: linting
+  - script: |
+      source activate pygenometracks
+      py.test pygenometracks --doctest-modules -n 4
+    displayName: pytest

@@ -26,7 +26,7 @@ def parse_arguments(args=None):
                         help='File to save the tracks',
                         metavar='output file',
                         type=argparse.FileType('w'),
-                        required=False)
+                        required=True)
 
     parser.add_argument('--version', action='version',
                         version=f'%(prog)s {__version__}')

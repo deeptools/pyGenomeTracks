@@ -9,3 +9,14 @@ gffutils >=0.9
 pybedtools >=0.8.1
 tqdm >=4.20
 biopython >=1.69
+# Below are dependencies for tests
+pytest
+pytest-xdist
+pytest-forked
+flake8
+nose
+pathlib
+configparser
+ghostscript
+coverage
+coverage-badge
