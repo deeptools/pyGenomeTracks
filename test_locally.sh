@@ -2,7 +2,7 @@
 
 source $(dirname $(dirname $(which conda)))/etc/profile.d/conda.sh
 
-for TRAVIS_PYTHON_VERSION in 3.6 3.7 3.8 3.9; do
+for TRAVIS_PYTHON_VERSION in 3.7 3.8 3.9; do
     conda create -n pgt_test_${TRAVIS_PYTHON_VERSION} --yes -c bioconda -c conda-forge python=$TRAVIS_PYTHON_VERSION --file requirements_CI.txt
     conda activate pgt_test_${TRAVIS_PYTHON_VERSION}
     python setup.py install

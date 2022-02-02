@@ -167,7 +167,7 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 
 # For this test I need to fix the tolerence at 19 to make it work
-# On python3.6 3.7 and 3.8
+# On python 3.7 and 3.8
 # The only difference between outputs is the font width...
 def test_plot_tracks_bed_unusual_format():
 
