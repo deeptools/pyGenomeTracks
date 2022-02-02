@@ -144,7 +144,7 @@ def test_first_maf_seq_zoom():
     outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "first_maf_seq.ini")
-    region = "2:34705108-34705208"
+    region = "2:34705120-34705150"
     expected_file = os.path.join(ROOT, 'master_first_maf_seq_zoom.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
@@ -154,3 +154,22 @@ def test_first_maf_seq_zoom():
                          outfile.name, tolerance)
     assert res is None, res
     os.remove(outfile.name)
+
+def test_first_maf_seq_zoom_change_height():
+    extension = '.png'
+    ini_file = os.path.join(ROOT, "first_maf_seq.ini")
+    region = "2:34705120-34705150"
+
+    for height in [2, 10]:
+        outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                    delete=False)
+        expected_file = os.path.join(ROOT, f'master_first_maf_seq_zoom_h{height}.png')
+        args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+            f"--height {height} " \
+            f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                            outfile.name, tolerance)
+        assert res is None, res
+        os.remove(outfile.name)
