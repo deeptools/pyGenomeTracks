@@ -58,6 +58,51 @@ height = 3
 with open(os.path.join(ROOT, "first_maf_seq.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+
+# To get the second_maf:
+# wget https://hgdownload.soe.ucsc.edu/goldenPath/mm10/multiz60way/maf/chr2.maf.gz
+# gunzip -k chr2.maf.gz
+# maf_build_index.py chr2.maf -s mm10
+# echo -e "74071500\t74077028" > isl2.txt
+# echo -e "74060473\t74082287" > isl2.txt
+# maf_extract_ranges_indexed.py chr2.maf -s mm10.chr2 < isl2.txt > mm10_chr2_isl2.maf
+# maf_limit_to_species.py mm10,rn5,hetGla2,hg19,susScr3,felCat5,ailMel1,pteVam1,loxAfr3,triMan1,ornAna1,galGal4,xenTro3,latCha1,fr3,danRer7 < mm10_chr2_isl2.maf > mm10_chr2_isl2_lessspe.maf
+# mouse rat naked_mole_rat human pig cat panda megabat elephant manatee platypus chicken x_tropicalis coelacanth fugu zebrafish
+
+browser_tracks = """
+[maf]
+file = mm10_chr2_isl2_lessspe.maf
+reference = mm10
+title = default
+height = 3
+
+[spacer]
+
+[maf]
+file = mm10_chr2_isl2_lessspe.maf
+reference = mm10
+title = choose order Platypus Elephant Megabat
+species_order = ornAna1 loxAfr3 pteVam1
+species_labels = Platypus Elephant Megatbat
+height = 3
+
+[spacer]
+
+[maf]
+file = mm10_chr2_isl2_lessspe.maf
+reference = mm10
+title = species_order_only Platypus Elephant Megabat and show seq
+species_order = ornAna1 loxAfr3 pteVam1
+species_labels = Platypus Elephant Megabat
+species_order_only = true
+display_ref_seq = true
+height = 5
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "maf_withe.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -155,6 +200,7 @@ def test_first_maf_seq_zoom():
     assert res is None, res
     os.remove(outfile.name)
 
+
 def test_first_maf_seq_zoom_change_height():
     extension = '.png'
     ini_file = os.path.join(ROOT, "first_maf_seq.ini")
@@ -173,3 +219,25 @@ def test_first_maf_seq_zoom_change_height():
                             outfile.name, tolerance)
         assert res is None, res
         os.remove(outfile.name)
+
+
+def test_second_maf_withe():
+    extension = '.png'
+    ini_file = os.path.join(ROOT, "maf_withe.ini")
+
+    for i, region in enumerate(['chr2:74,070,244-74,071,016',
+                                'chr2:74,075,687-74,075,808'],
+                               start=1):
+        outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                    delete=False)
+        expected_file = os.path.join(ROOT, f'master_maf_withe_region{i}.png')
+        args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+            f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                            outfile.name, tolerance)
+        assert res is None, res
+        os.remove(outfile.name)
+    # Remove the index file:
+    os.remove(os.path.join(ROOT, 'mm10_chr2_isl2_lessspe.maf.index'))

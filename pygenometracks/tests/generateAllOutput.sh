@@ -133,3 +133,5 @@ bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:347
 bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:34705120-34705150 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_first_maf_seq_zoom.png
 bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:34705120-34705150 --trackLabelFraction 0.2 --width 38 --dpi 130 --height 2 -o pygenometracks/tests/test_data/master_first_maf_seq_zoom_h2.png
 bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:34705120-34705150 --trackLabelFraction 0.2 --width 38 --dpi 130 --height 10 -o pygenometracks/tests/test_data/master_first_maf_seq_zoom_h10.png
+bin/pgt --tracks pygenometracks/tests/test_data/maf_withe.ini --region chr2:74,070,244-74,071,016 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_maf_withe_region1.png
+bin/pgt --tracks pygenometracks/tests/test_data/maf_withe.ini --region chr2:74,075,687-74,075,808 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_maf_withe_region2.png
