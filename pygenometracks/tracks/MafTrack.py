@@ -35,7 +35,7 @@ class MafTrack(GenomeTrack):
 #color_identical = black
 #color_mismatch = grey
 #color_gap = lightgrey
-# not used for the moment: line_width
+# Set line_width
 #line_width = 0.5
 # optional: the species order
 #species_order = hg18 panTro2
@@ -336,33 +336,73 @@ file_type = {TRACK_TYPE}
                         # self.log.debug(f"self.max_y {self.max_y}")
                     # Get the position:
                     ypos = self.species_y[assembly] * self.row_scale
-                    # Get the sequence to compare with ref:
-                    c_seq = c.text.upper()
-                    c_seq_no_gap = ''.join([l for i, l in enumerate(c_seq)
-                                            if i not in gaps])
-                    last_status = None
-                    last_end = None
-                    # This might need some improvement
-                    for i, (lr, la) in enumerate(zip(ref_seq_no_gap, c_seq_no_gap),
-                                                 start=ref.get_forward_strand_start()):
-                        cur_status = self.compare_letters(lr, la)
-                        if cur_status != last_status:
-                            if last_status is not None:
-                                # I plot it:
-                                ax.add_patch(Rectangle((last_end, ypos),
-                                                       i - last_end, 1,
-                                                       edgecolor="none",
-                                                       facecolor=self.properties[f'color_{last_status}']))
-                                valid_blocks += 1
-                            last_end = i
-                            last_status = cur_status
-                    if last_status is not None:
-                        # I plot it:
-                        ax.add_patch(Rectangle((last_end, ypos),
-                                               ref.get_forward_strand_end() - last_end, 1,
-                                               edgecolor="none",
-                                               facecolor=self.properties[f'color_{last_status}']))
-                        valid_blocks += 1
+                    if not c.empty:
+                        # Get the sequence to compare with ref:
+                        c_seq = c.text.upper()
+                        c_seq_no_gap = ''.join([l for i, l in enumerate(c_seq)
+                                                if i not in gaps])
+                        last_status = None
+                        last_end = None
+                        # This might need some improvement
+                        for i, (lr, la) in enumerate(zip(ref_seq_no_gap, c_seq_no_gap),
+                                                    start=ref.get_forward_strand_start()):
+                            cur_status = self.compare_letters(lr, la)
+                            if cur_status != last_status:
+                                if last_status is not None:
+                                    # I plot it:
+                                    ax.add_patch(Rectangle((last_end, ypos),
+                                                        i - last_end, 1,
+                                                        edgecolor="none",
+                                                        facecolor=self.properties[f'color_{last_status}']))
+                                    valid_blocks += 1
+                                last_end = i
+                                last_status = cur_status
+                        if last_status is not None:
+                            # I plot it:
+                            ax.add_patch(Rectangle((last_end, ypos),
+                                                   ref.get_forward_strand_end() - last_end, 1,
+                                                   edgecolor="none",
+                                                   facecolor=self.properties[f'color_{last_status}']))
+                            valid_blocks += 1
+                    else:
+                        if c.synteny_empty == "C":
+                            # the sequence before and after is contiguous
+                            # implying that this region was either deleted
+                            # in the source or inserted in the reference sequence.
+                            # The browser draws a single line or a "-" in base mode in these blocks.
+                            ax.plot([ref.get_forward_strand_start(), ref.get_forward_strand_end()],
+                                    [ypos + 0.5, ypos + 0.5], color="black", linewidth=self.properties['line_width'])
+                        elif c.synteny_empty == "I":
+                            # there are non-aligning bases in the source species
+                            # between chained alignment blocks before and
+                            # after this block.
+                            # The browser shows a double line or "=" in base mode.
+                            ax.plot([ref.get_forward_strand_start(), ref.get_forward_strand_end()],
+                                    [ypos + 0.3, ypos + 0.3], color="black", linewidth=self.properties['line_width'])
+                            ax.plot([ref.get_forward_strand_start(), ref.get_forward_strand_end()],
+                                    [ypos + 0.7, ypos + 0.7], color="black", linewidth=self.properties['line_width'])
+                        elif c.synteny_empty == "M":
+                            # there are non-aligning bases in the source and
+                            # more than 90% of them are Ns in the source.
+                            # The browser shows a pale yellow bar.
+                            ax.add_patch(Rectangle((ref.get_forward_strand_start(), ypos),
+                                                   ref.size, 1,
+                                                   edgecolor="none",
+                                                   facecolor="lightyellow"))
+                        elif c.synteny_empty == "n":
+                            # there are non-aligning bases in the source
+                            # and the next aligning block starts
+                            # in a new chromosome or scaffold
+                            # that is bridged by a chain between
+                            # still other blocks.
+                            # The browser shows either a single line
+                            # or a double line based on how many bases
+                            # are in the gap between the bridging alignments.
+                            # LD: My observation is that nothing is plotted
+                            continue
+                        else:
+                            self.log.warning(f"Unknown synteny empty code: {c.synteny_empty}"
+                                             f" for {assembly}. Nothing is plotted.")
         if valid_blocks == 0:
             self.log.warning("No valid blocks were found in file "
                              f"{self.properties['file']} for region"
