@@ -174,7 +174,7 @@ def file_to_intervaltree(file_name, plot_regions=None):
         valid_intervals += 1
 
     if valid_intervals == 0:
-        if file_to_open == file_name:
+        if file_to_open != file_name:
             suffix = " after intersection with the plotted region"
         else:
             suffix = ""
