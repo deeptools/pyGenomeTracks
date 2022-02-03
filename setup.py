@@ -100,7 +100,8 @@ install_requires_py = ["numpy >=1.16",
                        "pytest",
                        "gffutils >=0.9",
                        "pybedtools >=0.8.1",
-                       "tqdm >=4.20"
+                       "tqdm >=4.20",
+                       "bx-python >=0.8.13"
                        ]
 
 setup(
