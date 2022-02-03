@@ -677,6 +677,7 @@ type = vhighlight
 file = hoxd_genes_noGm_rgb.bed.gz
 type = vhighlight
 color = green
+alpha = 0.3
 
 [spacer]
 
@@ -684,6 +685,9 @@ color = green
 """
 with open(os.path.join(ROOT, "vhighlight.ini"), 'w') as fh:
     fh.write(browser_tracks)
+with open(os.path.join(ROOT, "vhighlight_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("bed\ntype = vhighlight",
+                                    "bed\ncolor = notvalid\nuseless = true\ntype = vhighlight"))
 
 browser_tracks = """
 [x-axis]
@@ -1104,12 +1108,33 @@ def test_plot_tracks_bed_different_UTR():
 
 
 def test_vhighlight():
+    for suf in ['', '_incorrect']:
+        ini_file = os.path.join(ROOT, f"vhighlight{suf}.ini")
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        region = "chr2:73,800,000-75,744,000"
+        expected_file = os.path.join(ROOT, 'master_vhighlight.png')
+        args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+            f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
+
+        os.remove(outfile.name)
+        # remove the incorrect ini file
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
+
+
+def test_vhighlight_chrX():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "vhighlight.ini")
-    region = "chr2:73,800,000-75,744,000"
-    expected_file = os.path.join(ROOT, 'master_vhighlight.png')
+    region = "chrX:0-1,000"
+    expected_file = os.path.join(ROOT, 'master_vhighlight_chrX.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
