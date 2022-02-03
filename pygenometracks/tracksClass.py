@@ -39,8 +39,6 @@ log.setLevel(logging.DEBUG)
 
 DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
-# proportion of width dedicated to (figure, legends)
-DEFAULT_WIDTH_RATIOS = (0.01, 0.90, 0.1)
 DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
 
 DEFAULT_VHIGHLIGHT_COLOR = 'yellow'
@@ -67,7 +65,7 @@ class PlotTracks(object):
 
     def __init__(self, tracks_file, fig_width=DEFAULT_FIGURE_WIDTH,
                  fig_height=None, fontsize=None, dpi=None,
-                 track_label_width=None,
+                 track_label_width=0.1,
                  plot_regions=None, plot_width=None):
         self.fig_width = fig_width
         self.fig_height = fig_height
@@ -87,12 +85,9 @@ class PlotTracks(object):
         # the track label width is the fraction of
         # the figure width that is used
         # for the track 'title' or label.
-        if track_label_width is None:
-            self.width_ratios = DEFAULT_WIDTH_RATIOS
-        else:
-            self.width_ratios = (0.01,
-                                 1 - track_label_width,
-                                 track_label_width)
+        self.width_ratios = (0.01,
+                             1 - track_label_width,
+                             track_label_width)
 
         # Process the width:
         if plot_width is not None:
