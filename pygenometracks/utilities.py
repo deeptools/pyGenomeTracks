@@ -39,22 +39,6 @@ def to_string(s):
     return s
 
 
-def to_bytes(s):
-    """
-    Like toString, but for functions requiring bytes in python3
-    """
-    assert(sys.version_info[0] != 2)
-#    if sys.version_info[0] == 2:
-#        return s
-    if isinstance(s, bytes):
-        return s
-    if isinstance(s, str):
-        return bytes(s, 'ascii')
-    if isinstance(s, list):
-        return [to_bytes(x) for x in s]
-    return s
-
-
 def opener(filename):
     """
     Determines if a file is compressed or not

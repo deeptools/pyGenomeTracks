@@ -167,8 +167,6 @@ file_type = {TRACK_TYPE}
                                  "This will generate an empty track!!\n")
                 return
 
-        chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
-
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
         for idx, interval in enumerate(arcs_in_region):

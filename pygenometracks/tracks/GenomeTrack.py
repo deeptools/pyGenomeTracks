@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .. utilities import to_string, to_bytes, InputError, transform
+from .. utilities import InputError, transform
 import logging
 import numpy as np
 from matplotlib import colors as mc
@@ -529,20 +529,6 @@ height = 2
             raise InputError(f"operation: {self.properties['operation']}"
                              " uses signs which are not allowed: "
                              f"{','.join(forbidden_signs)}.")
-
-    @staticmethod
-    def check_chrom_str_bytes(iteratable_obj, p_obj):
-        # determine type
-        if isinstance(p_obj, list) and len(p_obj) > 0:
-            type_ = type(p_obj[0])
-        else:
-            type_ = type(p_obj)
-        if not isinstance(type(next(iter(iteratable_obj))), type_):
-            if type(next(iter(iteratable_obj))) is str:
-                p_obj = to_string(p_obj)
-            elif type(next(iter(iteratable_obj))) in [bytes, np.bytes_]:
-                p_obj = to_bytes(p_obj)
-        return p_obj
 
     def plot_custom_cobar(self, axis, fraction=0.95):
         if self.properties.get('transform', 'no') in ['log', 'log1p']:

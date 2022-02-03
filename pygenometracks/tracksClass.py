@@ -322,7 +322,6 @@ class PlotTracks(object):
                             "No vertical lines will be "
                             "plotted!!\n")
                 return
-        chrom_region = GenomeTrack.check_chrom_str_bytes(self.vlines_intval_tree, chrom_region)
 
         for region in sorted(self.vlines_intval_tree[chrom_region][start_region - 10000:end_region + 10000]):
             vlines_list.append(region.begin)
@@ -361,7 +360,6 @@ class PlotTracks(object):
                                 f" {i}th file with vertical highlight."
                                 "\n")
                     return
-            chrom_region = GenomeTrack.check_chrom_str_bytes(int_tree, chrom_region)
 
             # Process the color:
             if 'color' not in properties:
