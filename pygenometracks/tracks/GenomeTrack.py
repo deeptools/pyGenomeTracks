@@ -141,33 +141,53 @@ height = 2
             else:
                 prefix = ""
             exponent = math.floor(np.log10(value))
-            sigfigs = max_signs - 1
             value_scien = value / 10 ** exponent
+            # Find the number of decimal values
+            # that would be possible to fit in
+            # max_signs
+            # At max it is max_signs - 1 because you need
+            # one sign before the '.'
+            sigfigs = max_signs - 1
             while sigfigs >= 0:
                 if np.abs(value_scien - np.round(value_scien, decimals=sigfigs)) < 1 * 10 ** (-max_signs + 1):
                     sigfigs -= 1
                 else:
+                    # We stop here
                     break
+            # We put back sigfigs to the value where it was correct:
             sigfigs += 1
             if exponent < 0:
-                if - exponent <= 3 or max_signs < 4:
+                # Writting scientific values would add:
+                # 'e' len(str(exponent))
+                # So occupy 1 + len(str(exponent))
+                # While writting not scientific would use:
+                # 0.xx (1 if -exponent is 1)
+                # 0.0xx (2 if -exponent is 2)...
+                # So if 1 + len(str(exponent)) >= -exponent
+                # It is better to write without scientific notation
+                # Also if the max_signs is below 1 + len(str(exponent)) + 1
+                # It is not possible to write in scientific notation
+                if 1 + len(str(exponent)) >= -exponent or max_signs < 1 + len(str(exponent)) + 1:
                     orderOfMagnitude = 0
                     suffix = ""
                     sigfigs = max(0, min(max_signs - 1, sigfigs - exponent))
                 else:
                     # Printing e exponent will take space
                     orderOfMagnitude = exponent
-                    sigfigs = min(sigfigs, max_signs - 4)
+                    sigfigs = min(sigfigs, max_signs - (1 + len(str(exponent)) + 1))
                     suffix = f"e{exponent}"
             elif exponent > 0:
+                # We prefer to write without scientific notation if possible
+                # We need exponent + 1 to write without scientific notation
                 if exponent <= (max_signs - 1):
                     orderOfMagnitude = 0
                     suffix = ""
                     sigfigs = max(0, sigfigs - exponent)
                 else:
                     # Printing e exponent will take space
+                    # 'e' len(str(exponent))
                     orderOfMagnitude = exponent
-                    sigfigs = min(sigfigs, max_signs - 3)
+                    sigfigs = min(sigfigs, max_signs - (1 + len(str(exponent)) + 1))
                     suffix = f"e{exponent}"
                     if sigfigs < 0:
                         raise InputError(f"I need max_signs above {original_max_signs} to display {value}")
@@ -277,7 +297,7 @@ height = 2
                 ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS,
                                              set_zero_max_value=max_abs_value / 1000) for v in original_values]
             except InputError:
-                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS,
+                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS + 1,
                                              set_zero_max_value=max_abs_value / 1000) for v in original_values]
 
         # The lower label should be verticalalignment='bottom'
@@ -456,7 +476,7 @@ height = 2
                     prepared_color_list = re.sub(" |\'|\"", "", self.properties[param][1:-1])
                     # We extract individual colors
                     match = block_no_comma_outside_parenthesis.findall(prepared_color_list)
-                    if match is not None:
+                    if len(match) != 0:
                         # We check the color which start with '(' are (r,g,b) with rgb as floats
                         if all([color_tuple.match(v) is not None
                                 for v in match if v[0] == '(']):
@@ -465,6 +485,7 @@ height = 2
                                 custom_colors = [tuple([float(v) for v in color_tuple.match(v).groups()])
                                                  if v[0] == '(' else v for v in match]
                             except ValueError:
+                                # This should never happen
                                 message = "some (r,g,b) values of the list could not be converted to float"
                             else:
                                 try:
@@ -473,10 +494,10 @@ height = 2
                                 except ValueError:
                                     message = "the list of color could not be converted to colormap"
                         else:
-                            message = "there is no color between brackets"
+                            message = "some colors starting with ( in the color" \
+                                      " list are not formatted (r,g,b) with r,g,b as float"
                     else:
-                        message = "some colors starting with ( in the color" \
-                                  " list are not formatted (r,g,b) with r,g,b as float"
+                        message = "there is nothing valid between brackets"
                 if message != "":
                     message = f" ({message})"
             else:
