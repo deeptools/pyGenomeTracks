@@ -227,6 +227,13 @@ max_labels = 600
 with open(os.path.join(ROOT, "bed_maxLab_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+with open(os.path.join(ROOT, "bed_maxLab_tracks_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("max_labels = 600\n\n",
+                                    "max_labels = 600\ncolor = (1, 0.88, 2./3)\n"))
+with open(os.path.join(ROOT, "bed_maxLab_tracks_incorrect2.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("max_labels = 600\n\n",
+                                    "max_labels = 600\ncolor = (1, 0.88, 2.3)\n"))
+
 browser_tracks = """
 [x-axis]
 where = top
@@ -892,20 +899,24 @@ def test_plot_tracks_tssarrow_zoom2():
 
 def test_plot_tracks_bed_with_maxLab():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                 delete=False)
-    ini_file = os.path.join(ROOT, "bed_maxLab_tracks.ini")
-    region = "X:2000000-3500000"
-    expected_file = os.path.join(ROOT, 'master_maxLab.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
+    for suf in ['', '_incorrect', '_incorrect2']:
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        ini_file = os.path.join(ROOT, f"bed_maxLab_tracks{suf}.ini")
+        region = "X:2000000-3500000"
+        expected_file = os.path.join(ROOT, 'master_maxLab.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
+        os.remove(outfile.name)
+        # remove the incorrect ini file
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
 
 
 def test_plot_tracks_genes_rgb():
