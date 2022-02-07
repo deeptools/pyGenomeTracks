@@ -87,6 +87,26 @@ def test_fasta_zoomin():
     os.remove(os.path.join(ROOT, "fasta_track.fasta.fai"))
 
 
+def test_fasta_zoomin_dec():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "fasta_tracks.ini")
+    region = "rDNA_unit_8919x2_bp:0-11"
+    expected_file = os.path.join(ROOT, 'master_fasta_tracks_zoomin_dec.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--decreasingXAxis "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+    os.remove(os.path.join(ROOT, "fasta_track.fasta.fai"))
+
+
 def test_fasta_extrazoomin():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',

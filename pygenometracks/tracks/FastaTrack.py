@@ -80,7 +80,15 @@ class FastaTrack(GenomeTrack):
             seq_overlap = self.seq[chrom_region][start_region:end_region].seq
         else:
             seq_overlap = self.seq[chrom_region][start_region:end_region]
-        for i, letter in enumerate(seq_overlap):
+        
+        # If the x-scale is inverted the complement is used:
+        xleft, xright = ax.get_xlim()
+        if xleft > xright:
+            seq_overlap_correct = pyfaidx.complement(seq_overlap)
+        else:
+            seq_overlap_correct = seq_overlap
+
+        for i, letter in enumerate(seq_overlap_correct):
             ax.text(i + start_region + 0.5, 0.5, letter,
                     color=seq_color[letter.upper()], verticalalignment='center',
                     horizontalalignment='center', fontsize=fontsize)
