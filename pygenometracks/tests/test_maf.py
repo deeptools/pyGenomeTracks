@@ -32,9 +32,8 @@ height = 3
 [maf]
 file = first.maf
 reference = mm10
-title = specify only zebrafish
+title = specify only danRer11
 species_order = danRer11
-species_labels = Zebrafish
 height = 3
 
 [x-axis]
@@ -58,6 +57,31 @@ height = 3
 with open(os.path.join(ROOT, "first_maf_seq.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+with open(os.path.join(ROOT, "first_maf_seq_invalid.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("first.maf\nreference",
+                                    "first.maf\nfile_index = first.maf.hg19.index\nreference"))
+
+with open(os.path.join(ROOT, "first_maf_seq_invalid2.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("first.maf\nreference",
+                                    "first.maf\nspecies_labels = Mouse Rat\nreference"))
+
+with open(os.path.join(ROOT, "first_maf_seq_invalid3.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("first.maf\nreference",
+                                    "first.maf\nspecies_labels = Mouse Rat\nspecies_order = rn5\nreference"))
+
+browser_tracks = """
+[maf]
+file = first.maf
+file_index = first.maf.hg19.index
+reference = hg19
+title = display_ref_seq = true
+display_ref_seq = true
+height = 3
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "first_maf_seq_hg19.ini"), 'w') as fh:
+    fh.write(browser_tracks)
 
 # To get the second_maf:
 # wget https://hgdownload.soe.ucsc.edu/goldenPath/mm10/multiz60way/maf/chr2.maf.gz
@@ -68,6 +92,7 @@ with open(os.path.join(ROOT, "first_maf_seq.ini"), 'w') as fh:
 # maf_extract_ranges_indexed.py chr2.maf -s mm10.chr2 < isl2.txt > mm10_chr2_isl2.maf
 # maf_limit_to_species.py mm10,rn5,hetGla2,hg19,susScr3,felCat5,ailMel1,pteVam1,loxAfr3,triMan1,ornAna1,galGal4,xenTro3,latCha1,fr3,danRer7 < mm10_chr2_isl2.maf > mm10_chr2_isl2_lessspe.maf
 # mouse rat naked_mole_rat human pig cat panda megabat elephant manatee platypus chicken x_tropicalis coelacanth fugu zebrafish
+# maf_build_index.py pygenometracks/tests/test_data/first.maf pygenometracks/tests/test_data/first.maf.hg19.index -s hg19
 
 browser_tracks = """
 [maf]
@@ -168,19 +193,22 @@ def test_first_maf_order_species_only():
 def test_first_maf_seq():
     extension = '.png'
 
-    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
-                                 delete=False)
-    ini_file = os.path.join(ROOT, "first_maf_seq.ini")
-    region = "2:34704975-34705208"
-    expected_file = os.path.join(ROOT, 'master_first_maf_seq.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
-    os.remove(outfile.name)
+    for suf in ['', '_invalid', '_invalid2', '_invalid3']:
+        outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        ini_file = os.path.join(ROOT, f"first_maf_seq{suf}.ini")
+        region = "2:34704975-34705208"
+        expected_file = os.path.join(ROOT, 'master_first_maf_seq.png')
+        args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+            f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
+        os.remove(outfile.name)
+        if 'invalid' in ini_file:
+            os.remove(ini_file)
 
 
 def test_first_maf_seq_zoom():
@@ -191,6 +219,43 @@ def test_first_maf_seq_zoom():
     ini_file = os.path.join(ROOT, "first_maf_seq.ini")
     region = "2:34705120-34705150"
     expected_file = os.path.join(ROOT, 'master_first_maf_seq_zoom.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+    os.remove(outfile.name)
+
+
+def test_first_maf_seq_zoom_dec():
+    extension = '.png'
+
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "first_maf_seq.ini")
+    region = "2:34705120-34705150"
+    expected_file = os.path.join(ROOT, 'master_first_maf_seq_zoom_dec.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--decreasingXAxis "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+    os.remove(outfile.name)
+
+
+def test_first_maf_seq_hg19():
+    extension = '.png'
+
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "first_maf_seq_hg19.ini")
+    region = "9:128093930-128093970"
+    expected_file = os.path.join(ROOT, 'master_first_maf_seq_hg19.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
