@@ -310,7 +310,8 @@ file_type = {TRACK_TYPE}
                 # Check the orientation:
                 xleft, xright = ax.get_xlim()
                 if xleft > xright:
-                    ref_seq_no_gap_correct = bx.seq.core.reverse_complement(ref_seq_no_gap)
+                    # I need to complement (not reversed because I keep the coordinates)
+                    ref_seq_no_gap_correct = ref_seq_no_gap.translate(bx.seq.DNA_COMP)
                 else:
                     ref_seq_no_gap_correct = ref_seq_no_gap
                 for i, lr in enumerate(ref_seq_no_gap_correct,
