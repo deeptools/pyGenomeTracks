@@ -118,6 +118,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/arcs_use_middle.ini --region X
 bin/pgt --tracks ./pygenometracks/tests/test_data/arcs_no_score.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_arcs_no_score.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/links_squares.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_links_squares.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/arcs_overlay.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_arcs_overlay.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/links_squares_overlay.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_links_squares_overlay.png
 
 # tests scaleBar
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar.ini --region X:3200000-3300000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_zoom.png
