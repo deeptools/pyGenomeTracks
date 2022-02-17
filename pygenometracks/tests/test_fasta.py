@@ -65,7 +65,6 @@ def test_fasta_zoomout():
     assert res is None, res
 
     os.remove(outfile.name)
-    os.remove(os.path.join(ROOT, "fasta_track.fasta.fai"))
 
 
 def test_fasta_zoomin():
@@ -84,7 +83,6 @@ def test_fasta_zoomin():
     assert res is None, res
 
     os.remove(outfile.name)
-    os.remove(os.path.join(ROOT, "fasta_track.fasta.fai"))
 
 
 def test_fasta_inexistingchr():
@@ -103,7 +101,6 @@ def test_fasta_inexistingchr():
     assert res is None, res
 
     os.remove(outfile.name)
-    os.remove(os.path.join(ROOT, "fasta_track.fasta.fai"))
 
 
 def test_fasta_zoomin_dec():
@@ -123,7 +120,6 @@ def test_fasta_zoomin_dec():
     assert res is None, res
 
     os.remove(outfile.name)
-    os.remove(os.path.join(ROOT, "fasta_track.fasta.fai"))
 
 
 def test_fasta_extrazoomin():
@@ -142,7 +138,6 @@ def test_fasta_extrazoomin():
     assert res is None, res
 
     os.remove(outfile.name)
-    os.remove(os.path.join(ROOT, "fasta_track.fasta.fai"))
 
 
 def test_fasta_extrazoomin_height2():
@@ -162,7 +157,6 @@ def test_fasta_extrazoomin_height2():
     assert res is None, res
 
     os.remove(outfile.name)
-    os.remove(os.path.join(ROOT, "fasta_track.fasta.fai"))
 
 
 def test_fasta_end_chr():
@@ -181,7 +175,6 @@ def test_fasta_end_chr():
     assert res is None, res
 
     os.remove(outfile.name)
-    os.remove(os.path.join(ROOT, "fasta_track.fasta.fai"))
 
 
 def test_fasta_malformed():
