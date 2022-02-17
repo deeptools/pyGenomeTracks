@@ -352,6 +352,53 @@ def change_chrom_names(chrom):
     return chrom
 
 
+def get_region(region_string):
+    """
+    splits a region string into
+    a chrom, start_region, end_region tuple
+    The region_string format is chr:start-end
+    """
+    if region_string:
+        # separate the chromosome name and the location using the ':' character
+        try:
+            chrom, position = region_string.strip().split(":")
+        except ValueError:
+            raise InputError(f"The region provided ({region_string})"
+                             " is not valid, it should be chr:start-end.\n")
+
+        # clean up the position
+        for char in ",.;|!{}()":
+            position = position.replace(char, '')
+
+        position_list = position.split("-")
+        assert len(position_list) == 2, \
+            f"The region provided ({region_string})" \
+            " is not valid, it should be chr:start-end.\n"
+
+        try:
+            region_start = int(position_list[0])
+        except ValueError:
+            raise InputError(f"The start value ({position_list[0]}) in the"
+                             " region provided"
+                             " is not valid, it should be chr:start-end.\n")
+        try:
+            region_end = int(position_list[1])
+        except ValueError:
+            raise InputError(f"The start value ({position_list[0]}) in the"
+                             " region provided"
+                             " is not valid, it should be chr:start-end.\n")
+
+        if region_end <= region_start:
+            raise InputError("Please check that the region end is larger "
+                             "than the region start.\n"
+                             f"Values given:\nstart: {region_start}\n"
+                             f"end: {region_end}\n"
+                             "To plot tracks with a decreasing axis "
+                             "consider using `--decreasingXAxis`.")
+
+        return chrom, region_start, region_end
+
+
 class MyBasePairFormatter(Formatter):
     """
     Format tick values as pretty numbers and add as offset the unit
