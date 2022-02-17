@@ -12,7 +12,7 @@ import matplotlib.colors
 import matplotlib.gridspec
 import matplotlib.cm
 import mpl_toolkits.axisartist as axisartist
-from . utilities import file_to_intervaltree, change_chrom_names, MyBasePairFormatter
+from . utilities import file_to_intervaltree, change_chrom_names, MyBasePairFormatter, get_region
 from collections import OrderedDict
 from pygenometracks.tracks.GenomeTrack import GenomeTrack
 from pygenometracks.utilities import InputError
@@ -158,11 +158,13 @@ class PlotTracks(object):
                 height = track_dict['height']
             elif track_dict['file_type'] == 'x_axis':
                 height = track_dict['fontsize'] / 8
-            elif 'depth' in track_dict and \
-                 track_dict['file_type'] == 'hic_matrix':
+            elif ('depth' in track_dict
+                  and track_dict['file_type'] == 'hic_matrix') or \
+                    track_dict['file_type'] == 'hic_matrix_square':
                 # compute the height of a Hi-C track
                 # based on the depth such that the
                 # resulting plot appears proportional
+                # For hic_matrix:
                 #
                 #      /|\
                 #     / | \
@@ -173,7 +175,10 @@ class PlotTracks(object):
                 #
                 # d (in cm) =  depth (in bp) * 0.5 *
                 #              width (in cm) / region len (in bp)
-
+                # For hic_matrix_square:
+                # d (in cm) = length of region2 (in bp) *
+                #              width (in cm) / region len (in bp)
+                #
                 # to compute the actual width of the figure the margins
                 # and the region
                 # set for the legends have to be considered
@@ -192,10 +197,17 @@ class PlotTracks(object):
                     self.width_ratios[1] / sum(self.width_ratios)
                 # the scale factor is to obtain each bin as a square
                 # (a 45 degree rotated matrix)
-                scale_factor = 0.5
-                depth = min(track_dict['depth'],
-                            int((end_region - start_region) * 1.25))
-
+                if track_dict['file_type'] == 'hic_matrix':
+                    scale_factor = 0.5
+                    depth = min(track_dict['depth'],
+                                int((end_region - start_region) * 1.25))
+                elif track_dict['file_type'] == 'hic_matrix_square':
+                    scale_factor = 1  # No rotation
+                    if track_dict['region2'] is None:
+                        depth = end_region - start_region
+                    else:
+                        region2 = get_region(track_dict['region2'])
+                        depth = region2[2] - region2[1]
                 height = scale_factor * depth * hic_width / \
                     (end_region - start_region)
             else:

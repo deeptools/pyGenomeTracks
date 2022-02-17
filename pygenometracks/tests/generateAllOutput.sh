@@ -118,6 +118,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/arcs_use_middle.ini --region X
 bin/pgt --tracks ./pygenometracks/tests/test_data/arcs_no_score.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_arcs_no_score.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/links_squares.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_links_squares.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/arcs_overlay.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_arcs_overlay.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/links_squares_overlay.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_links_squares_overlay.png
 
 # tests scaleBar
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar.ini --region X:3200000-3300000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_zoom.png
@@ -126,3 +127,7 @@ bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region 
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region X:3000000-3600000 --trackLabelFraction 0.2 --width 38 --dpi 130 --decreasingXAxis -o pygenometracks/tests/test_data/master_scale_bar_startend_dec.png
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region X:2000000000-2500000000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_startend_outside.png
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region X:3199500-3201000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_startend_superzoom.png
+
+# hic_matrix_square
+bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_square.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 --decreasingXAxis -o ./pygenometracks/tests/test_data/master_hic_square_dec.png

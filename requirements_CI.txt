@@ -12,10 +12,12 @@ tqdm >=4.20
 pytest
 pytest-xdist
 pytest-forked
-flake8
 nose
 pathlib
 configparser
 ghostscript
+# For linting
+flake8
+# For local test and coverage
 coverage
 coverage-badge
