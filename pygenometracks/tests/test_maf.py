@@ -267,6 +267,10 @@ def test_first_maf_seq_hg19():
 
 
 def test_first_maf_seq_zoom_change_height():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 17
+    else:
+        my_tolerance = tolerance
     extension = '.png'
     ini_file = os.path.join(ROOT, "first_maf_seq.ini")
     region = "2:34705120-34705150"
@@ -281,7 +285,7 @@ def test_first_maf_seq_zoom_change_height():
             f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                             outfile.name, tolerance)
+                             outfile.name, my_tolerance)
         assert res is None, res
         os.remove(outfile.name)
 
