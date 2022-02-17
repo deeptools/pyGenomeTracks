@@ -125,8 +125,6 @@ file_type = {TRACK_TYPE}
                                           enumerate(self.hic_ma.cut_intervals)
                                           if x[0] == chrom_region_y and x[1] >= start_bp_y
                                           and x[2] <= end_bp_y]))
-        print(f"{idx[0]} to {idx[-1]}")
-        print(f"{idx_y[0]} to {idx_y[-1]}")
         # select only relevant matrix part
         matrix = self.hic_ma.matrix[idx, :][:, idx_y]
         # update the start_pos to add the last end:
