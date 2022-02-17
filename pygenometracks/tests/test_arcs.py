@@ -236,6 +236,84 @@ file = arcs_invalid{suf}.arcs
         fh.write(browser_tracks)
 
 browser_tracks = """
+[test squares]
+file = test_wide.arcs
+line_width = 3
+color = RdYlGn
+title = squares no region2
+links_type = squares
+height = 3
+
+[spacer]
+
+[test squares2]
+file = test_wide.arcs
+line_width = 3
+color = RdYlGn
+title = squares region2=X:3000000-3050000
+region2 = X:3000000-3050000
+links_type = squares
+height = 3
+
+[spacer]
+
+[test trans1]
+file = test_trans.arcs
+line_width = 3
+color = blue
+title = squares arcs with trans no region2
+links_type = squares
+height = 3
+
+[spacer]
+
+[test trans1]
+file = test_trans.arcs
+line_width = 3
+color = black
+title = squares arcs with trans region2 = Y:3010000-3020000
+region2 = Y:3010000-3020000
+links_type = squares
+height = 3
+
+[spacer]
+
+[test trans2]
+file = test_trans.arcs
+line_width = 3
+color = black
+title = squares arcs with trans region2 = Y:3000000-3012000
+region2 = Y:3000000-3012000
+links_type = squares
+height = 3
+
+[spacer]
+
+[test trans3]
+file = test_trans.arcs
+line_width = 3
+color = black
+title = squares arcs with trans region2 = chrY:3000000-3012000 orientation = inverted
+region2 = chrY:3000000-3012000
+links_type = squares
+orientation = inverted
+height = 3
+
+[spacer]
+
+[test trans4]
+file = test_trans.arcs
+line_width = 3
+color = black
+title = squares arcs with trans region2 = Y:3011500-3012000
+region2 = Y:3011500-3012000
+links_type = squares
+height = 3
+"""
+with open(os.path.join(ROOT, "links_squares.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
 [arcs]
 title = arcs with scores viridis overlayed with shifted arcs hot
 file = test_high_score.arcs
@@ -352,6 +430,24 @@ def test_arcs_invalid2():
     else:
         raise Exception("The arcs_invalid2 should fail.")
     os.remove(ini_file)
+
+
+def test_squares_links():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "links_squares.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_links_squares.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
 
 
 def test_arcs_overlay():
