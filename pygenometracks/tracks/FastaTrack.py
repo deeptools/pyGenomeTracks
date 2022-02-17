@@ -80,7 +80,7 @@ class FastaTrack(GenomeTrack):
             seq_overlap = self.seq[chrom_region][start_region:end_region].seq
         else:
             seq_overlap = self.seq[chrom_region][start_region:end_region]
-        
+
         # If the x-scale is inverted the complement is used:
         xleft, xright = ax.get_xlim()
         if xleft > xright:
