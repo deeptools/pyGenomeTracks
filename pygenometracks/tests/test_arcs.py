@@ -313,6 +313,27 @@ height = 3
 with open(os.path.join(ROOT, "links_squares.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+
+browser_tracks = """
+[hic matrix]
+file = Li_et_al_2015.cool
+title = hic_matrix_square; transform = log1p; min_value = 5 (next track: overlay_previous = share-y display = squares)
+min_value = 5
+transform = log1p
+file_type = hic_matrix_square
+show_masked_bins = false
+
+[test arcs overlay]
+file = test_wide.arcs
+color = red
+line_width = 5
+links_type = squares
+overlay_previous = share-y
+"""
+with open(os.path.join(ROOT, "links_squares_overlay.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+
 browser_tracks = """
 [arcs]
 title = arcs with scores viridis overlayed with shifted arcs hot
@@ -433,12 +454,34 @@ def test_arcs_invalid2():
 
 
 def test_squares_links():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 18
+    else:
+        my_tolerance = tolerance
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "links_squares.ini")
     region = "X:3000000-3300000"
     expected_file = os.path.join(ROOT, 'master_links_squares.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, my_tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_squares_links_overlay():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "links_squares_overlay.ini")
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_links_squares_overlay.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
