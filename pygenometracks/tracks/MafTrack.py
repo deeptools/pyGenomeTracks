@@ -3,6 +3,7 @@ from .. utilities import change_chrom_names, InputError, get_optimal_fontsize
 import bx.align.maf
 import bx.interval_index_file
 import bx.seq
+import matplotlib as mpl
 from matplotlib.patches import Rectangle
 import numpy as np
 from tqdm import tqdm
@@ -323,10 +324,14 @@ file_type = {TRACK_TYPE}
 
     def plot_y_axis(self, ax, plot_axis):
         if self.labels is not None:
+            if int(mpl.__version__.split(".")[1]) < 3:
+                wrap = False
+            else:
+                wrap = True
             for y, label in enumerate(self.labels):
                 ax.text(0, y * self.row_scale + 0.5, label,
                         verticalalignment='center',
-                        horizontalalignment='right', wrap=True)
+                        horizontalalignment='right', wrap=wrap)
             ax.set_ylim(*plot_axis.get_ylim())
 
     @staticmethod
