@@ -9,14 +9,17 @@ gffutils >=0.9
 pybedtools >=0.8.1
 tqdm >=4.20
 bx-python >=0.8.13
+pyfaidx >=0.1.3
 # Below are dependencies for tests
 pytest
 pytest-xdist
 pytest-forked
-flake8
 nose
 pathlib
 configparser
 ghostscript
+# For linting
+flake8
+# For local test and coverage
 coverage
 coverage-badge

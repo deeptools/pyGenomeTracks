@@ -34,8 +34,9 @@ jobs:
       conda config --set always_yes yes --set changeps1 no
       conda info -a
       cat requirements_CI.txt | awk -v v=$(matplotlib.version) '{if($0~/matplotlib/){$0="matplotlib =="v}; print}' > requirements_CI_updated.txt
-      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI_updated.txt
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) mamba
       source activate pygenometracks
+      mamba install --yes -c defaults -c conda-forge -c bioconda --file requirements_CI_updated.txt
       python setup.py install
     displayName: installing dependencies
   - script: |
@@ -74,7 +75,6 @@ jobs:
       echo "##vso[task.prependpath]$CONDA/bin"
       hash -r
     displayName: Add conda to PATH
-
   # On Hosted macOS, the agent user doesn't have ownership of Miniconda's installation directory/
   # We need to take ownership if we want to update conda or install packages globally
   - bash: sudo chown -R $USER $CONDA
@@ -83,8 +83,9 @@ jobs:
       conda config --set always_yes yes --set changeps1 no
       conda info -a
       cat requirements_CI.txt | awk -v v=$(matplotlib.version) '{if($0~/matplotlib/){$0="matplotlib =="v}; print}' > requirements_CI_updated.txt
-      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI_updated.txt
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) mamba
       source activate pygenometracks
+      mamba install --yes -c defaults -c conda-forge -c bioconda --file requirements_CI_updated.txt
       python setup.py install
     displayName: installing dependencies
   - script: |
