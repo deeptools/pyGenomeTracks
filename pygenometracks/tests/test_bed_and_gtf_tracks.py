@@ -270,6 +270,18 @@ style = flybase
 fontsize = 10
 height_utr = 0.7
 
+[spacer]
+height = 1
+
+[genes 3]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = flybase; fontsize = 5; arrowhead_fraction = 0.03
+style = flybase
+fontsize = 5
+arrowhead_fraction = 0.03
+all_labels_inside = true
+
 """
 with open(os.path.join(ROOT, "bed_flybase_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)

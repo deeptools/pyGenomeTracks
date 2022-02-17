@@ -134,6 +134,15 @@ def file_to_intervaltree(file_name, plot_regions=None):
             chrom, start, end = fields[0:3]
         except Exception as detail:
             msg = f"Error reading line: {line_number}\nError message: {detail}"
+            if len(fields) == 1:
+                if fields[0].startswith("{\\rtf"):
+                    raise InputError(f"The file {file_name} is a rtf file."
+                                     " Please save it as plain text.")
+                else:
+                    raise InputError(f"Only one field detected in {file_name}"
+                                     ", you may use"
+                                     " a bed-like delimited by space. This format "
+                                     "is not supported by pyGenomeTracks.")
             raise InputError(msg)
 
         try:
