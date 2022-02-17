@@ -201,12 +201,26 @@ file_type = {TRACK_TYPE}
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
         for idx, interval in enumerate(arcs_in_region):
-            # If region2 is defined skip intervals which does not overlap region2:
-            if self.properties['region2'] is not None:
-                start2 = interval.data[2]
-                end2 = interval.data[3]
-                if start2 > self.region2[2] or end2 < self.region2[1]:
-                    continue
+            if self.properties['links_type'] == 'squares':
+                plotting_sides = {'as_in_data': False, 'mirrored': False}
+                start1, end1, start2, end2, _ = interval.data
+                if self.properties['region2'] is None:
+                    temp_region2 = [chrom_region, region_start, region_end]
+                else:
+                    temp_region2 = self.region2
+                if chrom_region not in [temp_region2[0], change_chrom_names(temp_region2[0])]:
+                    # This is a trans:
+                    plotting_sides['as_in_data'] = True
+                else:
+                    # We need to check which sides need to be plotted:
+                    if (start1 < region_end and end1 > region_start) \
+                    and (start2 < temp_region2[2] and end2 > temp_region2[1]) :
+                        plotting_sides['as_in_data'] = True
+                    if (start2 < region_end and end2 > region_start) \
+                    and (start1 < temp_region2[2] and end1 > temp_region2[1]) :
+                        plotting_sides['mirrored'] = True
+                    if not plotting_sides['as_in_data'] and not plotting_sides['mirrored']:
+                        continue
             else:
                 # skip intervals whose start and end are outside the plotted region
                 if interval.begin < region_start and interval.end > region_end:
@@ -222,7 +236,10 @@ file_type = {TRACK_TYPE}
             elif self.properties['links_type'] == 'loops':
                 self.plot_loops(ax, interval.data)
             elif self.properties['links_type'] == 'squares':
-                self.plot_squares(ax, interval.data)
+                if plotting_sides['as_in_data']:
+                    self.plot_squares(ax, interval.data)
+                if plotting_sides['mirrored']:
+                    self.plot_squares(ax, interval.data, mirrored=True)
             else:
                 self.plot_arcs(ax, interval)
 
@@ -350,19 +367,26 @@ file_type = {TRACK_TYPE}
         if y2 > self.max_height:
             self.max_height = y2
 
-    def plot_squares(self, ax, loop):
+    def plot_squares(self, ax, loop, mirrored=False):
         """
+        mirrored means mirrored regarding to the diagonal
+        (start2, end2, start1, end1)
         2->  "  " <- 1
         3->  "  " <- 0
         """
         # loop is start1, end1, start2, end2, score
-        x0 = loop[1]
-        y0 = loop[2]
+        if not mirrored:
+            x0 = loop[1]
+            y0 = loop[2]
+            y1 = loop[3]
+            x2 = loop[0]
+        else:
+            x0 = loop[3]
+            y0 = loop[0]
+            y1 = loop[1]
+            x2 = loop[2]
 
         x1 = x0
-        y1 = loop[3]
-
-        x2 = loop[0]
         y2 = y1
 
         x3 = x2
@@ -478,8 +502,12 @@ file_type = {TRACK_TYPE}
                 mid2 = (start2 + end2) / 2
                 interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
             else:
-                # each interval spans from the smallest start to the largest end
-                interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
+                if not is_trans:
+                    # each interval spans from the smallest start to the largest end
+                    interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
+                else:
+                    # For the trans we keep start1 and end1
+                    interval_tree[chrom1].add(Interval(start1, end1, [start1, end1, start2, end2, score]))
             valid_intervals += 1
 
         if valid_intervals == 0:
