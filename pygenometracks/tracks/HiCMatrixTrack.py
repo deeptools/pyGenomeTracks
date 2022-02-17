@@ -241,6 +241,14 @@ file_type = {TRACK_TYPE}
                 return
 
         chrom_region = self.check_chrom_str_bytes(self.chrom_sizes, chrom_region)
+        if region_start > self.chrom_sizes[chrom_region]:
+            self.log.warning("*Warning*\nThe region to plot starts beyond the"
+                             " chromosome size. This will generate an empty track.\n"
+                             f"{chrom_region} size: {self.chrom_sizes[chrom_region]}"
+                             f". Region to plot {region_start}-{region_end}\n")
+            self.img = None
+            return
+
         if region_end > self.chrom_sizes[chrom_region]:
             self.log.warning("*Warning*\nThe region to plot extends beyond the"
                              " chromosome size. Please check.\n"
