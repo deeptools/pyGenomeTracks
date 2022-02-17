@@ -454,6 +454,10 @@ def test_arcs_invalid2():
 
 
 def test_squares_links():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 18
+    else:
+        my_tolerance = tolerance
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
@@ -465,7 +469,7 @@ def test_squares_links():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
