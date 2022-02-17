@@ -214,10 +214,10 @@ file_type = {TRACK_TYPE}
                 else:
                     # We need to check which sides need to be plotted:
                     if (start1 < region_end and end1 > region_start) \
-                    and (start2 < temp_region2[2] and end2 > temp_region2[1]) :
+                       and (start2 < temp_region2[2] and end2 > temp_region2[1]):
                         plotting_sides['as_in_data'] = True
                     if (start2 < region_end and end2 > region_start) \
-                    and (start1 < temp_region2[2] and end1 > temp_region2[1]) :
+                       and (start1 < temp_region2[2] and end1 > temp_region2[1]):
                         plotting_sides['mirrored'] = True
                     if not plotting_sides['as_in_data'] and not plotting_sides['mirrored']:
                         continue
