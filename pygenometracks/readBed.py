@@ -108,12 +108,15 @@ class ReadBed(object):
         line_data = to_string(line_data)
         line_data = line_data.split("\t")
         if is_first_line:
-            assert len(line_data) != 1, \
-                "Only one field detected, you may use" \
-                " a bed delimited by space. This format " \
-                "is not supported by pyGenomeTracks."
-
-        if not is_first_line:
+            if len(line_data) == 1:
+                if line_data[0].startswith("{\\rtf"):
+                    raise InputError("The file is a rtf file."
+                                     " Please save it as plain text.")
+                else:
+                    raise InputError("Only one field detected, you may use"
+                                     " a bed delimited by space. This format "
+                                     "is not supported by pyGenomeTracks.")
+        else:
             if self.file_type != 'bed6':
                 # When bed6 you can have less fields in one row
                 # because there are default values
