@@ -9,14 +9,27 @@ jobs:
     vmImage: 'ubuntu-latest'
   strategy:
     matrix:
-      Python36:
+      Python36LowMatplotlib:
         python.version: '3.6'
-      Python37:
+        matplotlib.version: '3.1.1'
+      Python36HighMatplotlib:
+        python.version: '3.6'
+        matplotlib.version: '3.3.4'
+      Python37LowMatplotlib:
         python.version: '3.7'
-      Python38:
+        matplotlib.version: '3.1.1'
+      Python37HighMatplotlib:
+        python.version: '3.7'
+        matplotlib.version: '3.5.1'
+      Python38LowMatplotlib:
         python.version: '3.8'
-      Python39:
+        matplotlib.version: '3.1.1'
+      Python38HighMatplotlib:
+        python.version: '3.8'
+        matplotlib.version: '3.5.1'
+      Python39HighMatplotlib:
         python.version: '3.9'
+        matplotlib.version: '3.5.1'
 
   steps:
   - bash: |
@@ -26,7 +39,8 @@ jobs:
   - bash: |
       conda config --set always_yes yes --set changeps1 no
       conda info -a
-      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI.txt
+      cat requirements_CI.txt | awk -v v=$(matplotlib.version) '{if($0~/matplotlib/){$0="matplotlib =="v}; print}' > requirements_CI_updated.txt
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI_updated.txt
       source activate pygenometracks
       python setup.py install
     displayName: installing dependencies
@@ -45,14 +59,27 @@ jobs:
     vmImage: 'macOS-11'
   strategy:
     matrix:
-      Python36:
+      Python36LowMatplotlib:
         python.version: '3.6'
-      Python37:
+        matplotlib.version: '3.1.1'
+      Python36HighMatplotlib:
+        python.version: '3.6'
+        matplotlib.version: '3.3.4'
+      Python37LowMatplotlib:
         python.version: '3.7'
-      Python38:
+        matplotlib.version: '3.1.1'
+      Python37HighMatplotlib:
+        python.version: '3.7'
+        matplotlib.version: '3.5.1'
+      Python38LowMatplotlib:
         python.version: '3.8'
-      Python39:
+        matplotlib.version: '3.1.1'
+      Python38HighMatplotlib:
+        python.version: '3.8'
+        matplotlib.version: '3.5.1'
+      Python39HighMatplotlib:
         python.version: '3.9'
+        matplotlib.version: '3.5.1'
 
   steps:
   - bash: |
@@ -66,7 +93,8 @@ jobs:
   - bash: |
       conda config --set always_yes yes --set changeps1 no
       conda info -a
-      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI.txt
+      cat requirements_CI.txt | awk -v v=$(matplotlib.version) '{if($0~/matplotlib/){$0="matplotlib =="v}; print}' > requirements_CI_updated.txt
+      conda create -n pygenometracks --yes -c conda-forge -c bioconda python=$(python.version) --file requirements_CI_updated.txt
       source activate pygenometracks
       python setup.py install
     displayName: installing dependencies

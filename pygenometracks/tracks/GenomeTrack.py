@@ -552,6 +552,8 @@ height = 2
             formatter = LogFormatter(10, labelOnlyBase=False)
             aa = np.array([1, 2, 5])
             tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
+            vmin, vmax = self.img.get_clim()
+            tick_values = [t for t in tick_values if t <= vmax and t >= vmin]
             try:
                 cobar = plt.colorbar(self.img, ticks=tick_values,
                                      format=formatter, ax=axis,
@@ -573,11 +575,12 @@ height = 2
         # adjust the labels of the colorbar
         # Get ticks positions
         ticks = cobar.ax.get_yticks()
+        (vmin, vmax) = cobar.mappable.get_clim()
+        ticks = np.array([t for t in ticks if t <= vmax and t >= vmin])
         # Fix them
         cobar.set_ticks(ticks)
         # Set the corresponding labels
         labels = cobar.ax.set_yticklabels(ticks.astype('float32'))
-        (vmin, vmax) = cobar.mappable.get_clim()
         for idx in np.where(ticks == vmin)[0]:
             # if the label is at the start of the colobar
             # move it above avoid being cut or overlapping with other track

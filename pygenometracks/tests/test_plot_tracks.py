@@ -343,6 +343,10 @@ def test_plot_tracks_existing_chr_empty_tracks():
 
 
 def test_plot_tracks_missing_chr():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 16
+    else:
+        my_tolerance = tolerance
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
@@ -354,7 +358,7 @@ def test_plot_tracks_missing_chr():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)

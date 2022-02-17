@@ -565,6 +565,7 @@ def test_defaults():
 
 
 def test_width():
+    my_tolerence = 18
     region = "X:2,500,000-3,000,000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
                                  delete=False)
@@ -583,7 +584,7 @@ def test_width():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerence)
     assert res is None, res
     expected_file = os.path.join(ROOT, 'master_example_bigwig_plotwidth12Lab0.5.png')
     args = f"--tracks {ini_file} --region {region} "\
