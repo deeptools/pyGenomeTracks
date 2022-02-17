@@ -452,7 +452,7 @@ def test_invalid_bedgraph():
     try:
         pygenometracks.plotTracks.main(args)
     except InputError as e:
-        assert 'not enough values to unpack (expected 3, got 1)' in str(e)
+        assert 'Only one field detected' in str(e)
     else:
         raise Exception("The invalid_bedgraph should fail.")
 
