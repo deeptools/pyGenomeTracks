@@ -66,6 +66,8 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/example_op2.ini --region X:270
 
 # test_epilogosTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/epilogos.ini --region X:3100000-3150000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_epilogos.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/epilogos.ini --region chrX:3490000-24000000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_epilogos_overlap_end.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/epilogos.ini --region X:25000000-30000000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_epilogos_over_end.png
 
 # test_hiCMatrixTracks:
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_plot_hic.png
