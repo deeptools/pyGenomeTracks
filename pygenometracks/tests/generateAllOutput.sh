@@ -153,5 +153,8 @@ bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_u
 bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region chr2:0-11 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_inexistingchr.png
 
 # hic_matrix_square
-bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_square.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region chrX:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_square.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 --decreasingXAxis -o ./pygenometracks/tests/test_data/master_hic_square_dec.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_square.ini --region chr1:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_square.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_square.ini --region chrX:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_square_chrX.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_square_bad_region2.ini --region chr1:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_square_bad_region2.png
