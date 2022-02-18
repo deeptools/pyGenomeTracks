@@ -98,6 +98,10 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 
 def test_hic_square():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 21
+    else:
+        my_tolerance = tolerance
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
@@ -109,13 +113,17 @@ def test_hic_square():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
 
 
 def test_hic_square_dec():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 21
+    else:
+        my_tolerance = tolerance
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
@@ -128,7 +136,7 @@ def test_hic_square_dec():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
