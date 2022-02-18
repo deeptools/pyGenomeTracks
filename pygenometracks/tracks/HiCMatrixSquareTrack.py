@@ -55,7 +55,6 @@ file_type = {TRACK_TYPE}
                 self.img = None
                 return
 
-        chrom_region = self.check_chrom_str_bytes(self.chrom_sizes, chrom_region)
         if region_end > self.chrom_sizes[chrom_region]:
             self.log.warning("*Warning*\nThe region to plot extends beyond the"
                              " chromosome size. Please check.\n"
@@ -100,7 +99,6 @@ file_type = {TRACK_TYPE}
                     self.img = None
                     return
 
-            chrom_region_y = self.check_chrom_str_bytes(self.chrom_sizes, chrom_region)
             if region_end_y > self.chrom_sizes[chrom_region_y]:
                 self.log.warning("*Warning*\nThe region to plot extends beyond the"
                                  " chromosome size. Please check.\n"
