@@ -2,7 +2,6 @@ import scipy.sparse
 from matplotlib import colors
 import numpy as np
 from . HiCMatrixLikeTrack import HiCMatrixLikeTrack
-from .. utilities import change_chrom_names
 import logging
 import itertools
 
@@ -28,56 +27,10 @@ file_type = {TRACK_TYPE}
     # The colormap can only be a colormap
 
     def plot(self, ax, chrom_region, region_start, region_end):
-        if len(self.hic_ma.matrix.data) == 0:
-            self.log.warning("*Warning*\nThere is no data for the region "
-                             "considered on the matrix. "
-                             "This will generate an empty track!!\n")
-            self.img = None
+
+        continue_plotting, chrom_region = self.check_before_plotting(chrom_region, region_start, region_end)
+        if not continue_plotting:
             return
-
-        log.debug(f'chrom_region {chrom_region}, region_start {region_start}, region_end {region_end}')
-        if chrom_region not in self.chrom_sizes:
-            chrom_region_before = chrom_region
-            chrom_region = change_chrom_names(chrom_region)
-            if chrom_region not in self.chrom_sizes:
-                self.log.warning("*Warning*\nNeither " + chrom_region_before
-                                 + " nor " + chrom_region + " exists as a "
-                                 "chromosome name on the matrix. "
-                                 "This will generate an empty track!!\n")
-                self.img = None
-                return
-
-        if region_start > self.chrom_sizes[chrom_region]:
-            self.log.warning("*Warning*\nThe region to plot starts beyond the"
-                             " chromosome size. This will generate an empty track.\n"
-                             f"{chrom_region} size: {self.chrom_sizes[chrom_region]}"
-                             f". Region to plot {region_start}-{region_end}\n")
-            self.img = None
-            return
-
-        if region_end > self.chrom_sizes[chrom_region]:
-            self.log.warning("*Warning*\nThe region to plot extends beyond the"
-                             " chromosome size. Please check.\n"
-                             f"{chrom_region} size: {self.chrom_sizes[chrom_region]}"
-                             f". Region to plot {region_start}-{region_end}\n")
-
-        # A chromosome may disappear if it was full of Nan and nan bins were masked:
-        if chrom_region not in self.hic_ma.get_chromosome_sizes():
-            self.log.warning("*Warning*\nThere is no data for the region "
-                             "considered on the matrix. "
-                             "This will generate an empty track!!\n")
-            self.img = None
-            return
-        # Or it may be shortened:
-        if region_start > self.hic_ma.get_chromosome_sizes()[chrom_region]:
-            self.log.warning("*Warning*\nThe region to plot starts beyond the"
-                             " last bin with data on this chromosome."
-                             " This will generate an empty track.\n"
-                             f"{chrom_region} last bin: {self.hic_ma.get_chromosome_sizes()[chrom_region]}"
-                             f". Region to plot on y {region_start}-{region_end}\n")
-            self.img = None
-            return
-
         # expand region to plus depth on both sides
         # to avoid a 45 degree 'cut' on the edges
 
