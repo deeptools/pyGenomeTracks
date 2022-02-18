@@ -13,7 +13,7 @@ import numpy as np
 from tqdm import tqdm
 
 DEFAULT_BED_COLOR = '#1f78b4'
-DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked']
+DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked', 'squares']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
 AROUND_REGION = 100000
@@ -26,9 +26,6 @@ class BedTrack(GenomeTrack):
                          'bed9.gz', 'bed12.gz']
     TRACK_TYPE = 'bed'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
-# If the bed file contains the exon
-# structure (bed 12) then this is plotted. Otherwise
-# a region **with direction** is plotted.
 # If the bed file contains a column for color (column 9), then this color can be used by
 # setting:
 #color = bed_rgb
@@ -41,27 +38,24 @@ class BedTrack(GenomeTrack):
 #max_value=100
 # If the color is simply a color name, then this color is used and the score is not considered.
 color = darkblue
-# whether printing the labels
-labels = false
-# optional:
-# by default the labels are not printed if you have more than 60 features.
-# to change it, just increase the value:
-#max_labels = 60
-# optional: font size can be given to override the default size
-fontsize = 10
 # optional: line_width
 #line_width = 0.5
+# optional: border_color
+# default is black.
+# To remove the border, simply set 'border_color' to none
+# Not used in tssarrow style
+#border_color = black
 # the display parameter defines how the bed file is plotted.
 # Default is 'stacked' where regions are plotted on different lines so
 # we can see all regions and all labels.
-# The other options are ['collapsed', 'interleaved', 'triangles']
-# These options assume that the regions do not overlap.
+# The other options are ['collapsed', 'interleaved', 'triangles', 'squares']
+# These 2 options assume that the regions do not overlap.
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
-# optional, default is black. To remove the border, simply set 'border_color' to none
-# Not used in tssarrow style
-#border_color = black
-# style to plot the genes when the display is not triangles
+# If the bed file contains the exon
+# structure (bed 12) then this is plotted. Otherwise
+# a region **with direction** is plotted.
+# style to plot the genes when the display is 'stacked', 'collapsed' or 'interleaved'
 #style = UCSC
 #style = flybase
 #style = tssarrow
@@ -77,6 +71,14 @@ fontsize = 10
 # This is useful to combine images that are all consistent and
 # have the same number of rows.
 #global_max_row = true
+# whether printing the labels
+labels = false
+# optional:
+# by default the labels are not printed if you have more than 60 features.
+# to change it, just increase the value:
+#max_labels = 60
+# optional: font size can be given to override the default size
+fontsize = 10
 # If you want to plot all labels inside the plotting region:
 #all_labels_inside = true
 # If you want to display the name of the gene which goes over the plotted
@@ -108,6 +110,9 @@ fontsize = 10
 # their labels.
 # To increase it:
 #arrowhead_fraction = 0.01
+# The two other display options are really different and no label can be display:
+# `triangles` display each region as a triangle, can be useful to overlay with a hic_matrix
+# `squares` display each region as a square along the diagonal, can be useful to overlay with a hic_matrix_square
 # optional. If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
@@ -391,6 +396,13 @@ file_type = {TRACK_TYPE}
 
         if self.properties['display'] == 'triangles':
             self.plot_triangles(ax, genes_overlap)
+        elif self.properties['display'] == 'squares':
+            self.plot_squares(ax, genes_overlap)
+            if self.properties['orientation'] == 'inverted':
+                ax.set_ylim(start_region, end_region)
+            else:
+                ax.set_ylim(end_region, start_region)
+
         else:
             self.counter = 0
             self.small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
@@ -1043,6 +1055,37 @@ file_type = {TRACK_TYPE}
             ax.set_ylim(ymax, 0)
         else:
             ax.set_ylim(0, ymax)
+
+    def plot_squares(self, ax, genes_overlap):
+        """
+        Plots the boundaries as squares along the diagonal in the given ax.
+        """
+        valid_regions = 0
+        for region in genes_overlap:
+            """
+        2->  "  " <- 1
+        3->  "  " <- 0
+            """
+            x0 = region.end
+            x2 = region.begin
+
+            y0 = x0
+            x1 = x0
+            y2 = x2
+            y1 = y2
+            x3 = x2
+            y3 = y0
+            rgb = self.get_rgb(region.data)
+            edgecolor = self.get_rgb(region.data, param='border_color', default=rgb)
+
+            rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
+                                facecolor=rgb, edgecolor=edgecolor,
+                                linewidth=self.properties['line_width'])
+            ax.add_artist(rectangle)
+            valid_regions += 1
+
+        if valid_regions == 0:
+            self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
 
     def _plot_small_arrow(self, ax, xpos, ypos, strand, bed):
         """

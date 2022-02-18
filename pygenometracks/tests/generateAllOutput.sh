@@ -117,7 +117,9 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/title.ini --region X:3000000-3
 bin/pgt --tracks ./pygenometracks/tests/test_data/short_long_arcs.ini --region chr11:40000000-46000000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_short_long_arcs.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/arcs_use_middle.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_arcs_use_middle.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/arcs_no_score.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_arcs_no_score.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/links_squares.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_links_squares.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/arcs_overlay.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_arcs_overlay.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/links_squares_overlay.ini --region X:3000000-3300000  --trackLabelFraction 0.2 --width 38 --dpi 130  -o pygenometracks/tests/test_data/master_links_squares_overlay.png
 
 # tests scaleBar
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar.ini --region X:3200000-3300000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_zoom.png
@@ -126,3 +128,30 @@ bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region 
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region X:3000000-3600000 --trackLabelFraction 0.2 --width 38 --dpi 130 --decreasingXAxis -o pygenometracks/tests/test_data/master_scale_bar_startend_dec.png
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region X:2000000000-2500000000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_startend_outside.png
 bin/pgt --tracks pygenometracks/tests/test_data/scale_bar_startend.ini --region X:3199500-3201000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_scale_bar_startend_superzoom.png
+
+# tests maf
+bin/pgt --tracks pygenometracks/tests/test_data/first_maf.ini --BED pygenometracks/tests/test_data/regions_maf.bed --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_first_maf.png
+bin/pgt --tracks pygenometracks/tests/test_data/first_maf.ini --region chr1:0-1000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_first_maf_empty_chr.png
+bin/pgt --tracks pygenometracks/tests/test_data/first_maf_order_species_only.ini --region 2:34705032-34707346 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_first_maf_order_species_only.png
+bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:34704975-34705208 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_first_maf_seq.png
+bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:34705120-34705150 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_first_maf_seq_zoom.png
+bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:34705120-34705150 --trackLabelFraction 0.2 --width 38 --dpi 130 --decreasingXAxis -o pygenometracks/tests/test_data/master_first_maf_seq_zoom_dec.png
+bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:34705120-34705150 --trackLabelFraction 0.2 --width 38 --dpi 130 --height 2 -o pygenometracks/tests/test_data/master_first_maf_seq_zoom_h2.png
+bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:34705120-34705150 --trackLabelFraction 0.2 --width 38 --dpi 130 --height 10 -o pygenometracks/tests/test_data/master_first_maf_seq_zoom_h10.png
+bin/pgt --tracks pygenometracks/tests/test_data/maf_withe.ini --region chr2:74,070,244-74,071,016 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_maf_withe_region1.png
+bin/pgt --tracks pygenometracks/tests/test_data/maf_withe.ini --region chr2:74,075,687-74,075,808 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_maf_withe_region2.png
+bin/pgt --tracks pygenometracks/tests/test_data/first_maf_seq_hg19.ini --region 9:128093930-128093970 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_first_maf_seq_hg19.png
+
+# tests fasta
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-100 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_zoomout.png
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-11 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_zoomin.png
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-3 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_extrazoomin.png
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-3 --trackLabelFraction 0.2 --width 38 --dpi 130 --height 2 -o pygenometracks/tests/test_data/master_fasta_tracks_extrazoomin_height2.png
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:17840-17850 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_end_chr.png
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_track_malformed.ini --region test:48-60 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_track_malformed.png
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-11 --trackLabelFraction 0.2 --width 38 --dpi 130 --decreasingXAxis -o pygenometracks/tests/test_data/master_fasta_tracks_zoomin_dec.png
+bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region chr2:0-11 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_inexistingchr.png
+
+# hic_matrix_square
+bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_square.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 --decreasingXAxis -o ./pygenometracks/tests/test_data/master_hic_square_dec.png

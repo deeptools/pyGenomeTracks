@@ -778,6 +778,75 @@ merge_transcripts = true
 with open(os.path.join(ROOT, "gtf_no_exon.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[tads only]
+file = tad_classification.bed
+title = tads display = squares color = bed_rgb
+display = squares
+height = 3
+color = bed_rgb
+
+[tads only]
+file = tad_classification.bed
+title = tads display = squares color = Blues orientation = inverted
+display = squares
+height = 3
+color = Blues
+orientation = inverted
+
+[hic matrix]
+file = Li_et_al_2015.cool
+title = hic_matrix_square; transform = log1p; min_value = 5 (next track: overlay_previous = share-y display = squares)
+min_value = 5
+transform = log1p
+file_type = hic_matrix_square
+show_masked_bins = false
+
+[tad overlay]
+file = tad_classification.bed
+display = squares
+color = none
+border_color = red
+line_width = 5
+overlay_previous = share-y
+
+[hic matrix]
+file = Li_et_al_2015.cool
+title = hic_matrix_square; transform = log1p; min_value = 5 region2 = chrX:3000000-3100000 (next track: overlay_previous = share-y display = squares border_color = bed_rgb)
+min_value = 5
+transform = log1p
+file_type = hic_matrix_square
+region2 = chrX:3000000-3100000
+show_masked_bins = false
+
+[tad overlay]
+file = tad_classification.bed
+display = squares
+color = none
+border_color = bed_rgb
+line_width = 5
+overlay_previous = share-y
+
+[hic matrix]
+file = Li_et_al_2015.cool
+title = hic_matrix_square; transform = log1p; min_value = 5 region2 = chrX:3000000-3100000 (next track: overlay_previous = yes display = squares border_color = Reds)
+min_value = 5
+transform = log1p
+file_type = hic_matrix_square
+region2 = chrX:3000000-3100000
+show_masked_bins = false
+
+[tad overlay]
+file = tad_classification.bed
+display = squares
+color = none
+border_color = Reds
+line_width = 5
+overlay_previous = yes
+"""
+with open(os.path.join(ROOT, "bed_squares_overlay.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -1194,6 +1263,24 @@ def test_plot_gtf_no_exon():
     ini_file = os.path.join(ROOT, 'gtf_no_exon.ini')
     region = "381:0-1000"
     expected_file = os.path.join(ROOT, 'master_gtf_no_exon.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_bed_squares():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'bed_squares_overlay.ini')
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_bed_squares_overlay.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()

@@ -91,7 +91,7 @@ class install(_install):
 
 
 install_requires_py = ["numpy >=1.16",
-                       "matplotlib >=3.1.1,<=3.3.2",
+                       "matplotlib >=3.1.1,<=3.5.1",
                        "intervaltree >=2.1.0",
                        "pyBigWig >=0.3.16",
                        "future >=0.17.0",
@@ -100,7 +100,9 @@ install_requires_py = ["numpy >=1.16",
                        "pytest",
                        "gffutils >=0.9",
                        "pybedtools >=0.8.1",
-                       "tqdm >=4.20"
+                       "tqdm >=4.20",
+                       "bx-python >=0.8.13",
+                       "pyfaidx >=0.1.3"
                        ]
 
 setup(

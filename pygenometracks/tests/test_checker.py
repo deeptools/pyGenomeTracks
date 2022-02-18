@@ -253,6 +253,29 @@ with open(os.path.join(ROOT, "test_tracks_22.ini"), 'w') as fh:
     fh.write(test_tracks_22)
 
 
+test_tracks_23 = """
+[x-axis]
+
+[maf]
+file = first.maf
+reference = mm10
+species_order_only = true
+"""
+with open(os.path.join(ROOT, "test_tracks_23.ini"), 'w') as fh:
+    fh.write(test_tracks_23)
+
+
+test_tracks_24 = """
+[x-axis]
+
+[maf]
+file = mm10_chr2_malformed.maf
+reference = mm10
+"""
+with open(os.path.join(ROOT, "test_tracks_24.ini"), 'w') as fh:
+    fh.write(test_tracks_24)
+
+
 class TestCheckerMethods(unittest.TestCase):
 
     def test_vline_without_file(self):
@@ -654,6 +677,41 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("whereas we should have a float value between 0 and 1" in str(context.exception))
+        os.remove(ini_file)
+
+    def test_maf_order_only_while_no_order(self):
+        """
+        This test check that if you put
+        species_order_only while you did not
+        specify the order
+        it will raise an input error
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_23.ini")
+        region = "chr2:34704975-34705208"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("species_order_only set to true while species_order not specified." in str(context.exception))
+        os.remove(ini_file)
+
+    def test_maf_malformed(self):
+        """
+        This test check that if you put
+        a malformed maf (here start coo is 'a')
+        it will raise an input error
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_24.ini")
+        region = "chr2:34704975-34705208"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("Unable to generate index for" in str(context.exception))
         os.remove(ini_file)
 
 

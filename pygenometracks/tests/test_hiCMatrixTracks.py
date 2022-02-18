@@ -4,6 +4,7 @@ from matplotlib.testing.compare import compare_images
 from tempfile import NamedTemporaryFile
 import os.path
 import pygenometracks.plotTracks
+import sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                     "test_data")
@@ -413,6 +414,10 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 
 def test_plot_tracks_with_hic():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 14
+    else:
+        my_tolerance = tolerance
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
@@ -424,13 +429,17 @@ def test_plot_tracks_with_hic():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
 
 
 def test_plot_tracks_with_hic_dec():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 14
+    else:
+        my_tolerance = tolerance
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
@@ -443,13 +452,17 @@ def test_plot_tracks_with_hic_dec():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
 
 
 def test_plot_tracks_with_cool_region():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 14
+    else:
+        my_tolerance = tolerance
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
@@ -461,14 +474,17 @@ def test_plot_tracks_with_cool_region():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
 
 
 def test_plot_hic_logmlog():
-
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 21
+    else:
+        my_tolerance = tolerance
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "browser_tracks_hic_log-log.ini")
@@ -479,15 +495,18 @@ def test_plot_hic_logmlog():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
 
 
 def test_plot_tracks_with_hic_rasterize_height_2chr():
+    if mpl.__version__ == "3.1.1" or sys.version_info.minor == 6:
+        my_tolerance = 18
+    else:
+        my_tolerance = tolerance
     extension = '.pdf'
-
     outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "browser_tracks_hic_rasterize_height.ini")
@@ -510,7 +529,7 @@ def test_plot_tracks_with_hic_rasterize_height_2chr():
         os.system(f'cp {expected_file} {new_expected_file.name}')
         expected_file = new_expected_file.name
         res = compare_images(expected_file,
-                             output_file, tolerance)
+                             output_file, my_tolerance)
         assert res is None, res
 
         os.remove(output_file)
