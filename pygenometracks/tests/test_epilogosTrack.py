@@ -63,7 +63,7 @@ def test_epilogos_track_overlap_chr_end():
                                  delete=False)
     ini_file = os.path.join(ROOT, "epilogos.ini")
     region = "chrX:3490000-24000000"
-    expected_file = os.path.join(ROOT, 'master_epilogos_overlap_chr_end.png')
+    expected_file = os.path.join(ROOT, 'master_epilogos_overlap_end.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
@@ -80,7 +80,7 @@ def test_epilogos_track_over_chr_end():
                                  delete=False)
     ini_file = os.path.join(ROOT, "epilogos.ini")
     region = "X:25000000-30000000"
-    expected_file = os.path.join(ROOT, 'master_epilogos_over_chr_end.png')
+    expected_file = os.path.join(ROOT, 'master_epilogos_over_end.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
