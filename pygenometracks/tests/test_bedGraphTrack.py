@@ -231,7 +231,17 @@ height = 3
 with open(os.path.join(ROOT, "bedgraph_withNA.ini"), 'w') as fh:
     fh.write(bedgraph_withNA)
 
-for suff in ["", "2", "3"]:
+operation_withNA = """
+[test bedgraph withNA in op]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+second_file = bedgraph_withNA.bdg
+operation = file - second_file
+height = 3
+"""
+with open(os.path.join(ROOT, "bedgraph_operation_withNA.ini"), 'w') as fh:
+    fh.write(operation_withNA)
+
+for suff in ["", "2", "3", "4"]:
     invalid_bedgraph = f"""
 [invalid_bedgraph{suff}]
 file = invalid_bedgraph{suff}.bdg
@@ -241,6 +251,18 @@ height = 3
 """
     with open(os.path.join(ROOT, f"invalid_bedgraph{suff}.ini"), 'w') as fh:
         fh.write(invalid_bedgraph)
+suff = "5"
+invalid_bedgraph = f"""
+[invalid_bedgraph{suff}]
+file = bedgraph2_X_2.5e6_3.5e6.bdg
+second_file = invalid_bedgraph4.bdg
+operation = file - second_file
+height = 3
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, f"invalid_bedgraph{suff}.ini"), 'w') as fh:
+    fh.write(invalid_bedgraph)
 
 unsorted_bedgraph = """
 [unsorted_bedgraph]
@@ -409,6 +431,22 @@ def test_bdg_withNA():
     os.remove(outfile.name)
 
 
+def test_operation_withNA():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bdg_NA_', delete=False)
+    ini_file = os.path.join(ROOT, "bedgraph_operation_withNA.ini")
+    region = "X:2700000-3100000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_operation_withNA.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_bdg_unsorted():
     outfile = NamedTemporaryFile(suffix='.png', prefix='pgt_test_', delete=False)
     ini_file = os.path.join(ROOT, "unsorted_bedgraph.ini")
@@ -493,6 +531,24 @@ def test_invalid_bedgraph3():
         raise Exception("The invalid_bedgraph3 should fail.")
 
     os.remove(ini_file)
+
+
+def test_invalid_bedgraph4and5():
+    for suf in ["4", "5"]:
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pgt_test_', delete=True)
+        ini_file = os.path.join(ROOT, f"invalid_bedgraph{suf}.ini")
+        region = "X:2700000-3100000"
+        args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+            f"--outFileName {outfile.name}".split()
+        try:
+            pygenometracks.plotTracks.main(args)
+        except ValueError as e:
+            assert 'could not convert string to float' in str(e)
+        else:
+            raise Exception(f"The invalid_bedgraph{suf} should fail.")
+
+        os.remove(ini_file)
 
 
 def test_bedgraph_neg_log1p():

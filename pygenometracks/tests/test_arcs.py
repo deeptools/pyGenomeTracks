@@ -103,6 +103,9 @@ with open(os.path.join(ROOT, "short_long_arcs.ini"), 'w') as fh:
 with open(os.path.join(ROOT, "short_long_arcs_incorrect.ini"), 'w') as fh:
     fh.write(browser_tracks.replace('compact_arcs_level = 2', 'compact_arcs_level = 2\nylim=1000000'))
 
+with open(os.path.join(ROOT, "short_long_arcs_incorrect2.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace('compact_arcs_level = 2', 'compact_arcs_level = 2\nregion2=chrX:0-10'))
+
 browser_tracks = """
 [x-axis]
 where = top
@@ -312,6 +315,8 @@ height = 3
 """
 with open(os.path.join(ROOT, "links_squares.ini"), 'w') as fh:
     fh.write(browser_tracks)
+with open(os.path.join(ROOT, "links_squares_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("[test trans4]", "[test trans4]\nuse_middle = true"))
 
 
 browser_tracks = """
@@ -358,7 +363,7 @@ def test_short_long_arcs():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
-    for suf in ['', '_incorrect']:
+    for suf in ['', '_incorrect', '_incorrect2']:
         ini_file = os.path.join(ROOT, f"short_long_arcs{suf}.ini")
         region = "chr11:40000000-46000000"
         expected_file = os.path.join(ROOT, 'master_short_long_arcs.png')
@@ -459,20 +464,25 @@ def test_squares_links():
     else:
         my_tolerance = tolerance
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                 delete=False)
-    ini_file = os.path.join(ROOT, "links_squares.ini")
-    region = "X:3000000-3300000"
-    expected_file = os.path.join(ROOT, 'master_links_squares.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, my_tolerance)
-    assert res is None, res
+    for suf in ['', '_incorrect']:
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        ini_file = os.path.join(ROOT, f"links_squares{suf}.ini")
+        region = "X:3000000-3300000"
+        expected_file = os.path.join(ROOT, 'master_links_squares.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                            outfile.name, my_tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
+        os.remove(outfile.name)
+
+        # Remove incorrect ini file
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
 
 
 def test_squares_links_overlay():

@@ -143,3 +143,20 @@ def test_bedgraphmatrix_track():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_bedgraphmatrix_track_chr1():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bedgraph.ini")
+    region = "chr1:0-100000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_chr1.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)

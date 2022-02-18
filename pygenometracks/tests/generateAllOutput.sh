@@ -34,6 +34,7 @@ bin/pgt --tracks pygenometracks/tests/test_data/bed_different_UTR.ini --region c
 
 # test_bedGraphMatrixTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region X:2850000-3150000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region chr1:0-100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph_chr1.png
 
 # test bedGraphTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --BED ./pygenometracks/tests/test_data/regions_imbricated_chr2.bed --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.png
@@ -43,6 +44,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_withNA.ini --region X
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_negative.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_negative.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_end_not_covered.ini --region chr7:100-400 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph_end_not_covered.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid_op.ini --region chr2:74000000-74800000 --trackLabelFraction 0.2 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid_op.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_operation_withNA.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph_operation_withNA.png
 
 # test bigWigTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bigwig.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bigwig.png
