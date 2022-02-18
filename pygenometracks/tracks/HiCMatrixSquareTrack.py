@@ -79,10 +79,10 @@ file_type = {TRACK_TYPE}
         # Or it may be shortened:
         if region_start > self.hic_ma.get_chromosome_sizes()[chrom_region]:
             self.log.warning("*Warning*\nThe region to plot starts beyond the"
-                                " last bin with data on this chromosome."
-                                " This will generate an empty track.\n"
-                                f"{chrom_region} last bin: {self.hic_ma.get_chromosome_sizes()[chrom_region]}"
-                                f". Region to plot on y {region_start}-{region_end}\n")
+                             " last bin with data on this chromosome."
+                             " This will generate an empty track.\n"
+                             f"{chrom_region} last bin: {self.hic_ma.get_chromosome_sizes()[chrom_region]}"
+                             f". Region to plot on y {region_start}-{region_end}\n")
             self.img = None
             return
 

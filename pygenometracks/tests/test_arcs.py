@@ -475,7 +475,7 @@ def test_squares_links():
                f"--outFileName {outfile.name}".split()
         pygenometracks.plotTracks.main(args)
         res = compare_images(expected_file,
-                            outfile.name, my_tolerance)
+                             outfile.name, my_tolerance)
         assert res is None, res
 
         os.remove(outfile.name)
