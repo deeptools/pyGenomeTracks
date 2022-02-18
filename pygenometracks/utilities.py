@@ -69,7 +69,7 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
         # We extend the start and end:
         plot_regions_ext = [(chrom, max(0, start - around_region), end + around_region) for chrom, start, end in plot_regions]
         # We will overlap with both version of chromosome name:
-        plot_regions_as_bed = '\n'.join([f'{chrom} {start} {end}\n{change_chrom_names(chrom)} {start} {end}' for chrom, start, end in plot_regions_ext])
+        plot_regions_as_bed = '\n'.join([f'{chrom}\t{start}\t{end}\n{change_chrom_names(chrom)}\t{start}\t{end}' for chrom, start, end in plot_regions_ext])
         regions = pybedtools.BedTool(plot_regions_as_bed, from_string=True)
         # Bedtools will put a warning because we are using inconsistent
         # nomenclature (with and without chr)
