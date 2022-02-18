@@ -8,7 +8,7 @@ from .. utilities import opener, to_string, change_chrom_names, temp_file_from_i
 from tqdm import tqdm
 
 DEFAULT_LINKS_COLOR = 'blue'
-HUGE_NUMBER = 1e15  # Which should be above any chromosome size
+HUGE_NUMBER = int(1e9)  # Which should be above any chromosome size
 
 
 class LinksTrack(GenomeTrack):
