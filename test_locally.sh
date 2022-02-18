@@ -2,7 +2,7 @@
 
 source $(dirname $(dirname $(which conda)))/etc/profile.d/conda.sh
 
-for TRAVIS_PYTHON_VERSION in 3.6 3.7 3.8 3.9; do
+for TRAVIS_PYTHON_VERSION in 3.7 3.8 3.9; do
     for dir in $(find . -name "__pycache__"); do
         rm -r $dir
     done

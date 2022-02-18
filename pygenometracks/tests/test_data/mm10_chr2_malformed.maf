@@ -1,0 +1,5 @@
+##maf version=1
+a score=853550.0
+s mm10.chr2              a    46 + 182113224 AGAGAAACACTTTTGATTGTCTATTTGTCATTCTTAGAAATGAAGT 
+s rn5.chr3               67450406    45 + 183740530 AAAGAAACACTTTTGATT-TCTATTTGTCATTCTTAGAAATGAAAT 
+i rn5.chr3                                          C 0 C 0                                        

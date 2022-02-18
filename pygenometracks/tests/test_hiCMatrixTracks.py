@@ -474,7 +474,7 @@ def test_plot_tracks_with_cool_region():
 
 
 def test_plot_hic_logmlog():
-    if mpl.__version__ == "3.1.1" or sys.version_info.minor == 6:
+    if mpl.__version__ == "3.1.1":
         my_tolerance = 21
     else:
         my_tolerance = tolerance

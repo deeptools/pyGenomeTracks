@@ -9,12 +9,6 @@ jobs:
     vmImage: 'ubuntu-latest'
   strategy:
     matrix:
-      Python36LowMatplotlib:
-        python.version: '3.6'
-        matplotlib.version: '3.1.1'
-      Python36HighMatplotlib:
-        python.version: '3.6'
-        matplotlib.version: '3.3.4'
       Python37LowMatplotlib:
         python.version: '3.7'
         matplotlib.version: '3.1.1'
@@ -60,12 +54,6 @@ jobs:
     vmImage: 'macOS-11'
   strategy:
     matrix:
-      Python36LowMatplotlib:
-        python.version: '3.6'
-        matplotlib.version: '3.1.1'
-      Python36HighMatplotlib:
-        python.version: '3.6'
-        matplotlib.version: '3.3.4'
       Python37LowMatplotlib:
         python.version: '3.7'
         matplotlib.version: '3.1.1'

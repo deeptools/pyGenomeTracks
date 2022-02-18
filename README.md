@@ -43,7 +43,7 @@ Table of content
 
 Installation
 ------------
-pyGenomeTracks works with python >=3.6.
+pyGenomeTracks works with python >=3.7.
 
 The recommended way to install pyGenomeTracks is via conda
 
