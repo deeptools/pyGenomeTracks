@@ -390,8 +390,6 @@ file_type = {TRACK_TYPE}
                                  " inside the bed file. "
                                  "This will generate an empty track!!\n")
                 return
-        chrom_region = self.check_chrom_str_bytes(self.interval_tree,
-                                                  chrom_region)
 
         genes_overlap = \
             sorted(self.interval_tree[chrom_region][start_region:end_region])

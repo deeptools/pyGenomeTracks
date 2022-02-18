@@ -39,22 +39,6 @@ def to_string(s):
     return s
 
 
-def to_bytes(s):
-    """
-    Like toString, but for functions requiring bytes in python3
-    """
-    assert(sys.version_info[0] != 2)
-#    if sys.version_info[0] == 2:
-#        return s
-    if isinstance(s, bytes):
-        return s
-    if isinstance(s, str):
-        return bytes(s, 'ascii')
-    if isinstance(s, list):
-        return [to_bytes(x) for x in s]
-    return s
-
-
 def opener(filename):
     """
     Determines if a file is compressed or not
@@ -85,7 +69,7 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
         # We extend the start and end:
         plot_regions_ext = [(chrom, max(0, start - around_region), end + around_region) for chrom, start, end in plot_regions]
         # We will overlap with both version of chromosome name:
-        plot_regions_as_bed = '\n'.join([f'{chrom} {start} {end}\n{change_chrom_names(chrom)} {start} {end}' for chrom, start, end in plot_regions_ext])
+        plot_regions_as_bed = '\n'.join([f'{chrom}\t{start}\t{end}\n{change_chrom_names(chrom)}\t{start}\t{end}' for chrom, start, end in plot_regions_ext])
         regions = pybedtools.BedTool(plot_regions_as_bed, from_string=True)
         # Bedtools will put a warning because we are using inconsistent
         # nomenclature (with and without chr)
@@ -199,7 +183,7 @@ def file_to_intervaltree(file_name, plot_regions=None):
         valid_intervals += 1
 
     if valid_intervals == 0:
-        if file_to_open == file_name:
+        if file_to_open != file_name:
             suffix = " after intersection with the plotted region"
         else:
             suffix = ""

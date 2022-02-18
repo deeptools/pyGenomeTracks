@@ -17,6 +17,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/bed_shuffle.ini --BED ./pygeno
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_italic.ini --region chr2:74,650,000-74,710,000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_italic.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_vlines.ini --BED ./pygenometracks/tests/test_data/regionsXfakeChr.bed --trackLabelFraction 0.5 --width 38 --dpi 130 --trackLabelHAlign center -o ./pygenometracks/tests/test_data/master_bed_vlines.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/vhighlight.ini --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_vhighlight.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/vhighlight.ini --region chrX:0-1,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_vhighlight_chrX.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_genes_rgb.ini --region chr2:74,650,000-74,710,000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_genes_rgb.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/gtf_merge_overlapping_exons.ini --region chr2:74,704,000-74,710,000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_gtf_merge_overlapping_exons.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/gtf_no_exon.ini --region 381:0-1000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_gtf_no_exon.png
@@ -33,6 +34,7 @@ bin/pgt --tracks pygenometracks/tests/test_data/bed_different_UTR.ini --region c
 
 # test_bedGraphMatrixTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region X:2850000-3150000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region chr1:0-100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph_chr1.png
 
 # test bedGraphTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --BED ./pygenometracks/tests/test_data/regions_imbricated_chr2.bed --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.png
@@ -42,6 +44,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_withNA.ini --region X
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_negative.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_negative.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_end_not_covered.ini --region chr7:100-400 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph_end_not_covered.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid_op.ini --region chr2:74000000-74800000 --trackLabelFraction 0.2 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid_op.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_operation_withNA.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph_operation_withNA.png
 
 # test bigWigTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bigwig.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bigwig.png
@@ -152,5 +155,8 @@ bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_u
 bin/pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region chr2:0-11 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_inexistingchr.png
 
 # hic_matrix_square
-bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_square.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region chrX:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_square.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/hic_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 --decreasingXAxis -o ./pygenometracks/tests/test_data/master_hic_square_dec.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_square.ini --region chr1:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_square.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_square.ini --region chrX:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_square_chrX.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_square_bad_region2.ini --region chr1:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_square_bad_region2.png

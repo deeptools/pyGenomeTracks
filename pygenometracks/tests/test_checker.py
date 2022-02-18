@@ -204,6 +204,55 @@ with open(os.path.join(ROOT, "test_tracks_18.ini"), 'w') as fh:
     fh.write(test_tracks_18)
 
 
+test_tracks_19 = """
+[x-axis]
+
+[vlines1]
+type = vlines
+file = dm3_genes.bed4.gz
+
+[vlines2]
+type = vlines
+file = tad_classification.bed
+"""
+with open(os.path.join(ROOT, "test_tracks_19.ini"), 'w') as fh:
+    fh.write(test_tracks_19)
+
+
+test_tracks_20 = """
+[x-axis]
+
+[vhighlight]
+type = vhighlight
+"""
+with open(os.path.join(ROOT, "test_tracks_20.ini"), 'w') as fh:
+    fh.write(test_tracks_20)
+
+
+test_tracks_21 = """
+[x-axis]
+
+[vhighlight]
+type = vhighlight
+file = dm3_genes.bed4.gz
+alpha = a
+"""
+with open(os.path.join(ROOT, "test_tracks_21.ini"), 'w') as fh:
+    fh.write(test_tracks_21)
+
+
+test_tracks_22 = """
+[x-axis]
+
+[vhighlight]
+type = vhighlight
+file = dm3_genes.bed4.gz
+alpha = 2
+"""
+with open(os.path.join(ROOT, "test_tracks_22.ini"), 'w') as fh:
+    fh.write(test_tracks_22)
+
+
 test_tracks_23 = """
 [x-axis]
 
@@ -560,6 +609,74 @@ class TestCheckerMethods(unittest.TestCase):
             pygenometracks.plotTracks.main(args)
 
         assert("uses signs which are not allowed" in str(context.exception))
+        os.remove(ini_file)
+
+    def test_2_vlines(self):
+        """
+        This test check that if you did not put
+        2 sections with vlines
+        it will raise an input error
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_19.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("vlines defined in 2 different sections" in str(context.exception))
+        os.remove(ini_file)
+
+    def test_vhighlight_no_file(self):
+        """
+        This test check that if you did not put
+        vhighlight without file
+        it will raise an input error
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_20.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("is supposed to be a vhighlight but there is no file" in str(context.exception))
+        os.remove(ini_file)
+
+    def test_vhighlight_alpha_float(self):
+        """
+        This test check that if you did not put
+        vhighlight with a alpha which is not a float
+        it will raise an input error
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_21.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("whereas we should have a float" in str(context.exception))
+        os.remove(ini_file)
+
+    def test_vhighlight_alpha_range(self):
+        """
+        This test check that if you did not put
+        vhighlight with a alpha outside of 0-1
+        it will raise an input error
+        """
+        outfile_name = "test.png"
+        ini_file = os.path.join(ROOT, "test_tracks_22.ini")
+        region = "X:3000000-3300000"
+        args = f"--tracks {ini_file} --region {region} "\
+               f"--outFileName {outfile_name}".split()
+        with self.assertRaises(InputError) as context:
+            pygenometracks.plotTracks.main(args)
+
+        assert("whereas we should have a float value between 0 and 1" in str(context.exception))
         os.remove(ini_file)
 
     def test_maf_order_only_while_no_order(self):

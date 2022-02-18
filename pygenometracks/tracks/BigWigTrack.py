@@ -157,8 +157,6 @@ file_type = {TRACK_TYPE}
                 self.adjust_ylim(ax)
                 return
 
-        chrom_region = self.check_chrom_str_bytes(self.bw.chroms().keys(), chrom_region)
-
         # on rare occasions pyBigWig may throw an error, apparently caused by a corruption
         # of the memory. This only occurs when calling trackPlot from different
         # processors. Reloading the file solves the problem.

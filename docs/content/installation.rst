@@ -12,7 +12,7 @@ Requirements
 
 Python dependencies:
 
-* Python >= 3.6
+* Python >= 3.7
 * numpy >= 1.16
 * intervaltree >= 2.1.0
 * pyBigWig >= 0.3.16
@@ -22,6 +22,7 @@ Python dependencies:
 * gffutils >= 0.9
 * pybedtools >= 0.8.1
 * tqdm >= 4.20
+* bx-python >=0.8.13
 * pyfaidx >= 0.1.3
 
 External dependencies:

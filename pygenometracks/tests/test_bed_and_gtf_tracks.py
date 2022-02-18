@@ -227,6 +227,13 @@ max_labels = 600
 with open(os.path.join(ROOT, "bed_maxLab_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+with open(os.path.join(ROOT, "bed_maxLab_tracks_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("max_labels = 600\n\n",
+                                    "max_labels = 600\ncolor = (1, 0.88, 2./3)\n"))
+with open(os.path.join(ROOT, "bed_maxLab_tracks_incorrect2.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("max_labels = 600\n\n",
+                                    "max_labels = 600\ncolor = (1, 0.88, 2.3)\n"))
+
 browser_tracks = """
 [x-axis]
 where = top
@@ -562,6 +569,10 @@ max_value = 2
 """
 with open(os.path.join(ROOT, "bed_colormap_genes.ini"), 'w') as fh:
     fh.write(browser_tracks)
+with open(os.path.join(ROOT, "bed_colormap_genes_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("color_utr = Reds",
+                                    "color_utr = Reds\nborder_color = viridis"))
+
 
 browser_tracks = """
 [genes]
@@ -689,6 +700,7 @@ type = vhighlight
 file = hoxd_genes_noGm_rgb.bed.gz
 type = vhighlight
 color = green
+alpha = 0.3
 
 [spacer]
 
@@ -696,6 +708,9 @@ color = green
 """
 with open(os.path.join(ROOT, "vhighlight.ini"), 'w') as fh:
     fh.write(browser_tracks)
+with open(os.path.join(ROOT, "vhighlight_incorrect.ini"), 'w') as fh:
+    fh.write(browser_tracks.replace("bed\ntype = vhighlight",
+                                    "bed\ncolor = notvalid\nuseless = true\ntype = vhighlight"))
 
 browser_tracks = """
 [x-axis]
@@ -836,6 +851,23 @@ overlay_previous = yes
 with open(os.path.join(ROOT, "bed_squares_overlay.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[rtf]
+file = TadDomains_rtf.bed
+"""
+with open(os.path.join(ROOT, "bed_invalid_rtf.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[x-axis]
+[vlines]
+file = TadDomains_rtf.bed
+type = vlines
+"""
+with open(os.path.join(ROOT, "bed_invalid_rtf_vlines.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -969,20 +1001,24 @@ def test_plot_tracks_tssarrow_zoom2():
 
 def test_plot_tracks_bed_with_maxLab():
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                 delete=False)
-    ini_file = os.path.join(ROOT, "bed_maxLab_tracks.ini")
-    region = "X:2000000-3500000"
-    expected_file = os.path.join(ROOT, 'master_maxLab.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
+    for suf in ['', '_incorrect', '_incorrect2']:
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        ini_file = os.path.join(ROOT, f"bed_maxLab_tracks{suf}.ini")
+        region = "X:2000000-3500000"
+        expected_file = os.path.join(ROOT, 'master_maxLab.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
 
-    os.remove(outfile.name)
+        os.remove(outfile.name)
+        # remove the incorrect ini file
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
 
 
 def test_plot_tracks_genes_rgb():
@@ -1082,21 +1118,23 @@ def test_bed_as_gtf():
 
 
 def test_plot_tracks_bed_scores():
+    for suf in ['', '_incorrect']:
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        ini_file = os.path.join(ROOT, f"bed_colormap_genes{suf}.ini")
+        region = "X:3000000-3300000"
+        expected_file = os.path.join(ROOT, 'master_bed_colormap_genes.png')
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
 
-    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                 delete=False)
-    ini_file = os.path.join(ROOT, "bed_colormap_genes.ini")
-    region = "X:3000000-3300000"
-    expected_file = os.path.join(ROOT, 'master_bed_colormap_genes.png')
-    args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
-           f"--outFileName {outfile.name}".split()
-    pygenometracks.plotTracks.main(args)
-    res = compare_images(expected_file,
-                         outfile.name, tolerance)
-    assert res is None, res
-
-    os.remove(outfile.name)
+        os.remove(outfile.name)
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
 
 
 def test_bed_shuffle():
@@ -1185,12 +1223,33 @@ def test_plot_tracks_bed_different_UTR():
 
 
 def test_vhighlight():
+    for suf in ['', '_incorrect']:
+        ini_file = os.path.join(ROOT, f"vhighlight{suf}.ini")
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        region = "chr2:73,800,000-75,744,000"
+        expected_file = os.path.join(ROOT, 'master_vhighlight.png')
+        args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+            f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        res = compare_images(expected_file,
+                             outfile.name, tolerance)
+        assert res is None, res
+
+        os.remove(outfile.name)
+        # remove the incorrect ini file
+        if 'incorrect' in ini_file:
+            os.remove(ini_file)
+
+
+def test_vhighlight_chrX():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
     ini_file = os.path.join(ROOT, "vhighlight.ini")
-    region = "chr2:73,800,000-75,744,000"
-    expected_file = os.path.join(ROOT, 'master_vhighlight.png')
+    region = "chrX:0-1,000"
+    expected_file = os.path.join(ROOT, 'master_vhighlight_chrX.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
@@ -1254,3 +1313,22 @@ def test_plot_bed_squares():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_rtf():
+    for suf in ['', '_vlines']:
+        ini_file = os.path.join(ROOT, f"bed_invalid_rtf{suf}.ini")
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        region = "chr8:55000000-60000000"
+        args = f"--tracks {ini_file} --region {region} "\
+               "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+               f"--outFileName {outfile.name}".split()
+        try:
+            pygenometracks.plotTracks.main(args)
+        except InputError as e:
+            assert 'rtf' in str(e)
+        else:
+            raise Exception(f"The bed_invalid_rtf{suf} should fail.")
+
+        os.remove(ini_file)
