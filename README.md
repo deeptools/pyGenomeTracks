@@ -35,14 +35,16 @@ pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s4146
 
 Table of content
 ----------------
-  * [Installation](#installation)
-  * [Usage](#usage)
-  * [Citation](#citation)
-  * [Documentation](#documentation)
-  * [External users](#external-users)
+
+* [Installation](#installation)
+* [Usage](#usage)
+* [Citation](#citation)
+* [Documentation](#documentation)
+* [External users](#external-users)
 
 Installation
 ------------
+
 pyGenomeTracks works with python >=3.7.
 
 The recommended way to install pyGenomeTracks is via conda
@@ -67,6 +69,7 @@ Since version 3.5, pyGenomeTracks uses BEDTools, don't forget to install it or l
 
 Usage
 -----
+
 To run pyGenomeTracks a configuration file describing the tracks is required. The easiest way to create this file is using the program `make_tracks_file` which creates a configuration file with
 defaults that can be easily changed. The format is:
 
