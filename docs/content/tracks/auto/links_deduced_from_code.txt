@@ -12,7 +12,7 @@ Optional:
 
 - **orientation**: by default this option is not set but you can also put: inverted.
 
-- **links_type**: `arcs` (default) or triangles or loops.
+- **links_type**: `arcs` (default) or triangles, loops or squares.
 
 - **line_width**: by default this option is not set but you can also put: any float above 0
 
@@ -31,4 +31,6 @@ Optional:
 - **compact_arcs_level**: `0` (default) or 1 or 2.
 
 - **use_middle**: `false` (default) or true.
+
+- **region2**: by default this option is not set
 

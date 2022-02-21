@@ -32,9 +32,11 @@ Optional:
 
 - **style**: `flybase` (default) or UCSC or tssarrow.
 
-- **display**: `stacked` (default) or collapsed, triangles or interleaved.
+- **display**: `stacked` (default) or collapsed, triangles, interleaved or squares.
 
 - **max_labels**: `60` (default) or any integer above 0
+
+- **merge_overlapping_exons**: `false` (default) or true.
 
 - **global_max_row**: `false` (default) or true.
 
@@ -44,7 +46,11 @@ Optional:
 
 - **arrowhead_included**: `false` (default) or true.
 
+- **arrowhead_fraction**: `0.004` (default) or any float above 0
+
 - **color_utr**: `grey` (default)
+
+- **color_backbone**: `black` (default)
 
 - **height_utr**: `1` (default) or any float above 0 below 1
 
@@ -53,4 +59,6 @@ Optional:
 - **all_labels_inside**: `false` (default) or true.
 
 - **labels_in_margin**: `false` (default) or true.
+
+- **fontstyle**: `normal` (default) or italic or oblique.
 

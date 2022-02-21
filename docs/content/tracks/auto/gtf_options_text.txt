@@ -16,6 +16,10 @@ height = 2
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
 # merge_transcripts = true
+# Sometimes merging transcripts without merging overlapping
+# exons may give unexpected output especially when
+# multiple 3' exons overlap. We recommand to use:
+# merge_overlapping_exons = true
 # You can change the color of coding sequences by:
 color = darkblue
 # height of track in cm
@@ -61,6 +65,8 @@ fontsize = 10
 # If you want to display the name of the gene which goes over the plotted
 # region in the right margin put:
 #labels_in_margin = true
+# If you want to use italic for your labels:
+#fontstyle = italic
 # if you use UCSC style, you can set the relative distance between 2 arrows on introns
 # default is 2
 #arrow_interval = 2
@@ -72,12 +78,19 @@ fontsize = 10
 # as well as the proportion between their height and the one of coding
 # (by default they are the same height):
 #height_utr = 1
+# if you use flybase or UCSC style, you can choose the color of the backbone
+#color_backbone = red
 # By default, for oriented intervals in flybase style,
 # or bed files with less than 12 columns, the arrowhead is added
 # outside of the interval.
 # If you want that the tip of the arrow correspond to
 # the extremity of the interval use:
-# arrowhead_included = true
+#arrowhead_included = true
+# By default the size of this arrow is 0.4% of the plotted region.
+# This size is also used to put space between the bed regions and
+# their labels.
+# To increase it:
+#arrowhead_fraction = 0.01
 # optional. If not given is guessed from the file ending.
 file_type = gtf
     
