@@ -4,6 +4,8 @@ fasta
 Description
 -----------
 
+A track to display sequences from fasta files.
+
 Parameters
 ----------
 
