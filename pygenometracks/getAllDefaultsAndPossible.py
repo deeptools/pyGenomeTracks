@@ -123,7 +123,7 @@ def main():
     for j, track_type in enumerate(all_tracks_with_default, start=1):
         mat_csv[0, j] = track_type
     np.savetxt(os.path.join("docs", "content", "all_default_properties.csv"),
-               mat_csv, fmt=f'%s', delimiter=",")
+               mat_csv, fmt='%s', delimiter=",")
 
     if starPut:
         with open(os.path.join("docs", "content", "all_default_properties_rst.txt"), 'a') as f:
