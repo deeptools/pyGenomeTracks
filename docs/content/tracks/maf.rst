@@ -5,7 +5,7 @@ Description
 -----------
 
 A track for MAF (multiple alignment format).
-See the `format description from UCSC<https://genome.ucsc.edu/FAQ/FAQformat.html#format5>`_.
+See the `format description from UCSC <https://genome.ucsc.edu/FAQ/FAQformat.html#format5>`_.
 
 Parameters
 ----------
