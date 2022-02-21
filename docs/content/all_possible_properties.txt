@@ -1,6 +1,6 @@
 - **overlay_previous**:
 
-  - for *x_axis, epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, scalebar, fasta, spacer, maf, hic_matrix_square*: no, yes, share-y
+  - for *x_axis, epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, hic_matrix_square, scalebar, fasta, spacer, maf*: no, yes, share-y
 
 - **where**:
 
@@ -10,7 +10,7 @@
 
 - **orientation**:
 
-  - for *epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, maf, hic_matrix_square*: inverted, not set
+  - for *epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, hic_matrix_square, maf*: inverted, not set
 
 - **links_type**:
 

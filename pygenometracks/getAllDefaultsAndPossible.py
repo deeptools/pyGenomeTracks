@@ -49,7 +49,8 @@ def main():
     my_prefered_order_tracks_names = ['x_axis', 'epilogos', 'links',
                                       'domains', 'bed', 'gtf', 'narrow_peak',
                                       'bigwig', 'bedgraph', 'bedgraph_matrix',
-                                      'hlines', 'hic_matrix', 'scalebar']
+                                      'hlines', 'hic_matrix', 'hic_matrix_square',
+                                      'scalebar']
     my_prefered_order_tracks_names = [k for k in my_prefered_order_tracks_names
                                       if k in all_tracks]
     other_tracks = list(set([k for k in all_tracks.keys() if k is not None])
