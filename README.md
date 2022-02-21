@@ -63,15 +63,7 @@ Also, pyGenomeTracks can be installed using pip
 pip install pyGenomeTracks
 ```
 
-Since version 3.5, pyGenomeTracks uses BEDTools, don't forget to install it or load it into your environment
-
-
-If the latest version wants to be installed use:
-
-```bash
-$ pip install  git+https://github.com/deeptools/pyGenomeTracks.git
-```
-
+Since version 3.5, pyGenomeTracks uses BEDTools, don't forget to install it or load it into your environment.
 
 Usage
 -----
