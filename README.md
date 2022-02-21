@@ -16,10 +16,13 @@ are highly customizable. Currently, it is possible to plot:
  * bigwig
  * bed/gtf (many options)
  * bedgraph
+ * bedgraph matrices (like TAD-separation scores)
  * epilogos
  * narrow peaks
- * links (represented as arcs)
- * Hi-C matrices
+ * links (represented as arcs, triangles or squares)
+ * Hi-C matrices (as triangle or squares)
+ * fasta
+ * maf (multiple alignment format)
 
 Here is a scheme which describe how pyGenomeTracks is working (graphical abstract of [Lopez-Delisle et al. 2020](https://doi.org/10.1093/bioinformatics/btaa692)):
 
