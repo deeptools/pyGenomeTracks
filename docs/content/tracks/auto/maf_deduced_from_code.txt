@@ -1,0 +1,34 @@
+Necessary:
+^^^^^^^^^^
+- **file**
+
+- **reference**
+
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: `0.5` (default) or float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+
+- **orientation**: by default this option is not set but you can also put: inverted.
+
+- **line_width**: `0.5` (default) or any float above 0
+
+- **file_index**: by default this option is not set
+
+- **color_identical**: `black` (default)
+
+- **color_mismatch**: `grey` (default)
+
+- **color_gap**: `lightgrey` (default)
+
+- **species_order**: by default this option is not set
+
+- **species_labels**: by default this option is not set
+
+- **species_order_only**: `false` (default) or true.
+
+- **display_ref_seq**: `false` (default) or true.
+

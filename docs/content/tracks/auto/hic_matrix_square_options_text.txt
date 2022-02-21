@@ -27,9 +27,10 @@ show_masked_bins = false
 # (only used if you use pdf or svg output format) by using:
 # rasterize = false
     
-# depth is the maximum distance that should be plotted.
-# If it is more than 125% of the plotted region, it will
-# be adjsted to this maximum value.
-depth = 100000
-file_type = hic_matrix
+# region2 is the region that should be plotted on the y axis.
+# Default is the region on the x-axis
+# By default the top is the start and the bottom is the end
+# If orientation=inverted is used it is the contrary.
+#region2 = X:3000000-3500000
+file_type = hic_matrix_square
     

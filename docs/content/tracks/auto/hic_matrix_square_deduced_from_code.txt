@@ -16,19 +16,15 @@ Optional:
 
 - **min_value**: by default this option is not set but you can also put: any float
 
-- **show_data_range**: `true` (default) or false.
+- **region2**: by default this option is not set
 
-- **type**: `matrix` (default) or lines.
+- **transform**: `no` (default) or log, log1p or -log.
 
 - **rasterize**: `true` (default) or false.
 
-- **pos_score_in_bin**: `center` (default) or block.
+- **colormap**: `RdYlBu_r` (default)
 
-- **plot_horizontal_lines**: `false` (default) or true.
+- **show_masked_bins**: `false` (default) or true.
 
-- **colormap**: `viridis` (default)
-
-- **individual_color**: `grey` (default)
-
-- **summary_color**: `#1f77b4` (default)
+- **scale_factor**: `1` (default) or any float
 

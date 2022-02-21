@@ -21,6 +21,10 @@ height = 2
 # if type is set as lines, then the TAD score lines are drawn instead
 # of the matrix otherwise a heatmap is plotted
 type = lines
+# by default individual lines are colored in grey:
+individual_color = grey
+# by default the summary line is colored in blue:
+summary_color = #1f77b4
 # If the type is not lines, you can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = false
