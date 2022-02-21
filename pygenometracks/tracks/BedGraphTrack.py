@@ -288,6 +288,10 @@ file_type = {TRACK_TYPE}
             score_list.append(values)
             pos_list.append((start, end))
 
+        if self.num_fields is None:
+            # This means there is no value:
+            return score_list, pos_list
+
         # Add a last value if needed:
         if prev_end < end_region and return_nans:
             score_list.append(np.repeat(np.nan, self.num_fields))
