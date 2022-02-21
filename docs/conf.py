@@ -27,6 +27,7 @@ MOCK_MODULES = ['pygenometracks.tracksClass',  # (required for both)
                 # For plotTracks in plotTracks
                 'matplotlib',
                 # For plotTracks in utilities
+                'matplotlib.ticker',
                 'numpy',
                 'tqdm',
                 'pyfaidx',
