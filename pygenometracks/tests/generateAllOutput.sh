@@ -35,6 +35,7 @@ bin/pgt --tracks pygenometracks/tests/test_data/bed_different_UTR.ini --region c
 # test_bedGraphMatrixTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region X:2850000-3150000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph.ini --region chr1:0-100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph_chr1.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_matrix_line_colors.ini --region X:2850000-3150000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph_matrix_line_colors.png
 
 # test bedGraphTrack:
 bin/pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --BED ./pygenometracks/tests/test_data/regions_imbricated_chr2.bed --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.png
