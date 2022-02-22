@@ -15,7 +15,6 @@ pytest
 pytest-xdist
 pytest-forked
 nose
-pathlib
 configparser
 ghostscript
 # For linting
