@@ -116,7 +116,7 @@ setup(
     url='http://pygenometracks.readthedocs.io',
     license='LICENSE.txt',
     description='Command-line tool to make beautiful and reproducible genome browser snapshots',
-    long_description=open('README.md').read(),
+    long_description=open('README.md').read().replace("./docs/", "https://raw.githubusercontent.com/deeptools/pyGenomeTracks/" + get_version() + "/docs/"),
     long_description_content_type="text/markdown",
     classifiers=[
         'Intended Audience :: Science/Research',
