@@ -30,7 +30,7 @@ file_type = {TRACK_TYPE}
     def set_properties_defaults(self):
         # First I add region2 to region to get the matrix
         # Containing both region and region2:
-        if 'region2' in self.properties:
+        if 'region2' in self.properties and self.properties['region'] is not None:
             region2 = get_region(self.properties['region2'])
             self.properties['region'].append(region2)
         super(HiCMatrixSquareTrack, self).set_properties_defaults()

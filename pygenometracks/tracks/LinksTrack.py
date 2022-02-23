@@ -118,7 +118,8 @@ file_type = {TRACK_TYPE}
             self.properties['region2'] = None
         if self.properties['region2'] is not None:
             region2 = get_region(self.properties['region2'])
-            self.properties['region'].append(region2)
+            if self.properties['region'] is not None:
+                self.properties['region'].append(region2)
             self.region2 = region2
             if self.properties['use_middle']:
                 self.log.warning("*WARNING* for section "
