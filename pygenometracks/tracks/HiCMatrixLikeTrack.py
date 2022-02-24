@@ -77,7 +77,7 @@ show_masked_bins = false
     def set_properties_defaults(self):
         super(HiCMatrixLikeTrack, self).set_properties_defaults()
         # Put default img to None for y axis
-        self.img = None
+        self.last_img_plotted = None
         region = None
         if self.properties['region'] is not None:
             # We need to restrict it to a single region because
@@ -226,7 +226,7 @@ show_masked_bins = false
             self.log.warning("*Warning*\nThere is no data for the region "
                              "considered on the matrix. "
                              "This will generate an empty track!!\n")
-            self.img = None
+            self.last_img_plotted = None
             return False, chrom_region
 
         log.debug(f'{suffix}chrom_region {chrom_region}, region_start {region_start}, region_end {region_end}')
@@ -238,7 +238,7 @@ show_masked_bins = false
                                  + " nor " + chrom_region + " exists as a "
                                  "chromosome name on the matrix. "
                                  "This will generate an empty track!!\n")
-                self.img = None
+                self.last_img_plotted = None
                 return False, chrom_region
 
         if region_start > self.chrom_sizes[chrom_region]:
@@ -246,7 +246,7 @@ show_masked_bins = false
                              " chromosome size. This will generate an empty track.\n"
                              f"{chrom_region} size: {self.chrom_sizes[chrom_region]}"
                              f". Region to plot {suffix}{region_start}-{region_end}\n")
-            self.img = None
+            self.last_img_plotted = None
             return False, chrom_region
 
         if region_end > self.chrom_sizes[chrom_region]:
@@ -260,7 +260,7 @@ show_masked_bins = false
             self.log.warning("*Warning*\nThere is no data for the region "
                              "considered on the matrix. "
                              "This will generate an empty track!!\n")
-            self.img = None
+            self.last_img_plotted = None
             return False, chrom_region
         # Or it may be shortened:
         if region_start > self.hic_ma.get_chromosome_sizes()[chrom_region]:
@@ -269,7 +269,7 @@ show_masked_bins = false
                              " This will generate an empty track.\n"
                              f"{chrom_region} last bin: {self.hic_ma.get_chromosome_sizes()[chrom_region]}"
                              f". Region to plot {suffix}{region_start}-{region_end}\n")
-            self.img = None
+            self.last_img_plotted = None
             return False, chrom_region
 
         return True, chrom_region
@@ -278,7 +278,7 @@ show_masked_bins = false
         return
 
     def plot_y_axis(self, cbar_ax, plot_ax):
-        if self.img is None:
+        if self.last_img_plotted is None:
             return
 
         GenomeTrack.plot_custom_cobar(self, cbar_ax)

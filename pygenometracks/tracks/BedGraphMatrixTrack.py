@@ -158,10 +158,10 @@ file_type = {TRACK_TYPE}
             shading = 'gouraud'
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
-            self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax,
-                                     shading=shading, cmap=self.cmap)
+            self.last_img_plotted = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax,
+                                                  shading=shading, cmap=self.cmap)
             if self.properties['rasterize']:
-                self.img.set_rasterized(True)
+                self.last_img_plotted.set_rasterized(True)
 
     def plot_y_axis(self, ax, plot_axis):
         if self.properties['type'] == 'lines':

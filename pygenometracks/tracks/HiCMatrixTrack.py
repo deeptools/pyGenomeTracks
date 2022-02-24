@@ -124,9 +124,9 @@ file_type = {TRACK_TYPE}
         else:
             self.norm = colors.Normalize(vmin=vmin, vmax=vmax)
 
-        self.img = self.pcolormesh_45deg(ax, matrix, start_pos)
+        self.last_img_plotted = self.pcolormesh_45deg(ax, matrix, start_pos)
         if self.properties['rasterize']:
-            self.img.set_rasterized(True)
+            self.last_img_plotted.set_rasterized(True)
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(depth, 0)
         else:
