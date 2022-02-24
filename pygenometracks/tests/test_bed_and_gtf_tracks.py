@@ -1021,6 +1021,48 @@ def test_plot_tracks_bed_with_maxLab():
             os.remove(ini_file)
 
 
+def test_plot_tracks_bed_with_maxLab_zoom():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                    delete=False)
+    ini_file = os.path.join(ROOT, "bed_maxLab_tracks.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_maxLab_zoom.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                            outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_tracks_bed_with_maxLab_BED():
+    extension = '.png'
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                    delete=False)
+    ini_file = os.path.join(ROOT, "bed_maxLab_tracks.ini")
+    bed_file = os.path.join(ROOT, 'imbricated_X_regions.bed')
+    args = f"--tracks {ini_file} --BED {bed_file} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    for region, expected_basename_file in [("X:2000000-3500000", "master_maxLab"),
+                                           ("X:3000000-3500000", "master_maxLab_zoom")]:
+        region_str = region.replace(':', '-')
+        output_file = outfile.name[:-4] + '_' + region_str + extension
+        expected_file = os.path.join(ROOT, expected_basename_file
+                                     + extension)
+        res = compare_images(expected_file,
+                             output_file, tolerance)
+        assert res is None, res
+
+        os.remove(output_file)
+
+
 def test_plot_tracks_genes_rgb():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
