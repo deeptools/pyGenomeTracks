@@ -77,7 +77,7 @@ file_type = {TRACK_TYPE}
             end_bp_y = min(chr_end_y, region_end_y + 3 * self.hic_ma.getBinSize())
             idx_y = [idx for idx, x in enumerate(self.hic_ma.cut_intervals)
                      if x[0] == chrom_region_y and x[1] >= start_bp_y and x[2] <= end_bp_y]
-            if len(idx) == 0:
+            if len(idx_y) == 0:
                 self.log.warning("*Warning*\nThere is no data for the region "
                                  "considered on the matrix. "
                                  "This will generate an empty track!!\n")
