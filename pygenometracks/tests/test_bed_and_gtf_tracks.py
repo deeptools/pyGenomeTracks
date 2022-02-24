@@ -1024,7 +1024,7 @@ def test_plot_tracks_bed_with_maxLab():
 def test_plot_tracks_bed_with_maxLab_zoom():
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                    delete=False)
+                                 delete=False)
     ini_file = os.path.join(ROOT, "bed_maxLab_tracks.ini")
     region = "X:3000000-3500000"
     expected_file = os.path.join(ROOT, 'master_maxLab_zoom.png')
@@ -1033,7 +1033,7 @@ def test_plot_tracks_bed_with_maxLab_zoom():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                            outfile.name, tolerance)
+                         outfile.name, tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
@@ -1043,7 +1043,7 @@ def test_plot_tracks_bed_with_maxLab_BED():
     extension = '.png'
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
-                                    delete=False)
+                                 delete=False)
     ini_file = os.path.join(ROOT, "bed_maxLab_tracks.ini")
     bed_file = os.path.join(ROOT, 'imbricated_X_regions.bed')
     args = f"--tracks {ini_file} --BED {bed_file} "\
