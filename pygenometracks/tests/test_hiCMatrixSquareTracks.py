@@ -138,7 +138,7 @@ tolerance = 13  # default matplotlib pixed difference tolerance
 
 def test_hic_square():
     if mpl.__version__ == "3.1.1":
-        my_tolerance = 21
+        my_tolerance = 23
     else:
         my_tolerance = tolerance
 
@@ -160,7 +160,7 @@ def test_hic_square():
 
 def test_hic_square_dec():
     if mpl.__version__ == "3.1.1":
-        my_tolerance = 21
+        my_tolerance = 23
     else:
         my_tolerance = tolerance
 
