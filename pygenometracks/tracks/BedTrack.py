@@ -182,7 +182,7 @@ file_type = {TRACK_TYPE}
         super(BedTrack, self).__init__(*args, **kwarg)
         self.bed_type = None  # once the bed file is processed,
         # this is bed3, bed4, bed5, bed6, bed8, bed9 or bed12
-        self.len_w = None  # this is the length of the letter 'w' given the font size
+        self.current_len_w = None  # this is the length of the letter 'w' given the font size
         self.interval_tree = {}  # interval tree of the bed regions
         self.interval_tree, min_score, max_score = self.process_bed(self.properties['region'])
         if self.colormap is not None:
@@ -405,21 +405,22 @@ file_type = {TRACK_TYPE}
 
         else:
             self.counter = 0
-            self.small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
+            self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
             if self.properties['labels']:
-                self.len_w = get_length_w(ax.get_figure().get_figwidth(),
-                                          start_region, end_region,
-                                          self.properties['fontsize'])
+                self.current_len_w = get_length_w(ax.get_figure().get_figwidth(),
+                                                  start_region, end_region,
+                                                  self.properties['fontsize'])
             else:
-                self.len_w = 1
+                self.current_len_w = 1
 
             if self.properties['global_max_row']:
-                self.get_max_num_row(self.len_w, self.small_relative)
+                self.get_max_num_row(self.current_len_w, self.current_small_relative)
 
             # do not print labels when too many intervals are visible.
+            display_labels = self.properties['labels']
             if self.properties['labels'] and \
                len(genes_overlap) > self.properties['max_labels']:
-                self.properties['labels'] = False
+                display_labels = False
 
             linewidth = self.properties['line_width']
             max_num_row_local = 1
@@ -498,14 +499,14 @@ file_type = {TRACK_TYPE}
                     def is_right_to(a, b):
                         return a < b
 
-                if self.properties['labels']:
+                if display_labels:
                     num_name_characters = len(bed.name) + 2
                     # +2 to account for a space before and after the name
-                    bed_extended_right = int(add_to_right(bed_right, (num_name_characters * self.len_w)))
+                    bed_extended_right = int(add_to_right(bed_right, (num_name_characters * self.current_len_w)))
                     # To uniformize the label position and max_row calc should be:
-                    # bed_extended_right = int(add_to_right(bed_right, (num_name_characters * self.len_w + self.small_relative)))
+                    # bed_extended_right = int(add_to_right(bed_right, (num_name_characters * self.current_len_w + self.current_small_relative)))
                 else:
-                    bed_extended_right = add_to_right(bed_right, 2 * self.small_relative)
+                    bed_extended_right = add_to_right(bed_right, 2 * self.current_small_relative)
 
                 bed_extended_left = bed_left
                 # get smallest free row
@@ -515,11 +516,11 @@ file_type = {TRACK_TYPE}
                 else:
                     # If all_labels_inside = True
                     # genes which goes over will have their labels inside
-                    if self.properties['all_labels_inside'] and self.properties['labels'] \
+                    if self.properties['all_labels_inside'] and display_labels \
                        and is_right_to(bed_extended_right, ax.get_xlim()[1]):
-                        bed_extended_left = int(add_to_left(bed_left, (num_name_characters * self.len_w)))
+                        bed_extended_left = int(add_to_left(bed_left, (num_name_characters * self.current_len_w)))
                         # To uniformize the label position and max_row calc should be:
-                        # bed_extended_left = int(add_to_left(bed_left, (num_name_characters * self.len_w + self.small_relative)))
+                        # bed_extended_left = int(add_to_left(bed_left, (num_name_characters * self.current_len_w + self.current_small_relative)))
 
                         # Check that the start position is not outside:
                         if is_left_to(bed_extended_left, ax.get_xlim()[0]):
@@ -527,7 +528,7 @@ file_type = {TRACK_TYPE}
                             bed_extended_left = bed_left
                         else:
                             # If we keep the label to the left, we update the right extended
-                            bed_extended_right = add_to_right(bed_right, 2 * self.small_relative)
+                            bed_extended_right = add_to_right(bed_right, 2 * self.current_small_relative)
 
                     # get list of rows that are left to bed_extended_left, then take the min
                     idx_list = [idx for idx, value in enumerate(row_last_position)
@@ -568,34 +569,34 @@ file_type = {TRACK_TYPE}
                 else:
                     self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
 
-                if not self.properties['labels']:
+                if not display_labels:
                     pass
                 elif bed_extended_left != bed_left:
                     # The label will be plotted before
-                    ax.text(add_to_left(bed_left, self.small_relative),
+                    ax.text(add_to_left(bed_left, self.current_small_relative),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='right',
                             verticalalignment='center', fontproperties=self.fp,
                             fontstyle=self.properties['fontstyle'])
                     # To uniformize the label position and max_row calc should be:
-                    # ax.text(add_to_left(bed_left, self.small_relative + self.len_w),
+                    # ax.text(add_to_left(bed_left, self.current_small_relative + self.current_len_w),
                 elif bed_right > start_region and bed_right < end_region:
-                    ax.text(add_to_right(bed_right, self.small_relative),
+                    ax.text(add_to_right(bed_right, self.current_small_relative),
                             ypos + 0.5,
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp,
                             fontstyle=self.properties['fontstyle'])
                     # To uniformize the label position and max_row calc should be:
-                    # ax.text(add_to_right(bed_right, self.small_relative + self.len_w),
+                    # ax.text(add_to_right(bed_right, self.current_small_relative + self.current_len_w),
                 elif self.properties['labels_in_margin'] \
                         and (bed_right == end_region or is_right_to(bed_right, end_region)):
-                    ax.text(add_to_right(ax.get_xlim()[1], self.small_relative),
+                    ax.text(add_to_right(ax.get_xlim()[1], self.current_small_relative),
                             ypos + (1 / 2),
                             bed.name, horizontalalignment='left',
                             verticalalignment='center', fontproperties=self.fp,
                             fontstyle=self.properties['fontstyle'])
                     # To uniformize the label position and max_row calc should be:
-                    # ax.text(add_to_right(ax.get_xlim()[1], self.small_relative + self.len_w),
+                    # ax.text(add_to_right(ax.get_xlim()[1], self.current_small_relative + self.current_len_w),
 
             if self.counter == 0:
                 self.log.warning("*Warning* No intervals were found for file"
@@ -780,11 +781,11 @@ file_type = {TRACK_TYPE}
         if strand == '+':
             x0 = start
             if self.properties['arrowhead_included']:
-                x1 = max(start, end - self.small_relative)
+                x1 = max(start, end - self.current_small_relative)
                 x2 = end
             else:
                 x1 = end
-                x2 = end + self.small_relative
+                x2 = end + self.current_small_relative
             """
             The vertices correspond to 5 points along the path of a form like the following,
             starting in the lower left corner and progressing in a clock wise manner.
@@ -799,11 +800,11 @@ file_type = {TRACK_TYPE}
 
         else:
             if self.properties['arrowhead_included']:
-                x0 = min(end, start + self.small_relative)
+                x0 = min(end, start + self.current_small_relative)
                 xb = start
             else:
                 x0 = start
-                xb = start - self.small_relative
+                xb = start - self.current_small_relative
             x1 = end
             """
             The vertices correspond to 5 points along the path of a form like the following,
@@ -932,11 +933,11 @@ file_type = {TRACK_TYPE}
                 # plot small arrows over the back bone
                 intron_length = bed.block_starts[idx + 1] - (bed.block_starts[idx] + bed.block_sizes[idx])
                 arrow_interval = self.properties['arrow_interval']
-                if intron_length > self.small_relative:
+                if intron_length > self.current_small_relative:
                     intron_center = x1 + int(intron_length) / 2
-                    pos = np.arange(x1 + 1 * self.small_relative,
-                                    x1 + intron_length + self.small_relative,
-                                    int(arrow_interval * self.small_relative))
+                    pos = np.arange(x1 + 1 * self.current_small_relative,
+                                    x1 + intron_length + self.current_small_relative,
+                                    int(arrow_interval * self.current_small_relative))
                     # center them
                     pos = pos + intron_center - pos.mean()
                     # plot them
@@ -960,12 +961,12 @@ file_type = {TRACK_TYPE}
 
         if bed.strand in ["+", "-"]:
             if self.properties['arrow_length'] is None:
-                arrow_length = 10 * self.small_relative
+                arrow_length = 10 * self.current_small_relative
             else:
                 arrow_length = self.properties['arrow_length']
             y_arrow = ypos + 1 / 8
             head_width = 1 / 4
-            head_length = self.small_relative * 3
+            head_length = self.current_small_relative * 3
             # plot the arrow to indicate tss
             if bed.strand == "+":
                 x = bed.start
@@ -1100,13 +1101,13 @@ file_type = {TRACK_TYPE}
         if strand == '.':
             return
         if strand == '+':
-            xdata = [xpos - self.small_relative / 4,
-                     xpos + self.small_relative / 4,
-                     xpos - self.small_relative / 4]
+            xdata = [xpos - self.current_small_relative / 4,
+                     xpos + self.current_small_relative / 4,
+                     xpos - self.current_small_relative / 4]
         else:
-            xdata = [xpos + self.small_relative / 4,
-                     xpos - self.small_relative / 4,
-                     xpos + self.small_relative / 4]
+            xdata = [xpos + self.current_small_relative / 4,
+                     xpos - self.current_small_relative / 4,
+                     xpos + self.current_small_relative / 4]
         ydata = [ypos + 1 / 4,
                  ypos + 1 / 2,
                  ypos + 3 / 4]

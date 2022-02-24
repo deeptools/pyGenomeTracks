@@ -226,9 +226,9 @@ file_type = {TRACK_TYPE}
                     continue
 
             if self.properties['line_width'] is not None:
-                self.line_width = float(self.properties['line_width'])
+                self.current_line_width = float(self.properties['line_width'])
             else:
-                self.line_width = 0.5 * np.sqrt(interval.data[4])
+                self.current_line_width = 0.5 * np.sqrt(interval.data[4])
 
             if self.properties['links_type'] == 'triangles':
                 self.plot_triangles(ax, interval)
@@ -300,7 +300,7 @@ file_type = {TRACK_TYPE}
             rgb = self.properties['color']
         ax.add_patch(Arc((center, 0), width,
                          2 * half_height, 0, 0, 180, color=rgb,
-                         linewidth=self.line_width,
+                         linewidth=self.current_line_width,
                          ls=self.properties['line_style']))
 
     def plot_triangles(self, ax, interval):
@@ -325,7 +325,7 @@ file_type = {TRACK_TYPE}
         triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]),
                            closed=False,
                            facecolor='none', edgecolor=rgb,
-                           linewidth=self.line_width,
+                           linewidth=self.current_line_width,
                            ls=self.properties['line_style'])
         ax.add_artist(triangle)
         if y2 > self.max_height:
@@ -360,7 +360,7 @@ file_type = {TRACK_TYPE}
 
         rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
                             facecolor='none', edgecolor=rgb,
-                            linewidth=self.line_width,
+                            linewidth=self.current_line_width,
                             ls=self.properties['line_style'])
         ax.add_artist(rectangle)
         if y2 > self.max_height:
@@ -399,7 +399,7 @@ file_type = {TRACK_TYPE}
             rgb = self.properties['color']
         rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
                             facecolor='none', edgecolor=rgb,
-                            linewidth=self.line_width,
+                            linewidth=self.current_line_width,
                             ls=self.properties['line_style'])
         ax.add_artist(rectangle)
 
