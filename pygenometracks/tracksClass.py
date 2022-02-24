@@ -298,7 +298,7 @@ class PlotTracks(object):
             self.plot_vhighlight(axis_list, chrom, start, end)
 
         fig.savefig(file_name, dpi=self.dpi, transparent=False)
-        return fig.get_size_inches()
+        return fig
 
     def plot_vlines(self, axis_list, chrom_region, start_region, end_region):
         """

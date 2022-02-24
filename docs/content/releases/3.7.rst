@@ -61,3 +61,5 @@ Bugfixes:
 - pyGenomeTracks now allows to plot above chromosome size defined in bigwig or Hi-C matrices without raising an error.
 
 - pyGenomeTracks now works with gtf without exons.
+
+- pyGenomeTracks now closes figures after saving.

@@ -148,6 +148,7 @@ import warnings
 from pygenometracks.tracksClass import PlotTracks
 from pygenometracks._version import __version__
 from .utilities import InputError, get_region
+import matplotlib.pyplot as plt
 
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 
@@ -286,11 +287,13 @@ def main(args=None):
                               "detected! This can be too small to return "
                               "a proper TAD plot!\n")
             sys.stderr.write(f"saving {file_name}\n")
-            trp.plot(file_name, chrom, start, end, title=args.title,
-                     h_align_titles=args.trackLabelHAlign,
-                     decreasing_x_axis=args.decreasingXAxis)
+            current_fig = trp.plot(file_name, chrom, start, end, title=args.title,
+                                   h_align_titles=args.trackLabelHAlign,
+                                   decreasing_x_axis=args.decreasingXAxis)
+            plt.close(current_fig)
     else:
-        trp.plot(args.outFileName, *regions[0], title=args.title,
-                 h_align_titles=args.trackLabelHAlign,
-                 decreasing_x_axis=args.decreasingXAxis)
+        current_fig = trp.plot(args.outFileName, *regions[0], title=args.title,
+                               h_align_titles=args.trackLabelHAlign,
+                               decreasing_x_axis=args.decreasingXAxis)
+        plt.close(current_fig)
     trp.close_files()
