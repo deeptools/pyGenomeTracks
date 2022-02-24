@@ -41,7 +41,7 @@ Minor enhancements:
 
 - the help message for BED has been improved to highlight the fact that the extension needs to be part of the output.
 
-Drop python support for 3.6
+Drop support for python 3.6
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - The introduction of the new track for Maf forced us to drop support for python 3.6.
@@ -63,3 +63,5 @@ Bugfixes:
 - pyGenomeTracks now works with gtf without exons.
 
 - pyGenomeTracks now closes figures after saving.
+
+- The plotting part does not modify the tracks anymore. This solves `#393 <https://github.com/deeptools/pyGenomeTracks/issues/393>`_

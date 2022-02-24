@@ -107,6 +107,8 @@ file_type = {TRACK_TYPE}
                                             parse_e_rows=True)
         # Process the species_order and species_labels:
         self.species, self.labels = self.process_species_user()
+        # Initialize current_labels:
+        self.current_labels = None
         # Give row number
         self.species_y = {}
         self.max_y = 0
@@ -161,6 +163,18 @@ file_type = {TRACK_TYPE}
         epsilon = 0.08
         ymax = 0
         valid_blocks = 0
+        # Initiate lists and dicts
+        if self.species is not None:
+            current_species = self.species.copy()
+        else:
+            current_species = None
+        if self.labels is not None:
+            self.current_labels = self.labels.copy()
+        else:
+            self.current_labels = None
+        current_species_y = self.species_y.copy()
+        current_max_y = self.max_y
+
         if self.properties['display_ref_seq']:
             ref_seq_dic = {}
         for block in tqdm(self.idx.get_as_iterator(ref_in_index, start_region, end_region)):
@@ -202,19 +216,19 @@ file_type = {TRACK_TYPE}
                     # Check if we plot this assembly:
                     if self.properties["species_order_only"] and assembly not in self.species:
                         continue
-                    # Initiate self.species if needed:
-                    if self.species is None:
-                        self.species = []
-                        self.labels = []
+                    # Initiate self.current_species if needed:
+                    if current_species is None:
+                        current_species = []
+                        self.current_labels = []
                     # Add this assembly if needed:
-                    if assembly not in self.species:
-                        self.species.append(assembly)
-                        self.labels.append(assembly)
-                        self.species_y[assembly] = self.max_y
-                        self.max_y += 1
+                    if assembly not in current_species:
+                        current_species.append(assembly)
+                        self.current_labels.append(assembly)
+                        current_species_y[assembly] = current_max_y
+                        current_max_y += 1
                         # self.log.debug(f"self.max_y {self.max_y}")
                     # Get the position:
-                    ypos = self.species_y[assembly] * self.row_scale
+                    ypos = current_species_y[assembly] * self.row_scale
                     if not c.empty:
                         # Get the sequence to compare with ref:
                         c_seq = c.text.upper()
@@ -287,7 +301,7 @@ file_type = {TRACK_TYPE}
                              f"{self.properties['file']} for region"
                              f"{chrom_region}:{start_region}-{end_region}.\n")
         ymax -= epsilon
-        ymin = self.row_scale * self.max_y + epsilon
+        ymin = self.row_scale * current_max_y + epsilon
         # I need to know how many species are plotted before plotting the sequence:
         if self.properties['display_ref_seq']:
             plotting_figure_width = ax.get_window_extent().transformed(ax.get_figure().dpi_scale_trans.inverted()).width
@@ -298,7 +312,7 @@ file_type = {TRACK_TYPE}
             # The other constraint is the height
             real_height_in = ax.get_window_extent().transformed(ax.get_figure().dpi_scale_trans.inverted()).height
             # We cannot have the sequence that take more than the height of an alignment:
-            max_height_in = real_height_in / (self.max_y + 1)
+            max_height_in = real_height_in / (current_max_y + 1)
 
             # 1 point = 1/72 inch = height of character
             max_fontsize = max_height_in * 72
@@ -323,12 +337,12 @@ file_type = {TRACK_TYPE}
         ax.set_ylim(ymin, ymax)
 
     def plot_y_axis(self, ax, plot_axis):
-        if self.labels is not None:
+        if self.current_labels is not None:
             if int(mpl.__version__.split(".")[1]) < 3:
                 wrap = False
             else:
                 wrap = True
-            for y, label in enumerate(self.labels):
+            for y, label in enumerate(self.current_labels):
                 ax.text(0, y * self.row_scale + 0.5, label,
                         verticalalignment='center',
                         horizontalalignment='right', wrap=wrap)

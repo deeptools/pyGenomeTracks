@@ -120,13 +120,13 @@ file_type = {TRACK_TYPE}
                       f"{vmin}, {vmax}\n")
 
         if self.properties['transform'] == 'log1p':
-            self.norm = colors.LogNorm(vmin=vmin, vmax=vmax)
+            self.current_norm = colors.LogNorm(vmin=vmin, vmax=vmax)
         else:
-            self.norm = colors.Normalize(vmin=vmin, vmax=vmax)
+            self.current_norm = colors.Normalize(vmin=vmin, vmax=vmax)
 
-        self.img = self.pcolormesh_45deg(ax, matrix, start_pos)
+        self.last_img_plotted = self.pcolormesh_45deg(ax, matrix, start_pos)
         if self.properties['rasterize']:
-            self.img.set_rasterized(True)
+            self.last_img_plotted.set_rasterized(True)
         if self.properties['orientation'] == 'inverted':
             ax.set_ylim(depth, 0)
         else:
@@ -150,5 +150,5 @@ file_type = {TRACK_TYPE}
         y = matrix_a[:, 0].reshape(n + 1, n + 1)
         # plot
         im = ax.pcolormesh(x, y, np.flipud(matrix_c),
-                           cmap=self.cmap, norm=self.norm)
+                           cmap=self.cmap, norm=self.current_norm)
         return im

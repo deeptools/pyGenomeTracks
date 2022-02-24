@@ -559,17 +559,17 @@ height = 2
             formatter = LogFormatter(10, labelOnlyBase=False)
             aa = np.array([1, 2, 5])
             tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
-            vmin, vmax = self.img.get_clim()
+            vmin, vmax = self.last_img_plotted.get_clim()
             tick_values = [t for t in tick_values if t <= vmax and t >= vmin]
             try:
-                cobar = plt.colorbar(self.img, ticks=tick_values,
+                cobar = plt.colorbar(self.last_img_plotted, ticks=tick_values,
                                      format=formatter, ax=axis,
                                      fraction=fraction)
             except (AttributeError, ValueError):
                 return
         else:
             try:
-                cobar = plt.colorbar(self.img, ax=axis, fraction=fraction)
+                cobar = plt.colorbar(self.last_img_plotted, ax=axis, fraction=fraction)
             except AttributeError:
                 try:
                     cobar = plt.colorbar(self.colormap, ax=axis, fraction=fraction)
