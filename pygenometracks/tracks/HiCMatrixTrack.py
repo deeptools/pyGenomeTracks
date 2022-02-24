@@ -40,10 +40,15 @@ file_type = {TRACK_TYPE}
         chr_end = self.hic_ma.cut_intervals[chr_end_id - 1][2]
         start_bp = max(chr_start, region_start - self.properties['depth'])
         end_bp = min(chr_end, region_end + self.properties['depth'])
-
-        idx, start_pos = list(zip(*[(idx, x[1]) for idx, x in
-                                    enumerate(self.hic_ma.cut_intervals)
-                                    if x[0] == chrom_region and x[1] >= start_bp and x[2] <= end_bp]))
+        idx = [idx for idx, x in enumerate(self.hic_ma.cut_intervals)
+               if x[0] == chrom_region and x[1] >= start_bp and x[2] <= end_bp]
+        if len(idx) == 0:
+            self.log.warning("*Warning*\nThere is no data for the region "
+                             "considered on the matrix. "
+                             "This will generate an empty track!!\n")
+            self.img = None
+            return
+        start_pos = [x[1] for i, x in enumerate(self.hic_ma.cut_intervals) if i in idx]
         # select only relevant matrix part
         matrix = self.hic_ma.matrix[idx, :][:, idx]
         # update the start_pos to add the last end:

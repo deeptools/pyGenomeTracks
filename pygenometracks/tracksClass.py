@@ -104,7 +104,7 @@ class PlotTracks(object):
             log.info(f"initialize {properties['section_name']}")
             # the track_class is obtained from the available tracks
             track_class = self.available_tracks[properties['file_type']]
-            properties['region'] = plot_regions
+            properties['region'] = plot_regions.copy()
             self.track_obj_list.append(track_class(properties))
 
         log.info("time initializing track(s):")
