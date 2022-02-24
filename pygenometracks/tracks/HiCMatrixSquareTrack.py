@@ -47,11 +47,16 @@ file_type = {TRACK_TYPE}
         chr_end_x = self.hic_ma.cut_intervals[chr_end_id_x - 1][2]
         start_bp_x = max(chr_start_x, region_start - 3 * self.hic_ma.getBinSize())
         end_bp_x = min(chr_end_x, region_end + 3 * self.hic_ma.getBinSize())
+        idx = [idx for idx, x in enumerate(self.hic_ma.cut_intervals)
+               if x[0] == chrom_region and x[1] >= start_bp_x and x[2] <= end_bp_x]
+        if len(idx) == 0:
+            self.log.warning("*Warning*\nThere is no data for the region "
+                             "considered on the matrix. "
+                             "This will generate an empty track!!\n")
+            self.img = None
+            return
+        start_pos = [x[1] for i, x in enumerate(self.hic_ma.cut_intervals) if i in idx]
 
-        idx, start_pos = list(zip(*[(idx, x[1]) for idx, x in
-                                    enumerate(self.hic_ma.cut_intervals)
-                                    if x[0] == chrom_region and x[1] >= start_bp_x
-                                    and x[2] <= end_bp_x]))
         # Process region2:
         if self.properties['region2'] is None:
             idx_y = idx
@@ -70,11 +75,16 @@ file_type = {TRACK_TYPE}
             chr_end_y = self.hic_ma.cut_intervals[chr_end_id_y - 1][2]
             start_bp_y = max(chr_start_y, region_start_y - 3 * self.hic_ma.getBinSize())
             end_bp_y = min(chr_end_y, region_end_y + 3 * self.hic_ma.getBinSize())
+            idx_y = [idx for idx, x in enumerate(self.hic_ma.cut_intervals)
+                     if x[0] == chrom_region_y and x[1] >= start_bp_y and x[2] <= end_bp_y]
+            if len(idx) == 0:
+                self.log.warning("*Warning*\nThere is no data for the region "
+                                 "considered on the matrix. "
+                                 "This will generate an empty track!!\n")
+                self.img = None
+                return
+            start_pos_y = [x[1] for i, x in enumerate(self.hic_ma.cut_intervals) if i in idx_y]
 
-            idx_y, start_pos_y = list(zip(*[(idx, x[1]) for idx, x in
-                                          enumerate(self.hic_ma.cut_intervals)
-                                          if x[0] == chrom_region_y and x[1] >= start_bp_y
-                                          and x[2] <= end_bp_y]))
         # select only relevant matrix part
         matrix = self.hic_ma.matrix[idx, :][:, idx_y]
         # update the start_pos to add the last end:
