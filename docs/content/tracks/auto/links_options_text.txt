@@ -18,8 +18,8 @@ height = 2
 #   chr1 100 200 chr1 250 300 0.5
 # depending on the value of links_type either 'arcs' or 'triangles' or 'loops'
 # or 'squares' can be plotted.
-# If arcs, a line will be drawn from the center of the first region (chr1: 150),
-# to the center of the other region (chr1: 275).
+# If arcs, an arc will be drawn linking the beginning of the first region (chr1: 100),
+# to the end of the other region (chr1: 300) except if use_middle is set to true.
 # If triangles, the vertix of the triangle will be drawn at the center between the two points
 # (also the extremity of each position is used)
 # If loops, a diamond highlighting the intersection between the 2 regions will be shown
