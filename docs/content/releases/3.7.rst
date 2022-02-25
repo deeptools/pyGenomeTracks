@@ -19,7 +19,7 @@ This release is full of new tracks and new parameters for existing tracks:
 
 - New parameters for existing tracks:
 
-    - Related to ``hic_matrix_square``: we implemented a new ``display`` mode for ``bed`` and ``links``: ``squares``.
+    - Related to ``hic_matrix_square``: we implemented a new ``display`` mode for ``bed`` and ``links_type`` for ``links``: ``squares``.
       This allow to overlay TADs or loops on these Hi-C maps.
 
     - For ``bed`` and ``gtf``:
