@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import matplotlib as mpl
 from matplotlib.testing.compare import compare_images
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 import os.path
 import pygenometracks.plotTracks
 mpl.use('agg')
@@ -148,3 +148,21 @@ def test_fixed_height():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_non_existing_dir():
+
+    outdir = TemporaryDirectory()
+    output_file = os.path.join(outdir.name, "pGT_test", "test.png")
+    ini_file = os.path.join(ROOT, "title.ini")
+    region = "X:3000000-3500000"
+    expected_file = os.path.join(ROOT, 'master_title_0.2.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {output_file}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         output_file, tolerance)
+    assert res is None, res
+
+    outdir.cleanup()
