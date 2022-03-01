@@ -277,8 +277,8 @@ def main(args=None):
                      plot_regions=regions, plot_width=args.plotWidth)
 
     # Create dir if dir does not exists:
-    # Taken from https://stackoverflow.com/questions/12517451/automatically-creating-directories-with-file-output
-    os.makedirs(os.path.dirname(args.outFileName), exist_ok=True)
+    # Modified from https://stackoverflow.com/questions/12517451/automatically-creating-directories-with-file-output
+    os.makedirs(os.path.dirname(os.path.abspath(args.outFileName)), exist_ok=True)
 
     # Plot them
     if args.BED:
