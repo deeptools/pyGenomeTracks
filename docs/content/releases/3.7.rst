@@ -41,6 +41,8 @@ Minor enhancements:
 
 - the help message for BED has been improved to highlight the fact that the extension needs to be part of the output.
 
+- if the directory of the output file does not exists, it is created.
+
 Drop support for python 3.6
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
