@@ -142,6 +142,7 @@ type = vlines
 """
 
 import sys
+import os
 import argparse
 import warnings
 
@@ -274,6 +275,10 @@ def main(args=None):
                      fontsize=args.fontSize, dpi=args.dpi,
                      track_label_width=args.trackLabelFraction,
                      plot_regions=regions, plot_width=args.plotWidth)
+
+    # Create dir if dir does not exists:
+    # Taken from https://stackoverflow.com/questions/12517451/automatically-creating-directories-with-file-output
+    os.makedirs(os.path.dirname(args.outFileName), exist_ok=True)
 
     # Plot them
     if args.BED:
