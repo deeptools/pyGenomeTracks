@@ -258,8 +258,6 @@ file_type = {TRACK_TYPE}
                                      "track!!\n")
                     return score_list, pos_list
 
-            chrom_region = self.check_chrom_str_bytes(tbx.contigs,
-                                                      chrom_region)
             iterator = tbx.fetch(chrom_region, start_region, end_region)
 
         else:
@@ -276,7 +274,6 @@ file_type = {TRACK_TYPE}
                                      "This will generate an empty "
                                      "track!!\n")
                     return score_list, pos_list
-            chrom_region = self.check_chrom_str_bytes(inttree, chrom_region)
             iterator = iter(sorted(inttree[chrom_region][start_region - 10000:end_region + 10000]))
 
         prev_end = start_region
@@ -290,6 +287,10 @@ file_type = {TRACK_TYPE}
             prev_end = end
             score_list.append(values)
             pos_list.append((start, end))
+
+        if self.num_fields is None:
+            # This means there is no value:
+            return score_list, pos_list
 
         # Add a last value if needed:
         if prev_end < end_region and return_nans:

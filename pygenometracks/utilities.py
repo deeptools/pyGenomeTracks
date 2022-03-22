@@ -8,6 +8,8 @@ import pybedtools
 import tempfile
 import warnings
 import logging
+from matplotlib.ticker import Formatter
+import math
 
 
 FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
@@ -34,22 +36,6 @@ def to_string(s):
         return s.decode('ascii')
     if isinstance(s, list):
         return [to_string(x) for x in s]
-    return s
-
-
-def to_bytes(s):
-    """
-    Like toString, but for functions requiring bytes in python3
-    """
-    assert(sys.version_info[0] != 2)
-#    if sys.version_info[0] == 2:
-#        return s
-    if isinstance(s, bytes):
-        return s
-    if isinstance(s, str):
-        return bytes(s, 'ascii')
-    if isinstance(s, list):
-        return [to_bytes(x) for x in s]
     return s
 
 
@@ -83,7 +69,7 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
         # We extend the start and end:
         plot_regions_ext = [(chrom, max(0, start - around_region), end + around_region) for chrom, start, end in plot_regions]
         # We will overlap with both version of chromosome name:
-        plot_regions_as_bed = '\n'.join([f'{chrom} {start} {end}\n{change_chrom_names(chrom)} {start} {end}' for chrom, start, end in plot_regions_ext])
+        plot_regions_as_bed = '\n'.join([f'{chrom}\t{start}\t{end}\n{change_chrom_names(chrom)}\t{start}\t{end}' for chrom, start, end in plot_regions_ext])
         regions = pybedtools.BedTool(plot_regions_as_bed, from_string=True)
         # Bedtools will put a warning because we are using inconsistent
         # nomenclature (with and without chr)
@@ -91,7 +77,9 @@ def temp_file_from_intersect(file_name, plot_regions=None, around_region=0):
         sys.stderr = open(temporary_file.name, 'w')
         try:
             file_to_open = original_file.intersect(regions, wa=True, u=True).fn
-        except pybedtools.helpers.BEDToolsError:
+        except pybedtools.helpers.BEDToolsError as e:
+            log.warning(f"BEDTools intersect raised: {e}"
+                        "\nWill not subset the file.")
             file_to_open = file_name
         except NotImplementedError:
             log.warning("BEDTools is not installed pygenometracks"
@@ -146,6 +134,15 @@ def file_to_intervaltree(file_name, plot_regions=None):
             chrom, start, end = fields[0:3]
         except Exception as detail:
             msg = f"Error reading line: {line_number}\nError message: {detail}"
+            if len(fields) == 1:
+                if fields[0].startswith("{\\rtf"):
+                    raise InputError(f"The file {file_name} is a rtf file."
+                                     " Please save it as plain text.")
+                else:
+                    raise InputError(f"Only one field detected in {file_name}"
+                                     ", you may use"
+                                     " a bed-like delimited by space. This format "
+                                     "is not supported by pyGenomeTracks.")
             raise InputError(msg)
 
         try:
@@ -186,7 +183,7 @@ def file_to_intervaltree(file_name, plot_regions=None):
         valid_intervals += 1
 
     if valid_intervals == 0:
-        if file_to_open == file_name:
+        if file_to_open != file_name:
             suffix = " after intersection with the plotted region"
         else:
             suffix = ""
@@ -310,6 +307,19 @@ def get_length_w(fig_width, region_start, region_end, fontsize):
     return font_in_bp
 
 
+def get_optimal_fontsize(fig_width, region_start, region_end):
+    """
+    to improve the visualization of the letters (one per base)
+    it is good to have an estimation of the fontsize.
+    """
+    # from http://scipy-cookbook.readthedocs.org/items/Matplotlib_LaTeX_Examples.html
+    inches_per_pt = 1.0 / 72.27
+    region_len = region_end - region_start
+    bp_per_inch = region_len / fig_width
+    fontsize = 1 / (inches_per_pt * bp_per_inch)
+    return fontsize
+
+
 def count_lines(file_h, asBed=False):
     n = 0
     for line in file_h:
@@ -337,3 +347,142 @@ def change_chrom_names(chrom):
         chrom = 'chr' + chrom
 
     return chrom
+
+
+def get_region(region_string):
+    """
+    splits a region string into
+    a chrom, start_region, end_region tuple
+    The region_string format is chr:start-end
+    """
+    if region_string:
+        # separate the chromosome name and the location using the ':' character
+        try:
+            chrom, position = region_string.strip().split(":")
+        except ValueError:
+            raise InputError(f"The region provided ({region_string})"
+                             " is not valid, it should be chr:start-end.\n")
+
+        # clean up the position
+        for char in ",.;|!{}()":
+            position = position.replace(char, '')
+
+        position_list = position.split("-")
+        assert len(position_list) == 2, \
+            f"The region provided ({region_string})" \
+            " is not valid, it should be chr:start-end.\n"
+
+        try:
+            region_start = int(position_list[0])
+        except ValueError:
+            raise InputError(f"The start value ({position_list[0]}) in the"
+                             " region provided"
+                             " is not valid, it should be chr:start-end.\n")
+        try:
+            region_end = int(position_list[1])
+        except ValueError:
+            raise InputError(f"The start value ({position_list[0]}) in the"
+                             " region provided"
+                             " is not valid, it should be chr:start-end.\n")
+
+        if region_end <= region_start:
+            raise InputError("Please check that the region end is larger "
+                             "than the region start.\n"
+                             f"Values given:\nstart: {region_start}\n"
+                             f"end: {region_end}\n"
+                             "To plot tracks with a decreasing axis "
+                             "consider using `--decreasingXAxis`.")
+
+        return chrom, region_start, region_end
+
+
+class MyBasePairFormatter(Formatter):
+    """
+    Format tick values as pretty numbers and add as offset the unit
+
+    The units are "b", "Kb", "Mb"
+    The choice is made based on distance between extreme visible locs
+
+    """
+
+    def __init__(self):
+        self.format = ''
+        self.exponent = 0
+        self.unit = ""
+
+    def __call__(self, x, pos=None):
+        """
+        Return the format for tick value *x* at position *pos*.
+        """
+        if len(self.locs) == 0:
+            # This should never happen...
+            return ''
+        else:
+            xp = (x) / (10. ** self.exponent)
+            if abs(xp) < 1e-8:
+                xp = 0
+            if len(self.locs) < 2 or x == self.locs[-2]:
+                return self.format.format(xp) + ' ' + self.unit
+            else:
+                return self.format.format(xp)
+
+    def set_locs(self, locs):
+        # docstring inherited
+        self.locs = locs
+        if len(self.locs) > 0:
+            self._set_unit()
+            self._set_format()
+
+    def _set_unit(self):
+        # restrict to visible ticks
+        vmin, vmax = sorted(self.axis.get_view_interval())
+        locs = np.asarray(self.locs)
+        locs = locs[(vmin <= locs) & (locs <= vmax)]
+        locs = np.abs(locs)
+        if not len(locs):
+            # I don't understand how this can happen
+            self.exponent = 0
+            self.unit = ""
+            return
+        else:
+            if np.abs(locs[-1] - locs[0]) <= 1e3:
+                self.exponent = 0
+                self.unit = "b"
+            elif np.abs(locs[-1] - locs[0]) <= 7e5:
+                self.exponent = 3
+                self.unit = "Kb"
+            else:
+                self.exponent = 6
+                self.unit = "Mb"
+
+    # This is adapted from ScalarFormatter
+    def _set_format(self):
+        # set the format string to format all the ticklabels
+        if len(self.locs) < 2:
+            # Temporarily augment the locations with the axis end points.
+            _locs = [*self.locs, *self.axis.get_view_interval()]
+        else:
+            _locs = self.locs
+        locs = np.asarray(_locs) / 10. ** self.exponent
+        loc_range = np.ptp(locs)
+        # Curvilinear coordinates can yield two identical points.
+        if loc_range == 0:
+            loc_range = np.max(np.abs(locs))
+        # Both points might be zero.
+        if loc_range == 0:
+            loc_range = 1
+        if len(self.locs) < 2:
+            # We needed the end points only for the loc_range calculation.
+            locs = locs[:-2]
+        loc_range_oom = int(math.floor(math.log10(loc_range)))
+        # first estimate:
+        sigfigs = max(0, 3 - loc_range_oom)
+        # refined estimate:
+        thresh = 1e-3 * 10 ** loc_range_oom
+        while sigfigs >= 0:
+            if np.abs(locs - np.round(locs, decimals=sigfigs)).max() < thresh:
+                sigfigs -= 1
+            else:
+                break
+        sigfigs += 1
+        self.format = '{:,.' + str(sigfigs) + 'f}'

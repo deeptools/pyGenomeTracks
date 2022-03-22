@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from .. utilities import to_string, to_bytes, InputError, transform
+from .. utilities import InputError, transform
 import logging
 import numpy as np
 from matplotlib import colors as mc
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LogFormatter
 import re
+import math
 
 # This is a regex for float which would work for 11, 102.25, but also .2
 float_regex = r'(?:\d+)?(?:\.\d+)?'
@@ -15,6 +16,8 @@ float_regex = r'(?:\d+)?(?:\.\d+)?'
 color_tuple = re.compile(r'^\(({0}),({0}),({0})\)$'.format(float_regex))
 # This is a regex for group without comma except between parenthesis
 block_no_comma_outside_parenthesis = re.compile(r'(?:[^,(]|\([^)]*\))+')
+
+DEFAULT_MAX_SIGNS = 4
 
 
 class GenomeTrack(object):
@@ -97,14 +100,102 @@ height = 2
         if not self.properties.get('show_data_range', True):
             return
 
-        def value_to_str(value):
-            # given a numeric value, returns a
-            # string that removes unneeded decimal places
-            if value % 1 == 0:
-                str_value = str(int(value))
+        def value_to_str(value, max_signs=4, set_zero_max_value=0):
+            r"""
+            given a numeric value, returns a
+            string that removes unneeded decimal places
+            which uses max_signs (excluding the '.')
+
+            >>> value_to_str(12.01, max_signs=4)
+            '12.01'
+            >>> value_to_str(12.001, max_signs=4)
+            '12'
+            >>> value_to_str(12001, max_signs=4)
+            '1.2e4'
+            >>> value_to_str(1201.12, max_signs=4)
+            '1,201'
+            >>> value_to_str(.12001, max_signs=4)
+            '0.12'
+            >>> value_to_str(.00000012001, max_signs=4)
+            '1e-7'
+            >>> value_to_str(.00000012001, max_signs=5)
+            '1.2e-7'
+            >>> value_to_str(-12.01, max_signs=4)
+            '-12'
+            >>> value_to_str(-1201.12, max_signs=4)
+            '-1e3'
+            >>> value_to_str(-.0120112, max_signs=4)
+            '-0.01'
+            >>> value_to_str(-.0000120112, max_signs=4)
+            '-0.00'
+            # >>> value_to_str(120112, max_signs=2)
+            # raise an input Error
+            """
+            original_max_signs = max_signs
+            if np.abs(value) <= set_zero_max_value:
+                return "0"
+            elif value < 0:
+                prefix = "-"
+                value = - value
+                max_signs -= 1
             else:
-                str_value = f"{value:.1f}"
-            return str_value
+                prefix = ""
+            exponent = math.floor(np.log10(value))
+            value_scien = value / 10 ** exponent
+            # Find the number of decimal values
+            # that would be possible to fit in
+            # max_signs
+            # At max it is max_signs - 1 because you need
+            # one sign before the '.'
+            sigfigs = max_signs - 1
+            while sigfigs >= 0:
+                if np.abs(value_scien - np.round(value_scien, decimals=sigfigs)) < 1 * 10 ** (-max_signs + 1):
+                    sigfigs -= 1
+                else:
+                    # We stop here
+                    break
+            # We put back sigfigs to the value where it was correct:
+            sigfigs += 1
+            if exponent < 0:
+                # Writting scientific values would add:
+                # 'e' len(str(exponent))
+                # So occupy 1 + len(str(exponent))
+                # While writting not scientific would use:
+                # 0.xx (1 if -exponent is 1)
+                # 0.0xx (2 if -exponent is 2)...
+                # So if 1 + len(str(exponent)) >= -exponent
+                # It is better to write without scientific notation
+                # Also if the max_signs is below 1 + len(str(exponent)) + 1
+                # It is not possible to write in scientific notation
+                if 1 + len(str(exponent)) >= -exponent or max_signs < 1 + len(str(exponent)) + 1:
+                    orderOfMagnitude = 0
+                    suffix = ""
+                    sigfigs = max(0, min(max_signs - 1, sigfigs - exponent))
+                else:
+                    # Printing e exponent will take space
+                    orderOfMagnitude = exponent
+                    sigfigs = min(sigfigs, max_signs - (1 + len(str(exponent)) + 1))
+                    suffix = f"e{exponent}"
+            elif exponent > 0:
+                # We prefer to write without scientific notation if possible
+                # We need exponent + 1 to write without scientific notation
+                if exponent <= (max_signs - 1):
+                    orderOfMagnitude = 0
+                    suffix = ""
+                    sigfigs = max(0, sigfigs - exponent)
+                else:
+                    # Printing e exponent will take space
+                    # 'e' len(str(exponent))
+                    orderOfMagnitude = exponent
+                    sigfigs = min(sigfigs, max_signs - (1 + len(str(exponent)) + 1))
+                    suffix = f"e{exponent}"
+                    if sigfigs < 0:
+                        raise InputError(f"I need max_signs above {original_max_signs} to display {value}")
+            else:  # exponent == 0:
+                orderOfMagnitude = 0
+                suffix = ""
+            value /= 10 ** orderOfMagnitude
+            return prefix + ("{:,." + str(sigfigs) + "f}").format(value) + suffix
 
         def untransform(value, transform, log_pseudocount):
             # given a numeric value, transform and log_pseudocount
@@ -143,10 +234,18 @@ height = 2
                 ticks_values.sort(reverse=True)
             labels_pos = ticks_values
             if transform == 'no' or y_axis == 'transformed':
-                ticks_labels = [value_to_str(t) for t in ticks_values]
+                original_values = ticks_values
             else:
                 # There is a transformation and we want to display original values
-                ticks_labels = [value_to_str(untransform(t, transform, log_pseudocount)) for t in ticks_values]
+                original_values = [untransform(t, transform, log_pseudocount) for t in ticks_values]
+            max_abs_value = np.max(np.abs(original_values))
+            try:
+                ticks_labels = [value_to_str(t, max_signs=DEFAULT_MAX_SIGNS,
+                                             set_zero_max_value=max_abs_value / 1000) for t in original_values]
+            except InputError:
+                ticks_labels = [value_to_str(t, max_signs=DEFAULT_MAX_SIGNS + 1,
+                                             set_zero_max_value=max_abs_value / 1000) for t in original_values]
+
         elif transform == 'no' or y_axis == 'transformed':
             # This is a linear scale
             # plot something that looks like this:
@@ -158,7 +257,14 @@ height = 2
             # and not only half of the width of the line.
             ticks_values = [ymin + epsilon_pretty, ymax - epsilon_pretty]
             labels_pos = [ymin, ymax]
-            ticks_labels = [value_to_str(v) for v in [ymin, ymax]]
+            max_abs_value = np.max(np.abs([ymin, ymax]))
+            try:
+                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS,
+                                             set_zero_max_value=max_abs_value / 1000) for v in [ymin, ymax]]
+            except InputError:
+                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS + 1,
+                                             set_zero_max_value=max_abs_value / 1000) for v in [ymin, ymax]]
+
             if y_axis == 'transformed' and transform != 'no':
                 if transform == 'log1p':
                     ymid_str = "log(1 + x)"
@@ -184,8 +290,15 @@ height = 2
             #      │
             # ymin ┘
             ticks_values = [ymin + epsilon_pretty, ymid, ymax - epsilon_pretty]
+            original_values = [untransform(v, transform, log_pseudocount) for v in [ymin, ymid, ymax]]
+            max_abs_value = np.max(np.abs(original_values))
             labels_pos = [ymin, ymid, ymax]
-            ticks_labels = [value_to_str(untransform(v, transform, log_pseudocount)) for v in [ymin, ymid, ymax]]
+            try:
+                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS,
+                                             set_zero_max_value=max_abs_value / 1000) for v in original_values]
+            except InputError:
+                ticks_labels = [value_to_str(v, max_signs=DEFAULT_MAX_SIGNS + 1,
+                                             set_zero_max_value=max_abs_value / 1000) for v in original_values]
 
         # The lower label should be verticalalignment='bottom'
         # if it corresponds to ymin
@@ -363,7 +476,7 @@ height = 2
                     prepared_color_list = re.sub(" |\'|\"", "", self.properties[param][1:-1])
                     # We extract individual colors
                     match = block_no_comma_outside_parenthesis.findall(prepared_color_list)
-                    if match is not None:
+                    if len(match) != 0:
                         # We check the color which start with '(' are (r,g,b) with rgb as floats
                         if all([color_tuple.match(v) is not None
                                 for v in match if v[0] == '(']):
@@ -372,6 +485,7 @@ height = 2
                                 custom_colors = [tuple([float(v) for v in color_tuple.match(v).groups()])
                                                  if v[0] == '(' else v for v in match]
                             except ValueError:
+                                # This should never happen
                                 message = "some (r,g,b) values of the list could not be converted to float"
                             else:
                                 try:
@@ -380,10 +494,10 @@ height = 2
                                 except ValueError:
                                     message = "the list of color could not be converted to colormap"
                         else:
-                            message = "there is no color between brackets"
+                            message = "some colors starting with ( in the color" \
+                                      " list are not formatted (r,g,b) with r,g,b as float"
                     else:
-                        message = "some colors starting with ( in the color" \
-                                  " list are not formatted (r,g,b) with r,g,b as float"
+                        message = "there is nothing valid between brackets"
                 if message != "":
                     message = f" ({message})"
             else:
@@ -437,20 +551,6 @@ height = 2
                              " uses signs which are not allowed: "
                              f"{','.join(forbidden_signs)}.")
 
-    @staticmethod
-    def check_chrom_str_bytes(iteratable_obj, p_obj):
-        # determine type
-        if isinstance(p_obj, list) and len(p_obj) > 0:
-            type_ = type(p_obj[0])
-        else:
-            type_ = type(p_obj)
-        if not isinstance(type(next(iter(iteratable_obj))), type_):
-            if type(next(iter(iteratable_obj))) is str:
-                p_obj = to_string(p_obj)
-            elif type(next(iter(iteratable_obj))) in [bytes, np.bytes_]:
-                p_obj = to_bytes(p_obj)
-        return p_obj
-
     def plot_custom_cobar(self, axis, fraction=0.95):
         if self.properties.get('transform', 'no') in ['log', 'log1p']:
             # get a useful log scale
@@ -459,19 +559,21 @@ height = 2
             formatter = LogFormatter(10, labelOnlyBase=False)
             aa = np.array([1, 2, 5])
             tick_values = np.concatenate([aa * 10 ** x for x in range(10)])
+            vmin, vmax = self.last_img_plotted.get_clim()
+            tick_values = [t for t in tick_values if t <= vmax and t >= vmin]
             try:
-                cobar = plt.colorbar(self.img, ticks=tick_values,
+                cobar = plt.colorbar(self.last_img_plotted, ticks=tick_values,
                                      format=formatter, ax=axis,
                                      fraction=fraction)
-            except AttributeError:
+            except (AttributeError, ValueError):
                 return
         else:
             try:
-                cobar = plt.colorbar(self.img, ax=axis, fraction=fraction)
+                cobar = plt.colorbar(self.last_img_plotted, ax=axis, fraction=fraction)
             except AttributeError:
                 try:
                     cobar = plt.colorbar(self.colormap, ax=axis, fraction=fraction)
-                except AttributeError:
+                except (AttributeError, ValueError):
                     return
 
         cobar.solids.set_edgecolor("face")
@@ -480,11 +582,12 @@ height = 2
         # adjust the labels of the colorbar
         # Get ticks positions
         ticks = cobar.ax.get_yticks()
+        (vmin, vmax) = cobar.mappable.get_clim()
+        ticks = np.array([t for t in ticks if t <= vmax and t >= vmin])
         # Fix them
         cobar.set_ticks(ticks)
         # Set the corresponding labels
         labels = cobar.ax.set_yticklabels(ticks.astype('float32'))
-        (vmin, vmax) = cobar.mappable.get_clim()
         for idx in np.where(ticks == vmin)[0]:
             # if the label is at the start of the colobar
             # move it above avoid being cut or overlapping with other track

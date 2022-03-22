@@ -12,7 +12,7 @@ import matplotlib.colors
 import matplotlib.gridspec
 import matplotlib.cm
 import mpl_toolkits.axisartist as axisartist
-from . utilities import file_to_intervaltree, change_chrom_names
+from . utilities import file_to_intervaltree, change_chrom_names, MyBasePairFormatter, get_region
 from collections import OrderedDict
 from pygenometracks.tracks.GenomeTrack import GenomeTrack
 from pygenometracks.utilities import InputError
@@ -39,9 +39,9 @@ log.setLevel(logging.DEBUG)
 
 DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
-# proportion of width dedicated to (figure, legends)
-DEFAULT_WIDTH_RATIOS = (0.01, 0.90, 0.1)
 DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
+
+DEFAULT_VHIGHLIGHT_COLOR = 'yellow'
 
 
 class MultiDict(OrderedDict):
@@ -65,13 +65,15 @@ class PlotTracks(object):
 
     def __init__(self, tracks_file, fig_width=DEFAULT_FIGURE_WIDTH,
                  fig_height=None, fontsize=None, dpi=None,
-                 track_label_width=None,
+                 track_label_width=0.1,
                  plot_regions=None, plot_width=None):
         self.fig_width = fig_width
         self.fig_height = fig_height
         self.dpi = dpi
         self.vlines_intval_tree = None
         self.vlines_properties = None
+        self.vhighlight_intval_tree = []
+        self.vhighlight_properties = []
         self.track_list = None
         start = self.print_elapsed(None)
         self.available_tracks = self.get_available_tracks()
@@ -83,12 +85,9 @@ class PlotTracks(object):
         # the track label width is the fraction of
         # the figure width that is used
         # for the track 'title' or label.
-        if track_label_width is None:
-            self.width_ratios = DEFAULT_WIDTH_RATIOS
-        else:
-            self.width_ratios = (0.01,
-                                 1 - track_label_width,
-                                 track_label_width)
+        self.width_ratios = (0.01,
+                             1 - track_label_width,
+                             track_label_width)
 
         # Process the width:
         if plot_width is not None:
@@ -105,7 +104,7 @@ class PlotTracks(object):
             log.info(f"initialize {properties['section_name']}")
             # the track_class is obtained from the available tracks
             track_class = self.available_tracks[properties['file_type']]
-            properties['region'] = plot_regions
+            properties['region'] = plot_regions.copy()
             self.track_obj_list.append(track_class(properties))
 
         log.info("time initializing track(s):")
@@ -154,11 +153,13 @@ class PlotTracks(object):
                 height = track_dict['height']
             elif track_dict['file_type'] == 'x_axis':
                 height = track_dict['fontsize'] / 8
-            elif 'depth' in track_dict and \
-                 track_dict['file_type'] == 'hic_matrix':
+            elif ('depth' in track_dict
+                  and track_dict['file_type'] == 'hic_matrix') or \
+                    track_dict['file_type'] == 'hic_matrix_square':
                 # compute the height of a Hi-C track
                 # based on the depth such that the
                 # resulting plot appears proportional
+                # For hic_matrix:
                 #
                 #      /|\
                 #     / | \
@@ -169,7 +170,10 @@ class PlotTracks(object):
                 #
                 # d (in cm) =  depth (in bp) * 0.5 *
                 #              width (in cm) / region len (in bp)
-
+                # For hic_matrix_square:
+                # d (in cm) = length of region2 (in bp) *
+                #              width (in cm) / region len (in bp)
+                #
                 # to compute the actual width of the figure the margins
                 # and the region
                 # set for the legends have to be considered
@@ -188,10 +192,17 @@ class PlotTracks(object):
                     self.width_ratios[1] / sum(self.width_ratios)
                 # the scale factor is to obtain each bin as a square
                 # (a 45 degree rotated matrix)
-                scale_factor = 0.5
-                depth = min(track_dict['depth'],
-                            int((end_region - start_region) * 1.25))
-
+                if track_dict['file_type'] == 'hic_matrix':
+                    scale_factor = 0.5
+                    depth = min(track_dict['depth'],
+                                int((end_region - start_region) * 1.25))
+                elif track_dict['file_type'] == 'hic_matrix_square':
+                    scale_factor = 1  # No rotation
+                    if track_dict['region2'] is None:
+                        depth = end_region - start_region
+                    else:
+                        region2 = get_region(track_dict['region2'])
+                        depth = region2[2] - region2[1]
                 height = scale_factor * depth * hic_width / \
                     (end_region - start_region)
             else:
@@ -283,8 +294,11 @@ class PlotTracks(object):
         if self.vlines_intval_tree:
             self.plot_vlines(axis_list, chrom, start, end)
 
+        if len(self.vhighlight_intval_tree) > 0:
+            self.plot_vhighlight(axis_list, chrom, start, end)
+
         fig.savefig(file_name, dpi=self.dpi, transparent=False)
-        return fig.get_size_inches()
+        return fig
 
     def plot_vlines(self, axis_list, chrom_region, start_region, end_region):
         """
@@ -315,7 +329,6 @@ class PlotTracks(object):
                             "No vertical lines will be "
                             "plotted!!\n")
                 return
-        chrom_region = GenomeTrack.check_chrom_str_bytes(self.vlines_intval_tree, chrom_region)
 
         for region in sorted(self.vlines_intval_tree[chrom_region][start_region - 10000:end_region + 10000]):
             vlines_list.append(region.begin)
@@ -329,6 +342,52 @@ class PlotTracks(object):
 
         return
 
+    def plot_vhighlight(self, axis_list, chrom_region, start_region, end_region):
+        """
+        highlight regions from the top of the first plot to the bottom
+        of the last plot at the specified positions.
+
+        :param axis_list: list of plotted axis
+        :param chrom_region chromosome name
+        :param start_region start position
+        :param end_region end position
+
+        :return: None
+        """
+
+        for i, (int_tree, properties) in enumerate(zip(self.vhighlight_intval_tree, self.vhighlight_properties)):
+
+            if chrom_region not in list(int_tree):
+                chrom_region_before = chrom_region
+                chrom_region = change_chrom_names(chrom_region)
+                if chrom_region not in list(int_tree):
+                    log.warning("*Warning*\nNo interval was found when "
+                                f"overlapping with both {chrom_region_before}:{start_region}-{end_region}"
+                                f" and {chrom_region}:{start_region}-{end_region} inside the "
+                                f" {i}th file with vertical highlight."
+                                "\n")
+                    return
+
+            # Process the color:
+            if 'color' not in properties:
+                color = DEFAULT_VHIGHLIGHT_COLOR
+            else:
+                if matplotlib.colors.is_color_like(properties['color']):
+                    color = properties['color']
+                else:
+                    log.warning("*Warning*\nThe color "
+                                f"{properties['color']} specified"
+                                " for vhighlight is not a valid color."
+                                f" {DEFAULT_VHIGHLIGHT_COLOR} will be used."
+                                "\n")
+                    color = DEFAULT_VHIGHLIGHT_COLOR
+            for ax in axis_list:
+                for region in sorted(int_tree[chrom_region][start_region - 10000:end_region + 10000]):
+                    ax.axvspan(region.begin, region.end,
+                               color=color, alpha=properties['alpha'])
+
+        return
+
     def parse_tracks(self, tracks_file, plot_regions=None):
         """
         Parses a configuration file
@@ -336,9 +395,8 @@ class PlotTracks(object):
         :param tracks_file: file path containing the track configuration
         :param plot_regions: a list of tuple [(chrom1, start1, end1), (chrom2, start2, end2)]
                              on which the data should be loaded
-                             here the vlines
-        :return: array of dictionaries and vlines_file.
-                 One dictionary per track
+                             here the vlines and the vhightlight
+        :return: None
         """
         parser = ConfigParser(dict_type=MultiDict, strict=False)
         parser.read_file(open(tracks_file, 'r'))
@@ -357,6 +415,9 @@ class PlotTracks(object):
                 continue
             # Then the vlines are treated differently:
             if ('type', 'vlines') in parser.items(section_name):
+                # Raise an error if already defined:
+                if self.vlines_properties:
+                    raise InputError("vlines defined in 2 different sections.")
                 # The only thing to check is the file
                 # There is no other parameters to use.
                 if 'file' not in all_keywords:
@@ -378,6 +439,39 @@ class PlotTracks(object):
                                 f" be used {' '.join(extra_keywords)}.\n")
                 self.vlines_properties = \
                     self.check_file_exists(track_options, tracks_file_path)
+                continue
+            # Then the vhighlight is treated differently:
+            if ('type', 'vhighlight') in parser.items(section_name):
+                # The only thing to check is the file
+                # There is no other parameters to use.
+                if 'file' not in all_keywords:
+                    raise InputError(f"The section {section_name} is supposed to be a vhighlight"
+                                     " but there is no file.")
+                track_options['file'] = parser.get(section_name, 'file')
+                if 'alpha' in all_keywords:
+                    try:
+                        track_options['alpha'] = float(parser.get(section_name, 'alpha'))
+                    except ValueError:
+                        raise InputError(f"In section {section_name}, alpha "
+                                         f"was set to {parser.get(section_name, 'alpha')}"
+                                         " whereas we should have a float "
+                                         "value.")
+                    if track_options['alpha'] > 1 or track_options['alpha'] < 0:
+                        raise InputError(f"In section {section_name}, alpha "
+                                         f"was set to {parser.get(section_name, 'alpha')}"
+                                         " whereas we should have a float "
+                                         "value between 0 and 1.")
+                else:
+                    # We set the default value of vhighlight to 0.5
+                    track_options['alpha'] = 0.5
+                if 'color' in all_keywords:
+                    track_options['color'] = parser.get(section_name, 'color')
+                extra_keywords = [k for k in all_keywords
+                                  if k not in ['file', 'type', 'alpha', 'color']]
+                if len(extra_keywords) > 0:
+                    log.warning("These parameters were specified but will not"
+                                f" be used {' '.join(extra_keywords)}.\n")
+                self.vhighlight_properties.append(self.check_file_exists(track_options, tracks_file_path))
                 continue
             # For the other cases, we will append properties dictionnaries
             # to the track_list
@@ -533,6 +627,12 @@ class PlotTracks(object):
             self.vlines_intval_tree, __, __ = \
                 file_to_intervaltree(self.vlines_properties['file'],
                                      plot_regions)
+        if len(self.vhighlight_properties) > 0:
+            for i in range(len(self.vhighlight_properties)):
+                current_vhighlight_intval_tree, __, __ = \
+                    file_to_intervaltree(self.vhighlight_properties[i]['file'],
+                                         plot_regions)
+                self.vhighlight_intval_tree.append(current_vhighlight_intval_tree)
 
     def close_files(self):
         """
@@ -678,7 +778,8 @@ class XAxisTrack(GenomeTrack):
 
         start, end = ax.get_xlim()
         if self.properties['where'] == 'top':
-            ax.axis["x"] = ax.new_floating_axis(0, 0.2)
+            ax.axis["x"] = ax.new_floating_axis(0, 0.2, axis_direction="top")
+            # In some old matplotlib version (<3.3.4) it was not set:
             ax.axis["x"].set_axis_direction("top")
             label_y_pos = 0.99
             vert_align = 'top'
@@ -690,33 +791,8 @@ class XAxisTrack(GenomeTrack):
         # First adjust the size of the label
         ax.axis["x"].major_ticklabels.set(size=self.properties['fontsize'])
 
-        # Get the ticks values
-        ticks = ax.get_xticks()
-        if ticks[-1] - ticks[1] <= 1e3:
-            labels = [f"{x:,.0f}"
-                      for x in ticks]
-            labels[-2] += " b"
-
-        elif ticks[-1] - ticks[1] <= 4e5:
-            labels = [f"{x / 1000.0:,.0f}"
-                      for x in ticks]
-            labels[-2] += " Kb"
-
-        else:
-            labels = [f"{x / 1000000.0:,.1f} "
-                      for x in ticks]
-            labels[-2] += " Mbp"
-
-        # Fix ticks values
-        ax.set_xticks(ticks)
-
-        # Fix the limits which can be overwritten by set_xticks:
-        ax.set_xlim(start, end)
-
-        # Put the label
-        ax.set_xticklabels(labels)
-
-        # Add the chromosome name
+        # Use the formatter
+        ax.xaxis.set_major_formatter(MyBasePairFormatter())
         ax.text(0.5, label_y_pos, chrom_region, horizontalalignment='center',
                 fontsize=self.properties['fontsize'],
                 verticalalignment=vert_align, transform=ax.transAxes)

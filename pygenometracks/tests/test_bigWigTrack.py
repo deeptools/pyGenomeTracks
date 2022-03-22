@@ -456,6 +456,40 @@ def test_bigwig_track():
     os.remove(outfile.name)
 
 
+def test_bigwig_track_chr_end():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bigwig.ini")
+    region = "X:3490000-24000000"
+    expected_file = os.path.join(ROOT, 'master_bigwig_overlap_chrend.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bigwig_track_above_chr_end():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bigwig.ini")
+    region = "X:25000000-30000000"
+    expected_file = os.path.join(ROOT, 'master_bigwig_over_chrend.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
 def test_alpha():
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_alpha_test_',
                                  delete=False)
@@ -565,6 +599,7 @@ def test_defaults():
 
 
 def test_width():
+    my_tolerence = 18
     region = "X:2,500,000-3,000,000"
     outfile = NamedTemporaryFile(suffix='.png', prefix='bigwig_test_',
                                  delete=False)
@@ -583,7 +618,7 @@ def test_width():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerence)
     assert res is None, res
     expected_file = os.path.join(ROOT, 'master_example_bigwig_plotwidth12Lab0.5.png')
     args = f"--tracks {ini_file} --region {region} "\

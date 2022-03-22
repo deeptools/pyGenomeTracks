@@ -1,0 +1,69 @@
+3.7
+===
+
+
+Enhancements:
+^^^^^^^^^^^^^
+
+This release is full of new tracks and new parameters for existing tracks:
+
+- Brand new tracks:
+
+    - ``fasta``: to display sequences with colored letters from a fasta file (Thanks @GDelevoye for his contribution).
+
+    - ``maf`` (multiple alignment format): to display conservation between species.
+
+    - ``hic_matrix_square``: to display Hi-C matrices not in 'triangle' shape but in 'square' shape.
+      This allow to display identical regions but also interactions between 2 different regions.
+      This render plots close to `hicPlotMatrix <https://hicexplorer.readthedocs.io/en/latest/content/tools/hicPlotMatrix.html>`_.
+
+- New parameters for existing tracks:
+
+    - Related to ``hic_matrix_square``: we implemented a new ``display`` mode for ``bed`` and ``links_type`` for ``links``: ``squares``.
+      This allow to overlay TADs or loops on these Hi-C maps.
+
+    - For ``bed`` and ``gtf``:
+    
+        - the ``fontstyle`` can be set to ``italic`` or ``oblique``.
+    
+        - the ``arrowhead_fraction`` which controls the size of the arrowhead in the flybase style can be adjusted.
+    
+        - the color of the backbone when you use flybase or UCSC style can be changed with ``color_backbone``.
+
+    - For ``gtf`` a new parameter ``merge_overlapping_exons = true`` help to get a better display when all transcripts are merged. 
+
+    - For ``bedgraph_matrix``: when ``type = lines`` is set the colors of individual lines can be set by ``individual_color`` and the summary line by ``summary_color``
+
+Minor enhancements:
+^^^^^^^^^^^^^^^^^^^
+
+- pyGenomeTracks display better error message when rtf files are used.
+
+- the help message for BED has been improved to highlight the fact that the extension needs to be part of the output.
+
+- if the directory of the output file does not exists, it is created.
+
+Drop support for python 3.6
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- The introduction of the new track for Maf forced us to drop support for python 3.6.
+
+Relax version control on matplotlib:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Any version of matplotlib from 3.1.1 to 3.5.1 is now accepted.
+
+Bugfixes:
+^^^^^^^^^
+
+- The tick values for the x-axis are now accurate (see `#333 <https://github.com/deeptools/pyGenomeTracks/issues/333>`_) and more informative.
+
+- The y values for tracks like bigwig are not restricted to one decimal. If needed, the scientific notation can be used.
+
+- pyGenomeTracks now allows to plot above chromosome size defined in bigwig or Hi-C matrices without raising an error.
+
+- pyGenomeTracks now works with gtf without exons.
+
+- pyGenomeTracks now closes figures after saving.
+
+- The plotting part does not modify the tracks anymore. This solves `#393 <https://github.com/deeptools/pyGenomeTracks/issues/393>`_

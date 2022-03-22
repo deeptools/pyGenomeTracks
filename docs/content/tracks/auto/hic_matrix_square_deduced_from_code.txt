@@ -1,0 +1,30 @@
+Necessary:
+^^^^^^^^^^
+- **file**
+
+Optional:
+^^^^^^^^^
+- **title**: Put here a title which will apprear on the right.
+
+- **height**: `0.5` (default) or float above 0.
+
+- **overlay_previous**: `no` (default) or yes or share-y.
+
+- **orientation**: by default this option is not set but you can also put: inverted.
+
+- **max_value**: by default this option is not set but you can also put: any float
+
+- **min_value**: by default this option is not set but you can also put: any float
+
+- **region2**: by default this option is not set
+
+- **transform**: `no` (default) or log, log1p or -log.
+
+- **rasterize**: `true` (default) or false.
+
+- **colormap**: `RdYlBu_r` (default)
+
+- **show_masked_bins**: `false` (default) or true.
+
+- **scale_factor**: `1` (default) or any float
+

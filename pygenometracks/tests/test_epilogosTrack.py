@@ -56,3 +56,37 @@ def test_epilogos_track():
     assert res is None, res
 
     os.remove(outfile.name)
+
+
+def test_epilogos_track_overlap_chr_end():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "epilogos.ini")
+    region = "chrX:3490000-24000000"
+    expected_file = os.path.join(ROOT, 'master_epilogos_overlap_end.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_epilogos_track_over_chr_end():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "epilogos.ini")
+    region = "X:25000000-30000000"
+    expected_file = os.path.join(ROOT, 'master_epilogos_over_end.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)

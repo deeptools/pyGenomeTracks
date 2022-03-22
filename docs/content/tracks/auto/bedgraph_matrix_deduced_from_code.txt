@@ -28,3 +28,7 @@ Optional:
 
 - **colormap**: `viridis` (default)
 
+- **individual_color**: `grey` (default)
+
+- **summary_color**: `#1f77b4` (default)
+

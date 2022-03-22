@@ -91,7 +91,7 @@ class install(_install):
 
 
 install_requires_py = ["numpy >=1.16",
-                       "matplotlib >=3.1.1,<=3.3.2",
+                       "matplotlib >=3.1.1,<=3.5.1",
                        "intervaltree >=2.1.0",
                        "pyBigWig >=0.3.16",
                        "future >=0.17.0",
@@ -100,7 +100,9 @@ install_requires_py = ["numpy >=1.16",
                        "pytest",
                        "gffutils >=0.9",
                        "pybedtools >=0.8.1",
-                       "tqdm >=4.20"
+                       "tqdm >=4.20",
+                       "bx-python >=0.8.13",
+                       "pyfaidx >=0.1.3"
                        ]
 
 setup(
@@ -114,13 +116,13 @@ setup(
     url='http://pygenometracks.readthedocs.io',
     license='LICENSE.txt',
     description='Command-line tool to make beautiful and reproducible genome browser snapshots',
-    long_description=open('README.md').read(),
+    long_description=open('README.md').read().replace("./docs/", "https://raw.githubusercontent.com/deeptools/pyGenomeTracks/" + get_version() + "/docs/"),
     long_description_content_type="text/markdown",
     classifiers=[
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Bio-Informatics'],
     install_requires=install_requires_py,
     zip_safe=False,
-    python_requires='>=3.6.*, <4',
+    python_requires='>=3.7.*, <4',
     cmdclass={'sdist': sdist, 'install': install}
 )

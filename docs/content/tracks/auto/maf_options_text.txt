@@ -1,0 +1,39 @@
+
+# title of track (plotted on the right side)
+title =
+# height of track in cm (ignored if the track is overlay on top the previous track)
+height = 2
+# if you want to plot the track upside-down:
+# orientation = inverted
+# if you want to plot the track on top of the previous track. Options are 'yes' or 'share-y'.
+# For the 'share-y' option the y axis values is shared between this plot and the overlay plot.
+# Otherwise, each plot use its own scale
+#overlay_previous = yes
+
+# In addition to the maf file the reference genome is required:
+# For example
+#reference = mm10
+# To speed the access to specific region
+# The maf file needs an index.
+# The default is the file
+# followed by '.index'. Alternatively another
+# file can be specified.
+# If it does not exists it will be created:
+#file_index =
+# Set colors
+#color_identical = black
+#color_mismatch = grey
+#color_gap = lightgrey
+# Set line_width
+#line_width = 0.5
+# optional: the species order
+#species_order = hg18 panTro2
+# optional if species_order is specified (don't use space in names)
+#species_labels = human chimpanzee
+# optional if species_order is specified and they are the only one you want:
+#species_order_only = true
+# optional if you want to see the DNA sequence of the ref
+#display_ref_seq = true
+# optional: If not given is guessed from the file ending.
+file_type = maf
+    

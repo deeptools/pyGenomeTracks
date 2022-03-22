@@ -26,9 +26,12 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 MOCK_MODULES = ['pygenometracks.tracksClass',  # (required for both)
                 # For plotTracks in plotTracks
                 'matplotlib',
+                'matplotlib.pyplot',
                 # For plotTracks in utilities
+                'matplotlib.ticker',
                 'numpy',
                 'tqdm',
+                'pyfaidx',
                 'intervaltree',
                 'pybedtools']
 
@@ -70,7 +73,7 @@ release = version
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinxarg.ext']
+extensions = ['sphinx_rtd_theme', 'sphinxarg.ext']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

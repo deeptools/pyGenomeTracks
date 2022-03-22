@@ -12,16 +12,18 @@ Requirements
 
 Python dependencies:
 
-* Python >= 3.6
+* Python >= 3.7
 * numpy >= 1.16
 * intervaltree >= 2.1.0
 * pyBigWig >= 0.3.16
 * hicmatrix >= 15
 * pysam >= 0.14
-* matplotlib >=3.1.1,<=3.3.2
+* matplotlib >= 3.1.1,<= 3.5.1
 * gffutils >= 0.9
 * pybedtools >= 0.8.1
 * tqdm >= 4.20
+* bx-python >=0.8.13
+* pyfaidx >= 0.1.3
 
 External dependencies:
 
@@ -41,6 +43,34 @@ To get a specific version, one can specify it. For example:
 .. code:: bash
 
     $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks=3.5 python=3.7
+
+Command line installation using ``conda`` and ``mamba``
+-------------------------------------------------------
+
+
+However, we noticed that conda installation can be quite slow so using mamba can help.
+You first need to create the environment and install mamba:
+
+.. code:: bash
+
+    $ conda create -n pygenometracks -c bioconda -c conda-forge mamba python=3.7
+
+Then activate the environment and install pygenometracks with mamba:
+
+.. code:: bash
+
+    $ conda activate pygenometracks
+	$ mamba install -c defaults -c bioconda -c conda-forge pygenometracks
+
+
+or if you want a specific version:
+
+
+.. code:: bash
+
+    $ conda create -n pygenometracks -c bioconda -c conda-forge mamba python=3.7
+	$ conda activate pygenometracks
+	$ mamba install -c defaults -c bioconda -c conda-forge pygenometracks=3.5
 
 Command line installation using ``pip``
 -----------------------------------------

@@ -4,6 +4,8 @@ import numpy as np
 from matplotlib import cm
 
 DEFAULT_BEDGRAPHMATRIX_COLORMAP = 'viridis'
+DEFAULT_BEDGRAPHMATRIX_INDIVIDUAL = 'grey'
+DEFAULT_BEDGRAPHMATRIX_SUMMARY = '#1f77b4'  # mpl.rcParams["axes.prop_cycle"].by_key()["color"][0]
 
 
 class BedGraphMatrixTrack(BedGraphTrack):
@@ -21,6 +23,10 @@ class BedGraphMatrixTrack(BedGraphTrack):
 # if type is set as lines, then the TAD score lines are drawn instead
 # of the matrix otherwise a heatmap is plotted
 type = lines
+# by default individual lines are colored in grey:
+individual_color = grey
+# by default the summary line is colored in blue:
+summary_color = #1f77b4
 # If the type is not lines, you can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = false
@@ -52,7 +58,9 @@ file_type = {TRACK_TYPE}
                            'orientation': None,
                            'rasterize': True,
                            'region': None,  # Cannot be set manually but is set by tracksClass
-                           'colormap': DEFAULT_BEDGRAPHMATRIX_COLORMAP}
+                           'colormap': DEFAULT_BEDGRAPHMATRIX_COLORMAP,
+                           'individual_color': DEFAULT_BEDGRAPHMATRIX_INDIVIDUAL,
+                           'summary_color': DEFAULT_BEDGRAPHMATRIX_SUMMARY}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -64,12 +72,14 @@ file_type = {TRACK_TYPE}
                           'rasterize']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'type', 'pos_score_in_bin', 'orientation',
-                         'title', 'colormap']
+                         'title', 'colormap', 'individual_color',
+                         'summary_color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'height': [0, np.inf]}
     INTEGER_PROPERTIES = {}
-    # The color cannot be set for the moment
+    # The colormap can only be a colormap
+    # The individual_color and summary_color can only be a color
 
     def __init__(self, properties_dict):
         GenomeTrack.__init__(self, properties_dict)
@@ -91,6 +101,9 @@ file_type = {TRACK_TYPE}
                                colormap_only=True,
                                default_value_is_colormap=True)
             self.cmap = cm.get_cmap(self.properties['colormap'])
+        else:
+            for param in ['individual_color', 'summary_color']:
+                self.process_color(param, colormap_possible=False)
 
     def plot(self, ax, chrom_region, start_region, end_region):
         """
@@ -121,13 +134,15 @@ file_type = {TRACK_TYPE}
                 if self.properties['pos_score_in_bin'] == 'block':
                     # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
                     row = np.repeat(row, 2)
-                ax.plot(x_values, row, color='grey', linewidth=0.5)
+                ax.plot(x_values, row, color=self.properties['individual_color'],
+                        linewidth=0.5)
 
             if self.properties['pos_score_in_bin'] == 'block':
                 mean_values = np.repeat(matrix.mean(axis=0), 2)
             else:
                 mean_values = matrix.mean(axis=0)
-            ax.plot(x_values, mean_values, linestyle="--", marker="|")
+            ax.plot(x_values, mean_values, linestyle="--", marker="|",
+                    color=self.properties['summary_color'])
             self.adjust_ylim(ax)
 
             if self.properties['plot_horizontal_lines']:
@@ -143,10 +158,10 @@ file_type = {TRACK_TYPE}
             shading = 'gouraud'
             vmax = self.properties['max_value']
             vmin = self.properties['min_value']
-            self.img = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax,
-                                     shading=shading, cmap=self.cmap)
+            self.last_img_plotted = ax.pcolormesh(x, y, matrix, vmin=vmin, vmax=vmax,
+                                                  shading=shading, cmap=self.cmap)
             if self.properties['rasterize']:
-                self.img.set_rasterized(True)
+                self.last_img_plotted.set_rasterized(True)
 
     def plot_y_axis(self, ax, plot_axis):
         if self.properties['type'] == 'lines':

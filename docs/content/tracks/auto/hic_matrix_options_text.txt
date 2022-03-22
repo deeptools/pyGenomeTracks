@@ -6,10 +6,6 @@
 # For example, colormap = ['blue', 'yellow', 'red']
 # or colormap = ['white', (1, 0.88, .66), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
 #colormap = RdYlBu_r
-# depth is the maximum distance that should be plotted.
-# If it is more than 125% of the plotted region, it will
-# be adjsted to this maximum value.
-depth = 100000
 # height of track (in cm) can be given.
 # Otherwise, the height is computed such that the proportions of the
 # hic matrix are kept (e.g. the image does not appear shrink or extended)
@@ -30,5 +26,10 @@ show_masked_bins = false
 # You can choose to keep the matrix as not rasterized
 # (only used if you use pdf or svg output format) by using:
 # rasterize = false
+    
+# depth is the maximum distance that should be plotted.
+# If it is more than 125% of the plotted region, it will
+# be adjsted to this maximum value.
+depth = 100000
 file_type = hic_matrix
     

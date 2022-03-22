@@ -125,6 +125,51 @@ plot_horizontal_lines = true
 with open(os.path.join(ROOT, "bedgraph.ini"), 'w') as fh:
     fh.write(tracks)
 
+tracks = """
+[test bedgraph matrix]
+file = tad_separation_score.bm.gz
+type = lines
+title = bedgraph matrix type = lines default colors
+height = 5
+file_type = bedgraph_matrix
+
+[spacer]
+
+[test bedgraph matrix]
+file = tad_separation_score.bm.gz
+type = lines
+title = bedgraph matrix type = lines summary_color = red
+summary_color = red
+height = 5
+file_type = bedgraph_matrix
+
+[spacer]
+
+[test bedgraph matrix]
+file = tad_separation_score.bm.gz
+type = lines
+title = bedgraph matrix type = lines summary_color = red individual_color = (0, 1, 0)
+summary_color = red
+individual_color = (0, 1, 0)
+height = 5
+file_type = bedgraph_matrix
+
+[spacer]
+
+[test bedgraph matrix]
+file = tad_separation_score.bm.gz
+type = lines
+title = bedgraph matrix type = lines individual_color = (.34, 1, 0)
+individual_color = (.34, 1, 0)
+height = 5
+file_type = bedgraph_matrix
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "bedgraph_matrix_line_colors.ini"), 'w') as fh:
+    fh.write(tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -134,6 +179,74 @@ def test_bedgraphmatrix_track():
     ini_file = os.path.join(ROOT, "bedgraph.ini")
     region = "X:2850000-3150000"
     expected_file = os.path.join(ROOT, 'master_bedgraph.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bedgraphmatrix_track_chr1():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bedgraph.ini")
+    region = "chr1:0-100000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_chr1.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bedgraph_matrix_line_colors():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bedgraph_matrix_line_colors.ini")
+    region = "X:2850000-3150000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_matrix_line_colors.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bedgraphmatrix_track_overlap_chr_end():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bedgraph.ini")
+    region = "chrX:3490000-24000000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_overlap_end.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bedgraphmatrix_track_over_chr_end():
+    outfile = NamedTemporaryFile(suffix='.png', prefix='bedgraph_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "bedgraph.ini")
+    region = "X:25000000-30000000"
+    expected_file = os.path.join(ROOT, 'master_bedgraph_over_end.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --dpi 130 "\
            f"--outFileName {outfile.name}".split()

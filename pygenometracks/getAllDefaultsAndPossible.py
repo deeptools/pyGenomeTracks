@@ -49,10 +49,11 @@ def main():
     my_prefered_order_tracks_names = ['x_axis', 'epilogos', 'links',
                                       'domains', 'bed', 'gtf', 'narrow_peak',
                                       'bigwig', 'bedgraph', 'bedgraph_matrix',
-                                      'hlines', 'hic_matrix', 'scalebar']
+                                      'hlines', 'hic_matrix', 'hic_matrix_square',
+                                      'maf', 'scalebar']
     my_prefered_order_tracks_names = [k for k in my_prefered_order_tracks_names
                                       if k in all_tracks]
-    other_tracks = list(set(all_tracks.keys())
+    other_tracks = list(set([k for k in all_tracks.keys() if k is not None])
                         - set(my_prefered_order_tracks_names))
     # Get all possible and default parameters
     all_default_parameters = {}
@@ -116,6 +117,14 @@ def main():
                mat, fmt=f'%-{max_char}s', delimiter="  ",
                header='  '.join(mat[1, :]), footer='  '.join(mat[1, :]),
                comments='')
+    # For export as csv remove the row with '=='
+    mat_csv = np.delete(mat, 1, 0)
+    # update the header:
+    for j, track_type in enumerate(all_tracks_with_default, start=1):
+        mat_csv[0, j] = track_type
+    np.savetxt(os.path.join("docs", "content", "all_default_properties.csv"),
+               mat_csv, fmt='%s', delimiter=",")
+
     if starPut:
         with open(os.path.join("docs", "content", "all_default_properties_rst.txt"), 'a') as f:
             f.write(starText)

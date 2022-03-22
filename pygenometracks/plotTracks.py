@@ -142,12 +142,14 @@ type = vlines
 """
 
 import sys
+import os
 import argparse
 import warnings
 
 from pygenometracks.tracksClass import PlotTracks
 from pygenometracks._version import __version__
-from .utilities import InputError
+from .utilities import InputError, get_region
+import matplotlib.pyplot as plt
 
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 
@@ -177,8 +179,9 @@ def parse_arguments(args=None):
 
     group.add_argument('--BED',
                        help='Instead of a region, a file containing the regions to plot, in BED format, '
-                       'can be given. If this is the case, multiple files will be created using a prefix '
-                       'the value of --outFileName',
+                       'can be given. If this is the case, multiple files will be created. '
+                       'It will use the value of --outFileName as a template'
+                       ' and put the coordinates between the file name and the extension.',
                        type=argparse.FileType('r')
                        )
 
@@ -243,53 +246,6 @@ def parse_arguments(args=None):
     return parser
 
 
-def get_region(region_string):
-    """
-    splits a region string into
-    a chrom, start_region, end_region tuple
-    The region_string format is chr:start-end
-    """
-    if region_string:
-        # separate the chromosome name and the location using the ':' character
-        try:
-            chrom, position = region_string.strip().split(":")
-        except ValueError:
-            raise InputError(f"The region provided ({region_string})"
-                             " is not valid, it should be chr:start-end.\n")
-
-        # clean up the position
-        for char in ",.;|!{}()":
-            position = position.replace(char, '')
-
-        position_list = position.split("-")
-        assert len(position_list) == 2, \
-            f"The region provided ({region_string})" \
-            " is not valid, it should be chr:start-end.\n"
-
-        try:
-            region_start = int(position_list[0])
-        except ValueError:
-            raise InputError(f"The start value ({position_list[0]}) in the"
-                             " region provided"
-                             " is not valid, it should be chr:start-end.\n")
-        try:
-            region_end = int(position_list[1])
-        except ValueError:
-            raise InputError(f"The start value ({position_list[0]}) in the"
-                             " region provided"
-                             " is not valid, it should be chr:start-end.\n")
-
-        if region_end <= region_start:
-            raise InputError("Please check that the region end is larger "
-                             "than the region start.\n"
-                             f"Values given:\nstart: {region_start}\n"
-                             f"end: {region_end}\n"
-                             "To plot tracks with a decreasing axis "
-                             "consider using `--decreasingXAxis`.")
-
-        return chrom, region_start, region_end
-
-
 def main(args=None):
 
     args = parse_arguments().parse_args(args)
@@ -320,6 +276,10 @@ def main(args=None):
                      track_label_width=args.trackLabelFraction,
                      plot_regions=regions, plot_width=args.plotWidth)
 
+    # Create dir if dir does not exists:
+    # Modified from https://stackoverflow.com/questions/12517451/automatically-creating-directories-with-file-output
+    os.makedirs(os.path.dirname(os.path.abspath(args.outFileName)), exist_ok=True)
+
     # Plot them
     if args.BED:
         name = args.outFileName.split(".")
@@ -332,11 +292,13 @@ def main(args=None):
                               "detected! This can be too small to return "
                               "a proper TAD plot!\n")
             sys.stderr.write(f"saving {file_name}\n")
-            trp.plot(file_name, chrom, start, end, title=args.title,
-                     h_align_titles=args.trackLabelHAlign,
-                     decreasing_x_axis=args.decreasingXAxis)
+            current_fig = trp.plot(file_name, chrom, start, end, title=args.title,
+                                   h_align_titles=args.trackLabelHAlign,
+                                   decreasing_x_axis=args.decreasingXAxis)
+            plt.close(current_fig)
     else:
-        trp.plot(args.outFileName, *regions[0], title=args.title,
-                 h_align_titles=args.trackLabelHAlign,
-                 decreasing_x_axis=args.decreasingXAxis)
+        current_fig = trp.plot(args.outFileName, *regions[0], title=args.title,
+                               h_align_titles=args.trackLabelHAlign,
+                               decreasing_x_axis=args.decreasingXAxis)
+        plt.close(current_fig)
     trp.close_files()

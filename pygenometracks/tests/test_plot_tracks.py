@@ -228,6 +228,78 @@ overlay_previous = yes
 with open(os.path.join(ROOT, "firstTrackOverlay.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[hlines1]
+y_values = 0.1
+min_value = 0
+max_value = 0.15
+file_type = hlines
+height = 3
+title = y_values = 0.1, min_value = 0, max_value = 0.15
+
+[spacer]
+
+[hlines1]
+y_values = 0.01
+min_value = 0
+max_value = 0.03
+file_type = hlines
+height = 3
+title = y_values = 0.01, min_value = 0, max_value = 0.03
+
+[spacer]
+
+[hlines1]
+y_values = 10
+min_value = 0
+max_value = 12.023
+file_type = hlines
+height = 3
+title = y_values = 10, min_value = 0, max_value = 12.023
+
+[spacer]
+
+[hlines1]
+y_values = 0.000001
+min_value = 0
+max_value = 0.0000033489201
+file_type = hlines
+height = 3
+title = y_values = 0.000001, min_value = 0, max_value = 0.0000033489201
+
+[spacer]
+
+[hlines1]
+y_values = 1000000000
+min_value = 0
+max_value = 2342000300
+file_type = hlines
+height = 3
+title = y_values = 1000000000, min_value = 0, max_value = 2342000300
+
+[spacer]
+
+[hlines1]
+y_values = -0.000001
+min_value = -0.000003
+max_value = 0
+file_type = hlines
+height = 3
+title = y_values = -0.000001, min_value = -0.000003, max_value = 0
+[spacer]
+
+[hlines1]
+y_values = -30000000000
+min_value = -34000000000
+max_value = 0
+file_type = hlines
+height = 3
+title = y_values = -30000000000, min_value = 0, max_value = -34000000000
+"""
+
+with open(os.path.join(ROOT, "ylims.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -304,6 +376,10 @@ def test_plot_tracks_existing_chr_empty_tracks():
 
 
 def test_plot_tracks_missing_chr():
+    if mpl.__version__ == "3.1.1":
+        my_tolerance = 16
+    else:
+        my_tolerance = tolerance
 
     outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                  delete=False)
@@ -315,7 +391,7 @@ def test_plot_tracks_missing_chr():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, tolerance)
+                         outfile.name, my_tolerance)
     assert res is None, res
 
     os.remove(outfile.name)
@@ -331,6 +407,24 @@ def test_plot_tracks_dec():
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            "--decreasingXAxis "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_plot_ylims():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "ylims.ini")
+    region = "X:0-221"
+    expected_file = os.path.join(ROOT, 'master_ylims.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,

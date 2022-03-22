@@ -1,0 +1,36 @@
+
+# The different options for color maps can be found here:
+# https://matplotlib.org/users/colormaps.html
+# the default color map is RdYlBu_r (_r) stands for reverse
+# If you want your own colormap you can put the values of the color you want
+# For example, colormap = ['blue', 'yellow', 'red']
+# or colormap = ['white', (1, 0.88, .66), (1, 0.74, 0.25), (1, 0.5, 0), (1, 0.19, 0), (0.74, 0, 0), (0.35, 0, 0)]
+#colormap = RdYlBu_r
+# height of track (in cm) can be given.
+# Otherwise, the height is computed such that the proportions of the
+# hic matrix are kept (e.g. the image does not appear shrink or extended)
+# height = 10
+# min_value and max_value refer to the contacts in the matrix.
+#min_value =2.8
+#max_value = 3.0
+# the matrix can be transformed using the log1p (or log or -log, but zeros could be problematic)
+transform = log1p
+# show masked bins plots as white lines
+# those bins that were not used during the correction
+# the default is to extend neighboring bins to
+# obtain an aesthetically pleasant output
+show_masked_bins = false
+# optional if the values in the matrix need to be scaled the
+# following parameter can be used. This is useful to plot multiple hic-matrices on the same scale
+# scale_factor = 1
+# You can choose to keep the matrix as not rasterized
+# (only used if you use pdf or svg output format) by using:
+# rasterize = false
+    
+# region2 is the region that should be plotted on the y axis.
+# Default is the region on the x-axis
+# By default the top is the start and the bottom is the end
+# If orientation=inverted is used it is the contrary.
+#region2 = X:3000000-3500000
+file_type = hic_matrix_square
+    

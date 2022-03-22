@@ -4,11 +4,11 @@ from intervaltree import IntervalTree, Interval
 import matplotlib
 import numpy as np
 from matplotlib.patches import Arc, Polygon
-from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect
+from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect, get_region
 from tqdm import tqdm
 
 DEFAULT_LINKS_COLOR = 'blue'
-HUGE_NUMBER = 1e15  # Which should be above any chromosome size
+HUGE_NUMBER = int(1e9)  # Which should be above any chromosome size
 
 
 class LinksTrack(GenomeTrack):
@@ -21,14 +21,19 @@ class LinksTrack(GenomeTrack):
 # The fields after the score field will be ignored
 # for example:
 #   chr1 100 200 chr1 250 300 0.5
-# depending on the value of links_type either 'arcs' or 'triangles' or 'loops' can be plotted.
-# If arcs, a line will be drawn from the center of the first region (chr1: 150),
-# to the center of the other region (chr1: 275).
-# if triangles, the vertix of the triangle will be drawn at the center between the two points
+# depending on the value of links_type either 'arcs' or 'triangles' or 'loops'
+# or 'squares' can be plotted.
+# If arcs, an arc will be drawn linking the beginning of the first region (chr1: 100),
+# to the end of the other region (chr1: 300) except if use_middle is set to true.
+# If triangles, the vertix of the triangle will be drawn at the center between the two points
 # (also the extremity of each position is used)
-# if loops, a rectangle highlighting the intersection between the 2 regions will be shown
+# If loops, a diamond highlighting the intersection between the 2 regions will be shown
 # the triangles, and loops options are convenient to overlay over a
-# Hi-C matrix to highlight the matrix pixel of the highlighted link
+# Hi-C matrix to highlight the matrix pixel of the highlighted link.
+# If squares, a rectangle highlighting the intersection between the 2 regions will be shown
+# In this case the y axis represent region2 which can be specified
+# By default it is the same as the region of the x-axis
+#region2 = X:3000000-3500000
 # For these tracks do not hesitate to put large line_width like 5 or 10.
 links_type = arcs
 # For triangles and arcs, by default the extremities coordinates are used
@@ -74,20 +79,22 @@ file_type = {TRACK_TYPE}
                            'region': None,  # Cannot be set manually but is set by tracksClass
                            'ylim': None,
                            'compact_arcs_level': '0',
-                           'use_middle': False}
+                           'use_middle': False,
+                           'region2': None}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
                              'ylim': {'auto': None}}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'links_type': ['arcs', 'triangles', 'loops'],
+                           'links_type': ['arcs', 'triangles', 'loops', 'squares'],
                            'line_style': ['solid', 'dashed',
                                           'dotted', 'dashdot'],
                            'compact_arcs_level': ['0', '1', '2']}
     BOOLEAN_PROPERTIES = ['use_middle']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'links_type', 'line_style',
-                         'title', 'color', 'compact_arcs_level']
+                         'title', 'color', 'compact_arcs_level',
+                         'region2']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'ylim': [0, np.inf],
@@ -100,6 +107,28 @@ file_type = {TRACK_TYPE}
     def set_properties_defaults(self):
         super(LinksTrack, self).set_properties_defaults()
         self.max_height = None
+
+        if self.properties['region2'] is not None \
+           and self.properties['links_type'] != 'squares':
+            self.log.warning("*WARNING* for section "
+                             f"{self.properties['section_name']}"
+                             " a region2 was set but "
+                             "links_type was not set to squares."
+                             "region2 will be ignored.\n")
+            self.properties['region2'] = None
+        if self.properties['region2'] is not None:
+            region2 = get_region(self.properties['region2'])
+            if self.properties['region'] is not None:
+                self.properties['region'].append(region2)
+            self.region2 = region2
+            if self.properties['use_middle']:
+                self.log.warning("*WARNING* for section "
+                                 f"{self.properties['section_name']}"
+                                 " a use_middle was set to true "
+                                 "but this is incompatible with squares."
+                                 "\n")
+                self.properties['use_middle'] = False
+
         self.interval_tree, min_score, max_score, has_score = self.process_link_file(self.properties['region'])
         if self.properties['line_width'] is None and not has_score:
             self.log.warning("*WARNING* for section "
@@ -144,15 +173,16 @@ file_type = {TRACK_TYPE}
                              f"{self.properties['section_name']}"
                              " a ylim was set but "
                              "compact_arcs_level was set to 2."
-                             "ylim will be ignore.\n")
+                             "ylim will be ignored.\n")
             self.properties['ylim'] = None
 
     def plot(self, ax, chrom_region, region_start, region_end):
         """
-        Makes and arc connecting two points on a linear scale representing
+        Makes an arc connecting two points on a linear scale representing
         interactions between Hi-C bins.
+        Or a diamong or a triangle highlighting interactions.
+        Or a square.
         :param ax: matplotlib axis
-        :param label_ax: matplotlib axis for labels
         """
         self.max_height = 0
         count = 0
@@ -167,44 +197,81 @@ file_type = {TRACK_TYPE}
                                  "This will generate an empty track!!\n")
                 return
 
-        chrom_region = self.check_chrom_str_bytes(self.interval_tree, chrom_region)
-
         arcs_in_region = sorted(self.interval_tree[chrom_region][region_start:region_end])
 
         for idx, interval in enumerate(arcs_in_region):
-            # skip intervals whose start and end are outside the plotted region
-            if interval.begin < region_start and interval.end > region_end:
-                continue
+            if self.properties['links_type'] == 'squares':
+                plotting_sides = {'as_in_data': False, 'mirrored': False}
+                start1, end1, start2, end2, _ = interval.data
+                if self.properties['region2'] is None:
+                    temp_region2 = [chrom_region, region_start, region_end]
+                else:
+                    temp_region2 = self.region2
+                if chrom_region not in [temp_region2[0], change_chrom_names(temp_region2[0])]:
+                    # This is a trans:
+                    plotting_sides['as_in_data'] = True
+                else:
+                    # We need to check which sides need to be plotted:
+                    if (start1 < region_end and end1 > region_start) \
+                       and (start2 < temp_region2[2] and end2 > temp_region2[1]):
+                        plotting_sides['as_in_data'] = True
+                    if (start2 < region_end and end2 > region_start) \
+                       and (start1 < temp_region2[2] and end1 > temp_region2[1]):
+                        plotting_sides['mirrored'] = True
+                    if not plotting_sides['as_in_data'] and not plotting_sides['mirrored']:
+                        continue
+            else:
+                # skip intervals whose start and end are outside the plotted region
+                if interval.begin < region_start and interval.end > region_end:
+                    continue
 
             if self.properties['line_width'] is not None:
-                self.line_width = float(self.properties['line_width'])
+                self.current_line_width = float(self.properties['line_width'])
             else:
-                self.line_width = 0.5 * np.sqrt(interval.data[4])
+                self.current_line_width = 0.5 * np.sqrt(interval.data[4])
 
             if self.properties['links_type'] == 'triangles':
                 self.plot_triangles(ax, interval)
             elif self.properties['links_type'] == 'loops':
                 self.plot_loops(ax, interval.data)
+            elif self.properties['links_type'] == 'squares':
+                if plotting_sides['as_in_data']:
+                    self.plot_squares(ax, interval.data)
+                if plotting_sides['mirrored']:
+                    self.plot_squares(ax, interval.data, mirrored=True)
             else:
                 self.plot_arcs(ax, interval)
 
             count += 1
 
-        # the arc height is equal to the radius, the track height is the largest
-        # radius plotted plus an small increase to avoid cropping of the arcs
-        self.max_height *= 1.1
-        if self.properties['ylim'] is None:
-            ymax = self.max_height
-        else:
-            if self.properties['compact_arcs_level'] == '1':
-                ymax = np.sqrt(self.properties['ylim'])
-            else:
-                ymax = self.properties['ylim']
         self.log.debug(f"{count} were links plotted")
-        if self.properties['orientation'] == 'inverted':
-            ax.set_ylim(ymax, -1)
-        else:
-            ax.set_ylim(-1, ymax)
+        if self.properties['overlay_previous'] != 'share-y':
+            if self.properties['links_type'] == 'squares':
+                if self.properties['region2'] is None:
+                    region_start_y = region_start
+                    region_end_y = region_end
+                else:
+                    region_start_y = self.region2[1]
+                    region_end_y = self.region2[2]
+                if self.properties['orientation'] == 'inverted':
+                    ax.set_ylim(region_start_y, region_end_y)
+                else:
+                    ax.set_ylim(region_end_y, region_start_y)
+            else:
+                # the arc height is equal to the radius, the track height is the largest
+                # radius plotted plus an small increase to avoid cropping of the arcs
+                self.max_height *= 1.1
+                if self.properties['ylim'] is None:
+                    ymax = self.max_height
+                else:
+                    if self.properties['compact_arcs_level'] == '1':
+                        ymax = np.sqrt(self.properties['ylim'])
+                    else:
+                        ymax = self.properties['ylim']
+                if self.properties['orientation'] == 'inverted':
+                    ax.set_ylim(ymax, -1)
+                else:
+                    ax.set_ylim(-1, ymax)
 
     def plot_y_axis(self, axis, plot_ax):
         if self.colormap is not None and self.properties['overlay_previous'] == 'no':
@@ -233,7 +300,7 @@ file_type = {TRACK_TYPE}
             rgb = self.properties['color']
         ax.add_patch(Arc((center, 0), width,
                          2 * half_height, 0, 0, 180, color=rgb,
-                         linewidth=self.line_width,
+                         linewidth=self.current_line_width,
                          ls=self.properties['line_style']))
 
     def plot_triangles(self, ax, interval):
@@ -258,7 +325,7 @@ file_type = {TRACK_TYPE}
         triangle = Polygon(np.array([[x1, y1], [x2, y2], [x3, y1]]),
                            closed=False,
                            facecolor='none', edgecolor=rgb,
-                           linewidth=self.line_width,
+                           linewidth=self.current_line_width,
                            ls=self.properties['line_style'])
         ax.add_artist(triangle)
         if y2 > self.max_height:
@@ -293,11 +360,48 @@ file_type = {TRACK_TYPE}
 
         rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
                             facecolor='none', edgecolor=rgb,
-                            linewidth=self.line_width,
+                            linewidth=self.current_line_width,
                             ls=self.properties['line_style'])
         ax.add_artist(rectangle)
         if y2 > self.max_height:
             self.max_height = y2
+
+    def plot_squares(self, ax, loop, mirrored=False):
+        """
+        mirrored means mirrored regarding to the diagonal
+        (start2, end2, start1, end1)
+        2->  "  " <- 1
+        3->  "  " <- 0
+        """
+        # loop is start1, end1, start2, end2, score
+        if not mirrored:
+            x0 = loop[1]
+            y0 = loop[2]
+            y1 = loop[3]
+            x2 = loop[0]
+        else:
+            x0 = loop[3]
+            y0 = loop[0]
+            y1 = loop[1]
+            x2 = loop[2]
+
+        x1 = x0
+        y2 = y1
+
+        x3 = x2
+        y3 = y0
+
+        if self.colormap:
+            # translate score field
+            # into a color
+            rgb = self.colormap.to_rgba(loop[4])
+        else:
+            rgb = self.properties['color']
+        rectangle = Polygon(np.array([[x0, y0], [x1, y1], [x2, y2], [x3, y3]]),
+                            facecolor='none', edgecolor=rgb,
+                            linewidth=self.current_line_width,
+                            ls=self.properties['line_style'])
+        ax.add_artist(rectangle)
 
     def process_link_file(self, plot_regions):
         # the file format expected is similar to file format of links in
@@ -334,8 +438,26 @@ file_type = {TRACK_TYPE}
                                  f'chrom2, start2, end2\nError: {detail}\n'
                                  f' in line\n {line}')
             if chrom1 != chrom2:
-                self.log.warning(f"Only links in same chromosome are used. Skipping line\n{line}\n")
-                continue
+                if self.properties['region2'] is None:
+                    self.log.warning(f"Only links in same chromosome are used. Skipping line\n{line}\n")
+                    continue
+                else:
+                    # I keep if chrom1 or chrom2 matches the region2
+                    # And store with chrom2 corresponding to region2
+                    possible_chrom_region2 = [self.region2[0], change_chrom_names(self.region2[0])]
+                    if chrom1 in possible_chrom_region2:
+                        is_trans = True
+                        # I switch:
+                        chrom1, chrom2 = chrom2, chrom1
+                        start1, start2 = start2, start1
+                        end1, end2 = end2, end1
+                    elif chrom2 in possible_chrom_region2:
+                        is_trans = True
+                    else:
+                        self.log.warning(f"Only links with a chromosome matching region2 are used. Skipping line\n{line}\n")
+                        continue
+            else:
+                is_trans = False
 
             try:
                 score = line.strip().split('\t')[6]
@@ -371,18 +493,20 @@ file_type = {TRACK_TYPE}
 
             if chrom1 not in interval_tree:
                 interval_tree[chrom1] = IntervalTree()
-
-            if start2 < start1:
+            if start2 < start1 and not is_trans:
                 start1, start2 = start2, start1
                 end1, end2 = end2, end1
-
             if self.properties['use_middle']:
                 mid1 = (start1 + end1) / 2
                 mid2 = (start2 + end2) / 2
                 interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
             else:
-                # each interval spans from the smallest start to the largest end
-                interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
+                if not is_trans:
+                    # each interval spans from the smallest start to the largest end
+                    interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
+                else:
+                    # For the trans we keep start1 and end1
+                    interval_tree[chrom1].add(Interval(start1, end1, [start1, end1, start2, end2, score]))
             valid_intervals += 1
 
         if valid_intervals == 0:
