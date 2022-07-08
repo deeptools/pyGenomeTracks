@@ -1,0 +1,7 @@
+3.7.1
+=====
+
+Bugfix:
+^^^^^^^^^
+
+- Support mcool files for hic_matrix_square. This solves `#404 <https://github.com/deeptools/pyGenomeTracks/issues/404>`_
