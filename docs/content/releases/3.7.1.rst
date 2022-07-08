@@ -2,6 +2,12 @@
 =====
 
 Bugfix:
-^^^^^^^^^
+^^^^^^^
 
 - Support mcool files for hic_matrix_square. This solves `#404 <https://github.com/deeptools/pyGenomeTracks/issues/404>`_
+
+Forgotten announcement for 3.7
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+pyGenomeTracks now have a `vhighlight` to be able to hightlight a whole region across all tracks.
+See the `example <https://github.com/deeptools/pyGenomeTracks/blob/3.7/pygenometracks/tests/test_data/master_vhighlight.png>`_ with the corresponding `ini file <https://github.com/deeptools/pyGenomeTracks/blob/3.7/pygenometracks/tests/test_data/vhighlight.ini>`_.
