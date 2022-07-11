@@ -4,6 +4,7 @@ intervaltree >=2.1.0
 pybigwig >=0.3.16
 future >=0.17.0
 hicmatrix >=15
+h5py <3.2 # This is to prevent collision between h5py and hdf5 with mpi and no mpi when using mamba
 pysam >=0.14
 gffutils >=0.9
 pybedtools >=0.8.1
