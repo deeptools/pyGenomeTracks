@@ -72,11 +72,14 @@ class ReadGtf(object):
         try:
             self.db = gffutils.create_db(file_path, ':memory:')
         except ValueError as ve:
-            if "No lines parsed" in str(ve) or "No valid interval" in str(ve):
+            if "No lines parsed" in str(ve):
                 self.length = 0
                 self.all_transcripts = open(file_path, 'r')
             else:
                 raise InputError("This is not a gtf file.")
+        except gffutils.exceptions.EmptyInputError:
+            self.length = 0
+            self.all_transcripts = open(file_path, 'r')
         else:
             if self.merge_transcripts:
                 self.length = self.db.count_features_of_type("gene")
