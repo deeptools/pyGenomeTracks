@@ -1,0 +1,8 @@
+3.7.1
+=====
+
+Bugfix:
+^^^^^^^
+
+- Works with gffutils version 0.11.0 where ValueError became gffutils.exceptions.EmptyInputError for empty gtf.
+
