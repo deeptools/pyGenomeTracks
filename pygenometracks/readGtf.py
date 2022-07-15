@@ -77,6 +77,9 @@ class ReadGtf(object):
                 self.all_transcripts = open(file_path, 'r')
             else:
                 raise InputError("This is not a gtf file.")
+        except gffutils.exceptions.EmptyInputError:
+            self.length = 0
+            self.all_transcripts = open(file_path, 'r')
         else:
             if self.merge_transcripts:
                 self.length = self.db.count_features_of_type("gene")

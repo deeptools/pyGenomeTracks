@@ -718,7 +718,7 @@ class PlotTracks(object):
         if file_type is None:
             raise InputError(f"Section {track_dict['section_name']}: can not "
                              "identify file type. Please"
-                             " specify the file_type for '{file}'")
+                             f" specify the file_type for '{file_}'")
 
         return file_type
 

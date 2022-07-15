@@ -6,6 +6,8 @@ Bugfix:
 
 - Support mcool files for hic_matrix_square. This solves `#404 <https://github.com/deeptools/pyGenomeTracks/issues/404>`_
 
+- Works with gffutils version 0.11.0 where ValueError became gffutils.exceptions.EmptyInputError for empty gtf.
+
 Forgotten announcement for 3.7
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
