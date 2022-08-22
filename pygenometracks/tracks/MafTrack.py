@@ -151,7 +151,7 @@ file_type = {TRACK_TYPE}
                     my_labels = None
         if my_species is not None and my_labels is None:
             my_labels = my_species
-        return(my_species, my_labels)
+        return my_species, my_labels
 
     def plot(self, ax, chrom_region, start_region, end_region):
         ref_in_index_array = self.ref_chrom_in_maf_index(chrom_region)
@@ -355,10 +355,10 @@ file_type = {TRACK_TYPE}
             We assume lr cannot be '-' while la can.
         """
         if lr == la:
-            return("identical")
+            return "identical"
         if la == '-':
-            return("gap")
-        return("mismatch")
+            return "gap"
+        return "mismatch"
 
     # This is inspired from galaxy tools util maf_utilities
     # Except that parse_e_rows=True
@@ -420,9 +420,9 @@ file_type = {TRACK_TYPE}
 
     def maf_index_has_good_ref(self):
         ref_species = [ref.split(".")[0] for ref in self.idx.indexes.indexes.keys()]
-        return(self.ref in ref_species)
+        return self.ref in ref_species
 
     def ref_chrom_in_maf_index(self, chrom_name):
         compatible_ref = [ref for ref in self.idx.indexes.indexes.keys()
                           if ref in [f"{self.ref}.{chrom_name}", f"{self.ref}.{change_chrom_names(chrom_name)}"]]
-        return(compatible_ref)
+        return compatible_ref
