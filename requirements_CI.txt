@@ -6,7 +6,7 @@ future >=0.17.0
 hicmatrix >=15
 h5py
 pysam >=0.14
-gffutils >=0.9 <0.11 # This is waiting for release
+gffutils ==0.10 # This is waiting for release
 pybedtools >=0.8.1
 tqdm >=4.20
 bx-python >=0.8.13
