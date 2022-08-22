@@ -381,11 +381,14 @@ class PlotTracks(object):
                                 f" {DEFAULT_VHIGHLIGHT_COLOR} will be used."
                                 "\n")
                     color = DEFAULT_VHIGHLIGHT_COLOR
+            # Process zorder:
+            if 'zorder' not in properties:
+                properties['zorder'] = -100
             for ax in axis_list:
                 for region in sorted(int_tree[chrom_region][start_region - 10000:end_region + 10000]):
                     ax.axvspan(region.begin, region.end,
-                               color=color, alpha=properties['alpha'])
-
+                               facecolor=color, alpha=properties['alpha'],
+                               zorder=properties['zorder'])
         return
 
     def parse_tracks(self, tracks_file, plot_regions=None):
@@ -464,10 +467,21 @@ class PlotTracks(object):
                 else:
                     # We set the default value of vhighlight to 0.5
                     track_options['alpha'] = 0.5
+                if 'zorder' in all_keywords:
+                    try:
+                        track_options['zorder'] = float(parser.get(section_name, 'zorder'))
+                    except ValueError:
+                        raise InputError(f"In section {section_name}, zorder "
+                                         f"was set to {parser.get(section_name, 'zorder')}"
+                                         " whereas we should have a float "
+                                         "value.")
+                else:
+                    # We set the default value of vhighlight to 0.5
+                    track_options['alpha'] = 0.5
                 if 'color' in all_keywords:
                     track_options['color'] = parser.get(section_name, 'color')
                 extra_keywords = [k for k in all_keywords
-                                  if k not in ['file', 'type', 'alpha', 'color']]
+                                  if k not in ['file', 'type', 'alpha', 'color', 'zorder']]
                 if len(extra_keywords) > 0:
                     log.warning("These parameters were specified but will not"
                                 f" be used {' '.join(extra_keywords)}.\n")
