@@ -91,7 +91,7 @@ stages:
         displayName: installing dependencies
       - script: |
           source activate pygenometracks
-          flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503
+          flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503,E275
         displayName: linting
       - script: |
           source activate pygenometracks
