@@ -192,11 +192,17 @@ title = fontsize = 30
 [vlines]
 type = vlines
 file = dm3_genes.bed4.gz
+line_style = dotted
 
+[second_vlines]
+type = vlines
+file = dm3_genes_end.bed
+line_width = 1
+color = orange
+zorder = -100
 """
 with open(os.path.join(ROOT, "bed_arrow_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
-
 
 browser_tracks = """
 [x-axis]
@@ -620,11 +626,12 @@ title = centered title
 file = tad_classification.bed
 type = vlines
 line_width = 3
+color = red
 """
 with open(os.path.join(ROOT, "bed_vlines.ini"), 'w') as fh:
     fh.write(browser_tracks)
 with open(os.path.join(ROOT, "bed_vlines_incorrect.ini"), 'w') as fh:
-    fh.write(browser_tracks + 'line_style = dashed\n')
+    fh.write(browser_tracks + 'line_style = --\n')
 
 browser_tracks = """
 [x-axis]
@@ -695,6 +702,7 @@ title = HoxD genes and regulatory regions
 [annotations as highlight]
 file = HoxD_cluster_regulatory_regions_mm10.bed
 type = vhighlight
+border_color = red
 
 [genes as highlight]
 file = hoxd_genes_noGm_rgb.bed.gz
