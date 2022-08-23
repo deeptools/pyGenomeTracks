@@ -863,7 +863,8 @@ class SpacerTrack(GenomeTrack):
     INTEGER_PROPERTIES = {}
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        pass
+        ymin, ymax = ax.get_ylim()
+        ax.set_ylim(ymin, ymax)
 
     def plot_y_axis(self, ax, plot_ax):
         pass
@@ -890,6 +891,8 @@ class XAxisTrack(GenomeTrack):
     def plot(self, ax, chrom_region, region_start, region_end):
 
         start, end = ax.get_xlim()
+        ymin, ymax = ax.get_ylim()
+        ax.set_ylim(ymin, ymax)
         if self.properties['where'] == 'top':
             ax.axis["x"] = ax.new_floating_axis(0, 0.2, axis_direction="top")
             # In some old matplotlib version (<3.3.4) it was not set:
