@@ -585,13 +585,8 @@ class PlotTracks(object):
             # We will append properties dictionnaries
             # to the track_list or type_list
             # Then the types are treated slightly differently:
-            if 'type' in all_keywords:
+            if 'type' in all_keywords and parser.get(section_name, 'type') in self.available_types:
                 track_options['type'] = parser.get(section_name, 'type')
-                if track_options['type'] not in self.available_types:
-                    raise InputError(f"Section {section_name}: the type "
-                                     f"{track_options['type']} does not"
-                                     " exists.\npossible type are:"
-                                     f"{self.available_types.keys()}.")
                 track_options['track_class'] = \
                     self.available_types[track_options['type']]
             # If the sections are spacer or x-axis we fill the file_type:
@@ -723,9 +718,7 @@ class PlotTracks(object):
             track_options = self.check_file_exists(track_options,
                                                    tracks_file_path,
                                                    track_options.get('file_type', 'no') == 'hic_matrix')
-            if 'type' in track_options:
-                type_list.append(track_options)
-            else:
+            if 'file_type' in track_options:
                 # The 'overlay_previous' is initialized:
                 if 'overlay_previous' not in track_options:
                     track_options['overlay_previous'] = 'no'
@@ -743,6 +736,8 @@ class PlotTracks(object):
                                     f"{track_options['section_name']}\n")
                 # The track_options are added to the track_list
                 track_list.append(track_options)
+            else:
+                type_list.append(track_options)
         # Now that they were all checked
         self.track_list = track_list
         self.type_list = type_list
