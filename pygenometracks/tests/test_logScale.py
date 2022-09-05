@@ -404,7 +404,7 @@ class TestLogNegMethods(unittest.TestCase):
             with self.assertRaises(Exception) as context:
                 pygenometracks.plotTracks.main(args)
 
-            assert("coverage contains values smaller or equal to" in str(context.exception))
+            assert "coverage contains values smaller or equal to" in str(context.exception)
             os.remove(ini_file)
 
 

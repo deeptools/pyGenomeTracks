@@ -184,4 +184,4 @@ file_type = {TRACK_TYPE}
                              self.properties['merge_transcripts'],
                              self.properties['merge_overlapping_exons'])
         total_length = bed_file_h.length
-        return(bed_file_h, total_length)
+        return bed_file_h, total_length
