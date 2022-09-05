@@ -513,4 +513,4 @@ file_type = {TRACK_TYPE}
             self.log.warning(f"No valid intervals were found in file {self.properties['file']}.\n")
 
         file_h.close()
-        return(interval_tree, min_score, max_score, has_score)
+        return interval_tree, min_score, max_score, has_score
