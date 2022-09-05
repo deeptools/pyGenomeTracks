@@ -302,7 +302,7 @@ class ReadBed(object):
                     self.file_type = 'bed6'
                 else:
                     self.file_type = f'bed{self.fields_to_read}'
-            return()
+            return
 
         assert line_values[2] > line_values[1], \
             "Start position larger or equal than end" \
