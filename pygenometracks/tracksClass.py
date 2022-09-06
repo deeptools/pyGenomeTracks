@@ -155,7 +155,7 @@ type = {TYPE}
         super(VlineType, self).set_properties_defaults()
         self.process_color('color')
 
-    def plot(self, axis_list, chrom_region, start_region, end_region):
+    def plot(self, axis_list, figure, chrom_region, start_region, end_region):
         """
         If the zorder is positive:
         Plots lines from the top of the first plot to the bottom
@@ -185,22 +185,14 @@ type = {TYPE}
         for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
             vlines_list.append(region.begin)
 
-        if self.properties['zorder'] > 0:
-            for pos in vlines_list:
-                con = ConnectionPatch(xyA=(pos, axis_list[0].get_ylim()[1]), xyB=(pos, axis_list[-1].get_ylim()[0]),
-                                      coordsA="data", coordsB="data",
-                                      axesA=axis_list[0],
-                                      axesB=axis_list[-1], color=self.properties['color'],
-                                      lw=self.properties['line_width'], alpha=self.properties['alpha'],
-                                      zorder=self.properties['zorder'], ls=self.properties['line_style'])
-                axis_list[-1].add_patch(con)
-        else:
-            for ax in axis_list:
-                ymin, ymax = ax.get_ylim()
-                ax.vlines(vlines_list, ymin, ymax,
-                          color=self.properties['color'],
-                          lw=self.properties['line_width'], alpha=self.properties['alpha'],
-                          zorder=self.properties['zorder'], ls=self.properties['line_style'])
+        for pos in vlines_list:
+            con = ConnectionPatch(xyA=(pos, axis_list[0].get_ylim()[1]), xyB=(pos, axis_list[-1].get_ylim()[0]),
+                                  coordsA=axis_list[0].transData, coordsB=axis_list[-1].transData,
+                                  axesA=axis_list[0],
+                                  axesB=axis_list[-1], color=self.properties['color'],
+                                  lw=self.properties['line_width'], alpha=self.properties['alpha'],
+                                  zorder=self.properties['zorder'], ls=self.properties['line_style'])
+            figure.add_artist(con)
 
 
 class VhighlightType(VType):
@@ -251,7 +243,7 @@ type = {TYPE}
         self.process_color('color')
         self.process_color('border_color')
 
-    def plot(self, axis_list, chrom_region, start_region, end_region):
+    def plot(self, axis_list, figure, chrom_region, start_region, end_region):
         """
         Plots rectangle on each track,
         at the specified positions.
@@ -551,7 +543,7 @@ class PlotTracks(object):
                 axis_list.append(plot_axis)
 
         for current_type in self.type_obj_list:
-            current_type.plot(axis_list, chrom, start, end)
+            current_type.plot(axis_list, fig, chrom, start, end)
 
         fig.savefig(file_name, dpi=self.dpi, transparent=False)
         return fig
