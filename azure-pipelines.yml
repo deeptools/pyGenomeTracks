@@ -2,7 +2,27 @@ pr:
   autoCancel: true
 
 stages:
+- stage: lint
+  jobs:
+    - job: Linux
+      timeoutInMinutes: 0
+      pool:
+        vmImage: 'Ubuntu-latest'
+      container: python:3.8
+      steps:
+      - bash: |
+          echo "##vso[task.prependpath]$HOME/.local/bin"
+          hash -r
+        displayName: Add .local/bin to PATH
+      - bash:
+          python -m pip install --user --upgrade flake8
+        displayName: install flake8
+      - script:
+          flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503,E275
+        displayName: linting
 - stage: test
+  dependsOn: [lint]
+  condition: succeeded()
   jobs:
     - job: Linux
       timeoutInMinutes: 0
@@ -40,10 +60,6 @@ stages:
           mamba install --yes -c conda-forge -c bioconda --file requirements_CI_updated.txt
           python setup.py install
         displayName: installing dependencies
-      - script: |
-          source activate pygenometracks
-          flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503,E275
-        displayName: linting
       - script: |
           source activate pygenometracks
           py.test pygenometracks --doctest-modules -n 4
@@ -89,10 +105,6 @@ stages:
           mamba install --yes -c conda-forge -c bioconda --file requirements_CI_updated.txt
           python setup.py install
         displayName: installing dependencies
-      - script: |
-          source activate pygenometracks
-          flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503
-        displayName: linting
       - script: |
           source activate pygenometracks
           py.test pygenometracks --doctest-modules -n 4
