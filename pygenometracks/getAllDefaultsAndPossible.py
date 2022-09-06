@@ -2,7 +2,7 @@
 This python script will generate two files:
 - docs/content/all_default_properties_rst.txt
 This file is a rst table with all the defaults values for each parameter
-for each track class. This table is included in the readthedocs
+for each track class or vtype. This table is included in the readthedocs
 - docs/content/all_possible_properties.txt
 This file is a markdown list with possible values.
 This can also be used in the readthedocs
@@ -55,6 +55,8 @@ def main():
                                       if k in all_tracks]
     other_tracks = list(set([k for k in all_tracks.keys() if k is not None])
                         - set(my_prefered_order_tracks_names))
+    
+    all_types = PlotTracks.get_available_types()
     # Get all possible and default parameters
     all_default_parameters = {}
     all_tracks_with_default = []
@@ -83,6 +85,25 @@ def main():
         for p in track_class.BOOLEAN_PROPERTIES:
             all_possible_parameters[p] = all_possible_parameters.get(p, {})
             all_possible_parameters[p][track_type] = ["true", "false"]
+
+    for my_type in all_types:
+        type_class = all_types[my_type]
+        has_default = False
+        for p, value in type_class.DEFAULTS_PROPERTIES.items():
+            if p != 'region':
+                all_default_parameters[p] = all_default_parameters.get(p, {})
+                all_default_parameters[p][my_type] = value
+                has_default = True
+        if has_default:
+            all_tracks_with_default += [my_type]
+
+        for p, value in type_class.POSSIBLE_PROPERTIES.items():
+            all_possible_parameters[p] = all_possible_parameters.get(p, {})
+            all_possible_parameters[p][my_type] = value
+
+        for p in type_class.BOOLEAN_PROPERTIES:
+            all_possible_parameters[p] = all_possible_parameters.get(p, {})
+            all_possible_parameters[p][my_type] = ["true", "false"]
 
     # For the default they are summarized in a matrix
     mat = np.empty((len(all_default_parameters) + 2, len(all_tracks_with_default) + 1),
@@ -227,6 +248,69 @@ def main():
         with open(os.path.join("docs", "content", "tracks", "auto", f"{track_type}_options_text.txt"),
                   'w') as fo:
             fo.write(track_class.OPTIONS_TXT)
+
+    # For the type description:
+    for my_type in all_types:
+        type_class = all_types[my_type]
+        starPut = False
+        with open(os.path.join("docs", "content", "tracks", "auto", f"{my_type}_deduced_from_code.txt"),
+                  'w') as fo:
+            fo.write("Necessary:\n")
+            fo.write("^^^^^^^^^^\n")
+            fo.write(f"- **type**: {my_type}\n")
+            for n in type_class.NECESSARY_PROPERTIES:
+                fo.write("- **" + n + "**\n\n")
+            fo.write("Optional:\n")
+            fo.write("^^^^^^^^^\n")
+            for p in all_default_parameters:
+                if my_type in all_default_parameters[p]:
+                    if p in putStarsAfter:
+                        line_start = (f"- **{p}"
+                                      r"\***: ")
+                        starPut = True
+                    else:
+                        line_start = f"- **{p}**: "
+                    default = all_default_parameters[p][my_type]
+                    if isinstance(default, bool):
+                        if default:
+                            fo.write(f"{line_start}`true` (default) or false.\n\n")
+                        else:
+                            fo.write(f"{line_start}`false` (default) or true.\n\n")
+                    else:
+                        if default is None:
+                            default_str_no_ind = "by default this option is not set"
+                            default_str = f"{default_str_no_ind} but you can also put:"
+                        else:
+                            default_str_no_ind = f"`{default}` (default)"
+                            default_str = f"{default_str_no_ind} or"
+
+                        if my_type in all_possible_parameters.get(p, {}):
+                            others = [str(v) for v in all_possible_parameters[p][my_type] if v != default]
+                            if len(others) > 1:
+                                others_str = ", ".join(others[:-1]) + " or " + others[-1]
+                            else:
+                                others_str = others[0]
+                            fo.write(f"{line_start}{default_str} {others_str}.\n\n")
+                        elif p in type_class.FLOAT_PROPERTIES or p in type_class.INTEGER_PROPERTIES:
+                            if p in type_class.FLOAT_PROPERTIES:
+                                range_constrains = type_class.FLOAT_PROPERTIES[p]
+                                type_p = "float"
+                            else:
+                                range_constrains = type_class.INTEGER_PROPERTIES[p]
+                                type_p = "integer"
+                            range_str = ""
+                            if range_constrains[0] != - np.inf:
+                                range_str = f"{range_str} above {range_constrains[0]}"
+                            if range_constrains[1] != np.inf:
+                                range_str = f"{range_str} below {range_constrains[1]}"
+                            fo.write(f"{line_start}{default_str} any {type_p}{range_str}\n\n")
+                        else:
+                            fo.write(f"{line_start}{default_str_no_ind}\n\n")
+            if starPut:
+                fo.write(starText)
+        with open(os.path.join("docs", "content", "tracks", "auto", f"{my_type}_options_text.txt"),
+                  'w') as fo:
+            fo.write(type_class.OPTIONS_TXT)
 
 
 if __name__ == "__main__":

@@ -135,7 +135,7 @@ type = {TYPE}
                            'line_style': 'dashed'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {}
-    POSSIBLE_PROPERTIES = {'line_style': ['solid', 'dashed', 'dashdot', 'dotted']
+    POSSIBLE_PROPERTIES = {'line_style': ['solid', 'dashed', 'dotted', 'dashdot']
                            }
     BOOLEAN_PROPERTIES = []
     STRING_PROPERTIES = ['file', 'type',
