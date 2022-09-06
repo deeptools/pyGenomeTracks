@@ -55,7 +55,7 @@ def main():
                                       if k in all_tracks]
     other_tracks = list(set([k for k in all_tracks.keys() if k is not None])
                         - set(my_prefered_order_tracks_names))
-    
+
     all_types = PlotTracks.get_available_types()
     # Get all possible and default parameters
     all_default_parameters = {}
