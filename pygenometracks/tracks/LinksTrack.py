@@ -499,7 +499,10 @@ file_type = {TRACK_TYPE}
             if self.properties['use_middle']:
                 mid1 = (start1 + end1) / 2
                 mid2 = (start2 + end2) / 2
-                interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
+                if mid1 < mid2:
+                    interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
+                else:
+                    interval_tree[chrom1].add(Interval(mid2, mid1, [start2, end2, start1, end1, score]))
             else:
                 if not is_trans:
                     # each interval spans from the smallest start to the largest end
