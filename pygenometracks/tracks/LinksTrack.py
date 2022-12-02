@@ -363,6 +363,12 @@ file_type = {TRACK_TYPE}
                             linewidth=self.current_line_width,
                             ls=self.properties['line_style'])
         ax.add_artist(rectangle)
+        if min(y0, y1, y2, y3) < 0:
+            rectangle_flip = Polygon(np.array([[x0, -y0], [x1, -y1], [x2, -y2], [x3, -y3]]),
+                                facecolor='none', edgecolor=rgb,
+                                linewidth=self.current_line_width,
+                                ls=self.properties['line_style'])
+            ax.add_artist(rectangle_flip)
         if y2 > self.max_height:
             self.max_height = y2
 
@@ -506,7 +512,7 @@ file_type = {TRACK_TYPE}
             else:
                 if not is_trans:
                     # each interval spans from the smallest start to the largest end
-                    interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
+                    interval_tree[chrom1].add(Interval(start1, max(end1, end2), [start1, end1, start2, end2, score]))
                 else:
                     # For the trans we keep start1 and end1
                     interval_tree[chrom1].add(Interval(start1, end1, [start1, end1, start2, end2, score]))
