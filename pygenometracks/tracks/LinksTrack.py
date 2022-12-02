@@ -365,9 +365,9 @@ file_type = {TRACK_TYPE}
         ax.add_artist(rectangle)
         if min(y0, y1, y2, y3) < 0:
             rectangle_flip = Polygon(np.array([[x0, -y0], [x1, -y1], [x2, -y2], [x3, -y3]]),
-                                facecolor='none', edgecolor=rgb,
-                                linewidth=self.current_line_width,
-                                ls=self.properties['line_style'])
+                                     facecolor='none', edgecolor=rgb,
+                                     linewidth=self.current_line_width,
+                                     ls=self.properties['line_style'])
             ax.add_artist(rectangle_flip)
         if y2 > self.max_height:
             self.max_height = y2
