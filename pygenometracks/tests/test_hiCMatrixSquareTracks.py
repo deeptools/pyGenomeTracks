@@ -133,6 +133,34 @@ title = Hi-C square with region2 = chrY:0-5000000
 with open(os.path.join(ROOT, "browser_tracks_hic_inbetween.ini"), 'w') as fh:
     fh.write(browser_tracks_with_hic)
 
+
+browser_tracks_with_mcool = """
+[x-axis]
+
+[mcool1]
+file = matrix.mcool::/0
+depth = 1000000
+file_type = hic_matrix_square
+
+[mcool2]
+file = matrix.mcool::/1
+depth = 1000000
+file_type = hic_matrix_square
+
+[mcool3]
+file = matrix.mcool::/2
+depth = 1000000
+file_type = hic_matrix_square
+
+[mcool4]
+file = matrix.mcool::/4
+depth = 1000000
+file_type = hic_matrix_square
+"""
+
+with open(os.path.join(ROOT, "mcool_hic_matrix_square.ini"), 'w') as fh:
+    fh.write(browser_tracks_with_mcool)
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -256,3 +284,22 @@ def test_plot_tracks_with_hic_inbetween():
         assert res is None, res
 
         os.remove(output_file)
+
+
+def test_plot_tracks_with_mcool():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    args = "--tracks {0} --region X:2500000-3500000 "\
+           "--trackLabelFraction 0.23 --width 38 " \
+           "--dpi 130 --outFileName {1}" \
+           "".format(os.path.join(ROOT,
+                                  'mcool_hic_matrix_square.ini'),
+                     outfile.name).split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(os.path.join(ROOT,
+                                      'master_mcool_hic_matrix_square.png'),
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)

@@ -4,6 +4,7 @@
 Enhancement:
 ^^^^^^^^^^^^
 
+- A new `type` was introduced in 3.7 (announcement has been forgotten): a `vhighlight` to be able to hightlight a whole region across all tracks.
 - Much more parameters for vhighlight and vlines:
     - 'zorder' to set it on top or behind.
     - 'line_width', 'color', 'alpha', 'border_color' for vhighlight and 'line_style' for vlines
@@ -12,5 +13,7 @@ Enhancement:
 Bugfix:
 ^^^^^^^
 
+- Support mcool files for hic_matrix_square. This solves `#404 <https://github.com/deeptools/pyGenomeTracks/issues/404>`_
 - Works with gffutils version 0.11.0 where ValueError became gffutils.exceptions.EmptyInputError for empty gtf.
 - The installation instructions have been updated
+- Fixed a small bug in links track with "use_middle" enabled, where midpoints could have different ordering than start points (Thanks to @Jeff1995 ).

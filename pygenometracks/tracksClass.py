@@ -709,7 +709,8 @@ class PlotTracks(object):
             # The track_options will be checked for the file paths:
             track_options = self.check_file_exists(track_options,
                                                    tracks_file_path,
-                                                   track_options.get('file_type', 'no') == 'hic_matrix')
+                                                   track_options.get('file_type', 'no') in
+                                                   ['hic_matrix', 'hic_matrix_square'])
             if 'file_type' in track_options:
                 # The 'overlay_previous' is initialized:
                 if 'overlay_previous' not in track_options:
