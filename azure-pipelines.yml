@@ -18,7 +18,7 @@ stages:
           python -m pip install --user --upgrade flake8
         displayName: install flake8
       - script:
-          flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503,E275
+          flake8 . --exclude=.venv,.build,build --ignore=E501,F403,E402,F999,F405,E712,W503
         displayName: linting
 - stage: test
   dependsOn: [lint]

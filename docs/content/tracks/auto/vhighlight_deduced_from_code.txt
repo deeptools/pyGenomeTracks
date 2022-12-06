@@ -1,0 +1,17 @@
+Necessary:
+^^^^^^^^^^
+- **type**: vhighlight
+- **file**
+
+Optional:
+^^^^^^^^^
+- **line_width**: `0.5` (default) or any float above 0
+
+- **color**: `yellow` (default)
+
+- **alpha**: `0.5` (default) or any float above 0 below 1
+
+- **border_color**: `none` (default)
+
+- **zorder**: `-100` (default) or any float
+

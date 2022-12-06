@@ -1,0 +1,19 @@
+
+# Mandatory:
+# bed file with positions to plot (only start are used)
+file = tads.bed
+# type:
+type = vlines
+# Optional:
+# line width
+#line_width = 0.5
+# color of the line:
+#color = black
+# transparency:
+#alpha = 0.7
+# zorder, choose positive value (above) to put on top
+# and null or negative values to put behind
+#zorder = 10
+# line style choose among 'solid', 'dashed', 'dashdot' or 'dotted'
+# line_style = 'dashed'
+    

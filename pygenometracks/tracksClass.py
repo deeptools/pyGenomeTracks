@@ -7,6 +7,7 @@ import time
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.patches import ConnectionPatch
 import matplotlib.textpath
 import matplotlib.colors
 import matplotlib.gridspec
@@ -41,7 +42,239 @@ DEFAULT_TRACK_HEIGHT = 0.5  # in centimeters
 DEFAULT_FIGURE_WIDTH = 40  # in centimeters
 DEFAULT_MARGINS = {'left': 0.04, 'right': 0.92, 'bottom': 0.03, 'top': 0.97}
 
-DEFAULT_VHIGHLIGHT_COLOR = 'yellow'
+
+class VType(object):
+    """The VType object is a holder for all vertical types
+    which will be plotted above other tracks.
+
+    It is expected that all VType has a plot method
+    """
+    DEFAULTS_PROPERTIES = {}
+    NECESSARY_PROPERTIES = []
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = ['type']
+    FLOAT_PROPERTIES = {}
+    INTEGER_PROPERTIES = {}
+
+    def __init__(self, properties_dict):
+        FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
+        logging.basicConfig(format=FORMAT)
+        log = logging.getLogger(__name__)
+        log.setLevel(logging.DEBUG)
+        self.log = log
+        self.properties = properties_dict
+        self.set_properties_defaults()
+        self.type = 'test'
+
+    def set_properties_defaults(self):
+        # put to default all properties which are not set:
+        for prop in self.DEFAULTS_PROPERTIES:
+            if prop not in self.properties:
+                self.properties[prop] = self.DEFAULTS_PROPERTIES[prop]
+        # check if properties are possible:
+        for prop in self.POSSIBLE_PROPERTIES:
+            possibles = self.POSSIBLE_PROPERTIES[prop]
+            if self.properties[prop] not in possibles:
+                default_value = self.DEFAULTS_PROPERTIES[prop]
+                self.log.warning(f"*WARNING* {prop}: '{self.properties[prop]}'"
+                                 " for section "
+                                 f"{self.properties['section_name']}"
+                                 f" is not valid. {prop} has "
+                                 "been set to "
+                                 f"{default_value}.\n")
+                self.properties[prop] = default_value
+
+    def process_color(self, param):
+        """
+        Put a valid color in self.properties[param]
+        Args:
+            param: param to check/update the value
+
+        Returns:
+            None
+
+        """
+        if not matplotlib.colors.is_color_like(self.properties[param]):
+            default_value = self.DEFAULTS_PROPERTIES[param]
+            log.warning("*Warning*\nThe color "
+                        f"{self.properties[param]} specified"
+                        " is not a valid color."
+                        f" {default_value} will be used."
+                        "\n")
+            self.properties[param] = default_value
+        return
+
+
+class VlineType(VType):
+    TYPE = 'vlines'
+    OPTIONS_TXT = f"""
+# Mandatory:
+# bed file with positions to plot (only start are used)
+file = tads.bed
+# type:
+type = {TYPE}
+# Optional:
+# line width
+#line_width = 0.5
+# color of the line:
+#color = black
+# transparency:
+#alpha = 0.7
+# zorder, choose positive value (above) to put on top
+# and null or negative values to put behind
+#zorder = 10
+# line style choose among 'solid', 'dashed', 'dashdot' or 'dotted'
+# line_style = 'dashed'
+    """
+    DEFAULTS_PROPERTIES = {'line_width': 0.5,
+                           'color': 'black',
+                           'alpha': 0.7,
+                           'zorder': 10,
+                           'line_style': 'dashed'}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {'line_style': ['solid', 'dashed', 'dotted', 'dashdot']
+                           }
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = ['file', 'type',
+                         'color', 'line_style']
+    FLOAT_PROPERTIES = {'line_width': [0, np.inf],
+                        'zorder': [-np.inf, np.inf],
+                        'alpha': [0, 1]}
+    INTEGER_PROPERTIES = {}
+
+    def __init__(self, *args, **kwarg):
+        super(VlineType, self).__init__(*args, **kwarg)
+        # load the file as an interval tree
+        self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                          self.properties['region'])
+
+    def set_properties_defaults(self):
+        super(VlineType, self).set_properties_defaults()
+        self.process_color('color')
+
+    def plot(self, axis_list, figure, chrom_region, start_region, end_region):
+        """
+        If the zorder is positive:
+        Plots lines from the top of the first plot to the bottom
+        of the last plot at the specified positions.
+        Else:
+        Plots vlines on each track
+
+        :param axis_list: list of plotted axis
+        :param chrom_region chromosome name
+        :param start_region start position
+        :param end_region end position
+
+        :return: None
+        """
+        if chrom_region not in list(self.interval_tree):
+            chrom_region_before = chrom_region
+            chrom_region = change_chrom_names(chrom_region)
+            if chrom_region not in list(self.interval_tree):
+                log.warning("*Warning*\nNo interval was found when "
+                            f"overlapping with both {chrom_region_before}:{start_region}-{end_region}"
+                            f" and {chrom_region}:{start_region}-{end_region} inside the "
+                            "file with vertical lines. "
+                            "No vertical lines will be "
+                            "plotted!!\n")
+                return
+        vlines_list = []
+        for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
+            vlines_list.append(region.begin)
+
+        for pos in vlines_list:
+            con = ConnectionPatch(xyA=(pos, axis_list[0].get_ylim()[1]), xyB=(pos, axis_list[-1].get_ylim()[0]),
+                                  coordsA=axis_list[0].transData, coordsB=axis_list[-1].transData,
+                                  axesA=axis_list[0],
+                                  axesB=axis_list[-1], color=self.properties['color'],
+                                  lw=self.properties['line_width'], alpha=self.properties['alpha'],
+                                  zorder=self.properties['zorder'], ls=self.properties['line_style'])
+            figure.add_artist(con)
+
+
+class VhighlightType(VType):
+    TYPE = 'vhighlight'
+    OPTIONS_TXT = f"""
+# Mandatory:
+# bed file with regions to highlight
+file = regions.bed
+# type:
+type = {TYPE}
+# Optional:
+# line width
+#line_width = 0.5
+# border_color of the line (put none to have no border):
+#border_color = black
+# color of the rectangle:
+#color = yellow
+# transparency:
+#alpha = 0.3
+# zorder, choose high values (10 or 100) to put on top
+# and low values to put behind (0 or negative values)
+#zorder = -100
+    """
+    DEFAULTS_PROPERTIES = {'line_width': 0.5,
+                           'border_color': 'none',
+                           'color': 'yellow',
+                           'alpha': 0.5,
+                           'zorder': -100}
+    NECESSARY_PROPERTIES = ['file']
+    SYNONYMOUS_PROPERTIES = {}
+    POSSIBLE_PROPERTIES = {}
+    BOOLEAN_PROPERTIES = []
+    STRING_PROPERTIES = ['file', 'type',
+                         'color', 'border_color']
+    FLOAT_PROPERTIES = {'line_width': [0, np.inf],
+                        'zorder': [-np.inf, np.inf],
+                        'alpha': [0, 1]}
+    INTEGER_PROPERTIES = {}
+
+    def __init__(self, *args, **kwarg):
+        super(VhighlightType, self).__init__(*args, **kwarg)
+        # load the file as an interval tree
+        self.interval_tree, __, __ = file_to_intervaltree(self.properties['file'],
+                                                          self.properties['region'])
+
+    def set_properties_defaults(self):
+        super(VhighlightType, self).set_properties_defaults()
+        self.process_color('color')
+        self.process_color('border_color')
+
+    def plot(self, axis_list, figure, chrom_region, start_region, end_region):
+        """
+        Plots rectangle on each track,
+        at the specified positions.
+
+        :param axis_list: list of plotted axis
+        :param chrom_region chromosome name
+        :param start_region start position
+        :param end_region end position
+
+        :return: None
+        """
+        if chrom_region not in list(self.interval_tree):
+            chrom_region_before = chrom_region
+            chrom_region = change_chrom_names(chrom_region)
+            if chrom_region not in list(self.interval_tree):
+                log.warning("*Warning*\nNo interval was found when "
+                            f"overlapping with both {chrom_region_before}:{start_region}-{end_region}"
+                            f" and {chrom_region}:{start_region}-{end_region} inside the "
+                            "file with vhighlight. "
+                            "No vhighlight will be "
+                            "plotted!!\n")
+                return
+
+        for ax in axis_list:
+            for region in sorted(self.interval_tree[chrom_region][start_region - 10000:end_region + 10000]):
+                ax.axvspan(region.begin, region.end,
+                           facecolor=self.properties['color'],
+                           alpha=self.properties['alpha'],
+                           zorder=self.properties['zorder'],
+                           lw=self.properties['line_width'],
+                           edgecolor=self.properties['border_color'])
 
 
 class MultiDict(OrderedDict):
@@ -70,13 +303,11 @@ class PlotTracks(object):
         self.fig_width = fig_width
         self.fig_height = fig_height
         self.dpi = dpi
-        self.vlines_intval_tree = None
-        self.vlines_properties = None
-        self.vhighlight_intval_tree = []
-        self.vhighlight_properties = []
+        self.type_list = None
         self.track_list = None
         start = self.print_elapsed(None)
         self.available_tracks = self.get_available_tracks()
+        self.available_types = self.get_available_types()
         self.parse_tracks(tracks_file, plot_regions=plot_regions)
         if fontsize:
             fontsize = fontsize
@@ -102,10 +333,17 @@ class PlotTracks(object):
         self.track_obj_list = []
         for idx, properties in enumerate(self.track_list):
             log.info(f"initialize {properties['section_name']}")
-            # the track_class is obtained from the available tracks
-            track_class = self.available_tracks[properties['file_type']]
+            track_class = properties['track_class']
             properties['region'] = plot_regions.copy()
             self.track_obj_list.append(track_class(properties))
+
+        # initialize each type
+        self.type_obj_list = []
+        for idx, properties in enumerate(self.type_list):
+            log.info(f"initialize {properties['section_name']}")
+            track_class = properties['track_class']
+            properties['region'] = plot_regions.copy()
+            self.type_obj_list.append(track_class(properties))
 
         log.info("time initializing track(s):")
         self.print_elapsed(start)
@@ -122,6 +360,19 @@ class PlotTracks(object):
                     avail_tracks[track_type] = child
                     work.append(child)
         return avail_tracks
+
+    @staticmethod
+    def get_available_types():
+        avail_types = {}
+        work = [VType]
+        while work:
+            parent = work.pop()
+            for child in parent.__subclasses__():
+                if child not in avail_types:
+                    track_type = child.TYPE
+                    avail_types[track_type] = child
+                    work.append(child)
+        return avail_types
 
     def get_tracks_height(self, start_region=None, end_region=None):
         """
@@ -291,105 +542,11 @@ class PlotTracks(object):
             if not overlay:
                 axis_list.append(plot_axis)
 
-        if self.vlines_intval_tree:
-            self.plot_vlines(axis_list, chrom, start, end)
-
-        if len(self.vhighlight_intval_tree) > 0:
-            self.plot_vhighlight(axis_list, chrom, start, end)
+        for current_type in self.type_obj_list:
+            current_type.plot(axis_list, fig, chrom, start, end)
 
         fig.savefig(file_name, dpi=self.dpi, transparent=False)
         return fig
-
-    def plot_vlines(self, axis_list, chrom_region, start_region, end_region):
-        """
-        Plots dotted lines from the top of the first plot to the bottom
-        of the last plot at the specified positions.
-
-        :param axis_list: list of plotted axis
-        :param chrom_region chromosome name
-        :param start_region start position
-        :param end_region end position
-
-        :return: None
-        """
-        vlines_list = []
-        if 'line_width' in self.vlines_properties:
-            line_width = self.vlines_properties['line_width']
-        else:
-            line_width = 0.5
-
-        if chrom_region not in list(self.vlines_intval_tree):
-            chrom_region_before = chrom_region
-            chrom_region = change_chrom_names(chrom_region)
-            if chrom_region not in list(self.vlines_intval_tree):
-                log.warning("*Warning*\nNo interval was found when "
-                            f"overlapping with both {chrom_region_before}:{start_region}-{end_region}"
-                            f" and {chrom_region}:{start_region}-{end_region} inside the "
-                            "file with vertical lines. "
-                            "No vertical lines will be "
-                            "plotted!!\n")
-                return
-
-        for region in sorted(self.vlines_intval_tree[chrom_region][start_region - 10000:end_region + 10000]):
-            vlines_list.append(region.begin)
-
-        for ax in axis_list:
-            ymin, ymax = ax.get_ylim()
-
-            ax.vlines(vlines_list, ymin, ymax, linestyle='dashed', zorder=10,
-                      linewidth=line_width,
-                      color=(0, 0, 0, 0.7), alpha=0.5)
-
-        return
-
-    def plot_vhighlight(self, axis_list, chrom_region, start_region, end_region):
-        """
-        highlight regions from the top of the first plot to the bottom
-        of the last plot at the specified positions.
-
-        :param axis_list: list of plotted axis
-        :param chrom_region chromosome name
-        :param start_region start position
-        :param end_region end position
-
-        :return: None
-        """
-
-        for i, (int_tree, properties) in enumerate(zip(self.vhighlight_intval_tree, self.vhighlight_properties)):
-
-            if chrom_region not in list(int_tree):
-                chrom_region_before = chrom_region
-                chrom_region = change_chrom_names(chrom_region)
-                if chrom_region not in list(int_tree):
-                    log.warning("*Warning*\nNo interval was found when "
-                                f"overlapping with both {chrom_region_before}:{start_region}-{end_region}"
-                                f" and {chrom_region}:{start_region}-{end_region} inside the "
-                                f" {i}th file with vertical highlight."
-                                "\n")
-                    return
-
-            # Process the color:
-            if 'color' not in properties:
-                color = DEFAULT_VHIGHLIGHT_COLOR
-            else:
-                if matplotlib.colors.is_color_like(properties['color']):
-                    color = properties['color']
-                else:
-                    log.warning("*Warning*\nThe color "
-                                f"{properties['color']} specified"
-                                " for vhighlight is not a valid color."
-                                f" {DEFAULT_VHIGHLIGHT_COLOR} will be used."
-                                "\n")
-                    color = DEFAULT_VHIGHLIGHT_COLOR
-            # Process zorder:
-            if 'zorder' not in properties:
-                properties['zorder'] = -100
-            for ax in axis_list:
-                for region in sorted(int_tree[chrom_region][start_region - 10000:end_region + 10000]):
-                    ax.axvspan(region.begin, region.end,
-                               facecolor=color, alpha=properties['alpha'],
-                               zorder=properties['zorder'])
-        return
 
     def parse_tracks(self, tracks_file, plot_regions=None):
         """
@@ -407,6 +564,7 @@ class PlotTracks(object):
         tracks_file_path = os.path.dirname(tracks_file)
 
         track_list = []
+        type_list = []
         for section_name in parser.sections():
             # track_options is what will become the self.properties
             track_options = dict({"section_name": section_name})
@@ -416,82 +574,16 @@ class PlotTracks(object):
                parser.getboolean(section_name, 'skip'):
                 # In this case we just do not explore the section
                 continue
-            # Then the vlines are treated differently:
-            if ('type', 'vlines') in parser.items(section_name):
-                # Raise an error if already defined:
-                if self.vlines_properties:
-                    raise InputError("vlines defined in 2 different sections.")
-                # The only thing to check is the file
-                # There is no other parameters to use.
-                if 'file' not in all_keywords:
-                    raise InputError(f"The section {section_name} is supposed to be a vline"
-                                     " but there is no file.")
-                track_options['file'] = parser.get(section_name, 'file')
-                if 'line_width' in all_keywords:
-                    try:
-                        track_options['line_width'] = float(parser.get(section_name, 'line_width'))
-                    except ValueError:
-                        raise InputError(f"In section {section_name}, line_width "
-                                         f"was set to {parser.get(section_name, 'line_width')}"
-                                         " whereas we should have a float "
-                                         "value.")
-                extra_keywords = [k for k in all_keywords
-                                  if k not in ['file', 'type', 'line_width']]
-                if len(extra_keywords) > 0:
-                    log.warning("These parameters were specified but will not"
-                                f" be used {' '.join(extra_keywords)}.\n")
-                self.vlines_properties = \
-                    self.check_file_exists(track_options, tracks_file_path)
-                continue
-            # Then the vhighlight is treated differently:
-            if ('type', 'vhighlight') in parser.items(section_name):
-                # The only thing to check is the file
-                # There is no other parameters to use.
-                if 'file' not in all_keywords:
-                    raise InputError(f"The section {section_name} is supposed to be a vhighlight"
-                                     " but there is no file.")
-                track_options['file'] = parser.get(section_name, 'file')
-                if 'alpha' in all_keywords:
-                    try:
-                        track_options['alpha'] = float(parser.get(section_name, 'alpha'))
-                    except ValueError:
-                        raise InputError(f"In section {section_name}, alpha "
-                                         f"was set to {parser.get(section_name, 'alpha')}"
-                                         " whereas we should have a float "
-                                         "value.")
-                    if track_options['alpha'] > 1 or track_options['alpha'] < 0:
-                        raise InputError(f"In section {section_name}, alpha "
-                                         f"was set to {parser.get(section_name, 'alpha')}"
-                                         " whereas we should have a float "
-                                         "value between 0 and 1.")
-                else:
-                    # We set the default value of vhighlight to 0.5
-                    track_options['alpha'] = 0.5
-                if 'zorder' in all_keywords:
-                    try:
-                        track_options['zorder'] = float(parser.get(section_name, 'zorder'))
-                    except ValueError:
-                        raise InputError(f"In section {section_name}, zorder "
-                                         f"was set to {parser.get(section_name, 'zorder')}"
-                                         " whereas we should have a float "
-                                         "value.")
-                else:
-                    # We set the default value of vhighlight to 0.5
-                    track_options['alpha'] = 0.5
-                if 'color' in all_keywords:
-                    track_options['color'] = parser.get(section_name, 'color')
-                extra_keywords = [k for k in all_keywords
-                                  if k not in ['file', 'type', 'alpha', 'color', 'zorder']]
-                if len(extra_keywords) > 0:
-                    log.warning("These parameters were specified but will not"
-                                f" be used {' '.join(extra_keywords)}.\n")
-                self.vhighlight_properties.append(self.check_file_exists(track_options, tracks_file_path))
-                continue
-            # For the other cases, we will append properties dictionnaries
-            # to the track_list
+            # We will append properties dictionnaries
+            # to the track_list or type_list
+            # Then the types are treated slightly differently:
+            if 'type' in all_keywords and parser.get(section_name, 'type') in self.available_types:
+                track_options['type'] = parser.get(section_name, 'type')
+                track_options['track_class'] = \
+                    self.available_types[track_options['type']]
             # If the sections are spacer or x-axis we fill the file_type:
             # (They are special sections where the title defines the track type)
-            if section_name.endswith('[spacer]'):
+            elif section_name.endswith('[spacer]'):
                 track_options['file_type'] = 'spacer'
                 track_options['track_class'] = SpacerTrack
             elif section_name.endswith('[x-axis]'):
@@ -617,37 +709,31 @@ class PlotTracks(object):
             # The track_options will be checked for the file paths:
             track_options = self.check_file_exists(track_options,
                                                    tracks_file_path,
-                                                   track_options['file_type'] in
+                                                   track_options.get('file_type', 'no') in
                                                    ['hic_matrix', 'hic_matrix_square'])
-            # The 'overlay_previous' is initialized:
-            if 'overlay_previous' not in track_options:
-                track_options['overlay_previous'] = 'no'
-            if track_options['overlay_previous'] not in ['no', 'yes', 'share-y']:
-                raise InputError(f"In section {section_name}, overlay_previous "
-                                 f"was set to {track_options['overlay_previous']}."
-                                 " Possible options are no, yes, share-y")
-            # If there is no title:
-            if 'title' not in track_options:
-                track_options['title'] = ''
-                if track_options['overlay_previous'] == 'no' and \
-                   track_options['track_class'] not in [SpacerTrack,
-                                                        XAxisTrack]:
-                    log.warning("title not set for section "
-                                f"{track_options['section_name']}\n")
-            # The track_options are added to the track_list
-            track_list.append(track_options)
+            if 'file_type' in track_options:
+                # The 'overlay_previous' is initialized:
+                if 'overlay_previous' not in track_options:
+                    track_options['overlay_previous'] = 'no'
+                if track_options['overlay_previous'] not in ['no', 'yes', 'share-y']:
+                    raise InputError(f"In section {section_name}, overlay_previous "
+                                     f"was set to {track_options['overlay_previous']}."
+                                     " Possible options are no, yes, share-y")
+                # If there is no title:
+                if 'title' not in track_options:
+                    track_options['title'] = ''
+                    if track_options['overlay_previous'] == 'no' and \
+                        track_options['track_class'] not in [SpacerTrack,
+                                                             XAxisTrack]:
+                        log.warning("title not set for section "
+                                    f"{track_options['section_name']}\n")
+                # The track_options are added to the track_list
+                track_list.append(track_options)
+            else:
+                type_list.append(track_options)
         # Now that they were all checked
         self.track_list = track_list
-        if self.vlines_properties:
-            self.vlines_intval_tree, __, __ = \
-                file_to_intervaltree(self.vlines_properties['file'],
-                                     plot_regions)
-        if len(self.vhighlight_properties) > 0:
-            for i in range(len(self.vhighlight_properties)):
-                current_vhighlight_intval_tree, __, __ = \
-                    file_to_intervaltree(self.vhighlight_properties[i]['file'],
-                                         plot_regions)
-                self.vhighlight_intval_tree.append(current_vhighlight_intval_tree)
+        self.type_list = type_list
 
     def close_files(self):
         """
@@ -765,7 +851,8 @@ class SpacerTrack(GenomeTrack):
     INTEGER_PROPERTIES = {}
 
     def plot(self, ax, chrom_region, start_region, end_region):
-        pass
+        ymin, ymax = ax.get_ylim()
+        ax.set_ylim(ymin, ymax)
 
     def plot_y_axis(self, ax, plot_ax):
         pass
@@ -792,6 +879,8 @@ class XAxisTrack(GenomeTrack):
     def plot(self, ax, chrom_region, region_start, region_end):
 
         start, end = ax.get_xlim()
+        ymin, ymax = ax.get_ylim()
+        ax.set_ylim(ymin, ymax)
         if self.properties['where'] == 'top':
             ax.axis["x"] = ax.new_floating_axis(0, 0.2, axis_direction="top")
             # In some old matplotlib version (<3.3.4) it was not set:

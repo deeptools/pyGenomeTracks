@@ -204,21 +204,6 @@ with open(os.path.join(ROOT, "test_tracks_18.ini"), 'w') as fh:
     fh.write(test_tracks_18)
 
 
-test_tracks_19 = """
-[x-axis]
-
-[vlines1]
-type = vlines
-file = dm3_genes.bed4.gz
-
-[vlines2]
-type = vlines
-file = tad_classification.bed
-"""
-with open(os.path.join(ROOT, "test_tracks_19.ini"), 'w') as fh:
-    fh.write(test_tracks_19)
-
-
 test_tracks_20 = """
 [x-axis]
 
@@ -293,7 +278,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert "there is no file" in str(context.exception)
+        assert "the necessary property file is not part of the config file" in str(context.exception)
         os.remove(ini_file)
 
     def test_missing_file_type(self):
@@ -611,23 +596,6 @@ class TestCheckerMethods(unittest.TestCase):
         assert "uses signs which are not allowed" in str(context.exception)
         os.remove(ini_file)
 
-    def test_2_vlines(self):
-        """
-        This test check that if you did not put
-        2 sections with vlines
-        it will raise an input error
-        """
-        outfile_name = "test.png"
-        ini_file = os.path.join(ROOT, "test_tracks_19.ini")
-        region = "X:3000000-3300000"
-        args = f"--tracks {ini_file} --region {region} "\
-               f"--outFileName {outfile_name}".split()
-        with self.assertRaises(InputError) as context:
-            pygenometracks.plotTracks.main(args)
-
-        assert "vlines defined in 2 different sections" in str(context.exception)
-        os.remove(ini_file)
-
     def test_vhighlight_no_file(self):
         """
         This test check that if you did not put
@@ -642,7 +610,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert "is supposed to be a vhighlight but there is no file" in str(context.exception)
+        assert "the necessary property file is not part of the config file" in str(context.exception)
         os.remove(ini_file)
 
     def test_vhighlight_alpha_float(self):
@@ -676,7 +644,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert "whereas we should have a float value between 0 and 1" in str(context.exception)
+        assert "whereas it should be between 0 and 1" in str(context.exception)
         os.remove(ini_file)
 
     def test_maf_order_only_while_no_order(self):
