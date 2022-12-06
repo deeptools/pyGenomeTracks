@@ -21,3 +21,4 @@ All available tracks
    tracks/scalebar
    tracks/spacer
    tracks/x_axis
+   tracks/vlines_vhighlights

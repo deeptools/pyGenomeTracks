@@ -701,6 +701,7 @@ file = hoxd_genes_noGm_rgb.bed.gz
 type = vhighlight
 color = green
 alpha = 0.3
+zorder = 10
 
 [spacer]
 
