@@ -266,7 +266,7 @@ file_type = {TRACK_TYPE}
                                        asBed=True)
             bed_file_h = ReadBed(opener(file_to_open))
 
-        return(bed_file_h, total_length)
+        return bed_file_h, total_length
 
     def process_bed(self, plot_regions=None):
 

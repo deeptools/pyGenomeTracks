@@ -28,7 +28,8 @@ def test_make_tracks():
         diff = difflib.unified_diff(open(outfile.name).readlines(),
                                     open(os.path.join(ROOT, 'master_tracks.ini')).readlines(), lineterm='')
         print(''.join(list(diff)))
-    assert(filecmp.cmp(outfile.name,
-                       os.path.join(ROOT, 'master_tracks.ini')) is True)
+
+    assert filecmp.cmp(outfile.name,
+                       os.path.join(ROOT, 'master_tracks.ini')) is True
 
     os.remove(outfile.name)
