@@ -35,16 +35,16 @@ stages:
             matplotlib.version: '3.1.1'
           Python37HighMatplotlib:
             python.version: '3.7'
-            matplotlib.version: '3.5.1'
+            matplotlib.version: '3.5.3'
           Python38LowMatplotlib:
             python.version: '3.8'
             matplotlib.version: '3.1.1'
           Python38HighMatplotlib:
             python.version: '3.8'
-            matplotlib.version: '3.5.1'
+            matplotlib.version: '3.6.2'
           Python39HighMatplotlib:
             python.version: '3.9'
-            matplotlib.version: '3.5.1'
+            matplotlib.version: '3.6.2'
 
       steps:
       - bash: |

@@ -17,3 +17,8 @@ Bugfix:
 - Works with gffutils version 0.11.0 where ValueError became gffutils.exceptions.EmptyInputError for empty gtf.
 - The installation instructions have been updated
 - Fixed a small bug in links track with "use_middle" enabled, where midpoints could have different ordering than start points (Thanks to @Jeff1995 ).
+
+Relax version control on matplotlib:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Any version of matplotlib from 3.1.1 to 3.6.2 is now accepted.
