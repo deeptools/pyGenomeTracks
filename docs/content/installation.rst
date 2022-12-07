@@ -60,7 +60,7 @@ Then activate the environment and install pygenometracks with mamba:
 .. code:: bash
 
     $ conda activate pygenometracks
-    $ mamba install -c bioconda -c conda-forge pygenometracks
+    $ mamba install -c conda-forge -c bioconda pygenometracks
 
 
 or if you want a specific version:
@@ -70,7 +70,7 @@ or if you want a specific version:
 
     $ conda create -n pygenometracks -c bioconda -c conda-forge mamba python=3.7
     $ conda activate pygenometracks
-    $ mamba install -c bioconda -c conda-forge pygenometracks=3.5
+    $ mamba install -c conda-forge -c bioconda pygenometracks=3.5
 
 Command line installation using ``pip``
 -----------------------------------------
