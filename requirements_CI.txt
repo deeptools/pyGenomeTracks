@@ -4,7 +4,6 @@ intervaltree >=2.1.0
 pybigwig >=0.3.16
 future >=0.17.0
 hicmatrix >=15
-h5py
 pysam >=0.14
 gffutils >=0.9
 pybedtools >=0.8.1
