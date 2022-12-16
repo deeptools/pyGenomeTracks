@@ -1,0 +1,10 @@
+chr4	StringTie	transcript	146501988	147393209	1000	+	.	gene_id "MSTRG.12128"; transcript_id "MSTRG.12128.2"; 
+chr4	StringTie	exon	146501988	146502144	1000	+	.	gene_id "MSTRG.12128"; transcript_id "MSTRG.12128.2"; exon_number "1"; 
+chr4	StringTie	exon	147362811	147362904	1000	+	.	gene_id "MSTRG.12128"; transcript_id "MSTRG.12128.2"; exon_number "2"; 
+chr4	StringTie	exon	147385220	147385301	1000	+	.	gene_id "MSTRG.12128"; transcript_id "MSTRG.12128.2"; exon_number "3"; 
+chr4	StringTie	exon	147388322	147388448	1000	+	.	gene_id "MSTRG.12128"; transcript_id "MSTRG.12128.2"; exon_number "4"; 
+chr4	StringTie	exon	147390200	147393209	1000	+	.	gene_id "MSTRG.12128"; transcript_id "MSTRG.12128.2"; exon_number "5"; 
+chr4	StringTie	transcript	146971877	147030622	1000	+	.	gene_id "MSTRG.12136"; transcript_id "MSTRG.12136.2"; 
+chr4	StringTie	exon	146971877	146972117	1000	+	.	gene_id "MSTRG.12136"; transcript_id "MSTRG.12136.2"; exon_number "1"; 
+chr4	StringTie	exon	146973948	146974040	1000	+	.	gene_id "MSTRG.12136"; transcript_id "MSTRG.12136.2"; exon_number "2"; 
+chr4	StringTie	exon	147030547	147030622	1000	+	.	gene_id "MSTRG.12136"; transcript_id "MSTRG.12136.2"; exon_number "3"; 
