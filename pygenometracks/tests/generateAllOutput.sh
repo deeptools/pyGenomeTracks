@@ -22,6 +22,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/vhighlight.ini --region chrX:0
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_genes_rgb.ini --region chr2:74,650,000-74,710,000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_genes_rgb.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/gtf_merge_overlapping_exons.ini --region chr2:74,704,000-74,710,000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_gtf_merge_overlapping_exons.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/gtf_no_exon.ini --region 381:0-1000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_gtf_no_exon.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/gtf_long_intron.ini --region chr4:147085588-147087450 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_gtf_long_intron.png
 
 # non_classical_bed
 bin/pgt --tracks pygenometracks/tests/test_data/bed_unusual_formats.ini --region X:20000-40000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_bed_unusual_formats.png
