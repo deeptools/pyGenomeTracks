@@ -4,11 +4,12 @@
 Enhancement:
 ^^^^^^^^^^^^
 
-- A new `type` was introduced in 3.7 (announcement has been forgotten): a `vhighlight` to be able to hightlight a whole region across all tracks.
-- Much more parameters for vhighlight and vlines:
+- A new ``type`` was introduced in 3.7 (announcement has been forgotten): a ``vhighlight`` to be able to hightlight a whole region across all tracks.
+- Much more parameters for vhighlight and vlines
     - 'zorder' to set it on top or behind.
     - 'line_width', 'color', 'alpha', 'border_color' for vhighlight and 'line_style' for vlines
 - You can now set multiple vlines
+- For gtf, the output of ``make_tracks_file`` set ``prefered_name`` to ``gene_name`` instead of ``transcript_name``.
 
 Bugfix:
 ^^^^^^^
