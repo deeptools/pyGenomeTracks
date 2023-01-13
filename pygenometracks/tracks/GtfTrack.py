@@ -18,7 +18,7 @@ class GtfTrack(BedTrack):
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # By default the transcript_name is used.
 # If you want to use the gene_name:
-# prefered_name = gene_name
+prefered_name = gene_name
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
 # merge_transcripts = true
