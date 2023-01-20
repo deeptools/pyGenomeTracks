@@ -622,7 +622,7 @@ file_type = {TRACK_TYPE}
                 ax.set_ylim(2 + epsilon, ymax)
             elif self.properties['display'] == 'collapsed':
                 ax.set_ylim(1 + epsilon, ymax)
-                
+
         if self.properties['orientation'] == 'inverted':
             ylims = ax.get_ylim()
             ax.set_ylim(ylims[1], ylims[0])
