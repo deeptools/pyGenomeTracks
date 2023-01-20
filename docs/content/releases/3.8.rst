@@ -19,6 +19,7 @@ Bugfix:
 - The installation instructions have been updated
 - Fixed a small bug in links track with "use_middle" enabled, where midpoints could have different ordering than start points (Thanks to @Jeff1995 ).
 - Fix a bug when plotting gtf in the middle of a large intron
+- Fix plot genes with ``orientation = inverted``
 
 Relax version control on matplotlib:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

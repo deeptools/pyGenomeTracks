@@ -887,6 +887,29 @@ title = default
 with open(os.path.join(ROOT, "gtf_long_intron.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[genes 2]
+file = dm3_genes.bed.gz
+height = 7
+title = genes
+
+[spacer]
+height = 0.05
+
+[x-axis]
+where = top
+
+[spacer]
+height = 0.05
+
+[genes 2bis]
+file = dm3_genes.bed.gz
+height = 7
+orientation = inverted
+title = genes orientation = inverted
+"""
+with open(os.path.join(ROOT, "bed_inverted.ini"), 'w') as fh:
+    fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -1403,6 +1426,24 @@ def test_plot_gtf_long_intron():
     ini_file = os.path.join(ROOT, 'gtf_long_intron.ini')
     region = "chr4:147085588-147087450"
     expected_file = os.path.join(ROOT, 'master_gtf_long_intron.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bed_inverted():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'bed_inverted.ini')
+    region = "chrX:0-2500000"
+    expected_file = os.path.join(ROOT, 'master_bed_inverted.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
