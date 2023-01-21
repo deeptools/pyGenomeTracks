@@ -90,7 +90,7 @@ class install(_install):
             sys.stderr.write(f"Error: {e}")
 
 
-install_requires_py = ["numpy >=1.16",
+install_requires_py = ["numpy >=1.20",
                        "matplotlib >=3.1.1,<=3.6.2",
                        "intervaltree >=2.1.0",
                        "pyBigWig >=0.3.16",
