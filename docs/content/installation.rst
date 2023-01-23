@@ -13,7 +13,7 @@ Requirements
 Python dependencies:
 
 * Python >= 3.7
-* numpy >= 1.16
+* numpy >= 1.20
 * intervaltree >= 2.1.0
 * pyBigWig >= 0.3.16
 * hicmatrix >= 15

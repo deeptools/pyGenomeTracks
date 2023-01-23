@@ -317,9 +317,9 @@ file_type = {TRACK_TYPE}
             x_values = np.asarray([(t[0] + t[1]) / 2
                                    for i, t in enumerate(pos_list)
                                    if not np.isnan(score_list[i])],
-                                  dtype=np.float)
+                                  dtype=float)
             score_list = np.asarray([x for x in score_list if not np.isnan(x)],
-                                    dtype=np.float)
+                                    dtype=float)
         elif self.properties['summary_method'] is not None:
             score_list, x_values = self.get_values_as_bigwig(score_list,
                                                              pos_list,
@@ -366,9 +366,9 @@ file_type = {TRACK_TYPE}
                 x_values2 = np.asarray([(t[0] + t[1]) / 2
                                         for i, t in enumerate(pos_list2)
                                         if not np.isnan(score_list2[i])],
-                                       dtype=np.float)
+                                       dtype=float)
                 score_list2 = np.asarray([x for x in score_list2 if not np.isnan(x)],
-                                         dtype=np.float)
+                                         dtype=float)
                 if not all([x1 == x2 for x1, x2 in zip(x_values, x_values2)]):
                     # The x are not compatible we need to extrapolate:
                     new_x = sorted(np.unique(np.concatenate((x_values, x_values2), axis=0)))
@@ -481,7 +481,7 @@ file_type = {TRACK_TYPE}
         # convert [1, 2, 3 ...] in [1, 1, 2, 2, 3, 3 ...]
         score_list = np.repeat(score_list, 2)
         # convert [(0, 10), (10, 20), (20, 30)] into [0, 10, 10, 20, 20, 30]
-        x_values = np.asarray(sum(pos_list, tuple()), dtype=np.float)
+        x_values = np.asarray(sum(pos_list, tuple()), dtype=float)
 
         if self.properties['nans_to_zeros']:
             score_list[np.isnan(score_list)] = 0
