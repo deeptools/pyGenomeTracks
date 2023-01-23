@@ -1,0 +1,19 @@
+
+# Mandatory:
+# bed file with regions to highlight
+file = regions.bed
+# type:
+type = vhighlight
+# Optional:
+# line width
+#line_width = 0.5
+# border_color of the line (put none to have no border):
+#border_color = black
+# color of the rectangle:
+#color = yellow
+# transparency:
+#alpha = 0.3
+# zorder, choose high values (10 or 100) to put on top
+# and low values to put behind (0 or negative values)
+#zorder = -100
+    

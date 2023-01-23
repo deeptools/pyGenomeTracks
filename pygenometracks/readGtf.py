@@ -77,6 +77,9 @@ class ReadGtf(object):
                 self.all_transcripts = open(file_path, 'r')
             else:
                 raise InputError("This is not a gtf file.")
+        except gffutils.exceptions.EmptyInputError:
+            self.length = 0
+            self.all_transcripts = open(file_path, 'r')
         else:
             if self.merge_transcripts:
                 self.length = self.db.count_features_of_type("gene")
@@ -141,14 +144,15 @@ class ReadGtf(object):
             cds_start = tr.start - 1
             cds_end = tr.start - 1
         # Get all exons starts and end to get lengths
-        if self.db.count_features_of_type("exon") > 0:
+        exons = [e for e in self.db.children(tr, featuretype='exon', order_by='start')]
+        if len(exons) > 0:
             if self.merge_overlapping_exons:
                 # We merge overlapping exons:
                 exons_starts = []
                 exons_ends = []
                 current_start = -1
                 current_end = None
-                for e in self.db.children(tr, featuretype='exon', order_by='start'):
+                for e in exons:
                     if current_start == -1:
                         current_start = e.start - 1
                         current_end = e.end
@@ -172,14 +176,10 @@ class ReadGtf(object):
             else:
                 exons_starts = [e.start - 1
                                 for e in
-                                self.db.children(tr,
-                                                 featuretype='exon',
-                                                 order_by='start')]
+                                exons]
                 exons_ends = [e.end
                               for e in
-                              self.db.children(tr,
-                                               featuretype='exon',
-                                               order_by='start')]
+                              exons]
         else:
             # This means that the gtf does not have exon info for this gene/transcript:
             try:

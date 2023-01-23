@@ -22,6 +22,8 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/vhighlight.ini --region chrX:0
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_genes_rgb.ini --region chr2:74,650,000-74,710,000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_genes_rgb.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/gtf_merge_overlapping_exons.ini --region chr2:74,704,000-74,710,000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_gtf_merge_overlapping_exons.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/gtf_no_exon.ini --region 381:0-1000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_gtf_no_exon.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/gtf_long_intron.ini --region chr4:147085588-147087450 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_gtf_long_intron.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bed_inverted.ini --region chrX:0-2500000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_inverted.png
 
 # non_classical_bed
 bin/pgt --tracks pygenometracks/tests/test_data/bed_unusual_formats.ini --region X:20000-40000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_bed_unusual_formats.png
@@ -169,3 +171,4 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_square.ini --region chrX:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_square_chrX.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_square_bad_region2.ini --region chr1:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_square_bad_region2.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_inbetween.ini --BED ./pygenometracks/tests/test_data/chrY_regions.bed --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_inbetween.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/mcool_hic_matrix_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_mcool_hic_matrix_square.png

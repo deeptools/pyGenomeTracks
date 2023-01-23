@@ -8,8 +8,8 @@ mkdir -p docs/content/tracks/auto
 python pygenometracks/getAllDefaultsAndPossible.py 
 # This generates 2 tables that will be included in the readthedocs documentation
 # As well as a file in rst format for each track
-echo "All available tracks
-====================
+echo "All available tracks and types
+==============================
 
 .. toctree::
    :maxdepth: 1

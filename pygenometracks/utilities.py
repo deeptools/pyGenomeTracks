@@ -30,7 +30,7 @@ def to_string(s):
     if isinstance(s, str):
         return s
     if isinstance(s, bytes):
-        assert(sys.version_info[0] != 2)
+        assert sys.version_info[0] != 2
 #        if sys.version_info[0] == 2:
 #            return str(s)
         return s.decode('ascii')
@@ -257,7 +257,7 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
 
 def transform(score_list, transform, log_pseudocount, file):
     if transform == 'no':
-        return(score_list)
+        return score_list
     elif transform in ['log', 'log2', 'log10']:
         if np.nanmin(score_list) <= - log_pseudocount:
             msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
@@ -267,7 +267,7 @@ def transform(score_list, transform, log_pseudocount, file):
                    f"values in file: {file}")
             raise Exception(msg)
         else:
-            return(eval('np.' + transform + '(log_pseudocount + score_list)'))
+            return eval('np.' + transform + '(log_pseudocount + score_list)')
     elif transform == 'log1p':
         if np.nanmin(score_list) <= - 1:
             msg = ("\n*ERROR*\ncoverage contains values below or equal to - 1.\n"
@@ -275,7 +275,7 @@ def transform(score_list, transform, log_pseudocount, file):
                    f"values in file: {file}")
             raise Exception(msg)
         else:
-            return(np.log1p(score_list))
+            return np.log1p(score_list)
     elif transform == '-log':
         if np.nanmin(score_list) <= - log_pseudocount:
             msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
@@ -284,11 +284,11 @@ def transform(score_list, transform, log_pseudocount, file):
                    f"not be applied to values in file: {file}")
             raise Exception(msg)
         else:
-            return(- np.log(log_pseudocount + score_list))
+            return - np.log(log_pseudocount + score_list)
     else:
         warnings.warn(f"The transform: {transform} for file {file} is not "
                       "valid. Will not use any transformation.\n")
-        return(score_list)
+        return score_list
 
 
 def get_length_w(fig_width, region_start, region_end, fontsize):
@@ -330,7 +330,7 @@ def count_lines(file_h, asBed=False):
                 continue
         n += 1
     file_h.close()
-    return(n)
+    return n
 
 
 def change_chrom_names(chrom):

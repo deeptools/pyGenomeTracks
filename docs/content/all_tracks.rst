@@ -1,5 +1,5 @@
-All available tracks
-====================
+All available tracks and types
+==============================
 
 .. toctree::
    :maxdepth: 1
@@ -20,4 +20,6 @@ All available tracks
    tracks/narrow_peak
    tracks/scalebar
    tracks/spacer
+   tracks/vhighlight
+   tracks/vlines
    tracks/x_axis

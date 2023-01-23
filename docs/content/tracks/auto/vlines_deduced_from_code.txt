@@ -1,0 +1,17 @@
+Necessary:
+^^^^^^^^^^
+- **type**: vlines
+- **file**
+
+Optional:
+^^^^^^^^^
+- **line_width**: `0.5` (default) or any float above 0
+
+- **line_style**: `dashed` (default) or solid, dotted or dashdot.
+
+- **color**: `black` (default)
+
+- **alpha**: `0.7` (default) or any float above 0 below 1
+
+- **zorder**: `10` (default) or any float
+

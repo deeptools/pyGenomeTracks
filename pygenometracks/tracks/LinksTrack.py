@@ -363,6 +363,12 @@ file_type = {TRACK_TYPE}
                             linewidth=self.current_line_width,
                             ls=self.properties['line_style'])
         ax.add_artist(rectangle)
+        if min(y0, y1, y2, y3) < 0:
+            rectangle_flip = Polygon(np.array([[x0, -y0], [x1, -y1], [x2, -y2], [x3, -y3]]),
+                                     facecolor='none', edgecolor=rgb,
+                                     linewidth=self.current_line_width,
+                                     ls=self.properties['line_style'])
+            ax.add_artist(rectangle_flip)
         if y2 > self.max_height:
             self.max_height = y2
 
@@ -499,11 +505,14 @@ file_type = {TRACK_TYPE}
             if self.properties['use_middle']:
                 mid1 = (start1 + end1) / 2
                 mid2 = (start2 + end2) / 2
-                interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
+                if mid1 < mid2:
+                    interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
+                else:
+                    interval_tree[chrom1].add(Interval(mid2, mid1, [start2, end2, start1, end1, score]))
             else:
                 if not is_trans:
                     # each interval spans from the smallest start to the largest end
-                    interval_tree[chrom1].add(Interval(start1, end2, [start1, end1, start2, end2, score]))
+                    interval_tree[chrom1].add(Interval(start1, max(end1, end2), [start1, end1, start2, end2, score]))
                 else:
                     # For the trans we keep start1 and end1
                     interval_tree[chrom1].add(Interval(start1, end1, [start1, end1, start2, end2, score]))
@@ -513,4 +522,4 @@ file_type = {TRACK_TYPE}
             self.log.warning(f"No valid intervals were found in file {self.properties['file']}.\n")
 
         file_h.close()
-        return(interval_tree, min_score, max_score, has_score)
+        return interval_tree, min_score, max_score, has_score

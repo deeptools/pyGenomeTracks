@@ -266,7 +266,7 @@ file_type = {TRACK_TYPE}
                                        asBed=True)
             bed_file_h = ReadBed(opener(file_to_open))
 
-        return(bed_file_h, total_length)
+        return bed_file_h, total_length
 
     def process_bed(self, plot_regions=None):
 
@@ -398,11 +398,7 @@ file_type = {TRACK_TYPE}
             self.plot_triangles(ax, genes_overlap)
         elif self.properties['display'] == 'squares':
             self.plot_squares(ax, genes_overlap)
-            if self.properties['orientation'] == 'inverted':
-                ax.set_ylim(start_region, end_region)
-            else:
-                ax.set_ylim(end_region, start_region)
-
+            ax.set_ylim(end_region, start_region)
         else:
             self.counter = 0
             self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
@@ -626,6 +622,10 @@ file_type = {TRACK_TYPE}
                 ax.set_ylim(2 + epsilon, ymax)
             elif self.properties['display'] == 'collapsed':
                 ax.set_ylim(1 + epsilon, ymax)
+
+        if self.properties['orientation'] == 'inverted':
+            ylims = ax.get_ylim()
+            ax.set_ylim(ylims[1], ylims[0])
 
     def plot_label(self, label_ax, width_dpi, h_align='left'):
         if h_align == 'left':
@@ -1052,10 +1052,7 @@ file_type = {TRACK_TYPE}
         if valid_regions == 0:
             self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
 
-        if self.properties['orientation'] == 'inverted':
-            ax.set_ylim(ymax, 0)
-        else:
-            ax.set_ylim(0, ymax)
+        ax.set_ylim(0, ymax)
 
     def plot_squares(self, ax, genes_overlap):
         """

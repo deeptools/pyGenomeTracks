@@ -18,7 +18,7 @@ class GtfTrack(BedTrack):
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # By default the transcript_name is used.
 # If you want to use the gene_name:
-# prefered_name = gene_name
+prefered_name = gene_name
 # By default, the gtf is transformed to transcripts
 # If you want to use see only one structure per gene
 # merge_transcripts = true
@@ -184,4 +184,4 @@ file_type = {TRACK_TYPE}
                              self.properties['merge_transcripts'],
                              self.properties['merge_overlapping_exons'])
         total_length = bed_file_h.length
-        return(bed_file_h, total_length)
+        return bed_file_h, total_length

@@ -204,21 +204,6 @@ with open(os.path.join(ROOT, "test_tracks_18.ini"), 'w') as fh:
     fh.write(test_tracks_18)
 
 
-test_tracks_19 = """
-[x-axis]
-
-[vlines1]
-type = vlines
-file = dm3_genes.bed4.gz
-
-[vlines2]
-type = vlines
-file = tad_classification.bed
-"""
-with open(os.path.join(ROOT, "test_tracks_19.ini"), 'w') as fh:
-    fh.write(test_tracks_19)
-
-
 test_tracks_20 = """
 [x-axis]
 
@@ -293,7 +278,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("there is no file" in str(context.exception))
+        assert "the necessary property file is not part of the config file" in str(context.exception)
         os.remove(ini_file)
 
     def test_missing_file_type(self):
@@ -311,8 +296,8 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("file_type newFileTypeIJustInvented does not exists" in
-               str(context.exception))
+        assert "file_type newFileTypeIJustInvented does not exists" in \
+               str(context.exception)
         os.remove(ini_file)
 
     def test_unguessable_file_type_no_file(self):
@@ -330,8 +315,8 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert(" there is no file_type nor file " in
-               str(context.exception))
+        assert " there is no file_type nor file " in \
+               str(context.exception)
         os.remove(ini_file)
 
     def test_missing_necessary_option(self):
@@ -351,7 +336,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("the necessary property" in str(context.exception))
+        assert "the necessary property" in str(context.exception)
         os.remove(ini_file)
 
     def test_boolean(self):
@@ -369,7 +354,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("boolean" in str(context.exception))
+        assert "boolean" in str(context.exception)
         os.remove(ini_file)
 
     def test_float(self):
@@ -387,7 +372,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("float" in str(context.exception))
+        assert "float" in str(context.exception)
         os.remove(ini_file)
 
     def test_float_limit(self):
@@ -406,7 +391,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("whereas it should be between" in str(context.exception))
+        assert "whereas it should be between" in str(context.exception)
         os.remove(ini_file)
 
     def test_integer(self):
@@ -424,7 +409,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("integer" in str(context.exception))
+        assert "integer" in str(context.exception)
         os.remove(ini_file)
 
     def test_integer_limit(self):
@@ -443,7 +428,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("whereas it should be between" in str(context.exception))
+        assert "whereas it should be between" in str(context.exception)
         os.remove(ini_file)
 
     def test_file_missing(self):
@@ -461,8 +446,8 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("File in section [1. [inexisting file]] not found" in
-               str(context.exception))
+        assert "File in section [1. [inexisting file]] not found" in \
+               str(context.exception)
         os.remove(ini_file)
 
     def test_unguessable_file_type(self):
@@ -482,7 +467,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("can not identify file type" in str(context.exception))
+        assert "can not identify file type" in str(context.exception)
         os.remove(ini_file)
 
     def test_operation_bw_without_second_file(self):
@@ -500,8 +485,8 @@ class TestCheckerMethods(unittest.TestCase):
             with self.assertRaises(InputError) as context:
                 pygenometracks.plotTracks.main(args)
 
-            assert("requires to set the parameter second_file" in
-                   str(context.exception))
+            assert "requires to set the parameter second_file" in \
+                   str(context.exception)
             os.remove(ini_file)
 
     def test_operation_with_transform(self):
@@ -518,8 +503,8 @@ class TestCheckerMethods(unittest.TestCase):
             with self.assertRaises(InputError) as context:
                 pygenometracks.plotTracks.main(args)
 
-            assert("'operation' and 'transform' cannot be set at the same time."
-                   in str(context.exception))
+            assert "'operation' and 'transform' cannot be set at the same time." \
+                   in str(context.exception)
             os.remove(ini_file)
 
     def test_invalid_operation(self):
@@ -536,8 +521,8 @@ class TestCheckerMethods(unittest.TestCase):
             with self.assertRaises(Exception) as context:
                 pygenometracks.plotTracks.main(args)
 
-            assert("could not be computed"
-                   in str(context.exception))
+            assert "could not be computed" \
+                   in str(context.exception)
             os.remove(ini_file)
 
     def test_invalid_operation2(self):
@@ -554,8 +539,8 @@ class TestCheckerMethods(unittest.TestCase):
             with self.assertRaises(Exception) as context:
                 pygenometracks.plotTracks.main(args)
 
-            assert("could not be computed"
-                   in str(context.exception))
+            assert "could not be computed" \
+                   in str(context.exception)
             os.remove(ini_file)
 
     def test_wrong_overlay_previous(self):
@@ -573,7 +558,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("Possible options are no, yes, share-y" in str(context.exception))
+        assert "Possible options are no, yes, share-y" in str(context.exception)
         os.remove(ini_file)
 
     def test_wrong_line_width_vlines(self):
@@ -591,7 +576,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("whereas we should have a float" in str(context.exception))
+        assert "whereas we should have a float" in str(context.exception)
         os.remove(ini_file)
 
     def test_invalid_characters_in_operation(self):
@@ -608,24 +593,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("uses signs which are not allowed" in str(context.exception))
-        os.remove(ini_file)
-
-    def test_2_vlines(self):
-        """
-        This test check that if you did not put
-        2 sections with vlines
-        it will raise an input error
-        """
-        outfile_name = "test.png"
-        ini_file = os.path.join(ROOT, "test_tracks_19.ini")
-        region = "X:3000000-3300000"
-        args = f"--tracks {ini_file} --region {region} "\
-               f"--outFileName {outfile_name}".split()
-        with self.assertRaises(InputError) as context:
-            pygenometracks.plotTracks.main(args)
-
-        assert("vlines defined in 2 different sections" in str(context.exception))
+        assert "uses signs which are not allowed" in str(context.exception)
         os.remove(ini_file)
 
     def test_vhighlight_no_file(self):
@@ -642,7 +610,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("is supposed to be a vhighlight but there is no file" in str(context.exception))
+        assert "the necessary property file is not part of the config file" in str(context.exception)
         os.remove(ini_file)
 
     def test_vhighlight_alpha_float(self):
@@ -659,7 +627,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("whereas we should have a float" in str(context.exception))
+        assert "whereas we should have a float" in str(context.exception)
         os.remove(ini_file)
 
     def test_vhighlight_alpha_range(self):
@@ -676,7 +644,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("whereas we should have a float value between 0 and 1" in str(context.exception))
+        assert "whereas it should be between 0 and 1" in str(context.exception)
         os.remove(ini_file)
 
     def test_maf_order_only_while_no_order(self):
@@ -694,7 +662,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("species_order_only set to true while species_order not specified." in str(context.exception))
+        assert "species_order_only set to true while species_order not specified." in str(context.exception)
         os.remove(ini_file)
 
     def test_maf_malformed(self):
@@ -711,7 +679,7 @@ class TestCheckerMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("Unable to generate index for" in str(context.exception))
+        assert "Unable to generate index for" in str(context.exception)
         os.remove(ini_file)
 
 
@@ -730,8 +698,8 @@ class TestInputRegionMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("is not valid, it should be chr:start-end" in
-               str(context.exception))
+        assert "is not valid, it should be chr:start-end" in \
+               str(context.exception)
 
     def test_region_format_chr_only_start(self):
         """
@@ -746,8 +714,8 @@ class TestInputRegionMethods(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("is not valid, it should be chr:start-end" in
-               str(context.exception))
+        assert "is not valid, it should be chr:start-end" in \
+               str(context.exception)
 
     def test_region_format_invalid_start(self):
         """
@@ -762,8 +730,8 @@ class TestInputRegionMethods(unittest.TestCase):
             with self.assertRaises(InputError) as context:
                 pygenometracks.plotTracks.main(args)
 
-            assert("is not valid, it should be chr:start-end" in
-                   str(context.exception))
+            assert "is not valid, it should be chr:start-end" in \
+                   str(context.exception)
 
     def test_region_format_invalid_end(self):
         """
@@ -778,8 +746,8 @@ class TestInputRegionMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("is not valid, it should be chr:start-end" in
-               str(context.exception))
+        assert "is not valid, it should be chr:start-end" in \
+               str(context.exception)
 
     def test_region_format_start_smaller_end(self):
         """
@@ -794,4 +762,4 @@ class TestInputRegionMethods(unittest.TestCase):
         with self.assertRaises(InputError) as context:
             pygenometracks.plotTracks.main(args)
 
-        assert("end is larger" in str(context.exception))
+        assert "end is larger" in str(context.exception)

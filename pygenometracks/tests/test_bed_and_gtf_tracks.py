@@ -192,11 +192,17 @@ title = fontsize = 30
 [vlines]
 type = vlines
 file = dm3_genes.bed4.gz
+line_style = dotted
 
+[second_vlines]
+type = vlines
+file = dm3_genes_end.bed
+line_width = 1
+color = orange
+zorder = -100
 """
 with open(os.path.join(ROOT, "bed_arrow_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
-
 
 browser_tracks = """
 [x-axis]
@@ -620,11 +626,12 @@ title = centered title
 file = tad_classification.bed
 type = vlines
 line_width = 3
+color = red
 """
 with open(os.path.join(ROOT, "bed_vlines.ini"), 'w') as fh:
     fh.write(browser_tracks)
 with open(os.path.join(ROOT, "bed_vlines_incorrect.ini"), 'w') as fh:
-    fh.write(browser_tracks + 'line_style = dashed\n')
+    fh.write(browser_tracks + 'line_style = --\n')
 
 browser_tracks = """
 [x-axis]
@@ -695,12 +702,14 @@ title = HoxD genes and regulatory regions
 [annotations as highlight]
 file = HoxD_cluster_regulatory_regions_mm10.bed
 type = vhighlight
+border_color = red
 
 [genes as highlight]
 file = hoxd_genes_noGm_rgb.bed.gz
 type = vhighlight
 color = green
 alpha = 0.3
+zorder = 10
 
 [spacer]
 
@@ -867,6 +876,40 @@ type = vlines
 with open(os.path.join(ROOT, "bed_invalid_rtf_vlines.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+
+browser_tracks = """
+[test]
+file = gtfwithtranscript.gtf
+title = default
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "gtf_long_intron.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[genes 2]
+file = dm3_genes.bed.gz
+height = 7
+title = genes
+
+[spacer]
+height = 0.05
+
+[x-axis]
+where = top
+
+[spacer]
+height = 0.05
+
+[genes 2bis]
+file = dm3_genes.bed.gz
+height = 7
+orientation = inverted
+title = genes orientation = inverted
+"""
+with open(os.path.join(ROOT, "bed_inverted.ini"), 'w') as fh:
+    fh.write(browser_tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
 
@@ -1374,3 +1417,39 @@ def test_rtf():
             raise Exception(f"The bed_invalid_rtf{suf} should fail.")
 
         os.remove(ini_file)
+
+
+def test_plot_gtf_long_intron():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'gtf_long_intron.ini')
+    region = "chr4:147085588-147087450"
+    expected_file = os.path.join(ROOT, 'master_gtf_long_intron.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bed_inverted():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'bed_inverted.ini')
+    region = "chrX:0-2500000"
+    expected_file = os.path.join(ROOT, 'master_bed_inverted.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
