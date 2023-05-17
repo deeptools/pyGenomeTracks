@@ -3,7 +3,7 @@ from .. readBed import ReadBed
 # To remove next 1.0
 from .. readGtf import ReadGtf
 # End to remove
-from .. utilities import opener, get_length_w, count_lines, temp_file_from_intersect, change_chrom_names
+from .. utilities import opener, get_length_w, count_lines, temp_file_from_intersect, change_chrom_names, InputError
 import matplotlib
 from matplotlib import font_manager
 from matplotlib.patches import Rectangle, Polygon
@@ -559,9 +559,11 @@ file_type = {TRACK_TYPE}
                         self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
                                                                   rgb, edgecolor,
                                                                   linewidth)
-                    else:
+                    elif self.properties['style'] == 'UCSC':
                         self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor,
                                                     linewidth)
+                    else:
+                        raise InputError(f"Unknown style {self.properties['style']}")
                 else:
                     self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
 
