@@ -554,7 +554,10 @@ file_type = {TRACK_TYPE}
                 if self.properties['style'] == 'tssarrow':
                     self.draw_gene_tssarrow_style(ax, bed, ypos, rgb,
                                                   linewidth)
-                if self.properties['style'] == 'flybase':
+                elif self.bed_type == 'bed6':
+                    # Both would give the same output:
+                    self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
+                elif self.properties['style'] == 'flybase':
                     self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
                                                               rgb, edgecolor,
                                                               linewidth)
