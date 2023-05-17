@@ -29,10 +29,11 @@ fontsize = 10
 [genes 2bis]
 file = dm3_genes.bed.gz
 height = 7
-title = genes (bed12) style = UCSC; arrow_interval=10; fontsize = 10
+title = genes (bed12) style = UCSC; arrow_interval=10; fontsize = 10; color_arrow = red
 style = UCSC
 arrow_interval = 10
 fontsize = 10
+color_arrow = red
 
 [spacer]
 height = 1
@@ -450,12 +451,13 @@ color_utr = bed_rgb
 [genes 2bix]
 file = hoxd_genes_rgb.bed.gz
 height = 7
-title = same but color_backbone = bed_rgb
+title = same but color_backbone = bed_rgb and color_arrow = bed_rgb
 style = UCSC
 fontsize = 10
 color = bed_rgb
 color_utr = bed_rgb
 color_backbone = bed_rgb
+color_arrow = bed_rgb
 
 [spacer]
 
@@ -502,6 +504,33 @@ fontsize = 10
 color = bed_rgb
 color_utr = bed_rgb
 display = collapsed
+
+
+[spacer]
+
+[genes 6]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = genes (bed12) style = exonarrows; fontsize = 10; color = bed_rgb; color_utr = bed_rgb
+style = exonarrows
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+line_width = 2
+
+[spacer]
+
+[genes 2bix]
+file = hoxd_genes_rgb.bed.gz
+height = 7
+title = same but color_arrow = white
+style = exonarrows
+fontsize = 10
+color = bed_rgb
+color_utr = bed_rgb
+color_arrow = white
+line_width = 2
+
 """
 with open(os.path.join(ROOT, "bed_genes_rgb.ini"), 'w') as fh:
     fh.write(browser_tracks)
@@ -685,6 +714,15 @@ file = example.bed
 title = bed style = tssarrow
 style = tssarrow
 height = 4
+
+[spacer]
+
+[genes1]
+file = example.bed
+title = bed style = exonarrows
+style = exonarrows
+height = 4
+line_width = 2
 
 [spacer]
 
@@ -911,6 +949,63 @@ title = genes orientation = inverted
 with open(os.path.join(ROOT, "bed_inverted.ini"), 'w') as fh:
     fh.write(browser_tracks)
 
+browser_tracks = """
+[x-axis]
+where = top
+
+[spacer]
+height = 0.05
+
+[genes 0]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = exonarrows
+style = exonarrows
+fontsize = 10
+color_arrow = white
+line_width = 2
+
+[genes 0]
+file = dm3_genes.bed.gz
+height = 7
+title = genes (bed12) style = exonarrows color_utr=red
+style = exonarrows
+fontsize = 10
+color_arrow = white
+line_width = 2
+color_utr = red
+
+[test bed4]
+file = dm3_genes.bed4.gz
+height = 7
+title = bed4 style = exonarrows (bed4 has no orientation)
+style = exonarrows
+fontsize = 10
+color_arrow = white
+line_width = 2
+
+[test bed6]
+file = dm3_genes.bed6.gz
+height = 7
+title = bed6 style = exonarrows
+style = exonarrows
+fontsize = 10
+color_arrow = white
+line_width = 2
+
+[test bed6 increase interval]
+file = dm3_genes.bed6.gz
+height = 7
+title = bed6 style = exonarrows increase space between arrows
+style = exonarrows
+fontsize = 10
+color_arrow = white
+line_width = 2
+arrow_interval = 10
+"""
+with open(os.path.join(ROOT, "bed_exonarrows_tracks.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+    
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
@@ -1444,6 +1539,24 @@ def test_bed_inverted():
     ini_file = os.path.join(ROOT, 'bed_inverted.ini')
     region = "chrX:0-2500000"
     expected_file = os.path.join(ROOT, 'master_bed_inverted.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_bed_exonarrows():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, 'bed_exonarrows_tracks.ini')
+    region = "X:3000000-3300000"
+    expected_file = os.path.join(ROOT, 'master_bed_exonarrows.png')
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
            f"--outFileName {outfile.name}".split()
