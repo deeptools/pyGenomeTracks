@@ -687,6 +687,8 @@ file_type = {TRACK_TYPE}
     def draw_gene_simple(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
         draws an interval with direction (if given)
+        So either a rectangle if no direction is given
+        Or a rectangle with an arrow giving the orientation
         """
 
         if bed.strand not in ['+', '-']:
@@ -767,7 +769,15 @@ file_type = {TRACK_TYPE}
 
     def _draw_arrow(self, start, end, strand, ypos, half_height=None):
         """
-        Draws a filled arrow.
+        Draws a filled arrow, from start to end
+        This is in agreement with BED convention:
+        For example for a [0-2[ interval:
+        0    1    2    3  (matplotlib axis)
+        |  0 |  1 |  2 |  (bases index on genome)
+        -----------\
+        |           \
+        |           /
+        -----------/
         :param start:
         :param end:
         :param strand:
