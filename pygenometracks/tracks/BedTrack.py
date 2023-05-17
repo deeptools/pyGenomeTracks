@@ -554,18 +554,15 @@ file_type = {TRACK_TYPE}
                 if self.properties['style'] == 'tssarrow':
                     self.draw_gene_tssarrow_style(ax, bed, ypos, rgb,
                                                   linewidth)
-                elif self.bed_type == 'bed12':
-                    if self.properties['style'] == 'flybase':
-                        self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
-                                                                  rgb, edgecolor,
-                                                                  linewidth)
-                    elif self.properties['style'] == 'UCSC':
-                        self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor,
-                                                    linewidth)
-                    else:
-                        raise InputError(f"Unknown style {self.properties['style']}")
+                if self.properties['style'] == 'flybase':
+                    self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
+                                                              rgb, edgecolor,
+                                                              linewidth)
+                elif self.properties['style'] == 'UCSC':
+                    self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor,
+                                                linewidth)
                 else:
-                    self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
+                    raise InputError(f"Unknown style {self.properties['style']}")
 
                 if not display_labels:
                     pass
@@ -708,8 +705,9 @@ file_type = {TRACK_TYPE}
         """
         draws a gene like in flybase gbrowse.
         """
-        if bed.block_count == 0 and bed.thick_start == bed.start and \
-           bed.thick_end == bed.end:
+        if ((self.bed_type == 'bed12' and bed.block_count <= 1)
+            or self.bed_type != 'bed12') and \
+           bed.thick_start == bed.start and bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
         half_height = 1 / 2
@@ -836,16 +834,24 @@ file_type = {TRACK_TYPE}
         :param bed: a namedtuple with at least 6 fields
         :return: a list of tuple (start, end, type) with type in ['UTR', 'coding']
         """
-        if self.bed_type != 'bed12':
+        if self.bed_type == 'bed6':
             # No thick_start, thick_end, block_count:
             return [(bed.start, bed.end, 'coding')]
+        if self.bed_type != 'bed12':
+            block_count = 1
+            block_starts = [bed.start]
+            block_sizes = [bed.end - bed.start]
+        else:
+            block_count = bed.block_count
+            block_starts = bed.block_starts
+            block_sizes = bed.block_sizes
 
         # get start, end of all the blocks
         positions = []
-        for idx in range(0, bed.block_count):
+        for idx in range(0, block_count):
             # x0 and x1 are the start/end of the current block
-            x0 = bed.start + bed.block_starts[idx]
-            x1 = x0 + bed.block_sizes[idx]
+            x0 = bed.start + block_starts[idx]
+            x1 = x0 + block_sizes[idx]
             # We deal with the special case where
             # there is no coding independently
             if bed.thick_start == bed.thick_end:
@@ -882,8 +888,16 @@ file_type = {TRACK_TYPE}
         Except that for the moment no arrow are plotted
         on the coding part
         """
-
-        if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
+        if self.bed_type != 'bed12':
+            block_count = 1
+            block_starts = [bed.start]
+            block_sizes = [bed.end - bed.start]
+        else:
+            block_count = bed.block_count
+            block_starts = bed.block_starts
+            block_sizes = bed.block_sizes
+        if block_count <= 1 and \
+           bed.thick_start == bed.start and bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
 
@@ -891,9 +905,9 @@ file_type = {TRACK_TYPE}
         rgb_backbone = self.get_rgb(bed, param='color_backbone', default='black')
         ax.plot([bed.start, bed.end], [ypos + 1 / 2, ypos + 1 / 2], color=rgb_backbone, linewidth=linewidth, zorder=-1)
 
-        for idx in range(0, bed.block_count):
-            x0 = bed.start + bed.block_starts[idx]
-            x1 = x0 + bed.block_sizes[idx]
+        for idx in range(0, block_count):
+            x0 = bed.start + block_starts[idx]
+            x1 = x0 + block_sizes[idx]
             if x1 < bed.thick_start or x0 > bed.thick_end or \
                bed.thick_start == bed.thick_end:
                 y0 = ypos + 1 / 4
@@ -941,9 +955,9 @@ file_type = {TRACK_TYPE}
                                  edgecolor='none',
                                  facecolor=rgb))
 
-            if idx < bed.block_count - 1:
+            if idx < block_count - 1:
                 # plot small arrows over the back bone
-                intron_length = bed.block_starts[idx + 1] - (bed.block_starts[idx] + bed.block_sizes[idx])
+                intron_length = block_starts[idx + 1] - (block_starts[idx] + block_sizes[idx])
                 arrow_interval = self.properties['arrow_interval']
                 if intron_length > self.current_small_relative:
                     intron_center = x1 + int(intron_length) / 2
