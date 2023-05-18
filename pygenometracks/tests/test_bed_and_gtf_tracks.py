@@ -1005,7 +1005,7 @@ arrow_interval = 10
 """
 with open(os.path.join(ROOT, "bed_exonarrows_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
-    
+
 tolerance = 13  # default matplotlib pixed difference tolerance
 
 
