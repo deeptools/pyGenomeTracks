@@ -53,11 +53,13 @@ browser_tracks = """
 file = invalid_rgb.bed
 title = first line valid but neg invalid
 color = bed_rgb
+color_utr = bed_rgb
 
 [invalid_rgb2]
 file = invalid_rgb2.bed
 title = first line invalid
 color = bed_rgb
+color_utr = bed_rgb
 """
 with open(os.path.join(ROOT, "invalid_rgb.ini"), 'w') as fh:
     fh.write(browser_tracks)
@@ -84,6 +86,7 @@ browser_tracks = """
 file = invalid_CDScoo.bed
 title = invalid CDS coordinate in first line rgb is ignored
 color = bed_rgb
+color_utr = bed_rgb
 
 [spacer]
 
@@ -91,6 +94,7 @@ color = bed_rgb
 file = invalid_CDScoo2.bed
 title = invalid CDS coordinate in not first line rgb can be used
 color = bed_rgb
+color_utr = bed_rgb
 height = 2
 
 [spacer]
@@ -99,6 +103,7 @@ height = 2
 file = invalid_CDScoo3.bed
 title = invalid CDS coordinate in not first line bed12 can be used
 color = bed_rgb
+color_utr = bed_rgb
 style = UCSC
 height = 2
 """
