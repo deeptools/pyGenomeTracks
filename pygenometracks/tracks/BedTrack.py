@@ -13,7 +13,7 @@ import numpy as np
 from tqdm import tqdm
 
 DEFAULT_BED_COLOR = '#1f78b4'
-DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked', 'squares']
+DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked', 'squares', 'deletions']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
 AROUND_REGION = 100000
@@ -48,7 +48,7 @@ color = darkblue
 # the display parameter defines how the bed file is plotted.
 # Default is 'stacked' where regions are plotted on different lines so
 # we can see all regions and all labels.
-# The other options are ['collapsed', 'interleaved', 'triangles', 'squares']
+# The other options are ['collapsed', 'interleaved', 'triangles', 'squares', 'deletions']
 # These 2 options assume that the regions do not overlap.
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
@@ -117,9 +117,13 @@ fontsize = 10
 # for exonarrows, you can choose the proportion between the height of the introns and the one of exon
 # (by default introns are half):
 #height_intron = 0.5
-# The two other display options are really different and no label can be display:
+# The two following display options are really different and no label can be display:
 # `triangles` display each region as a triangle, can be useful to overlay with a hic_matrix
 # `squares` display each region as a square along the diagonal, can be useful to overlay with a hic_matrix_square
+# The last display option do not expect overlapping feature:
+# `deletions` display a line on the plotted region (color can be controlled by color_backbone)
+# and a V shape breaking the line for each region in bed (color can be controled by color)
+# Labels can be displayed on bottom centered on the region
 # optional. If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
@@ -225,8 +229,12 @@ file_type = {TRACK_TYPE}
         # (for example, TADsTracks do not have color_utr nor color_backbone)
         for param in [p for p in ['border_color', 'color_utr', 'color_backbone', 'color_arrow']
                       if p in self.properties]:
-            is_colormap = self.process_color(param, colormap_possible=True,
-                                             bed_rgb_possible=True)
+            if param == 'color_backbone' and self.properties['display'] == 'deletions':
+                is_colormap = self.process_color(param, colormap_possible=False,
+                                                 bed_rgb_possible=False)
+            else:
+                is_colormap = self.process_color(param, colormap_possible=True,
+                                                 bed_rgb_possible=True)
             if is_colormap:
                 if self.colormap is None:
                     self.colormap = self.properties[param]
@@ -409,6 +417,8 @@ file_type = {TRACK_TYPE}
         elif self.properties['display'] == 'squares':
             self.plot_squares(ax, genes_overlap)
             ax.set_ylim(end_region, start_region)
+        elif self.properties['display'] == 'deletions':
+            self.plot_deletions(ax, genes_overlap, start_region, end_region)
         else:
             self.counter = 0
             self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
@@ -1165,6 +1175,74 @@ file_type = {TRACK_TYPE}
 
         if valid_regions == 0:
             self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
+
+    def plot_deletions(self, ax, genes_overlap, start_region, end_region):
+        """
+        Plots the regions as:
+        _____________  ____________
+                     \/
+                    label
+        """
+        valid_regions = 0
+        back_bone = []
+        last_plotted = start_region
+        y1 = 1
+        y2 = 0
+        y3 = -0.5
+        min_y = y2
+        for region in genes_overlap:
+            """
+               x1 x2 x3
+            _____________________
+               "      "_____ y1
+                "    "
+                 "  "
+                  ""
+                   ______ y2
+                   _______y3
+                 label
+                   -------y4
+
+            """
+            x1 = region.begin
+            x2 = x1 + float(region.end - region.begin) / 2
+            x3 = region.end
+
+            # Update info for back bone:
+            if x1 > last_plotted:
+                back_bone.append([last_plotted, x1])
+            last_plotted = x3
+
+            rgb = self.get_rgb(region.data)
+
+            ax.add_line(Line2D([x1, x2, x3], [y1, y2, y1], color=rgb,
+                               linewidth=self.properties['line_width']))
+
+            # Add label if needed:
+            if self.properties['labels']:
+                txt = ax.text(x2, y3, region.data.name,
+                              horizontalalignment='center',
+                              verticalalignment='top',
+                              fontproperties=self.fp,
+                              fontstyle=self.properties['fontstyle'],
+                              wrap=True)
+                r = ax.get_figure().canvas.get_renderer()
+                y4 = txt.get_window_extent(renderer=r).transformed(ax.transData.inverted()).y0
+                if y4 < min_y:
+                    min_y = y4
+            valid_regions += 1
+
+        # Update info for back bone:
+        if x3 < end_region:
+            back_bone.append([x3, end_region])
+        # Plot the backbone:
+        for chunk_start, chunk_end in back_bone:
+            ax.plot([chunk_start, chunk_end], [y1, y1], color=self.properties['color_backbone'],
+                    linewidth=self.properties['line_width'])
+        if valid_regions == 0:
+            self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
+        # Set ylim:
+        ax.set_ylim(min_y - 0.05, ax.get_ylim()[1])
 
     def _plot_small_arrow(self, ax, xpos, ypos_top, ypos_bottom, strand, bed):
         """
