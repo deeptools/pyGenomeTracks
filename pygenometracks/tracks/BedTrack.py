@@ -49,7 +49,7 @@ color = darkblue
 # Default is 'stacked' where regions are plotted on different lines so
 # we can see all regions and all labels.
 # The other options are ['collapsed', 'interleaved', 'triangles', 'squares', 'deletions']
-# These 2 options assume that the regions do not overlap.
+# These 2 options assume that the regions do not overlap:
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
 # If the bed file contains the exon
