@@ -842,7 +842,7 @@ file_type = {TRACK_TYPE}
             return [(bed.start, bed.end, 'coding')]
         if self.bed_type != 'bed12':
             block_count = 1
-            block_starts = [bed.start]
+            block_starts = [0]
             block_sizes = [bed.end - bed.start]
         else:
             block_count = bed.block_count
@@ -893,7 +893,7 @@ file_type = {TRACK_TYPE}
         """
         if self.bed_type != 'bed12':
             block_count = 1
-            block_starts = [bed.start]
+            block_starts = [0]
             block_sizes = [bed.end - bed.start]
         else:
             block_count = bed.block_count
