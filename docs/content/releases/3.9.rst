@@ -4,7 +4,8 @@
 Enhancement:
 ^^^^^^^^^^^^
 
-- New style to display bed: exonarrows which displays arrows with orientation in the exons.
+- New style to display bed: ``exonarrows`` which displays arrows with orientation in the exons.
+- For the UCSC stlyle, the color of arrows on introns in customable
 
 Bugfix:
 ^^^^^^^
