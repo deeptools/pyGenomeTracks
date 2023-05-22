@@ -28,7 +28,7 @@ Optional:
 
 - **style**: `flybase` (default) or UCSC, tssarrow or exonarrows.
 
-- **display**: `stacked` (default) or collapsed, triangles or interleaved.
+- **display**: `stacked` (default) or collapsed, triangles, interleaved, squares or deletions.
 
 - **max_labels**: `60` (default) or any integer above 0
 
