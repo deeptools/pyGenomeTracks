@@ -1179,8 +1179,9 @@ file_type = {TRACK_TYPE}
     def plot_deletions(self, ax, genes_overlap, start_region, end_region):
         """
         Plots the regions as:
-        _____________  ____________
-                     \/
+        _____________   ____________
+                     " "
+                      "
                     label
         """
         valid_regions = 0
