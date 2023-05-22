@@ -4,8 +4,10 @@
 Enhancement:
 ^^^^^^^^^^^^
 
+- New display for bed: ``deletions`` which is helpful when you need to show a deletion with precise coordinates.
 - New style to display bed: ``exonarrows`` which displays arrows with orientation in the exons.
 - For the UCSC stlyle, the color of arrows on introns in customable
+- Do not hesistate to check the updated documentation: `here <https://pygenometracks.readthedocs.io/en/latest/content/examples.html#examples-with-bed-and-gtf>`_
 
 Bugfix:
 ^^^^^^^
