@@ -18,6 +18,8 @@ DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
 AROUND_REGION = 100000
 
+EPSILON = 0.08
+
 
 class BedTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['bed', 'bed3', 'bed4', 'bed5', 'bed6', 'bed8',
@@ -401,13 +403,16 @@ file_type = {TRACK_TYPE}
             chrom_region_before = chrom_region
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
-                self.log.warning("*Warning*\nNo interval was found when "
-                                 "overlapping with both "
-                                 f"{chrom_region_before}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
-                                 f" and {chrom_region}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
-                                 " inside the bed file. "
-                                 "This will generate an empty track!!\n")
-                return
+                if self.properties['display'] != 'deletions':
+                    self.log.warning("*Warning*\nNo interval was found when "
+                                     "overlapping with both "
+                                     f"{chrom_region_before}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                     f" and {chrom_region}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                     " inside the bed file. "
+                                     "This will generate an empty track!!\n")
+                    return
+                else:
+                    self.interval_tree[chrom_region] = IntervalTree()
 
         genes_overlap = \
             sorted(self.interval_tree[chrom_region][start_region:end_region])
@@ -626,8 +631,7 @@ file_type = {TRACK_TYPE}
                                  " for the interval plotted"
                                  f" ({chrom_region}:{start_region}-{end_region}).\n")
 
-            epsilon = 0.08
-            ymax = - epsilon
+            ymax = - EPSILON
 
             # We set ymin and ymax to have genes centered epsilon from the border
 
@@ -637,20 +641,22 @@ file_type = {TRACK_TYPE}
             elif self.properties['gene_rows'] is not None:
                 max_ypos = self.properties['gene_rows'] * self.row_scale
 
-            ymin = max_ypos + (1 + epsilon)
+            ymin = max_ypos + (1 + EPSILON)
 
             self.log.debug(f"ylim {ymin},{ymax}")
             # the axis is inverted (thus, ymax < ymin)
             ax.set_ylim(ymin, ymax)
 
             if self.properties['display'] == 'interleaved':
-                ax.set_ylim(2 + epsilon, ymax)
+                ax.set_ylim(2 + EPSILON, ymax)
             elif self.properties['display'] == 'collapsed':
-                ax.set_ylim(1 + epsilon, ymax)
+                ax.set_ylim(1 + EPSILON, ymax)
 
         if self.properties['orientation'] == 'inverted':
             ylims = ax.get_ylim()
             ax.set_ylim(ylims[1], ylims[0])
+
+        self.log.debug(f"ylim {ax.get_ylim()}")
 
     def plot_label(self, label_ax, width_dpi, h_align='left'):
         if h_align == 'left':
@@ -1183,14 +1189,20 @@ file_type = {TRACK_TYPE}
                      " "
                       "
                     label
+        genes_overlap can be empty, then it plots
+        _____________________________
         """
         valid_regions = 0
         back_bone = []
         last_plotted = start_region
-        y1 = 1
-        y2 = 0
-        y3 = -0.5
+        y1 = 0.5
+        y2 = -0.5
+        y3 = -1
         min_y = y2
+        x1 = start_region
+        x2 = start_region
+        x3 = start_region
+
         for region in genes_overlap:
             """
                x1 x2 x3
@@ -1242,8 +1254,8 @@ file_type = {TRACK_TYPE}
                     linewidth=self.properties['line_width'])
         if valid_regions == 0:
             self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
-        # Set ylim:
-        ax.set_ylim(min_y - 0.05, ax.get_ylim()[1])
+        # Set ylim (to be compatible with collapsed genes):
+        ax.set_ylim(min_y - 0.05, 1 + EPSILON)
 
     def _plot_small_arrow(self, ax, xpos, ypos_top, ypos_bottom, strand, bed):
         """

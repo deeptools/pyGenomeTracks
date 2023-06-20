@@ -1030,6 +1030,19 @@ color = red
 labels = false
 height = 1
 
+[spacer]
+
+[empty deletion]
+file = empty.bed
+display = deletions
+height = 1
+title = no deletion ovelayed with genes
+
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+overlay_previous = share-y
+display = collapsed
+
 [x-axis]
 """
 with open(os.path.join(ROOT, "bed_deletions.ini"), 'w') as fh:
