@@ -32,7 +32,7 @@ Optional:
 
 - **style**: `flybase` (default) or UCSC, tssarrow or exonarrows.
 
-- **display**: `stacked` (default) or collapsed, triangles, interleaved, squares or deletions.
+- **display**: `stacked` (default) or collapsed, triangles, interleaved, squares, deletions or inversions.
 
 - **max_labels**: `60` (default) or any integer above 0
 

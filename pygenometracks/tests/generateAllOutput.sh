@@ -27,6 +27,8 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/bed_inverted.ini --region chrX
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_exonarrows_tracks.ini --region X:3000000-3300000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_exonarrows.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_deletions.ini --region chr1:0-500000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_deletions.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_deletions.ini --region chr1:0-210000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_deletions_zoom.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bed_inversions.ini --region chr1:0-500000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_inversions.png
+bin/pgt --tracks ./pygenometracks/tests/test_data/bed_inversions.ini --region chr1:0-210000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_inversions_zoom.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/bed_displays.ini --region chrX:960000-1170000 --trackLabelFraction 0.2 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_bed_displays.png
 
 # non_classical_bed
