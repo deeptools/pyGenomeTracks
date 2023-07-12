@@ -210,7 +210,7 @@ file_type = {TRACK_TYPE}
         for idx, interval in enumerate(arcs_in_region):
             if self.properties['links_type'] == 'squares':
                 plotting_sides = {'as_in_data': False, 'mirrored': False}
-                start1, end1, start2, end2, _ = interval.data
+                start1, end1, start2, end2, _, _ = interval.data
                 if self.properties['region2'] is None:
                     temp_region2 = [chrom_region, region_start, region_end]
                 else:
