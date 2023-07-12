@@ -107,6 +107,72 @@ with open(os.path.join(ROOT, "short_long_arcs_incorrect2.ini"), 'w') as fh:
     fh.write(browser_tracks.replace('compact_arcs_level = 2', 'compact_arcs_level = 2\nregion2=chrX:0-10'))
 
 browser_tracks = """
+[arcs]
+title = default
+file = short_long.arcs
+color = bwr
+height = 5
+plot_arrows = true
+
+[spacer]
+
+[arcs]
+file = short_long.arcs
+color = bwr
+height = 5
+title = ylim = 6000000 (6Mb)
+ylim = 6000000
+plot_arrows = true
+
+[spacer]
+
+[arcs]
+file = short_long.arcs
+color = bwr
+height = 5
+title = ylim = 200000 (200kb)
+ylim = 200000
+plot_arrows = true
+
+[spacer]
+
+[arcs]
+title = compact_arcs_level = 1
+file = short_long.arcs
+color = bwr
+height = 5
+compact_arcs_level = 1
+plot_arrows = true
+
+[spacer]
+
+[arcs]
+title = compact_arcs_level = 1 ylim = 6000000 (6Mb)
+ylim = 6000000
+file = short_long.arcs
+color = bwr
+height = 5
+compact_arcs_level = 1
+plot_arrows = true
+
+[spacer]
+
+[arcs]
+title = compact_arcs_level = 2 line_style = dashed
+file = short_long.arcs
+color = bwr
+height = 5
+compact_arcs_level = 2
+plot_arrows = true
+line_style = dashed
+
+[x-axis]
+where = bottom
+"""
+with open(os.path.join(ROOT, "short_long_arcs_plot_arrows.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
 [x-axis]
 where = top
 
@@ -380,6 +446,24 @@ def test_short_long_arcs():
         # Remove incorrect ini file
         if 'incorrect' in ini_file:
             os.remove(ini_file)
+
+
+def test_use_plot_arrows():
+
+    outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "short_long_arcs_plot_arrows.ini")
+    region = "chr11:40000000-46000000"
+    expected_file = os.path.join(ROOT, 'master_short_long_arcs_plot_arrows.png')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
 
 
 def test_use_middle_arcs():
