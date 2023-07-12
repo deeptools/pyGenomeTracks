@@ -3,7 +3,8 @@ from pygenometracks.utilities import InputError
 from intervaltree import IntervalTree, Interval
 import matplotlib
 import numpy as np
-from matplotlib.patches import Arc, Polygon
+import math
+from matplotlib.patches import Arc, Polygon, FancyArrowPatch
 from .. utilities import opener, to_string, change_chrom_names, temp_file_from_intersect, get_region
 from tqdm import tqdm
 
@@ -66,6 +67,10 @@ line_style = solid
 # The unit is bp. This corresponds to the longest arc you will see.
 # This option is incompatible with compact_arcs_level = 2
 #ylim = 100000
+# You can add arrows on your arcs to indicate orientation
+#plot_arrows = true
+# You can adjust the size of arrowhead by playing with mutation_scale
+#mutation_scale = 20
 file_type = {TRACK_TYPE}
     """
     DEFAULTS_PROPERTIES = {'links_type': 'arcs',
@@ -80,7 +85,9 @@ file_type = {TRACK_TYPE}
                            'ylim': None,
                            'compact_arcs_level': '0',
                            'use_middle': False,
-                           'region2': None}
+                           'region2': None,
+                           'plot_arrows': False,
+                           'mutation_scale': 20}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
@@ -90,7 +97,7 @@ file_type = {TRACK_TYPE}
                            'line_style': ['solid', 'dashed',
                                           'dotted', 'dashdot'],
                            'compact_arcs_level': ['0', '1', '2']}
-    BOOLEAN_PROPERTIES = ['use_middle']
+    BOOLEAN_PROPERTIES = ['use_middle', 'plot_arrows']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',
                          'orientation', 'links_type', 'line_style',
                          'title', 'color', 'compact_arcs_level',
@@ -100,7 +107,8 @@ file_type = {TRACK_TYPE}
                         'ylim': [0, np.inf],
                         'alpha': [0, 1],
                         'line_width': [0, np.inf],
-                        'height': [0, np.inf]}
+                        'height': [0, np.inf],
+                        'mutation_scale': [0, np.inf]}
     INTEGER_PROPERTIES = {}
     # The color can be a color or a colormap (if there is a score)
 
@@ -202,7 +210,7 @@ file_type = {TRACK_TYPE}
         for idx, interval in enumerate(arcs_in_region):
             if self.properties['links_type'] == 'squares':
                 plotting_sides = {'as_in_data': False, 'mirrored': False}
-                start1, end1, start2, end2, _ = interval.data
+                start1, end1, start2, end2, _, _ = interval.data
                 if self.properties['region2'] is None:
                     temp_region2 = [chrom_region, region_start, region_end]
                 else:
@@ -298,10 +306,44 @@ file_type = {TRACK_TYPE}
             rgb = self.colormap.to_rgba(interval.data[4])
         else:
             rgb = self.properties['color']
-        ax.add_patch(Arc((center, 0), width,
-                         2 * half_height, 0, 0, 180, color=rgb,
-                         linewidth=self.current_line_width,
-                         ls=self.properties['line_style']))
+        if not self.properties['plot_arrows']:
+            ax.add_patch(Arc((center, 0), width,
+                             2 * half_height, 0, 0, 180, color=rgb,
+                             linewidth=self.current_line_width,
+                             ls=self.properties['line_style']))
+        else:
+            is_flipped = interval.data[5]
+            angle_in_rad = 0.01
+            rel_A_point = (width / 2 * math.cos(angle_in_rad),
+                           half_height * math.sin(angle_in_rad))
+            angle_on_ellipse_in_rad = math.atan(rel_A_point[1] / rel_A_point[0])
+            if is_flipped:
+                ax.add_patch(Arc((center, 0), width,
+                                 2 * half_height, 0, 0,
+                                 180 - math.degrees(angle_on_ellipse_in_rad),
+                                 color=rgb,
+                                 linewidth=self.current_line_width,
+                                 ls=self.properties['line_style']))
+                ax.add_patch(FancyArrowPatch(posA=(center - rel_A_point[0], rel_A_point[1]),
+                                             posB=(interval.begin, 0),
+                                             arrowstyle='simple,tail_width=0',
+                                             mutation_scale=self.properties['mutation_scale'],
+                                             color=rgb, connectionstyle=f'arc3,rad={angle_in_rad * 0.2}',
+                                             linewidth=self.current_line_width / 2,
+                                             ls=self.properties['line_style']))
+            else:
+                ax.add_patch(Arc((center, 0), width,
+                                 2 * half_height, 0, math.degrees(angle_on_ellipse_in_rad),
+                                 180, color=rgb,
+                                 linewidth=self.current_line_width,
+                                 ls=self.properties['line_style']))
+                ax.add_patch(FancyArrowPatch(posA=(center + rel_A_point[0], rel_A_point[1]),
+                                             posB=(interval.end, 0),
+                                             arrowstyle='simple,tail_width=0',
+                                             mutation_scale=self.properties['mutation_scale'],
+                                             color=rgb, connectionstyle=f'arc3,rad=-{angle_in_rad * 0.2}',
+                                             linewidth=self.current_line_width / 2,
+                                             ls=self.properties['line_style']))
 
     def plot_triangles(self, ax, interval):
         x1 = interval.begin
@@ -499,23 +541,25 @@ file_type = {TRACK_TYPE}
 
             if chrom1 not in interval_tree:
                 interval_tree[chrom1] = IntervalTree()
+            is_flipped = False
             if start2 < start1 and not is_trans:
+                is_flipped = True
                 start1, start2 = start2, start1
                 end1, end2 = end2, end1
             if self.properties['use_middle']:
                 mid1 = (start1 + end1) / 2
                 mid2 = (start2 + end2) / 2
                 if mid1 < mid2:
-                    interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score]))
+                    interval_tree[chrom1].add(Interval(mid1, mid2, [start1, end1, start2, end2, score, is_flipped]))
                 else:
-                    interval_tree[chrom1].add(Interval(mid2, mid1, [start2, end2, start1, end1, score]))
+                    interval_tree[chrom1].add(Interval(mid2, mid1, [start2, end2, start1, end1, score, is_flipped]))
             else:
                 if not is_trans:
                     # each interval spans from the smallest start to the largest end
-                    interval_tree[chrom1].add(Interval(start1, max(end1, end2), [start1, end1, start2, end2, score]))
+                    interval_tree[chrom1].add(Interval(start1, max(end1, end2), [start1, end1, start2, end2, score, is_flipped]))
                 else:
                     # For the trans we keep start1 and end1
-                    interval_tree[chrom1].add(Interval(start1, end1, [start1, end1, start2, end2, score]))
+                    interval_tree[chrom1].add(Interval(start1, end1, [start1, end1, start2, end2, score, is_flipped]))
             valid_intervals += 1
 
         if valid_intervals == 0:
