@@ -418,8 +418,6 @@ file_type = {TRACK_TYPE}
         genes_overlap = \
             sorted(self.interval_tree[chrom_region][start_region:end_region])
 
-        self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
-
         if self.properties['display'] == 'triangles':
             self.plot_triangles(ax, genes_overlap)
         elif self.properties['display'] == 'squares':
@@ -428,9 +426,11 @@ file_type = {TRACK_TYPE}
         elif self.properties['display'] == 'deletions':
             self.plot_deletions(ax, genes_overlap, start_region, end_region)
         elif self.properties['display'] == 'inversions':
+            self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
             self.plot_inversions(ax, genes_overlap, start_region, end_region)
         else:
             self.counter = 0
+            self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
             if self.properties['labels']:
                 self.current_len_w = get_length_w(ax.get_figure().get_figwidth(),
                                                   start_region, end_region,
