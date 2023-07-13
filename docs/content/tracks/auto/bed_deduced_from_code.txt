@@ -30,9 +30,9 @@ Optional:
 
 - **labels**: `true` (default) or false.
 
-- **style**: `flybase` (default) or UCSC or tssarrow.
+- **style**: `flybase` (default) or UCSC, tssarrow or exonarrows.
 
-- **display**: `stacked` (default) or collapsed, triangles, interleaved or squares.
+- **display**: `stacked` (default) or collapsed, triangles, interleaved, squares, deletions or inversions.
 
 - **max_labels**: `60` (default) or any integer above 0
 
@@ -56,9 +56,13 @@ Optional:
 
 - **arrow_length**: by default this option is not set but you can also put: any integer above 0
 
+- **height_intron**: `0.5` (default) or any float above 0 below 1
+
 - **all_labels_inside**: `false` (default) or true.
 
 - **labels_in_margin**: `false` (default) or true.
 
 - **fontstyle**: `normal` (default) or italic or oblique.
+
+- **color_arrow**: `black` (default)
 
