@@ -34,7 +34,7 @@
 
 - **style**:
 
-  - for *bed, gtf*: flybase, UCSC, tssarrow
+  - for *bed, gtf*: flybase, UCSC, tssarrow, exonarrows
 
 - **display**:
 
