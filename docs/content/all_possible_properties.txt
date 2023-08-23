@@ -34,13 +34,11 @@
 
 - **style**:
 
-  - for *bed, gtf*: flybase, UCSC, tssarrow
+  - for *bed, gtf*: flybase, UCSC, tssarrow, exonarrows
 
 - **display**:
 
-  - for *bed*: collapsed, triangles, interleaved, stacked, squares
-
-  - for *gtf*: collapsed, triangles, interleaved, stacked
+  - for *bed, gtf*: collapsed, triangles, interleaved, stacked, squares, deletions
 
 - **fontstyle**:
 
