@@ -58,7 +58,7 @@ show_data_range = true
 # 'log10': transformed_values = log10(log_pseudocount + initial_values)
 # '-log': transformed_values = - log(log_pseudocount + initial_values)
 # For example:
-#tranform = log
+#transform = log
 #log_pseudocount = 2
 # When a transformation is applied, by default the y axis
 # gives the transformed values, if you prefer to see

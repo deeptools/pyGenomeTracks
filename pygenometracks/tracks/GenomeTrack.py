@@ -82,7 +82,7 @@ height = 2
                 self.properties[prop] = default_value
 
     def plot_y_axis(self, ax, plot_axis, transform='no', log_pseudocount=0,
-                    y_axis='tranformed', only_at_ticks=False):
+                    y_axis='transformed', only_at_ticks=False):
         """
         Plot the scale of the y axis with respect to the plot_axis
         Args:
@@ -90,7 +90,7 @@ height = 2
             plot_axis: the reference axis to get the max and min.
             transform: what was the transformation of the data
             log_pseudocount:
-            y_axis: 'tranformed' or 'original'
+            y_axis: 'transformed' or 'original'
             only_at_ticks: False: only min_max are diplayed
                            True: only ticks values are displayed
 
