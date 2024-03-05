@@ -64,6 +64,29 @@ You can also overlay bigwig with or without transparency.
 
 .. image:: ../../pygenometracks/tests/test_data/master_alpha.png
 
+Demo examples
+-------------
+
+These two examples try to cover all file types covered by pyGenomeTracks:
+
+The first one display a relatively large region. The ini file is available `here<https://github.com/deeptools/pyGenomeTracks/blob/master/pygenometracks/tests/test_data/demo.ini>`_.
+
+.. code:: bash
+
+    $ pyGenomeTracks --tracks demo.ini --region chrX:3000000-3500000 -o demo.png
+
+.. image:: ../../pygenometracks/tests/test_data/demo.png
+
+
+The second one display a relatively small region and uses vlines and vhighlight. The ini file is available `here<https://github.com/deeptools/pyGenomeTracks/blob/master/pygenometracks/tests/test_data/demo2.ini>`_.
+
+.. code:: bash
+
+    $ pyGenomeTracks --tracks demo2.ini --region chrX:3320000-3370000 -o demo2.png
+
+.. image:: ../../pygenometracks/tests/test_data/demo2.png
+
+
 Examples with bed and gtf
 -------------------------
 Here is an example to explain the parameters for bed and gtf:
