@@ -21,6 +21,10 @@ from pygenometracks.utilities import InputError
 import warnings
 
 matplotlib.use('Agg')
+# To be able to use pdf and ps in illustrator
+# see https://jonathansoma.com/lede/data-studio/matplotlib/exporting-from-matplotlib-to-open-in-adobe-illustrator/
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ndarray size changed")
