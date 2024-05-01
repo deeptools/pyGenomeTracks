@@ -1,0 +1,4 @@
+3.9
+===
+
+This version drops support for python 3.7.
