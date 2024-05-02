@@ -2,7 +2,7 @@
 
 source $(dirname $(dirname $(which conda)))/etc/profile.d/conda.sh
 
-for TRAVIS_PYTHON_VERSION in 3.8 3.9; do
+for TRAVIS_PYTHON_VERSION in 3.8 3.9 3.10; do
     for dir in $(find . -name "__pycache__"); do
         rm -r $dir
     done
@@ -20,7 +20,7 @@ for TRAVIS_PYTHON_VERSION in 3.8 3.9; do
     conda deactivate
 done
 
-TRAVIS_PYTHON_VERSION=3.10
+TRAVIS_PYTHON_VERSION=3.11
 conda create -n pgt_test_${TRAVIS_PYTHON_VERSION} --yes -c bioconda -c conda-forge python=$TRAVIS_PYTHON_VERSION
 conda activate pgt_test_${TRAVIS_PYTHON_VERSION}
 conda install --yes -c conda-forge -c bioconda bedtools
