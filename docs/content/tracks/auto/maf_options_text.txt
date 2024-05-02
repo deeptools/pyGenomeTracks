@@ -34,6 +34,8 @@ height = 2
 #species_order_only = true
 # optional if you want to see the DNA sequence of the ref
 #display_ref_seq = true
+# You can choose to rasterize the block part of the maf by using:
+#rasterize = true
 # optional: If not given is guessed from the file ending.
 file_type = maf
     

@@ -74,9 +74,10 @@ browser_tracks = """
 file = first.maf
 file_index = first.maf.hg19.index
 reference = hg19
-title = display_ref_seq = true
+title = display_ref_seq = true rasterize = true
 display_ref_seq = true
 height = 3
+rasterize = true
 
 [x-axis]
 """
@@ -310,3 +311,21 @@ def test_second_maf_withe():
         os.remove(outfile.name)
     # Remove the index file:
     os.remove(os.path.join(ROOT, 'mm10_chr2_isl2_lessspe.maf.index'))
+
+
+def test_first_maf_seq_hg19_pdf():
+    extension = '.pdf'
+
+    outfile = NamedTemporaryFile(suffix=extension, prefix='pyGenomeTracks_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "first_maf_seq_hg19.ini")
+    region = "9:128093930-128093970"
+    expected_file = os.path.join(ROOT, 'master_first_maf_seq_hg19.pdf')
+    args = f"--tracks {ini_file} --region {region} "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 10 "\
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, tolerance)
+    assert res is None, res
+    os.remove(outfile.name)
