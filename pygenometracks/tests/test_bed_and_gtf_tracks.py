@@ -523,12 +523,13 @@ line_width = 2
 [genes 2bix]
 file = hoxd_genes_rgb.bed.gz
 height = 7
-title = same but color_arrow = white
+title = same but color_arrow = white border_color = none
 style = exonarrows
 fontsize = 10
 color = bed_rgb
 color_utr = bed_rgb
 color_arrow = white
+border_color = none
 line_width = 2
 
 """
@@ -996,12 +997,13 @@ line_width = 2
 [test bed6 increase interval]
 file = dm3_genes.bed6.gz
 height = 7
-title = bed6 style = exonarrows increase space between arrows
+title = bed6 style = exonarrows increase space between arrows and border_color = none
 style = exonarrows
 fontsize = 10
 color_arrow = white
 line_width = 2
 arrow_interval = 10
+border_color = none
 """
 with open(os.path.join(ROOT, "bed_exonarrows_tracks.ini"), 'w') as fh:
     fh.write(browser_tracks)
