@@ -89,7 +89,16 @@ The second one display a relatively small region and uses vlines and vhighlight.
 
 Examples with bed and gtf
 -------------------------
-Here is an example to explain the parameters for bed and gtf:
+
+Here are all the possible 'display' options:
+
+.. image:: ../../pygenometracks/tests/test_data/master_bed_displays.png
+
+Here are all possible 'style' options (when display is collapsed, interleaved or stacked:
+
+.. image:: ../../pygenometracks/tests/test_data/master_different_UTR.png
+
+Here is an example to explain the parameters for bed and gtf in stacked display:
 
 .. literalinclude:: ../../pygenometracks/tests/test_data/bed_and_gtf_tracks.ini
     :language: INI
