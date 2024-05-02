@@ -19,3 +19,4 @@ Bugfix:
 ^^^^^^^
 
 - Fix the UTR/Coding of BED8/BED9.
+- Fix a typo in options help text of bedgraph and bigwig: `tranform` instead of `transform`.
