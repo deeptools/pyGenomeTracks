@@ -10,7 +10,7 @@ Enhancement:
 ^^^^^^^^^^^^
 
 - pyGenomeTracks now uses font type 42 for pdf and ps which helps modification with illustrator.
-- New display for bed: ``deletions`` which is helpful when you need to show a deletion with precise coordinates.
+- 2 new display for bed: ``deletions`` which is helpful when you need to show a deletion with precise coordinates and ``inversions`` which displays arrows.
 - New style to display bed: ``exonarrows`` which displays arrows with orientation in the exons.
 - For the UCSC stlyle, the color of arrows on introns in customable
 - Do not hesistate to check the updated documentation: `here <https://pygenometracks.readthedocs.io/en/latest/content/examples.html#examples-with-bed-and-gtf>`_

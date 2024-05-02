@@ -1,6 +1,6 @@
 - **overlay_previous**:
 
-  - for *x_axis, epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, hic_matrix_square, maf, scalebar, fasta, spacer*: no, yes, share-y
+  - for *x_axis, epilogos, links, domains, bed, gtf, narrow_peak, bigwig, bedgraph, bedgraph_matrix, hlines, hic_matrix, hic_matrix_square, maf, scalebar, spacer, fasta*: no, yes, share-y
 
 - **where**:
 
@@ -38,7 +38,7 @@
 
 - **display**:
 
-  - for *bed, gtf*: collapsed, triangles, interleaved, stacked, squares, deletions
+  - for *bed, gtf*: collapsed, triangles, interleaved, stacked, squares, deletions, inversions
 
 - **fontstyle**:
 

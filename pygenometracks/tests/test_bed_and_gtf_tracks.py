@@ -1053,6 +1053,65 @@ with open(os.path.join(ROOT, "bed_deletions.ini"), 'w') as fh:
 browser_tracks = """
 [genes]
 file = dm3_genes_withrgbandscore.bed.gz
+title = bed default
+height = 4
+
+[spacer]
+
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+title = bed display = inversions
+display = inversions
+height = 1
+
+[spacer]
+
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+title = bed display = inversions color = red labels = false
+display = inversions
+color = red
+labels = false
+height = 1
+
+[spacer]
+
+[inversion]
+file = dm3_genes_withrgbandscore.bed.gz
+display = inversions
+color = red
+labels = false
+height = 1
+title = inversions overlayed with genes
+
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+overlay_previous = share-y
+display = collapsed
+
+[spacer]
+
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+display = collapsed
+height = 1
+title = genes overlayed with inversions
+
+[inversion]
+file = dm3_genes_withrgbandscore.bed.gz
+overlay_previous = share-y
+display = inversions
+color = red
+labels = false
+
+[x-axis]
+"""
+with open(os.path.join(ROOT, "bed_inversions.ini"), 'w') as fh:
+    fh.write(browser_tracks)
+
+browser_tracks = """
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
 title = bed display = collapsed
 display = collapsed
 height = 4
@@ -1095,6 +1154,14 @@ height = 4
 file = dm3_genes_withrgbandscore.bed.gz
 title = bed display = deletions
 display = deletions
+height = 1
+
+[spacer]
+
+[genes]
+file = dm3_genes_withrgbandscore.bed.gz
+title = bed display = inversions
+display = inversions
 height = 1
 
 [x-axis]
@@ -1669,6 +1736,27 @@ def test_plot_tracks_bed_deletions():
     ini_file = os.path.join(ROOT, "bed_deletions.ini")
     for region, expected_basename_file in [("chr1:0-500000", "master_bed_deletions"),
                                            ("chr1:0-210000", "master_bed_deletions_zoom")]:
+        outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
+                                     delete=False)
+        args = f"--tracks {ini_file} --region {region} "\
+            "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+            f"--outFileName {outfile.name}".split()
+        pygenometracks.plotTracks.main(args)
+        output_file = outfile.name
+        expected_file = os.path.join(ROOT, expected_basename_file
+                                     + extension)
+        res = compare_images(expected_file,
+                             output_file, tolerance)
+        assert res is None, res
+
+        os.remove(output_file)
+
+
+def test_plot_tracks_bed_inversions():
+    extension = '.png'
+    ini_file = os.path.join(ROOT, "bed_inversions.ini")
+    for region, expected_basename_file in [("chr1:0-500000", "master_bed_inversions"),
+                                           ("chr1:0-210000", "master_bed_inversions_zoom")]:
         outfile = NamedTemporaryFile(suffix='.png', prefix='pyGenomeTracks_test_',
                                      delete=False)
         args = f"--tracks {ini_file} --region {region} "\

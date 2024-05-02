@@ -6,14 +6,14 @@ from .. readGtf import ReadGtf
 from .. utilities import opener, get_length_w, count_lines, temp_file_from_intersect, change_chrom_names, InputError
 import matplotlib
 from matplotlib import font_manager
-from matplotlib.patches import Rectangle, Polygon
+from matplotlib.patches import Rectangle, Polygon, FancyArrowPatch
 from matplotlib.lines import Line2D
 from intervaltree import IntervalTree, Interval
 import numpy as np
 from tqdm import tqdm
 
 DEFAULT_BED_COLOR = '#1f78b4'
-DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked', 'squares', 'deletions']
+DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked', 'squares', 'deletions', 'inversions']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
 AROUND_REGION = 100000
@@ -50,7 +50,7 @@ color = darkblue
 # the display parameter defines how the bed file is plotted.
 # Default is 'stacked' where regions are plotted on different lines so
 # we can see all regions and all labels.
-# The other options are ['collapsed', 'interleaved', 'triangles', 'squares', 'deletions']
+# The other options are ['collapsed', 'interleaved', 'triangles', 'squares', 'deletions', 'inversions']
 # These 2 options assume that the regions do not overlap:
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
@@ -122,10 +122,11 @@ fontsize = 10
 # The two following display options are really different and no label can be display:
 # `triangles` display each region as a triangle, can be useful to overlay with a hic_matrix
 # `squares` display each region as a square along the diagonal, can be useful to overlay with a hic_matrix_square
-# The last display option do not expect overlapping feature:
+# The 2 last display options do not expect overlapping feature:
 # `deletions` display a line on the plotted region (color can be controlled by color_backbone)
 # and a V shape breaking the line for each region in bed (color can be controled by color)
-# Labels can be displayed on bottom centered on the region
+# `inversions` display 2 arrows around each region
+# For both, labels can be displayed on bottom centered on the region
 # optional. If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
@@ -424,6 +425,9 @@ file_type = {TRACK_TYPE}
             ax.set_ylim(end_region, start_region)
         elif self.properties['display'] == 'deletions':
             self.plot_deletions(ax, genes_overlap, start_region, end_region)
+        elif self.properties['display'] == 'inversions':
+            self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
+            self.plot_inversions(ax, genes_overlap, start_region, end_region)
         else:
             self.counter = 0
             self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
@@ -1256,6 +1260,66 @@ file_type = {TRACK_TYPE}
             self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
         # Set ylim (to be compatible with collapsed genes):
         ax.set_ylim(min_y - 0.05, 1 + EPSILON)
+
+    def plot_inversions(self, ax, genes_overlap, start_region, end_region):
+        """
+        Plots the regions as:
+      y0         ->
+                |
+      y1
+                            |
+      y2                  <-
+      y3
+                    label
+      y4
+        """
+        y0 = 1.5
+        y1 = 0.5
+        y2 = -0.5
+        y3 = -1
+        min_y = y2 - 0.5
+
+        for region in genes_overlap:
+            x1 = region.begin
+            x2 = x1 + 15 * self.current_small_relative
+            x3 = x1 + float(region.end - region.begin) / 2
+            x5 = region.end
+            x4 = x5 - 15 * self.current_small_relative
+
+            if x2 > x5:
+                x2 = x5
+                x4 = x1
+
+            rgb = self.get_rgb(region.data)
+
+            # Plot left arrow
+            ax.add_patch(FancyArrowPatch(posA=(x1, y1), posB=(x2, y0),
+                                         arrowstyle='simple,tail_width=0',
+                                         mutation_scale=20, color=rgb,
+                                         connectionstyle='angle3,angleA=90,angleB=180',
+                                         linewidth=self.properties['line_width']))
+            # Plot right arrow
+            ax.add_patch(FancyArrowPatch(posA=(x5, y1), posB=(x4, y2),
+                                         arrowstyle='simple,tail_width=0',
+                                         mutation_scale=20, color=rgb,
+                                         connectionstyle='angle3,angleA=-90,angleB=0',
+                                         linewidth=self.properties['line_width']))
+
+            # Add label if needed:
+            if self.properties['labels']:
+                txt = ax.text(x3, y3, region.data.name,
+                              horizontalalignment='center',
+                              verticalalignment='top',
+                              fontproperties=self.fp,
+                              fontstyle=self.properties['fontstyle'],
+                              wrap=True)
+                r = ax.get_figure().canvas.get_renderer()
+                y4 = txt.get_window_extent(renderer=r).transformed(ax.transData.inverted()).y0
+                if y4 < min_y:
+                    min_y = y4
+
+        # Set ylim:
+        ax.set_ylim(min_y - 0.05, 2 + EPSILON)
 
     def _plot_small_arrow(self, ax, xpos, ypos_top, ypos_bottom, strand, bed):
         """

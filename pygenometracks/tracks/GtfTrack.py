@@ -6,7 +6,7 @@ from .. utilities import temp_file_from_intersect
 import numpy as np
 
 DEFAULT_BED_COLOR = '#1f78b4'
-DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked', 'squares', 'deletions']
+DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked', 'squares', 'deletions', 'inversions']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
 AROUND_REGION = 100000
@@ -38,7 +38,7 @@ color = darkblue
 # the display parameter defines how the gtf file is plotted.
 # Default is 'stacked' where regions are plotted on different lines so
 # we can see all regions and all labels.
-# The other options are ['collapsed', 'interleaved', 'triangles', 'squares', 'deletions']
+# The other options are ['collapsed', 'interleaved', 'triangles', 'squares', 'deletions', 'inversions']
 # These 2 last options assume that the regions do not overlap:
 # `collapsed`: The gtf regions are plotted one after the other in one line.
 # `interleaved`: The gtf regions are plotted in two lines, first up, then down, then up etc.
@@ -107,10 +107,11 @@ fontsize = 10
 # The two following display options are really different and no label can be display:
 # `triangles` display each region as a triangle, can be useful to overlay with a hic_matrix
 # `squares` display each region as a square along the diagonal, can be useful to overlay with a hic_matrix_square
-# The last display option do not expect overlapping feature:
+# The 2 last display options do not expect overlapping feature:
 # `deletions` display a line on the plotted region (color can be controlled by color_backbone)
 # and a V shape breaking the line for each region in bed (color can be controled by color)
-# Labels can be displayed on bottom centered on the region
+# `inversions` display 2 arrows around each region
+# For both, labels can be displayed on bottom centered on the region
 # optional. If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
