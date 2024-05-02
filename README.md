@@ -45,12 +45,12 @@ Table of content
 Installation
 ------------
 
-pyGenomeTracks works with python >=3.7.
+pyGenomeTracks works with python >=3.8.
 
 The recommended way to install pyGenomeTracks is via conda
 
 ```bash
-conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks python=3.7
+conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks
 ```
 
 To get a specific version, one can specify it. For example:
@@ -63,7 +63,7 @@ However, we noticed that conda installation can be quite slow so using mamba can
 You first need to create the environment and install mamba:
 
 ```bash
-conda create -n pygenometracks -c bioconda -c conda-forge mamba python=3.7
+conda create -n pygenometracks -c bioconda -c conda-forge mamba python=3.9
 ```
 
 Then activate the environment and install pygenometracks with mamba:

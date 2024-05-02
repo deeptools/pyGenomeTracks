@@ -76,7 +76,7 @@ class FastaTrack(GenomeTrack):
                              " sequence length")
             end_region = len(self.seq[chrom_region])
 
-        if type(self.seq) == pyfaidx.Fasta:
+        if isinstance(self.seq, pyfaidx.Fasta):
             seq_overlap = self.seq[chrom_region][start_region:end_region].seq
         else:
             seq_overlap = self.seq[chrom_region][start_region:end_region]

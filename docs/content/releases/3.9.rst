@@ -1,8 +1,15 @@
 3.9
 ===
 
+Change:
+^^^^^^^
+
+This version drops support for python 3.7.
+
 Enhancement:
 ^^^^^^^^^^^^
+
+pyGenomeTracks now uses font type 42 for pdf and ps which helps modification with illustrator.
 
 Bugfix:
 ^^^^^^^
