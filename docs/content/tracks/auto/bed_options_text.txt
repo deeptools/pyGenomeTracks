@@ -43,6 +43,7 @@ color = darkblue
 #style = UCSC
 #style = flybase
 #style = tssarrow
+#style = exonarrows
 # maximum number of gene rows to be plotted. This
 # field is useful to limit large number of close genes
 # to be printed over many rows. When several images want
@@ -70,15 +71,18 @@ fontsize = 10
 #labels_in_margin = true
 # If you want to use italic for your labels:
 #fontstyle = italic
-# if you use UCSC style, you can set the relative distance between 2 arrows on introns
+# if you use UCSC or exonarrows style, you can set the relative distance between 2 arrows on introns/exons
 # default is 2
 #arrow_interval = 2
+# you can also choose the color of arrows
+# default is black
+#color_arrow = black
 # if you use tssarrow style, you can choose the length of the arrow in bp
 # (default is 4% of the plotted region)
 #arrow_length = 5000
-# if you use flybase or tssarrow style, you can choose the color of non-coding intervals:
+# if you use flybase, tssarrow or exonarrows style, you can choose the color of non-coding intervals:
 #color_utr = grey
-# as well as the proportion between their height and the one of coding
+# for flybase and tssarrow, you can choose the proportion between their height and the one of coding
 # (by default they are the same height):
 #height_utr = 1
 # if you use flybase or UCSC style, you can choose the color of the backbone
@@ -94,6 +98,9 @@ fontsize = 10
 # their labels.
 # To increase it:
 #arrowhead_fraction = 0.01
+# for exonarrows, you can choose the proportion between the height of the introns and the one of exon
+# (by default introns are half):
+#height_intron = 0.5
 # The two other display options are really different and no label can be display:
 # `triangles` display each region as a triangle, can be useful to overlay with a hic_matrix
 # `squares` display each region as a square along the diagonal, can be useful to overlay with a hic_matrix_square

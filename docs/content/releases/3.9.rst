@@ -9,7 +9,9 @@ This version drops support for python 3.7.
 Enhancement:
 ^^^^^^^^^^^^
 
-pyGenomeTracks now uses font type 42 for pdf and ps which helps modification with illustrator.
+- New style to display bed: ``exonarrows`` which displays arrows with orientation in the exons.
+- For the UCSC stlyle, the color of arrows on introns in customizable
+- pyGenomeTracks now uses font type 42 for pdf and ps which helps modification with illustrator.
 
 Bugfix:
 ^^^^^^^
