@@ -173,3 +173,7 @@ bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_small_test_square_bad_region2.ini --region chr1:0-200000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_small_test_square_bad_region2.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/browser_tracks_hic_inbetween.ini --BED ./pygenometracks/tests/test_data/chrY_regions.bed --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_hic_inbetween.png
 bin/pgt --tracks ./pygenometracks/tests/test_data/mcool_hic_matrix_square.ini --region X:2500000-3500000 --trackLabelFraction 0.23 --width 38 --dpi 130 -o ./pygenometracks/tests/test_data/master_mcool_hic_matrix_square.png
+
+# demo
+pgt --tracks ./pygenometracks/tests/test_data/demo2.ini --region chrX:3320000-3370000 -o ./pygenometracks/tests/test_data/demo2.png
+pgt --tracks ./pygenometracks/tests/test_data/demo.ini --region chrX:3000000-3500000 -o ./pygenometracks/tests/test_data/demo.png

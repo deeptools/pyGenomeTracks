@@ -1,11 +1,17 @@
 3.9
 ===
 
+Change:
+^^^^^^^
+
+This version drops support for python 3.7.
+
 Enhancement:
 ^^^^^^^^^^^^
 
 - New style to display bed: ``exonarrows`` which displays arrows with orientation in the exons.
 - For the UCSC stlyle, the color of arrows on introns in customable
+- pyGenomeTracks now uses font type 42 for pdf and ps which helps modification with illustrator.
 
 Bugfix:
 ^^^^^^^
