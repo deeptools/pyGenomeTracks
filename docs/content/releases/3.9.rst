@@ -10,3 +10,8 @@ Enhancement:
 ^^^^^^^^^^^^
 
 pyGenomeTracks now uses font type 42 for pdf and ps which helps modification with illustrator.
+
+Bugfix:
+^^^^^^^
+
+- Fix the UTR/Coding of BED8/BED9.
