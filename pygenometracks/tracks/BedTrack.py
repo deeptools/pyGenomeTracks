@@ -581,7 +581,7 @@ file_type = {TRACK_TYPE}
                                                   linewidth)
                 elif self.properties['style'] == 'exonarrows':
                     self.draw_gene_with_arrows_in_exons(ax, bed, ypos, rgb,
-                                                        linewidth)
+                                                        edgecolor, linewidth)
                 elif self.bed_type == 'bed6':
                     # Both would give the same output:
                     self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
@@ -982,6 +982,7 @@ file_type = {TRACK_TYPE}
             else:
                 vertices = ([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])
 
+            # Would be good to change edgecolor='none' to edgecolor=edgecolor...
             ax.add_patch(Polygon(vertices, closed=True, fill=True,
                                  linewidth=linewidth,
                                  edgecolor='none',
@@ -1062,12 +1063,12 @@ file_type = {TRACK_TYPE}
                                        linewidth=linewidth))
             last_corner = (end_pos, y0 - height, _rgb)
 
-    def draw_gene_with_arrows_in_exons(self, ax, bed, ypos, rgb, linewidth):
+    def draw_gene_with_arrows_in_exons(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
         Draw genes like this:
         ___________          ____________
         |          |________|            |
-        | >  >  >   ________   >  >  >   |
+        | >  >  >  |________|  >  >  >   |
         |__________|        |____________|
         """
 
@@ -1079,8 +1080,7 @@ file_type = {TRACK_TYPE}
         y_bottom_intron = ypos + 0.5 + height_intron / 2
         y_top_intron = ypos + 0.5 - height_intron / 2
 
-        # plot all blocks as rectangles like in the flybase mode but
-        # with no border
+        # plot all blocks as rectangles like in the flybase mode
         # as well as the junction between exons:
         last_exon_end = None
         for start_pos, end_pos, _type in positions:
@@ -1093,7 +1093,7 @@ file_type = {TRACK_TYPE}
                         (end_pos, ypos), (end_pos, y_bottom)]
 
             ax.add_patch(Polygon(vertices, closed=True, fill=True,
-                                 edgecolor="none",
+                                 edgecolor=edgecolor,
                                  facecolor=_rgb,
                                  linewidth=linewidth))
             # plot small arrows over the exon
@@ -1106,7 +1106,7 @@ file_type = {TRACK_TYPE}
                                 (start_pos, y_top_intron), (start_pos, y_bottom_intron)]
 
                     ax.add_patch(Polygon(vertices, closed=True, fill=True,
-                                         edgecolor="none",
+                                         edgecolor=edgecolor,
                                          facecolor=rgb,
                                          linewidth=linewidth))
 
