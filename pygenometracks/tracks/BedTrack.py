@@ -3,20 +3,22 @@ from .. readBed import ReadBed
 # To remove next 1.0
 from .. readGtf import ReadGtf
 # End to remove
-from .. utilities import opener, get_length_w, count_lines, temp_file_from_intersect, change_chrom_names
+from .. utilities import opener, get_length_w, count_lines, temp_file_from_intersect, change_chrom_names, InputError
 import matplotlib
 from matplotlib import font_manager
-from matplotlib.patches import Rectangle, Polygon
+from matplotlib.patches import Rectangle, Polygon, FancyArrowPatch
 from matplotlib.lines import Line2D
 from intervaltree import IntervalTree, Interval
 import numpy as np
 from tqdm import tqdm
 
 DEFAULT_BED_COLOR = '#1f78b4'
-DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked', 'squares']
+DISPLAY_BED_VALID = ['collapsed', 'triangles', 'interleaved', 'stacked', 'squares', 'deletions', 'inversions']
 DISPLAY_BED_SYNONYMOUS = {'interlaced': 'interleaved', 'domain': 'interleaved'}
 DEFAULT_DISPLAY_BED = 'stacked'
 AROUND_REGION = 100000
+
+EPSILON = 0.08
 
 
 class BedTrack(GenomeTrack):
@@ -48,8 +50,8 @@ color = darkblue
 # the display parameter defines how the bed file is plotted.
 # Default is 'stacked' where regions are plotted on different lines so
 # we can see all regions and all labels.
-# The other options are ['collapsed', 'interleaved', 'triangles', 'squares']
-# These 2 options assume that the regions do not overlap.
+# The other options are ['collapsed', 'interleaved', 'triangles', 'squares', 'deletions', 'inversions']
+# These 2 options assume that the regions do not overlap:
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
 # If the bed file contains the exon
@@ -59,6 +61,7 @@ color = darkblue
 #style = UCSC
 #style = flybase
 #style = tssarrow
+#style = exonarrows
 # maximum number of gene rows to be plotted. This
 # field is useful to limit large number of close genes
 # to be printed over many rows. When several images want
@@ -86,15 +89,18 @@ fontsize = 10
 #labels_in_margin = true
 # If you want to use italic for your labels:
 #fontstyle = italic
-# if you use UCSC style, you can set the relative distance between 2 arrows on introns
+# if you use UCSC or exonarrows style, you can set the relative distance between 2 arrows on introns/exons
 # default is 2
 #arrow_interval = 2
+# you can also choose the color of arrows
+# default is black
+#color_arrow = black
 # if you use tssarrow style, you can choose the length of the arrow in bp
 # (default is 4% of the plotted region)
 #arrow_length = 5000
-# if you use flybase or tssarrow style, you can choose the color of non-coding intervals:
+# if you use flybase, tssarrow or exonarrows style, you can choose the color of non-coding intervals:
 #color_utr = grey
-# as well as the proportion between their height and the one of coding
+# for flybase and tssarrow, you can choose the proportion between their height and the one of coding
 # (by default they are the same height):
 #height_utr = 1
 # if you use flybase or UCSC style, you can choose the color of the backbone
@@ -110,9 +116,17 @@ fontsize = 10
 # their labels.
 # To increase it:
 #arrowhead_fraction = 0.01
-# The two other display options are really different and no label can be display:
+# for exonarrows, you can choose the proportion between the height of the introns and the one of exon
+# (by default introns are half):
+#height_intron = 0.5
+# The two following display options are really different and no label can be display:
 # `triangles` display each region as a triangle, can be useful to overlay with a hic_matrix
 # `squares` display each region as a square along the diagonal, can be useful to overlay with a hic_matrix_square
+# The 2 last display options do not expect overlapping feature:
+# `deletions` display a line on the plotted region (color can be controlled by color_backbone)
+# and a V shape breaking the line for each region in bed (color can be controled by color)
+# `inversions` display 2 arrows around each region
+# For both, labels can be displayed on bottom centered on the region
 # optional. If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
@@ -143,15 +157,17 @@ file_type = {TRACK_TYPE}
                            'height_utr': 1,
                            'region': None,  # Cannot be set manually but is set by tracksClass
                            'arrow_length': None,
+                           'height_intron': 0.5,
                            'all_labels_inside': False,
                            'labels_in_margin': False,
-                           'fontstyle': 'normal'}
+                           'fontstyle': 'normal',
+                           'color_arrow': 'black'}
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
                              'min_value': {'auto': None},
                              'display': DISPLAY_BED_SYNONYMOUS}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
-                           'style': ['flybase', 'UCSC', 'tssarrow'],
+                           'style': ['flybase', 'UCSC', 'tssarrow', 'exonarrows'],
                            'display': DISPLAY_BED_VALID,
                            'fontstyle': ['normal', 'italic', 'oblique']}
     BOOLEAN_PROPERTIES = ['labels', 'global_max_row',
@@ -163,7 +179,7 @@ file_type = {TRACK_TYPE}
                          'overlay_previous', 'orientation',
                          'title', 'style', 'color', 'border_color',
                          'color_utr', 'display', 'fontstyle',
-                         'color_backbone',
+                         'color_backbone', 'color_arrow',
                          # To remove in next 1.0
                          'prefered_name']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
@@ -172,6 +188,7 @@ file_type = {TRACK_TYPE}
                         'line_width': [0, np.inf],
                         'height': [0, np.inf],
                         'height_utr': [0, 1],
+                        'height_intron': [0, 1],
                         'arrowhead_fraction': [0, np.inf]}
     INTEGER_PROPERTIES = {'gene_rows': [0, np.inf],
                           'max_labels': [0, np.inf],
@@ -213,10 +230,14 @@ file_type = {TRACK_TYPE}
         # check if border_color and color_utr and color_backbone are colors
         # if they are part of self.properties
         # (for example, TADsTracks do not have color_utr nor color_backbone)
-        for param in [p for p in ['border_color', 'color_utr', 'color_backbone']
+        for param in [p for p in ['border_color', 'color_utr', 'color_backbone', 'color_arrow']
                       if p in self.properties]:
-            is_colormap = self.process_color(param, colormap_possible=True,
-                                             bed_rgb_possible=True)
+            if param == 'color_backbone' and self.properties['display'] == 'deletions':
+                is_colormap = self.process_color(param, colormap_possible=False,
+                                                 bed_rgb_possible=False)
+            else:
+                is_colormap = self.process_color(param, colormap_possible=True,
+                                                 bed_rgb_possible=True)
             if is_colormap:
                 if self.colormap is None:
                     self.colormap = self.properties[param]
@@ -383,13 +404,16 @@ file_type = {TRACK_TYPE}
             chrom_region_before = chrom_region
             chrom_region = change_chrom_names(chrom_region)
             if chrom_region not in self.interval_tree.keys():
-                self.log.warning("*Warning*\nNo interval was found when "
-                                 "overlapping with both "
-                                 f"{chrom_region_before}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
-                                 f" and {chrom_region}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
-                                 " inside the bed file. "
-                                 "This will generate an empty track!!\n")
-                return
+                if self.properties['display'] != 'deletions':
+                    self.log.warning("*Warning*\nNo interval was found when "
+                                     "overlapping with both "
+                                     f"{chrom_region_before}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                     f" and {chrom_region}:{start_region - AROUND_REGION}-{end_region + AROUND_REGION}"
+                                     " inside the bed file. "
+                                     "This will generate an empty track!!\n")
+                    return
+                else:
+                    self.interval_tree[chrom_region] = IntervalTree()
 
         genes_overlap = \
             sorted(self.interval_tree[chrom_region][start_region:end_region])
@@ -399,6 +423,11 @@ file_type = {TRACK_TYPE}
         elif self.properties['display'] == 'squares':
             self.plot_squares(ax, genes_overlap)
             ax.set_ylim(end_region, start_region)
+        elif self.properties['display'] == 'deletions':
+            self.plot_deletions(ax, genes_overlap, start_region, end_region)
+        elif self.properties['display'] == 'inversions':
+            self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
+            self.plot_inversions(ax, genes_overlap, start_region, end_region)
         else:
             self.counter = 0
             self.current_small_relative = self.properties['arrowhead_fraction'] * (end_region - start_region)
@@ -554,16 +583,21 @@ file_type = {TRACK_TYPE}
                 if self.properties['style'] == 'tssarrow':
                     self.draw_gene_tssarrow_style(ax, bed, ypos, rgb,
                                                   linewidth)
-                elif self.bed_type == 'bed12':
-                    if self.properties['style'] == 'flybase':
-                        self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
-                                                                  rgb, edgecolor,
-                                                                  linewidth)
-                    else:
-                        self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor,
-                                                    linewidth)
-                else:
+                elif self.properties['style'] == 'exonarrows':
+                    self.draw_gene_with_arrows_in_exons(ax, bed, ypos, rgb,
+                                                        edgecolor, linewidth)
+                elif self.bed_type == 'bed6':
+                    # Both would give the same output:
                     self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
+                elif self.properties['style'] == 'flybase':
+                    self.draw_gene_with_introns_flybase_style(ax, bed, ypos,
+                                                              rgb, edgecolor,
+                                                              linewidth)
+                elif self.properties['style'] == 'UCSC':
+                    self.draw_gene_with_introns(ax, bed, ypos, rgb, edgecolor,
+                                                linewidth)
+                else:
+                    raise InputError(f"Unknown style {self.properties['style']}")
 
                 if not display_labels:
                     pass
@@ -601,8 +635,7 @@ file_type = {TRACK_TYPE}
                                  " for the interval plotted"
                                  f" ({chrom_region}:{start_region}-{end_region}).\n")
 
-            epsilon = 0.08
-            ymax = - epsilon
+            ymax = - EPSILON
 
             # We set ymin and ymax to have genes centered epsilon from the border
 
@@ -612,20 +645,22 @@ file_type = {TRACK_TYPE}
             elif self.properties['gene_rows'] is not None:
                 max_ypos = self.properties['gene_rows'] * self.row_scale
 
-            ymin = max_ypos + (1 + epsilon)
+            ymin = max_ypos + (1 + EPSILON)
 
             self.log.debug(f"ylim {ymin},{ymax}")
             # the axis is inverted (thus, ymax < ymin)
             ax.set_ylim(ymin, ymax)
 
             if self.properties['display'] == 'interleaved':
-                ax.set_ylim(2 + epsilon, ymax)
+                ax.set_ylim(2 + EPSILON, ymax)
             elif self.properties['display'] == 'collapsed':
-                ax.set_ylim(1 + epsilon, ymax)
+                ax.set_ylim(1 + EPSILON, ymax)
 
         if self.properties['orientation'] == 'inverted':
             ylims = ax.get_ylim()
             ax.set_ylim(ylims[1], ylims[0])
+
+        self.log.debug(f"ylim {ax.get_ylim()}")
 
     def plot_label(self, label_ax, width_dpi, h_align='left'):
         if h_align == 'left':
@@ -685,6 +720,8 @@ file_type = {TRACK_TYPE}
     def draw_gene_simple(self, ax, bed, ypos, rgb, edgecolor, linewidth):
         """
         draws an interval with direction (if given)
+        So either a rectangle if no direction is given
+        Or a rectangle with an arrow giving the orientation
         """
 
         if bed.strand not in ['+', '-']:
@@ -704,8 +741,9 @@ file_type = {TRACK_TYPE}
         """
         draws a gene like in flybase gbrowse.
         """
-        if bed.block_count == 0 and bed.thick_start == bed.start and \
-           bed.thick_end == bed.end:
+        if ((self.bed_type == 'bed12' and bed.block_count <= 1)
+            or self.bed_type != 'bed12') and \
+           bed.thick_start == bed.start and bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
         half_height = 1 / 2
@@ -765,7 +803,15 @@ file_type = {TRACK_TYPE}
 
     def _draw_arrow(self, start, end, strand, ypos, half_height=None):
         """
-        Draws a filled arrow.
+        Draws a filled arrow, from start to end
+        This is in agreement with BED convention:
+        For example for a [0-2[ interval:
+        0    1    2    3  (matplotlib axis)
+        |  0 |  1 |  2 |  (bases index on genome)
+        -----------\
+        |           \
+        |           /
+        -----------/
         :param start:
         :param end:
         :param strand:
@@ -824,16 +870,24 @@ file_type = {TRACK_TYPE}
         :param bed: a namedtuple with at least 6 fields
         :return: a list of tuple (start, end, type) with type in ['UTR', 'coding']
         """
-        if self.bed_type != 'bed12':
+        if self.bed_type == 'bed6':
             # No thick_start, thick_end, block_count:
             return [(bed.start, bed.end, 'coding')]
+        if self.bed_type != 'bed12':
+            block_count = 1
+            block_starts = [0]
+            block_sizes = [bed.end - bed.start]
+        else:
+            block_count = bed.block_count
+            block_starts = bed.block_starts
+            block_sizes = bed.block_sizes
 
         # get start, end of all the blocks
         positions = []
-        for idx in range(0, bed.block_count):
+        for idx in range(0, block_count):
             # x0 and x1 are the start/end of the current block
-            x0 = bed.start + bed.block_starts[idx]
-            x1 = x0 + bed.block_sizes[idx]
+            x0 = bed.start + block_starts[idx]
+            x1 = x0 + block_sizes[idx]
             # We deal with the special case where
             # there is no coding independently
             if bed.thick_start == bed.thick_end:
@@ -870,8 +924,16 @@ file_type = {TRACK_TYPE}
         Except that for the moment no arrow are plotted
         on the coding part
         """
-
-        if bed.block_count == 0 and bed.thick_start == bed.start and bed.thick_end == bed.end:
+        if self.bed_type != 'bed12':
+            block_count = 1
+            block_starts = [0]
+            block_sizes = [bed.end - bed.start]
+        else:
+            block_count = bed.block_count
+            block_starts = bed.block_starts
+            block_sizes = bed.block_sizes
+        if block_count <= 1 and \
+           bed.thick_start == bed.start and bed.thick_end == bed.end:
             self.draw_gene_simple(ax, bed, ypos, rgb, edgecolor, linewidth)
             return
 
@@ -879,9 +941,9 @@ file_type = {TRACK_TYPE}
         rgb_backbone = self.get_rgb(bed, param='color_backbone', default='black')
         ax.plot([bed.start, bed.end], [ypos + 1 / 2, ypos + 1 / 2], color=rgb_backbone, linewidth=linewidth, zorder=-1)
 
-        for idx in range(0, bed.block_count):
-            x0 = bed.start + bed.block_starts[idx]
-            x1 = x0 + bed.block_sizes[idx]
+        for idx in range(0, block_count):
+            x0 = bed.start + block_starts[idx]
+            x1 = x0 + block_sizes[idx]
             if x1 < bed.thick_start or x0 > bed.thick_end or \
                bed.thick_start == bed.thick_end:
                 y0 = ypos + 1 / 4
@@ -924,25 +986,16 @@ file_type = {TRACK_TYPE}
             else:
                 vertices = ([(x0, y0), (x0, y1), (x1, y1), (x1, y0)])
 
+            # Would be good to change edgecolor='none' to edgecolor=edgecolor...
             ax.add_patch(Polygon(vertices, closed=True, fill=True,
                                  linewidth=linewidth,
                                  edgecolor='none',
                                  facecolor=rgb))
 
-            if idx < bed.block_count - 1:
+            if idx < block_count - 1:
                 # plot small arrows over the back bone
-                intron_length = bed.block_starts[idx + 1] - (bed.block_starts[idx] + bed.block_sizes[idx])
-                arrow_interval = self.properties['arrow_interval']
-                if intron_length > self.current_small_relative:
-                    intron_center = x1 + int(intron_length) / 2
-                    pos = np.arange(x1 + 1 * self.current_small_relative,
-                                    x1 + intron_length + self.current_small_relative,
-                                    int(arrow_interval * self.current_small_relative))
-                    # center them
-                    pos = pos + intron_center - pos.mean()
-                    # plot them
-                    for xpos in pos:
-                        self._plot_small_arrow(ax, xpos, ypos, bed.strand, bed)
+                self.plot_arrows_on_interval(ax, x1, bed.start + block_starts[idx + 1],
+                                             ypos + 1 / 4, ypos + 3 / 4, bed)
 
     def draw_gene_tssarrow_style(self, ax, bed, ypos, rgb, linewidth):
         """
@@ -1012,8 +1065,56 @@ file_type = {TRACK_TYPE}
                              y0 - height)
                     ax.add_line(Line2D(xdata, ydata, color=last_corner[2],
                                        linewidth=linewidth))
-
             last_corner = (end_pos, y0 - height, _rgb)
+
+    def draw_gene_with_arrows_in_exons(self, ax, bed, ypos, rgb, edgecolor, linewidth):
+        """
+        Draw genes like this:
+        ___________          ____________
+        |          |________|            |
+        | >  >  >  |________|  >  >  >   |
+        |__________|        |____________|
+        """
+
+        # get start, end of all the blocks
+        positions = self._split_bed_to_blocks(bed)
+        height_intron = self.properties['height_intron']
+
+        y_bottom = ypos + 1
+        y_bottom_intron = ypos + 0.5 + height_intron / 2
+        y_top_intron = ypos + 0.5 - height_intron / 2
+
+        # plot all blocks as rectangles like in the flybase mode
+        # as well as the junction between exons:
+        last_exon_end = None
+        for start_pos, end_pos, _type in positions:
+            if _type == 'UTR':
+                _rgb = self.get_rgb(bed, param='color_utr', default=rgb)
+            else:
+                _rgb = rgb
+
+            vertices = [(start_pos, y_bottom), (start_pos, ypos),
+                        (end_pos, ypos), (end_pos, y_bottom)]
+
+            ax.add_patch(Polygon(vertices, closed=True, fill=True,
+                                 edgecolor=edgecolor,
+                                 facecolor=_rgb,
+                                 linewidth=linewidth))
+            # plot small arrows over the exon
+            # Should be end_pos - 1
+            # To respect half-opened
+            self.plot_arrows_on_interval(ax, start_pos, end_pos, ypos + 3 / 4, ypos + 1 / 4, bed)
+            if last_exon_end is not None:
+                if last_exon_end < start_pos:
+                    vertices = [(last_exon_end, y_bottom_intron), (last_exon_end, y_top_intron),
+                                (start_pos, y_top_intron), (start_pos, y_bottom_intron)]
+
+                    ax.add_patch(Polygon(vertices, closed=True, fill=True,
+                                         edgecolor=edgecolor,
+                                         facecolor=rgb,
+                                         linewidth=linewidth))
+
+            last_exon_end = end_pos
 
     def plot_triangles(self, ax, genes_overlap):
         """
@@ -1085,7 +1186,142 @@ file_type = {TRACK_TYPE}
         if valid_regions == 0:
             self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
 
-    def _plot_small_arrow(self, ax, xpos, ypos, strand, bed):
+    def plot_deletions(self, ax, genes_overlap, start_region, end_region):
+        """
+        Plots the regions as:
+        _____________   ____________
+                     " "
+                      "
+                    label
+        genes_overlap can be empty, then it plots
+        _____________________________
+        """
+        valid_regions = 0
+        back_bone = []
+        last_plotted = start_region
+        y1 = 0.5
+        y2 = -0.5
+        y3 = -1
+        min_y = y2
+        x1 = start_region
+        x2 = start_region
+        x3 = start_region
+
+        for region in genes_overlap:
+            """
+               x1 x2 x3
+            _____________________
+               "      "_____ y1
+                "    "
+                 "  "
+                  ""
+                   ______ y2
+                   _______y3
+                 label
+                   -------y4
+
+            """
+            x1 = region.begin
+            x2 = x1 + float(region.end - region.begin) / 2
+            x3 = region.end
+
+            # Update info for back bone:
+            if x1 > last_plotted:
+                back_bone.append([last_plotted, x1])
+            last_plotted = x3
+
+            rgb = self.get_rgb(region.data)
+
+            ax.add_line(Line2D([x1, x2, x3], [y1, y2, y1], color=rgb,
+                               linewidth=self.properties['line_width']))
+
+            # Add label if needed:
+            if self.properties['labels']:
+                txt = ax.text(x2, y3, region.data.name,
+                              horizontalalignment='center',
+                              verticalalignment='top',
+                              fontproperties=self.fp,
+                              fontstyle=self.properties['fontstyle'],
+                              wrap=True)
+                r = ax.get_figure().canvas.get_renderer()
+                y4 = txt.get_window_extent(renderer=r).transformed(ax.transData.inverted()).y0
+                if y4 < min_y:
+                    min_y = y4
+            valid_regions += 1
+
+        # Update info for back bone:
+        if x3 < end_region:
+            back_bone.append([x3, end_region])
+        # Plot the backbone:
+        for chunk_start, chunk_end in back_bone:
+            ax.plot([chunk_start, chunk_end], [y1, y1], color=self.properties['color_backbone'],
+                    linewidth=self.properties['line_width'])
+        if valid_regions == 0:
+            self.log.warning(f"No regions found for section {self.properties['section_name']}.\n")
+        # Set ylim (to be compatible with collapsed genes):
+        ax.set_ylim(min_y - 0.05, 1 + EPSILON)
+
+    def plot_inversions(self, ax, genes_overlap, start_region, end_region):
+        """
+        Plots the regions as:
+      y0         ->
+                |
+      y1
+                            |
+      y2                  <-
+      y3
+                    label
+      y4
+        """
+        y0 = 1.5
+        y1 = 0.5
+        y2 = -0.5
+        y3 = -1
+        min_y = y2 - 0.5
+
+        for region in genes_overlap:
+            x1 = region.begin
+            x2 = x1 + 15 * self.current_small_relative
+            x3 = x1 + float(region.end - region.begin) / 2
+            x5 = region.end
+            x4 = x5 - 15 * self.current_small_relative
+
+            if x2 > x5:
+                x2 = x5
+                x4 = x1
+
+            rgb = self.get_rgb(region.data)
+
+            # Plot left arrow
+            ax.add_patch(FancyArrowPatch(posA=(x1, y1), posB=(x2, y0),
+                                         arrowstyle='simple,tail_width=0',
+                                         mutation_scale=20, color=rgb,
+                                         connectionstyle='angle3,angleA=90,angleB=180',
+                                         linewidth=self.properties['line_width']))
+            # Plot right arrow
+            ax.add_patch(FancyArrowPatch(posA=(x5, y1), posB=(x4, y2),
+                                         arrowstyle='simple,tail_width=0',
+                                         mutation_scale=20, color=rgb,
+                                         connectionstyle='angle3,angleA=-90,angleB=0',
+                                         linewidth=self.properties['line_width']))
+
+            # Add label if needed:
+            if self.properties['labels']:
+                txt = ax.text(x3, y3, region.data.name,
+                              horizontalalignment='center',
+                              verticalalignment='top',
+                              fontproperties=self.fp,
+                              fontstyle=self.properties['fontstyle'],
+                              wrap=True)
+                r = ax.get_figure().canvas.get_renderer()
+                y4 = txt.get_window_extent(renderer=r).transformed(ax.transData.inverted()).y0
+                if y4 < min_y:
+                    min_y = y4
+
+        # Set ylim:
+        ax.set_ylim(min_y - 0.05, 2 + EPSILON)
+
+    def _plot_small_arrow(self, ax, xpos, ypos_top, ypos_bottom, strand, bed):
         """
         Draws a broken line with 2 parts:
         For strand = +:  > For strand = -: <
@@ -1105,9 +1341,27 @@ file_type = {TRACK_TYPE}
             xdata = [xpos + self.current_small_relative / 4,
                      xpos - self.current_small_relative / 4,
                      xpos + self.current_small_relative / 4]
-        ydata = [ypos + 1 / 4,
-                 ypos + 1 / 2,
-                 ypos + 3 / 4]
+        ydata = [ypos_top,
+                 (ypos_bottom + ypos_top) / 2,
+                 ypos_bottom]
+        rgb_arrow = self.get_rgb(bed, param='color_arrow', default='black')
+        ax.add_line(Line2D(xdata, ydata, color=rgb_arrow, linewidth=self.properties['line_width']))
 
-        rgb_backbone = self.get_rgb(bed, param='color_backbone', default='black')
-        ax.add_line(Line2D(xdata, ydata, color=rgb_backbone, linewidth=self.properties['line_width']))
+    def plot_arrows_on_interval(self, ax, start_pos, end_pos, ypos_top, ypos_bottom, bed):
+        """
+        Plot evenly distributed arrows on interval
+        from bed (can be exon or intron)
+        start_pos and end_pos included
+        """
+        interval_length = end_pos - start_pos + 1
+        arrow_interval = self.properties['arrow_interval']
+        if interval_length > self.current_small_relative:
+            interval_center = start_pos + interval_length / 2
+            pos = np.arange(start_pos + 1 * self.current_small_relative,
+                            end_pos + self.current_small_relative,
+                            int(arrow_interval * self.current_small_relative))
+            # center them
+            pos = pos + interval_center - pos.mean()
+            # plot them
+            for xpos in pos:
+                self._plot_small_arrow(ax, xpos, ypos_top, ypos_bottom, bed.strand, bed)

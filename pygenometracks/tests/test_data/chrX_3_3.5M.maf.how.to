@@ -1,0 +1,9 @@
+# Download maf from UCSC:
+wget https://hgdownload.soe.ucsc.edu/goldenPath/dm3/multiz15way/chrX.maf.gz
+# Gunzip
+gunzip chrX.maf.gz
+# Index
+maf_build_index.py -s dm3 chrX.maf
+# Extract range
+echo -e dm3.chrXt3000000t3500000 > interval.bed
+maf_extract_ranges_indexed.py chrX.maf < interval.bed > chrX_3_3.5M.maf
