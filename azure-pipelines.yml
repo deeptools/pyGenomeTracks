@@ -30,6 +30,9 @@ stages:
         vmImage: 'ubuntu-latest'
       strategy:
         matrix:
+          Python38LowMatplotlib:
+            python.version: '3.8'
+            matplotlib.version: '3.1.1'
           Python38HighMatplotlib:
             python.version: '3.8'
             matplotlib.version: '3.6.0'
