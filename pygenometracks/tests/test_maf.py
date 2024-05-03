@@ -321,6 +321,14 @@ def test_first_maf_seq_hg19_pdf():
     ini_file = os.path.join(ROOT, "first_maf_seq_hg19.ini")
     region = "9:128093930-128093970"
     expected_file = os.path.join(ROOT, 'master_first_maf_seq_hg19.pdf')
+    # matplotlib compare on pdf will create a png next to it.
+    # To avoid issues related to write in test_data folder
+    # We copy the expected file into a temporary place
+    new_expected_file = NamedTemporaryFile(suffix='.pdf',
+                                           prefix='pyGenomeTracks_test_',
+                                           delete=False)
+    os.system(f'cp {expected_file} {new_expected_file.name}')
+    expected_file = new_expected_file.name
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 10 "\
            f"--outFileName {outfile.name}".split()
@@ -329,3 +337,4 @@ def test_first_maf_seq_hg19_pdf():
                          outfile.name, tolerance)
     assert res is None, res
     os.remove(outfile.name)
+    os.remove(expected_file.replace('.pdf', '_pdf.png'))
