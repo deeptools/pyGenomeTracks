@@ -1,9 +1,8 @@
 import argparse
 import os
 import sys
+from importlib.metadata import version
 from pygenometracks.tracksClass import PlotTracks
-
-from pygenometracks._version import __version__
 
 
 def parse_arguments(args=None):
@@ -29,7 +28,7 @@ def parse_arguments(args=None):
                         required=True)
 
     parser.add_argument('--version', action='version',
-                        version=f'%(prog)s {__version__}')
+                        version=version('pyGenomeTracks'))
 
     return parser
 

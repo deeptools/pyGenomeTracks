@@ -13,7 +13,7 @@ for TRAVIS_PYTHON_VERSION in 3.8 3.9 3.10; do
     conda activate pgt_test_${TRAVIS_PYTHON_VERSION}
     requirement_file=requirements_CI.txt
     mamba install --yes -c conda-forge -c bioconda --file ${requirement_file}
-    python setup.py install
+    python3 -m pip install .
     coverage run -m py.test
     coverage html
     coverage-badge -f -o docs/coverage.svg

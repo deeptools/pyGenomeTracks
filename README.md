@@ -26,12 +26,12 @@ are highly customizable. Currently, it is possible to plot:
 
 Here is a scheme which describe how pyGenomeTracks is working (graphical abstract of [Lopez-Delisle et al. 2020](https://doi.org/10.1093/bioinformatics/btaa692)):
 
-![pyGenomeTracks](./docs/content/images/graphicalabstract.png)
+![pyGenomeTracks](https://github.com/deeptools/pyGenomeTracks/blob/b8918d43b0bd1ca9dd2939fdd0d93a5a297d0453/docs/content/images/graphicalabstract.png)
 
 pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of
 pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
 
-![pyGenomeTracks example](./docs/content/images/hic_example_nat_comm_small.png)
+![pyGenomeTracks example](https://github.com/deeptools/pyGenomeTracks/blob/b8918d43b0bd1ca9dd2939fdd0d93a5a297d0453/docs/content/images/hic_example_nat_comm_small.png)
 
 Table of content
 ----------------
