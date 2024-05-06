@@ -42,7 +42,7 @@ done
 # Then for the usage:
 awk 'NR==1,/<!--- Start of possible arguments of pgt -->/' README.md > newREADME.md
 echo "\`\`\` text" >> newREADME.md
-bin/pyGenomeTracks -h | awk '/optional arguments:/{toprint = 1}toprint == 1 {print}' >> newREADME.md
+pyGenomeTracks -h | awk '/options:/{toprint = 1}toprint == 1 {print}' >> newREADME.md
 echo "\`\`\`" >> newREADME.md
 awk '/<!--- End of possible arguments of pgt -->/{toprint = 1}toprint == 1{print}' README.md >> newREADME.md
 mv newREADME.md README.md

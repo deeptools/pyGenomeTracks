@@ -16,6 +16,8 @@ Optional:
 
 - **line_width**: `0.5` (default) or any float above 0
 
+- **rasterize**: `false` (default) or true.
+
 - **file_index**: by default this option is not set
 
 - **color_identical**: `black` (default)

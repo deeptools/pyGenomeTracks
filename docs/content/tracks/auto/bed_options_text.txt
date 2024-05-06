@@ -32,8 +32,8 @@ color = darkblue
 # the display parameter defines how the bed file is plotted.
 # Default is 'stacked' where regions are plotted on different lines so
 # we can see all regions and all labels.
-# The other options are ['collapsed', 'interleaved', 'triangles', 'squares']
-# These 2 options assume that the regions do not overlap.
+# The other options are ['collapsed', 'interleaved', 'triangles', 'squares', 'deletions', 'inversions']
+# These 2 options assume that the regions do not overlap:
 # `collapsed`: The bed regions are plotted one after the other in one line.
 # `interleaved`: The bed regions are plotted in two lines, first up, then down, then up etc.
 # If the bed file contains the exon
@@ -43,6 +43,7 @@ color = darkblue
 #style = UCSC
 #style = flybase
 #style = tssarrow
+#style = exonarrows
 # maximum number of gene rows to be plotted. This
 # field is useful to limit large number of close genes
 # to be printed over many rows. When several images want
@@ -70,15 +71,18 @@ fontsize = 10
 #labels_in_margin = true
 # If you want to use italic for your labels:
 #fontstyle = italic
-# if you use UCSC style, you can set the relative distance between 2 arrows on introns
+# if you use UCSC or exonarrows style, you can set the relative distance between 2 arrows on introns/exons
 # default is 2
 #arrow_interval = 2
+# you can also choose the color of arrows
+# default is black
+#color_arrow = black
 # if you use tssarrow style, you can choose the length of the arrow in bp
 # (default is 4% of the plotted region)
 #arrow_length = 5000
-# if you use flybase or tssarrow style, you can choose the color of non-coding intervals:
+# if you use flybase, tssarrow or exonarrows style, you can choose the color of non-coding intervals:
 #color_utr = grey
-# as well as the proportion between their height and the one of coding
+# for flybase and tssarrow, you can choose the proportion between their height and the one of coding
 # (by default they are the same height):
 #height_utr = 1
 # if you use flybase or UCSC style, you can choose the color of the backbone
@@ -94,9 +98,17 @@ fontsize = 10
 # their labels.
 # To increase it:
 #arrowhead_fraction = 0.01
-# The two other display options are really different and no label can be display:
+# for exonarrows, you can choose the proportion between the height of the introns and the one of exon
+# (by default introns are half):
+#height_intron = 0.5
+# The two following display options are really different and no label can be display:
 # `triangles` display each region as a triangle, can be useful to overlay with a hic_matrix
 # `squares` display each region as a square along the diagonal, can be useful to overlay with a hic_matrix_square
+# The 2 last display options do not expect overlapping feature:
+# `deletions` display a line on the plotted region (color can be controlled by color_backbone)
+# and a V shape breaking the line for each region in bed (color can be controled by color)
+# `inversions` display 2 arrows around each region
+# For both, labels can be displayed on bottom centered on the region
 # optional. If not given is guessed from the file ending.
 file_type = bed
     

@@ -26,12 +26,12 @@ are highly customizable. Currently, it is possible to plot:
 
 Here is a scheme which describe how pyGenomeTracks is working (graphical abstract of [Lopez-Delisle et al. 2020](https://doi.org/10.1093/bioinformatics/btaa692)):
 
-![pyGenomeTracks](./docs/content/images/graphicalabstract.png)
+![pyGenomeTracks](https://github.com/deeptools/pyGenomeTracks/blob/b8918d43b0bd1ca9dd2939fdd0d93a5a297d0453/docs/content/images/graphicalabstract.png)
 
 pyGenomeTracks can make plots with or without Hi-C data. The following is an example output of
 pyGenomeTracks from [Ramírez et al. 2017](https://www.nature.com/articles/s41467-017-02525-w)
 
-![pyGenomeTracks example](./docs/content/images/hic_example_nat_comm_small.png)
+![pyGenomeTracks example](https://github.com/deeptools/pyGenomeTracks/blob/b8918d43b0bd1ca9dd2939fdd0d93a5a297d0453/docs/content/images/hic_example_nat_comm_small.png)
 
 Table of content
 ----------------
@@ -45,12 +45,12 @@ Table of content
 Installation
 ------------
 
-pyGenomeTracks works with python >=3.7.
+pyGenomeTracks works with python >=3.8.
 
 The recommended way to install pyGenomeTracks is via conda
 
 ```bash
-conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks python=3.7
+conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks
 ```
 
 To get a specific version, one can specify it. For example:
@@ -63,7 +63,7 @@ However, we noticed that conda installation can be quite slow so using mamba can
 You first need to create the environment and install mamba:
 
 ```bash
-conda create -n pygenometracks -c bioconda -c conda-forge mamba python=3.7
+conda create -n pygenometracks -c bioconda -c conda-forge mamba python=3.9
 ```
 
 Then activate the environment and install pygenometracks with mamba:
@@ -112,7 +112,7 @@ The ending `--outFileName` defines the image format. If `.pdf` is used, then the
 Description of other possible arguments:
 <!--- Start of possible arguments of pgt -->
 ``` text
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --tracks TRACKS       File containing the instructions to plot the tracks.
                         The tracks.ini file can be genarated using the

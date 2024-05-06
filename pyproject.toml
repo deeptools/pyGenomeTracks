@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyGenomeTracks"
+version = "3.9"
+authors = [
+  { name = "Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolf, Björn Grüning", email = "lucille.delisle@epfl.ch" },
+]
+description = "Command-line tool to make beautiful and reproducible genome browser snapshots"
+readme = "README.md"
+requires-python = ">=3.8,<4"
+classifiers = [
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Bio-Informatics',
+]
+license = {file = "LICENSE"}
+dependencies = [
+    "numpy >=1.20",
+    "matplotlib >=3.1.1,<3.9",
+    "intervaltree >=2.1.0",
+    "pyBigWig >=0.3.16",
+    "future >=0.17.0",
+    "hicmatrix >=15",
+    "pysam >=0.14",
+    "pytest",
+    "gffutils >=0.9",
+    "pybedtools >=0.8.1",
+    "tqdm >=4.20",
+    "bx-python >=0.8.13",
+    "pyfaidx >=0.1.3"
+]
+
+[project.scripts]
+make_tracks_file = "pygenometracks.makeTracksFile:main"
+pyGenomeTracks = "pygenometracks.plotTracks:main"
+pgt = "pygenometracks.plotTracks:main"
+
+[project.urls]
+Homepage = "https://github.com/deeptools/pyGenomeTracks"
+Documentation = "https://pygenometracks.readthedocs.io"
+Issues = "https://github.com/deeptools/pyGenomeTracks/issues"
+
+[tool.setuptools]
+package-dir = {'pygenometracks'= 'pygenometracks'}

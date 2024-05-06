@@ -12,7 +12,7 @@ Requirements
 
 Python dependencies:
 
-* Python >= 3.7
+* Python >= 3.8
 * numpy >= 1.20
 * intervaltree >= 2.1.0
 * pyBigWig >= 0.3.16
@@ -36,7 +36,7 @@ We encourage users to use ``conda`` installation to install pygenometracks. All 
 
 .. code:: bash
 
-    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks python=3.7
+    $ conda create -n pygenometracks -c bioconda -c conda-forge pygenometracks
 
 To get a specific version, one can specify it. For example:
 
@@ -53,7 +53,7 @@ You first need to create the environment and install mamba:
 
 .. code:: bash
 
-    $ conda create -n pygenometracks -c bioconda -c conda-forge mamba python=3.7
+    $ conda create -n pygenometracks -c bioconda -c conda-forge mamba python=3.9
 
 Then activate the environment and install pygenometracks with mamba:
 

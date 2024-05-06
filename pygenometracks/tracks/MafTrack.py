@@ -46,6 +46,8 @@ class MafTrack(GenomeTrack):
 #species_order_only = true
 # optional if you want to see the DNA sequence of the ref
 #display_ref_seq = true
+# You can choose to rasterize the block part of the maf by using:
+#rasterize = true
 # optional: If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
@@ -59,12 +61,13 @@ file_type = {TRACK_TYPE}
                            'species_order': None,
                            'species_labels': None,
                            'species_order_only': False,
-                           'display_ref_seq': False}
+                           'display_ref_seq': False,
+                           'rasterize': False}
     NECESSARY_PROPERTIES = ['file', 'reference']
     SYNONYMOUS_PROPERTIES = {}
     POSSIBLE_PROPERTIES = {'orientation': [None, 'inverted'],
                            }
-    BOOLEAN_PROPERTIES = ['species_order_only', 'display_ref_seq']
+    BOOLEAN_PROPERTIES = ['species_order_only', 'display_ref_seq', 'rasterize']
     STRING_PROPERTIES = ['file', 'file_type',
                          'overlay_previous', 'orientation',
                          'title', 'file_index', 'color_identical',
@@ -246,7 +249,8 @@ file_type = {TRACK_TYPE}
                                     ax.add_patch(Rectangle((last_end, ypos),
                                                            i - last_end, 1,
                                                            edgecolor="none",
-                                                           facecolor=self.properties[f'color_{last_status}']))
+                                                           facecolor=self.properties[f'color_{last_status}'],
+                                                           zorder=0))
                                     valid_blocks += 1
                                 last_end = i
                                 last_status = cur_status
@@ -255,7 +259,8 @@ file_type = {TRACK_TYPE}
                             ax.add_patch(Rectangle((last_end, ypos),
                                                    ref.get_forward_strand_end() - last_end, 1,
                                                    edgecolor="none",
-                                                   facecolor=self.properties[f'color_{last_status}']))
+                                                   facecolor=self.properties[f'color_{last_status}'],
+                                                   zorder=0))
                             valid_blocks += 1
                     else:
                         if c.synteny_empty == "C":
@@ -264,16 +269,19 @@ file_type = {TRACK_TYPE}
                             # in the source or inserted in the reference sequence.
                             # The browser draws a single line or a "-" in base mode in these blocks.
                             ax.plot([ref.get_forward_strand_start(), ref.get_forward_strand_end()],
-                                    [ypos + 0.5, ypos + 0.5], color="black", linewidth=self.properties['line_width'])
+                                    [ypos + 0.5, ypos + 0.5], color="black", linewidth=self.properties['line_width'],
+                                    zorder=0)
                         elif c.synteny_empty == "I":
                             # there are non-aligning bases in the source species
                             # between chained alignment blocks before and
                             # after this block.
                             # The browser shows a double line or "=" in base mode.
                             ax.plot([ref.get_forward_strand_start(), ref.get_forward_strand_end()],
-                                    [ypos + 0.3, ypos + 0.3], color="black", linewidth=self.properties['line_width'])
+                                    [ypos + 0.3, ypos + 0.3], color="black", linewidth=self.properties['line_width'],
+                                    zorder=0)
                             ax.plot([ref.get_forward_strand_start(), ref.get_forward_strand_end()],
-                                    [ypos + 0.7, ypos + 0.7], color="black", linewidth=self.properties['line_width'])
+                                    [ypos + 0.7, ypos + 0.7], color="black", linewidth=self.properties['line_width'],
+                                    zorder=0)
                         elif c.synteny_empty == "M":
                             # there are non-aligning bases in the source and
                             # more than 90% of them are Ns in the source.
@@ -281,7 +289,8 @@ file_type = {TRACK_TYPE}
                             ax.add_patch(Rectangle((ref.get_forward_strand_start(), ypos),
                                                    ref.size, 1,
                                                    edgecolor="none",
-                                                   facecolor="lightyellow"))
+                                                   facecolor="lightyellow",
+                                                   zorder=0))
                         elif c.synteny_empty == "n":
                             # there are non-aligning bases in the source
                             # and the next aligning block starts
@@ -335,6 +344,8 @@ file_type = {TRACK_TYPE}
         self.log.debug(f"ylim {ymin},{ymax}")
         # the axis is inverted (thus, ymax < ymin)
         ax.set_ylim(ymin, ymax)
+        if self.properties['rasterize']:
+            ax.set_rasterization_zorder(1)
 
     def plot_y_axis(self, ax, plot_axis):
         if self.current_labels is not None:
