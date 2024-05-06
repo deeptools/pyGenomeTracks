@@ -10,6 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import importlib.metadata
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../'))
@@ -45,23 +46,7 @@ project = 'pyGenomeTracks'
 copyright = '2020, Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolff, Thomas Manke, , Bjoern Gruening, Fidel Ramirez'
 author = 'Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolff, Thomas Manke,  Bjoern Gruening, Fidel Ramirez'
 
-
-# Copied from deeptools
-def get_version():
-    import re
-    try:
-        f = open("../pygenometracks/_version.py")
-    except EnvironmentError:
-        return None
-    for line in f.readlines():
-        mo = re.match("__version__ = '([^']+)'", line)
-        if mo:
-            ver = mo.group(1)
-            return ver
-    return None
-
-
-version = get_version()
+version = importlib.metadata.version("pyGenomeTracks")
 
 
 # The full version, including alpha/beta/rc tags
