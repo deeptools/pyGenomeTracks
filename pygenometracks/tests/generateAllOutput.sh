@@ -159,6 +159,7 @@ pgt --tracks pygenometracks/tests/test_data/first_maf_seq.ini --region 2:3470512
 pgt --tracks pygenometracks/tests/test_data/maf_withe.ini --region chr2:74,070,244-74,071,016 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_maf_withe_region1.png
 pgt --tracks pygenometracks/tests/test_data/maf_withe.ini --region chr2:74,075,687-74,075,808 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_maf_withe_region2.png
 pgt --tracks pygenometracks/tests/test_data/first_maf_seq_hg19.ini --region 9:128093930-128093970 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_first_maf_seq_hg19.png
+pgt --tracks pygenometracks/tests/test_data/first_maf_seq_hg19.ini --region 9:128093930-128093970 --trackLabelFraction 0.2 --width 38 --dpi 10 -o pygenometracks/tests/test_data/master_first_maf_seq_hg19.pdf
 
 # tests fasta
 pgt --tracks pygenometracks/tests/test_data/fasta_tracks.ini --region rDNA_unit_8919x2_bp:0-100 --trackLabelFraction 0.2 --width 38 --dpi 130 -o pygenometracks/tests/test_data/master_fasta_tracks_zoomout.png

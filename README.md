@@ -112,7 +112,7 @@ The ending `--outFileName` defines the image format. If `.pdf` is used, then the
 Description of other possible arguments:
 <!--- Start of possible arguments of pgt -->
 ``` text
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --tracks TRACKS       File containing the instructions to plot the tracks.
                         The tracks.ini file can be genarated using the
