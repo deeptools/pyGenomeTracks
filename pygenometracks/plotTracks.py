@@ -146,8 +146,9 @@ import os
 import argparse
 import warnings
 
+from importlib.metadata import version
+
 from pygenometracks.tracksClass import PlotTracks
-from pygenometracks._version import __version__
 from .utilities import InputError, get_region
 import matplotlib.pyplot as plt
 
@@ -241,7 +242,7 @@ def parse_arguments(args=None):
                         action='store_true')
 
     parser.add_argument('--version', action='version',
-                        version=f'%(prog)s {__version__}')
+                        version=version('pyGenomeTracks'))
 
     return parser
 
