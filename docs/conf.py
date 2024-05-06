@@ -13,36 +13,12 @@
 import importlib.metadata
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../'))
-
-from unittest.mock import Mock
 
 import warnings
 
 import sphinx_rtd_theme
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-
-# import mock
-
-MOCK_MODULES = ['pygenometracks.tracksClass',  # (required for both)
-                # For plotTracks in plotTracks
-                'matplotlib',
-                'matplotlib.pyplot',
-                # For plotTracks in utilities
-                'matplotlib.ticker',
-                'numpy',
-                'tqdm',
-                'pyfaidx',
-                'intervaltree',
-                'pybedtools']
-
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = Mock()
-
-autodoc_mock_imports = MOCK_MODULES
-# -- Project information -----------------------------------------------------
 
 project = 'pyGenomeTracks'
 copyright = '2020, Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolff, Thomas Manke, , Bjoern Gruening, Fidel Ramirez'
