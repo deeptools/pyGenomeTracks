@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyGenomeTracks"
-version = "3.8"
+version = "3.9"
 authors = [
   { name = "Lucille Lopez-Delisle, Leily Rabbani, Joachim Wolf, Björn Grüning", email = "lucille.delisle@epfl.ch" },
 ]
