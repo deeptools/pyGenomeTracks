@@ -299,7 +299,8 @@ file_type = {TRACK_TYPE}
         else:
             rgb = self.properties['color']
         ax.add_patch(Arc((center, 0), width,
-                         2 * half_height, 0, 0, 180, color=rgb,
+                         2 * half_height, angle=0, theta1=0, theta2=180,
+                         color=rgb,
                          linewidth=self.current_line_width,
                          ls=self.properties['line_style']))
 
