@@ -69,7 +69,7 @@ Demo examples
 
 These two examples try to cover all file types covered by pyGenomeTracks:
 
-The first one display a relatively large region. The ini file is available `here<https://github.com/deeptools/pyGenomeTracks/blob/master/pygenometracks/tests/test_data/demo.ini>`_.
+The first one display a relatively large region. The ini file is available at `demo.ini <https://github.com/deeptools/pyGenomeTracks/blob/master/pygenometracks/tests/test_data/demo.ini>`_.
 
 .. code:: bash
 
@@ -78,7 +78,7 @@ The first one display a relatively large region. The ini file is available `here
 .. image:: ../../pygenometracks/tests/test_data/demo.png
 
 
-The second one display a relatively small region and uses vlines and vhighlight. The ini file is available `here<https://github.com/deeptools/pyGenomeTracks/blob/master/pygenometracks/tests/test_data/demo2.ini>`_.
+The second one display a relatively small region and uses vlines and vhighlight. The ini file is available at `demo2.ini <https://github.com/deeptools/pyGenomeTracks/blob/master/pygenometracks/tests/test_data/demo2.ini>`_.
 
 .. code:: bash
 
