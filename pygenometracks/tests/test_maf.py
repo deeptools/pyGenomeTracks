@@ -4,6 +4,7 @@ mpl.use('agg')
 from matplotlib.testing.compare import compare_images
 from tempfile import NamedTemporaryFile
 import os.path
+import shutil
 import pygenometracks.plotTracks
 
 
@@ -327,7 +328,7 @@ def test_first_maf_seq_hg19_pdf():
     new_expected_file = NamedTemporaryFile(suffix='.pdf',
                                            prefix='pyGenomeTracks_test_',
                                            delete=False)
-    os.system(f'cp {expected_file} {new_expected_file.name}')
+    shutil.copy(expected_file, new_expected_file.name)
     expected_file = new_expected_file.name
     args = f"--tracks {ini_file} --region {region} "\
            "--trackLabelFraction 0.2 --width 38 --dpi 10 "\
