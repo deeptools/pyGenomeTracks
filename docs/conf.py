@@ -11,12 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import importlib.metadata
-import os
-import sys
-
 import warnings
-
-import sphinx_rtd_theme
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
