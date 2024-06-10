@@ -91,6 +91,7 @@ stages:
           conda info -a
           cat requirements_CI.txt | awk -v v=$(matplotlib.version) -v vp=$(python.version) 'BEGIN{print "python =="vp}{if($0~/matplotlib/){$0="matplotlib =="v}; print}' > requirements_CI_updated.txt
           conda create -n pygenometracks --yes -c conda-forge -c bioconda --file requirements_CI_updated.txt
+          source activate pygenometracks
           python -m pip install .
         displayName: installing dependencies
       - script: |
