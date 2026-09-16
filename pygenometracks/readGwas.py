@@ -53,7 +53,7 @@ class ReadGwas(ReadTabular):
         positions = []
         for req_f in self.required_fields:
             if not req_f in fields:
-                raise InputError(f"The header does not contain any of the following column name: {req_f}, {",".join(alias[req_f])} which is required.")
+                raise InputError(f"The header does not contain any of the following column name: {req_f}, {", ".join(self.alias[req_f])} which is required.")
             else:
                 positions.append([i for i, v in enumerate(fields) if v == req_f][0])
         self.used_fields = fields
