@@ -41,6 +41,8 @@ class ReadGwas(ReadTabular):
             # revert the alias dictionary
             synonymous = {v: k for k in self.alias for v in self.alias[k]}
             self.header = next(self.file_handle)
+            if self.header.startswith('#'):
+                self.header = self.header[1:]
             header_fields = self.get_line_data(self.header)
             fields = []
             for hf in header_fields:
