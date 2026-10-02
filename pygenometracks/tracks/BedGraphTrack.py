@@ -436,12 +436,10 @@ file_type = {TRACK_TYPE}
                       self.properties['color'],
                       self.properties['negative_color'],
                       self.properties['alpha'],
-                      self.properties['grid'])
+                      self.properties['grid'],
+                      self.properties['rasterize'])
 
         self.adjust_ylim(ax)
-
-        if self.properties['rasterize']:
-            ax.set_rasterized(True)
 
     def get_values_as_bigwig(self, score_list, pos_list, chrom_region,
                              start_region, end_region):
