@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 from .readTabular import ReadTabular
 from .utilities import InputError
 
@@ -37,17 +39,19 @@ class ReadGwas(ReadTabular):
             self.length -= 1
 
     def adjust_fields(self):
+        # From https://stackoverflow.com/questions/3303312/how-do-i-convert-a-string-to-a-valid-variable-name-in-python
+        def clean(varStr): return re.sub('\W|^(?=\d)','_', varStr)
         if self.has_header:
             # revert the alias dictionary
             synonymous = {v: k for k in self.alias for v in self.alias[k]}
             self.header = next(self.file_handle)
-            if self.header.startswith('#'):
-                self.header = self.header[1:]
             header_fields = self.get_line_data(self.header)
+            if header_fields[0].startswith('#'):
+                header_fields[0] = header_fields[0][1:]
             fields = []
             for hf in header_fields:
                 hfl = hf.lower()
-                fields.append(synonymous.get(hfl, hfl))
+                fields.append(synonymous.get(hfl, clean(hfl)))
         else:
             fields = self.fields
         # Check all needed fields are present
