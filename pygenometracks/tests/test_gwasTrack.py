@@ -1,4 +1,5 @@
 import os.path
+import shutil
 from tempfile import NamedTemporaryFile
 
 import matplotlib as mpl
@@ -44,6 +45,32 @@ max_value = 1e-15
 """
 
 with open(os.path.join(ROOT, "gwas.ini"), 'w') as fh:
+    fh.write(tracks)
+
+
+tracks = """
+[gwas]
+file = head_all_hg38_qcd_LE1_simgwas_quant1a.simgwas_quant1.glm.linear
+height = 4
+file_has_header = True
+grid = true
+
+title = glm.linear grid = true
+
+[spacer]
+
+[gwas raster]
+file = head_all_hg38_qcd_LE1_simgwas_quant1a.simgwas_quant1.glm.linear
+height = 4
+file_has_header = True
+grid = true
+rasterize = true
+title = glm.linear grid = true rasterize = true
+
+[x-axis]
+"""
+
+with open(os.path.join(ROOT, "gwas2.ini"), 'w') as fh:
     fh.write(tracks)
 
 tolerance = 13  # default matplotlib pixed difference tolerance
@@ -110,6 +137,37 @@ def test_gwas_track_chrY():
     expected_file = os.path.join(ROOT, 'master_gwas_chrY.png')
     args = f"--tracks {ini_file} --region {region} " \
            "--trackLabelFraction 0.2 --dpi 130 " \
+           f"--outFileName {outfile.name}".split()
+    pygenometracks.plotTracks.main(args)
+    res = compare_images(expected_file,
+                         outfile.name, my_tolerance)
+    assert res is None, res
+
+    os.remove(outfile.name)
+
+
+def test_gwas_track_raster():
+
+    if mpl.__version__ != default_mpl_version:
+        my_tolerance = tolerance
+    else:
+        my_tolerance = tolerance
+
+    outfile = NamedTemporaryFile(suffix='.pdf', prefix='gwas_test_',
+                                 delete=False)
+    ini_file = os.path.join(ROOT, "gwas2.ini")
+    region = "1:0-1300000"
+    expected_file = os.path.join(ROOT, 'master_gwas2.pdf')
+    # matplotlib compare on pdf will create a png next to it.
+    # To avoid issues related to write in test_data folder
+    # We copy the expected file into a temporary place
+    new_expected_file = NamedTemporaryFile(suffix='.pdf',
+                                           prefix='pyGenomeTracks_test_',
+                                           delete=False)
+    shutil.copy(expected_file, new_expected_file.name)
+    expected_file = new_expected_file.name
+    args = f"--tracks {ini_file} --region {region} " \
+           "--trackLabelFraction 0.2 --dpi 10 " \
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,

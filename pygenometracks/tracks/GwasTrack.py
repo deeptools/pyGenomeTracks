@@ -53,6 +53,11 @@ show_data_range = true
 # Use for example:
 min_value = 1
 max_value = 1e-15
+# If your gwas file is large and you are plotting large regions
+# This can lead to very large pdf/svg files.
+# A way to decrease the size of your file
+# is to rasterize the dots by using:
+# rasterize = true
 # Optional. If not given is guessed from the file ending.
 file_type = {TRACK_TYPE}
     """
@@ -68,7 +73,9 @@ file_type = {TRACK_TYPE}
                            'transform': '-log10',
                            'log_pseudocount': 0,
                            'y_axis_values': 'transformed',
-                           'file_has_header': False}
+                           'file_has_header': False,
+                           'rasterize': False,
+                           'grid': False}
 
     NECESSARY_PROPERTIES = ['file']
     SYNONYMOUS_PROPERTIES = {'max_value': {'auto': None},
@@ -76,7 +83,7 @@ file_type = {TRACK_TYPE}
     POSSIBLE_PROPERTIES = {'transform': ['no', 'log', 'log1p', '-log', 'log2',
                                          'log10', '-log10'],
                            'y_axis_values': ['original', 'transformed']}
-    BOOLEAN_PROPERTIES = ['file_has_header', 'show_data_range']
+    BOOLEAN_PROPERTIES = ['file_has_header', 'show_data_range', 'rasterize', 'grid']
     STRING_PROPERTIES = ['title', 'file_type', 'file', 'color', 'border_color']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
@@ -178,6 +185,17 @@ file_type = {TRACK_TYPE}
                    s=self.properties['marker_size'],
                    color=self.properties['color'], marker='o',
                    edgecolors=self.properties['border_color'],
-                   linewidths=self.properties['line_width'])
+                   linewidths=self.properties['line_width'],
+                   rasterized=self.properties['rasterize'])
+
+        if self.properties['grid']:
+            ax.grid(axis='y', zorder=0)
 
         self.adjust_ylim(ax)
+
+    def plot_y_axis(self, ax, plot_axis):
+        super(GwasTrack, self).plot_y_axis(ax, plot_axis,
+                                           self.properties['transform'],
+                                           self.properties['log_pseudocount'],
+                                           self.properties['y_axis_values'],
+                                           self.properties['grid'])
