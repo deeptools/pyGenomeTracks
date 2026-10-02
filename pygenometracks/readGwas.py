@@ -40,7 +40,8 @@ class ReadGwas(ReadTabular):
 
     def adjust_fields(self):
         # From https://stackoverflow.com/questions/3303312/how-do-i-convert-a-string-to-a-valid-variable-name-in-python
-        def clean(varStr): return re.sub('\W|^(?=\d)','_', varStr)
+        def clean(varStr):
+            return re.sub(r'\W|^(?=\d)', '_', varStr)
         if self.has_header:
             # revert the alias dictionary
             synonymous = {v: k for k in self.alias for v in self.alias[k]}

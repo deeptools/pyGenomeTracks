@@ -1,10 +1,10 @@
 import os
-import unittest
 
 from pygenometracks.readGwas import ReadGwas
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                     "test_data")
+
 
 def test_read_gwas_4col():
     gwas = ReadGwas(os.path.join(ROOT, 'gwas_1.gwas'))
@@ -17,6 +17,7 @@ def test_read_gwas_4col():
     assert records[2].pvalue == 9.2e-5
     assert records[-1].variant_id == 'rs8840123'
     assert set([r.chromosome for r in records]) == {'X'}
+
 
 def test_read_gwas_header():
     gwas = ReadGwas(os.path.join(ROOT, 'gwas_2.gwas'), has_header=True)
@@ -31,6 +32,7 @@ def test_read_gwas_header():
     assert records[4].se == '0.11'
     assert records[-1].maf == '0.21'
     assert set([r.chromosome for r in records]) == {'X'}
+
 
 def test_read_gwas_glm_linear():
     gwas = ReadGwas(os.path.join(ROOT, 'head_all_hg38_qcd_LE1_simgwas_quant1a.simgwas_quant1.glm.linear'), has_header=True)
