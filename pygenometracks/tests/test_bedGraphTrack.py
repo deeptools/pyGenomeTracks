@@ -30,6 +30,15 @@ title = bedgraph rasterize = true
 rasterize = true
 max_value = 10
 
+[test bedgraph2]
+file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
+color = blue
+height = 5
+title = bedgraph rasterize = true grid = true
+grid = true
+rasterize = true
+max_value = 10
+
 [test bedgraph]
 file = GSM3182416_E12DHL_WT_Hoxd11vp.bedgraph.gz
 color = blue
@@ -49,7 +58,6 @@ use_middle = true
 file = HoxD_cluster_regulatory_regions_mm10.bed
 height = 3
 title = HoxD genes and regulatory regions
-
 """
 with open(os.path.join(ROOT, "bedgraph_useMid.ini"), 'w') as fh:
     fh.write(browser_tracks)
@@ -408,7 +416,7 @@ def test_plot_bedgraph_tracks_rasterize():
     shutil.copy(expected_file, new_expected_file.name)
     expected_file = new_expected_file.name
     args = f"--tracks {ini_file} --region {region} "\
-           "--trackLabelFraction 0.2 --width 38 --dpi 130 "\
+           "--trackLabelFraction 0.2 --width 38 --dpi 10 "\
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,

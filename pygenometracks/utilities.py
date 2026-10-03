@@ -194,43 +194,44 @@ def file_to_intervaltree(file_name, plot_regions=None):
 
 
 def plot_coverage(ax, x_values, score_list, plot_type, size, color,
-                  negative_color, alpha, grid):
+                  negative_color, alpha, grid,
+                  rasterize_coverage=False):
     if grid:
         ax.grid(axis='y', zorder=0)
     if plot_type == 'line':
         if color == negative_color:
             ax.plot(x_values, score_list, '-', linewidth=size, color=color,
-                    alpha=alpha)
+                    alpha=alpha, rasterized=rasterize_coverage)
         else:
             warnings.warn('Line plots with a different negative color might not look pretty.\n')
             pos_x_values = x_values.copy()
             pos_x_values[score_list < 0] = np.nan
             ax.plot(pos_x_values, score_list, '-', linewidth=size, color=color,
-                    alpha=alpha)
+                    alpha=alpha, rasterized=rasterize_coverage)
 
             neg_x_values = x_values.copy()
             neg_x_values[score_list >= 0] = np.nan
             ax.plot(neg_x_values, score_list, '-', linewidth=size,
-                    color=negative_color, alpha=alpha)
+                    color=negative_color, alpha=alpha, rasterized=rasterize_coverage)
 
     elif plot_type == 'points':
         if color == negative_color:
             ax.plot(x_values, score_list, '.', markersize=size,
                     color=color,
-                    alpha=alpha)
+                    alpha=alpha, rasterized=rasterize_coverage)
         else:
             pos_x_values = x_values.copy()
             pos_x_values[score_list < 0] = np.nan
             ax.plot(pos_x_values, score_list, '.',
                     markersize=size,
                     color=color,
-                    alpha=alpha)
+                    alpha=alpha, rasterized=rasterize_coverage)
             neg_x_values = x_values.copy()
             neg_x_values[score_list >= 0] = np.nan
             ax.plot(neg_x_values, score_list, '.',
                     markersize=size,
                     color=negative_color,
-                    alpha=alpha)
+                    alpha=alpha, rasterized=rasterize_coverage)
     else:
         if plot_type != 'fill':
             warnings.warn('The plot type was not part of known types '
@@ -239,20 +240,20 @@ def plot_coverage(ax, x_values, score_list, plot_type, size, color,
             ax.fill_between(x_values, score_list, linewidth=0.1,
                             color=color,
                             facecolor=color,
-                            alpha=alpha)
+                            alpha=alpha, rasterized=rasterize_coverage)
         else:
             pos_x_values = x_values.copy()
             pos_x_values[score_list < 0] = np.nan
             ax.fill_between(pos_x_values, score_list, linewidth=0.1,
                             color=color,
                             facecolor=color,
-                            alpha=alpha)
+                            alpha=alpha, rasterized=rasterize_coverage)
             neg_x_values = x_values.copy()
             neg_x_values[score_list > 0] = np.nan
             ax.fill_between(neg_x_values, score_list, linewidth=0.1,
                             color=negative_color,
                             facecolor=negative_color,
-                            alpha=alpha)
+                            alpha=alpha, rasterized=rasterize_coverage)
 
 
 def transform(score_list, transform, log_pseudocount, file):

@@ -51,7 +51,7 @@ pgt --tracks ./pygenometracks/tests/test_data/bedgraph_matrix_line_colors.ini --
 
 # test bedGraphTrack:
 pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --BED ./pygenometracks/tests/test_data/regions_imbricated_chr2.bed --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.png
-pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 130  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.pdf
+pgt --tracks ./pygenometracks/tests/test_data/bedgraph_useMid.ini --region chr2:73,800,000-75,744,000 --trackLabelFraction 0.2 --width 38 --dpi 10  -o ./pygenometracks/tests/test_data/master_bedgraph_useMid.pdf
 pgt --tracks ./pygenometracks/tests/test_data/operation_bdg.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_operation_bdg.png
 pgt --tracks ./pygenometracks/tests/test_data/bedgraph_withNA.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_bedgraph_withNA.png
 pgt --tracks ./pygenometracks/tests/test_data/bedgraph_negative.ini --region X:2700000-3100000 --trackLabelFraction 0.2 --dpi 130 -o ./pygenometracks/tests/test_data/master_negative.png
