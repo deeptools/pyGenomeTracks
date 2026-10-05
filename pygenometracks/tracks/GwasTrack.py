@@ -15,17 +15,17 @@ class GwasTrack(GenomeTrack):
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
 # File containing the data.
 # We expect either:
-# - a tabular without header, with the first four columns:
+# - a tabular without header, with the first four columns being:
 #   CHR, BP, SNP and P.
 #   Optionally, extra annotation columns can be added.
 # - a tabular with a header indicating the column values.
-#   Required columns are:
+#   Required column labels are (case insensitive):
 #   - chromosome (can also be labelled chr or chrom)
 #   - position (can also be bp, pos or base_pair_location)
 #   - pvalue (can also be p, pval, p-value, p_value, p.value)
-#   The header can start with '#'
+#   The header can start with '#' it will be removed
 file =
-# Indicate if your file has a header:
+# Indicate if your file has a header indicating the column content:
 file_has_header = false
 # Each SNP will be plotted as a 'o' and you can control color/size etc...
 # Inside color
