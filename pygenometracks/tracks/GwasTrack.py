@@ -186,7 +186,7 @@ file_type = {TRACK_TYPE}
         position = [region.begin for region in gwas_overlap]
         score_list = [region.data.pvalue
                       for region in gwas_overlap]
-        
+
         transformed_scores = transform(np.array(score_list),
                                        self.properties['transform'],
                                        self.properties['log_pseudocount'],
