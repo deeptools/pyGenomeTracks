@@ -83,8 +83,11 @@ file_type = {TRACK_TYPE}
     POSSIBLE_PROPERTIES = {'transform': ['no', 'log', 'log1p', '-log', 'log2',
                                          'log10', '-log10'],
                            'y_axis_values': ['original', 'transformed']}
-    BOOLEAN_PROPERTIES = ['file_has_header', 'show_data_range', 'rasterize', 'grid']
-    STRING_PROPERTIES = ['title', 'file_type', 'file', 'color', 'border_color']
+    BOOLEAN_PROPERTIES = ['file_has_header', 'show_data_range',
+                          'rasterize', 'grid']
+    STRING_PROPERTIES = ['title', 'file_type', 'file', 'overlay_previous',
+                         'orientation', 'color',
+                         'border_color', 'transform', 'y_axis_values']
     FLOAT_PROPERTIES = {'max_value': [- np.inf, np.inf],
                         'min_value': [- np.inf, np.inf],
                         'log_pseudocount': [- np.inf, np.inf],
