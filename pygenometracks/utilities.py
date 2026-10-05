@@ -286,6 +286,15 @@ def transform(score_list, transform, log_pseudocount, file):
             raise Exception(msg)
         else:
             return - np.log(log_pseudocount + score_list)
+    elif transform == '-log10':
+        if np.nanmin(score_list) <= - log_pseudocount:
+            msg = ("\n*ERROR*\ncoverage contains values smaller or equal to"
+                   f" - {log_pseudocount}.\n"
+                   f"- log10( {log_pseudocount} + <values>) transformation can "
+                   f"not be applied to values in file: {file}")
+            raise Exception(msg)
+        else:
+            return - np.log10(log_pseudocount + score_list)
     else:
         warnings.warn(f"The transform: {transform} for file {file} is not "
                       "valid. Will not use any transformation.\n")
@@ -319,19 +328,6 @@ def get_optimal_fontsize(fig_width, region_start, region_end):
     bp_per_inch = region_len / fig_width
     fontsize = 1 / (inches_per_pt * bp_per_inch)
     return fontsize
-
-
-def count_lines(file_h, asBed=False):
-    n = 0
-    for line in file_h:
-        if asBed:
-            line = to_string(line)
-            if line.startswith("#") or line.startswith("track") or \
-               line.startswith("browser") or line.strip() == '':
-                continue
-        n += 1
-    file_h.close()
-    return n
 
 
 def change_chrom_names(chrom):

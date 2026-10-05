@@ -25,10 +25,6 @@ class TestUilitiesMethods(unittest.TestCase):
         assert utilities.to_string([bytes("A", 'ascii'),
                                     bytes("B", 'ascii')])[1] == "B"
 
-    def test_count_lines(self):
-        with open(os.path.join(ROOT, "bedgraph_withNA.bdg"), 'r') as fh:
-            assert utilities.count_lines(fh, asBed=True) == 3
-
     def test_transform_strange(self):
         input = [0, 1, 2]
         transformed = utilities.transform(input,

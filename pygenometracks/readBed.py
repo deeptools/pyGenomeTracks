@@ -1,88 +1,50 @@
 # -*- coding: utf-8 -*-
-import collections
 import sys
 
+from .readTabular import ReadTabular
 from .utilities import InputError, to_string
 
 
-class ReadBed(object):
+class ReadBed(ReadTabular):
     """
     Reads a bed file. Based on the number of fields
     it tries to guess the type of bed file used. Current options
-    are bed3, bed6 and bed12
+    are bed6, bed8, bed9 and bed12
 
     Example:
-    bed = ReadBed(open("file.bed", 'r'))
+    bed = ReadBed("file.bed")
     for interval in bed:
         print interval.start
 
     """
+    # list of bed12 fields
+    fields = ['chromosome', 'start', 'end',
+              'name', 'score', 'strand',
+              'thick_start', 'thick_end',
+              'rgb', 'block_count',
+              'block_sizes', 'block_starts']
+    comments_keywords = ["#", "browser", "track"]
 
-    def __init__(self, file_handle):
-        """
-        :param file_handle: file handle
-        :return:
-        """
-
+    def adjust_fields(self):
         # file_type can be bed6, bed8, bed9, or bed12
         self.file_type = None
         # The number of fields to read at each line
         # Can be 3 to 12
         self.fields_to_read = 12
-        self.file_handle = file_handle
-        self.line_number = 0
         # guess file type
         try:
             fields = self.get_no_comment_line()
         except StopIteration:
             self.file_type = 'bed6'
         else:
-            self.get_bed_interval(fields, is_first_line=True)
+            self.get_record(fields, is_first_line=True)
         self.file_handle.seek(0)
-
-        # list of bed fields
-        self.fields = ['chromosome', 'start', 'end',
-                       'name', 'score', 'strand',
-                       'thick_start', 'thick_end',
-                       'rgb', 'block_count',
-                       'block_sizes', 'block_starts']
-
         if self.fields_to_read <= 6:
-            self.BedInterval = collections.namedtuple('BedInterval',
-                                                      self.fields[:6])
+            self.used_fields = self.fields[:6]
         else:
-            self.BedInterval = collections.namedtuple('BedInterval',
-                                                      self.fields[:self.fields_to_read])
+            self.used_fields = self.fields[:self.fields_to_read]
 
-    def __iter__(self):
-        return self
-
-    def get_no_comment_line(self):
-        """
-        Skips comment lines starting with '#'
-        "track" or "browser" in the bed files
-        :return:
-        """
-        line = next(self.file_handle)
-        line = to_string(line)
-        if line.startswith("#") or line.startswith("track") or \
-                line.startswith("browser") or line.strip() == '':
-            line = self.get_no_comment_line()
-
-        self.line_number += 1
-        return line
-
-    def __next__(self):
-        """
-        :return: bedInterval object
-        """
-        line = self.get_no_comment_line()
-
-        bed = self.get_bed_interval(line)
-
-        return bed
-
-    def get_bed_interval(self, bed_line, is_first_line=False):
+    def get_record(self, bed_line, is_first_line=False):
         r"""
         Processes each bed line from a bed file, casts the values and returns
         a namedtuple object
@@ -90,8 +52,8 @@ class ReadBed(object):
         >>> bed_line="chr1\t0\t1000\tgene_1\t0.5\t-\t0\t1000\t0\t3\t10,20,300\t0,200,700"
         >>> with open('/tmp/test.bed', 'w') as fh:
         ...     foo = fh.write(bed_line)
-        >>> bed_f = ReadBed(open('/tmp/test.bed','r'))
-        >>> bed = bed_f.get_bed_interval(bed_line)
+        >>> bed_f = ReadBed('/tmp/test.bed')
+        >>> bed = bed_f.get_record(bed_line)
         >>> bed.chromosome
         'chr1'
         >>> bed.block_starts
@@ -100,14 +62,12 @@ class ReadBed(object):
         >>> bed_line="chr2\t0\t1000\tgene_1\t0.5\t-\n"
         >>> with open('/tmp/test.bed', 'w') as fh:
         ...     foo = fh.write(bed_line)
-        >>> bed_f = ReadBed(open('/tmp/test.bed','r'))
-        >>> bed_f.get_bed_interval(bed_line)
-        BedInterval(chromosome='chr2', start=0, end=1000, name='gene_1', score=0.5, strand='-')
+        >>> bed_f = ReadBed('/tmp/test.bed')
+        >>> bed_f.get_record(bed_line)
+        Record(chromosome='chr2', start=0, end=1000, name='gene_1', score=0.5, strand='-')
         """
 
-        line_data = bed_line.strip()
-        line_data = to_string(line_data)
-        line_data = line_data.split("\t")
+        line_data = self.get_line_data(bed_line)
         if is_first_line:
             if len(line_data) == 1:
                 if line_data[0].startswith("{\\rtf"):
@@ -324,7 +284,7 @@ class ReadBed(object):
                            else default[i - 3]
                            for i in range(6)]
 
-        return self.BedInterval._make(line_values)
+        return self.Record._make(line_values)
 
 
 def check_bed12(line_values, line_number, bed_line):
