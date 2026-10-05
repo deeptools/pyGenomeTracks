@@ -17,6 +17,16 @@ tracks = """
 [gwas]
 file = gwas_1.gwas
 height = 4
+transform = no
+title = test_1 transform = no orientation = inverted color = black
+orientation = inverted
+color = black
+
+[spacer]
+
+[gwas]
+file = gwas_1.gwas
+height = 4
 title = test_1 default values
 
 [spacer]
@@ -40,6 +50,20 @@ height = 4
 title = test_1 default values min_value = 1 max_value = 1e-15
 min_value = 1
 max_value = 1e-15
+
+[spacer]
+
+[gwas1]
+file = gwas_1.gwas
+height = 4
+title = test_1 orange overlayed with test_2 blue
+color = orange
+
+[gwas2]
+file = gwas_2.gwas
+file_has_header = True
+color = blue
+overlay_previous = share-y
 
 [x-axis]
 """
@@ -90,7 +114,7 @@ def test_gwas_track():
     region = "X:3000000-3200000"
     expected_file = os.path.join(ROOT, 'master_gwas.png')
     args = f"--tracks {ini_file} --region {region} " \
-           "--trackLabelFraction 0.2 --dpi 130 " \
+           "--trackLabelFraction 0.3 --plotWidth 30 --dpi 130 " \
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
@@ -113,7 +137,7 @@ def test_gwas_track_chrX():
     region = "chrX:3000000-3200000"
     expected_file = os.path.join(ROOT, 'master_gwas.png')
     args = f"--tracks {ini_file} --region {region} " \
-           "--trackLabelFraction 0.2 --dpi 130 " \
+           "--trackLabelFraction 0.3 --plotWidth 30 --dpi 130 " \
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
