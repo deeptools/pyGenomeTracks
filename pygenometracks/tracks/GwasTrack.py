@@ -13,10 +13,19 @@ class GwasTrack(GenomeTrack):
     SUPPORTED_ENDINGS = ['.gwas', '.linear', '.logistic', '.assoc', '.qassoc']  # this is used by make_tracks_file to guess the type of track based on file name
     TRACK_TYPE = 'gwas'
     OPTIONS_TXT = GenomeTrack.OPTIONS_TXT + f"""
-# File containing the data. We expect an IGV .gwas format file with the columns: CHR, BP, SNP and P.
-# Optionally, extra annotation columns can be added.
+# File containing the data.
+# We expect either:
+# - a tabular without header, with the first four columns:
+#   CHR, BP, SNP and P.
+#   Optionally, extra annotation columns can be added.
+# - a tabular with a header indicating the column values.
+#   Required columns are:
+#   - chromosome (can also be labelled chr or chrom)
+#   - position (can also be bp, pos or base_pair_location)
+#   - pvalue (can also be p, pval, p-value, p_value, p.value)
+#   The header can start with '#'
 file =
-# Indicate if your file has a header that do not start with '#':
+# Indicate if your file has a header:
 file_has_header = false
 # Each SNP will be plotted as a 'o' and you can control color/size etc...
 # Inside color
@@ -150,7 +159,6 @@ file_type = {TRACK_TYPE}
     def plot(self, ax, chrom_region, start_region, end_region):
         """
         Plot a scatter plot for the GWAS data.
-        The p-values are transformed as -log10(pvalue), so the y-axis will show the exponents of the p-values.
 
         :param ax: matplotlib axis
         :param chrom_region: chromosome name
@@ -178,6 +186,7 @@ file_type = {TRACK_TYPE}
         position = [region.begin for region in gwas_overlap]
         score_list = [region.data.pvalue
                       for region in gwas_overlap]
+        
         transformed_scores = transform(np.array(score_list),
                                        self.properties['transform'],
                                        self.properties['log_pseudocount'],
