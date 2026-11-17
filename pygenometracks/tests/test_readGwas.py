@@ -49,6 +49,7 @@ def test_read_gwas_glm_linear():
     assert records[-1].REF == 'G'
     assert set([r.chromosome for r in records]) == {'1'}
 
+
 def test_read_gwas_OR_colname():
     infile = NamedTemporaryFile(suffix='.gwas', prefix='gwas_test_',
                                 delete=False)
@@ -61,4 +62,3 @@ def test_read_gwas_OR_colname():
     assert records[0].OR == "whatever"
     # The 'or' colnames is changed to _4:
     assert records[0]._4 == "something"
-    

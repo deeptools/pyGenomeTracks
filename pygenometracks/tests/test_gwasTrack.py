@@ -141,7 +141,7 @@ def test_gwas_track_chrX():
            f"--outFileName {outfile.name}".split()
     pygenometracks.plotTracks.main(args)
     res = compare_images(expected_file,
-                         outfile.name, my_tolerance + 3) # 3 is the change between X and chrX
+                         outfile.name, my_tolerance + 3)  # 3 is the change between X and chrX
     assert res is None, res
 
     os.remove(outfile.name)
