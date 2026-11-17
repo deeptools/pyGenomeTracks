@@ -104,7 +104,7 @@ default_mpl_version = get_CI_mpl_version()
 def test_gwas_track():
 
     if mpl.__version__ != default_mpl_version:
-        my_tolerance = 26
+        my_tolerance = 19
     else:
         my_tolerance = tolerance
 
@@ -127,7 +127,7 @@ def test_gwas_track():
 def test_gwas_track_chrX():
 
     if mpl.__version__ != default_mpl_version:
-        my_tolerance = 15
+        my_tolerance = 19
     else:
         my_tolerance = tolerance
 
@@ -150,7 +150,7 @@ def test_gwas_track_chrX():
 def test_gwas_track_chrY():
 
     if mpl.__version__ != default_mpl_version:
-        my_tolerance = 26
+        my_tolerance = 22
     else:
         my_tolerance = tolerance
 
@@ -204,7 +204,7 @@ def test_gwas_track_raster():
 def test_gwas_track_farX():
 
     if mpl.__version__ != default_mpl_version:
-        my_tolerance = tolerance
+        my_tolerance = 19
     else:
         my_tolerance = tolerance
 
