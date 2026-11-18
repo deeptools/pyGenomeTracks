@@ -5,6 +5,7 @@ import warnings
 
 import gffutils
 
+from .readBed import ReadBed
 from .utilities import InputError
 
 FORMAT = "[%(levelname)s:%(filename)s:%(lineno)s - %(funcName)20s()] %(message)s"
@@ -31,7 +32,7 @@ warnings.filterwarnings("ignore", message="It appears you have a transcript "
                         "database creation")
 
 
-class ReadGtf(object):
+class ReadGtf(ReadBed):
     """
     Reads a gtf file.
 
@@ -51,15 +52,8 @@ class ReadGtf(object):
         """
 
         self.file_type = 'bed12'
+        self.Record = collections.namedtuple('Record', self.fields)
 
-        # list of bed fields
-        self.fields = ['chromosome', 'start', 'end',
-                       'name', 'score', 'strand',
-                       'thick_start', 'thick_end',
-                       'rgb', 'block_count',
-                       'block_sizes', 'block_starts']
-
-        self.BedInterval = collections.namedtuple('BedInterval', self.fields)
         # I think the name which should be written
         # should be the transcript_name
         # But we can change it to gene_name
@@ -93,18 +87,13 @@ class ReadGtf(object):
                 self.all_transcripts = self.db.features_of_type("transcript",
                                                                 order_by='start')
 
-    def __iter__(self):
-        return self
-
     def __next__(self):
         """
-        :return: bedInterval object
+        :return: Record object
         """
-        bed = self.get_bed_interval()
+        return self.get_record()
 
-        return bed
-
-    def get_bed_interval(self):
+    def get_record(self):
         """
         Process a transcript from the database,
         retrieve all the values and return
@@ -198,4 +187,4 @@ class ReadGtf(object):
         line_values = [tr.chrom, tr.start - 1, tr.end, trName, 0, tr.strand,
                        cds_start, cds_end, "0", len(exons_starts),
                        exons_length, relative_exons_starts]
-        return self.BedInterval._make(line_values)
+        return self.Record._make(line_values)

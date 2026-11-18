@@ -9,8 +9,8 @@ from ..readBed import ReadBed
 # To remove next 1.0
 from ..readGtf import ReadGtf
 # End to remove
-from ..utilities import (InputError, change_chrom_names, count_lines,
-                         get_length_w, opener, temp_file_from_intersect)
+from ..utilities import (InputError, change_chrom_names, get_length_w,
+                         temp_file_from_intersect)
 from .GenomeTrack import GenomeTrack
 
 DEFAULT_BED_COLOR = '#1f78b4'
@@ -291,18 +291,15 @@ file_type = {TRACK_TYPE}
                                  self.properties['prefered_name'],
                                  self.properties['merge_transcripts'],
                                  self.properties['merge_overlapping_exons'])
-            total_length = bed_file_h.length
         else:
             # end of remove
-            total_length = count_lines(opener(file_to_open),
-                                       asBed=True)
-            bed_file_h = ReadBed(opener(file_to_open))
+            bed_file_h = ReadBed(file_to_open)
 
-        return bed_file_h, total_length
+        return bed_file_h
 
     def process_bed(self, default_color, file_key='file', color_key='color', plot_regions=None):
 
-        bed_file_h, total_length = self.get_bed_handler(file_key, plot_regions)
+        bed_file_h = self.get_bed_handler(file_key, plot_regions)
         self.bed_type = bed_file_h.file_type
 
         if self.properties[color_key] == 'bed_rgb' and \
@@ -317,7 +314,7 @@ file_type = {TRACK_TYPE}
 
         max_score = float('-inf')
         min_score = float('inf')
-        for bed in tqdm(bed_file_h, total=total_length):
+        for bed in tqdm(bed_file_h, total=bed_file_h.length):
             if bed.score < min_score:
                 min_score = bed.score
             if bed.score > max_score:

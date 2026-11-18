@@ -43,7 +43,7 @@ stages:
           "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
         displayName: Install micromamba
       - bash: |
-          cat requirements_CI.txt | awk -v v=$(matplotlib.version) -v vp=$(python.version) 'BEGIN{print "python =="vp}{if($0~/matplotlib/){$0="matplotlib =="v}; print}' > requirements_CI_updated.txt
+          cat requirements_CI.txt | awk -v v=$(matplotlib.version) -v vp=$(python.version) 'BEGIN{print "python =="vp}{if($0~/matplotlib/){$0="matplotlib =="v};if($0=="pytest" && vp=="3.10"){$0="pytest<9.2"}; print}' > requirements_CI_updated.txt
           micromamba create -n pygenometracks --yes -c conda-forge -c bioconda --file requirements_CI_updated.txt
           eval "$(micromamba shell hook --shell bash)"
           micromamba activate pygenometracks
@@ -99,7 +99,7 @@ stages:
         displayName: Install micromamba
       - bash: |
           eval "$(micromamba shell hook --shell bash)"
-          cat requirements_CI.txt | awk -v v=$(matplotlib.version) -v vp=$(python.version) 'BEGIN{print "python =="vp}{if($0~/matplotlib/){$0="matplotlib =="v}; print}' > requirements_CI_updated.txt
+          cat requirements_CI.txt | awk -v v=$(matplotlib.version) -v vp=$(python.version) 'BEGIN{print "python =="vp}{if($0~/matplotlib/){$0="matplotlib =="v};if($0=="pytest" && vp=="3.10"){$0="pytest<9.2"}; print}' > requirements_CI_updated.txt
           micromamba create -n pygenometracks --yes -c conda-forge -c bioconda --file requirements_CI_updated.txt
           eval "$(micromamba shell hook --shell bash)"
           micromamba activate pygenometracks

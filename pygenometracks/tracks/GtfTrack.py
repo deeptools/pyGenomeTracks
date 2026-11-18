@@ -193,10 +193,9 @@ file_type = {TRACK_TYPE}
     #                                                 plot_regions, AROUND_REGION)
     #     else:
     #         file_to_open = self.properties['file']
-
+    #
     #     bed_file_h = ReadGtf(file_to_open,
     #                          self.properties['prefered_name'],
     #                          self.properties['merge_transcripts'],
     #                          self.properties['merge_overlapping_exons'])
-    #     total_length = bed_file_h.length
-    #     return bed_file_h, total_length
+    #     return bed_file_h

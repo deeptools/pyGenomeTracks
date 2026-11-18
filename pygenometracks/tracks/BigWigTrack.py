@@ -59,6 +59,7 @@ show_data_range = true
 # 'log2': transformed_values = log2(log_pseudocount + initial_values)
 # 'log10': transformed_values = log10(log_pseudocount + initial_values)
 # '-log': transformed_values = - log(log_pseudocount + initial_values)
+# '-log10': transformed_values = - log10(log_pseudocount + initial_values)
 # For example:
 #transform = log
 #log_pseudocount = 2
@@ -96,7 +97,7 @@ file_type = {TRACK_TYPE}
                                               'stdev', 'dev', 'coverage',
                                               'cov', 'sum'],
                            'transform': ['no', 'log', 'log1p', '-log', 'log2',
-                                         'log10'],
+                                         'log10', '-log10'],
                            'y_axis_values': ['original', 'transformed']}
     BOOLEAN_PROPERTIES = ['nans_to_zeros', 'show_data_range', 'grid']
     STRING_PROPERTIES = ['file', 'file_type', 'overlay_previous',

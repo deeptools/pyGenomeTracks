@@ -33,7 +33,7 @@ if [ -e build ]; then
 fi
 micromamba create -n pgt_test_${TRAVIS_PYTHON_VERSION} --yes -c bioconda python=$TRAVIS_PYTHON_VERSION
 micromamba activate pgt_test_${TRAVIS_PYTHON_VERSION}
-awk -v low='3.8.4' '{if($0~/matplotlib/){print "matplotlib =="low}else{print}}' requirements_CI.txt > requirements_CI_low.txt
+awk -v low='3.8.4' '{if($0~/matplotlib/){$0="matplotlib =="low};if($0=="pytest"){$0="pytest<9.2"};print}' requirements_CI.txt > requirements_CI_low.txt
 requirement_file=requirements_CI_low.txt
 micromamba install --yes -c bioconda --file ${requirement_file}
 python -m pip install .
